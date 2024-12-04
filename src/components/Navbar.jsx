@@ -8,10 +8,12 @@ const Navbar = () => {
         <div className="fixed top-0 left-0 right-0 mt-6 z-50 bg-white rounded-[24px] mx-auto p-5 max-w-[95%] shadow-[0px_4px_10px_rgba(0,0,0,0.1)] border border-[#E5E5E5]">
             <div className="flex items-center justify-between">
                 {/* Logo Section */}
-                <div>
+                <Link to='/'>
+                 <div>
                     <Logo />
                 </div>
-
+                </Link>
+               
                 {/* Navigation Links */}
                 <div className="flex items-center gap-x-8">
                     <ul className="flex items-center gap-x-8 text-[#282F5A]">

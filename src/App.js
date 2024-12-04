@@ -7,6 +7,7 @@ import './App.css'
 import Pricing from './pages/Pricing';
 import VerifyEmail from './pages/VerifyEmail';
 import Setting from './pages/Setting';
+import Dashboard from './pages/Dashboard';
 function App() {
   return (
     <div className="App">
@@ -18,7 +19,7 @@ function App() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/setting" element={<Setting />} />
-
+        <Route path='/dashboard' element={<Dashboard/>}/>
       </Routes>
     </div>
   );
