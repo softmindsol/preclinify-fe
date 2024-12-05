@@ -36,7 +36,7 @@ const Dashboard = () => {
               <Sidebar />
               
           </div>
-          <div className="bg-gray-50 py-8 px-4 w-full">
+          <div className=" py-8 px-4 w-full">
             <div className='flex justify-end'> 
                   <div className="relative w-[320px] ">
                       <input
