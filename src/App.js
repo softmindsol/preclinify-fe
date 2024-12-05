@@ -8,6 +8,9 @@ import Pricing from './pages/Pricing';
 import VerifyEmail from './pages/VerifyEmail';
 import Setting from './pages/Setting';
 import Dashboard from './pages/Dashboard';
+import ForgetPassword from './pages/ForgetPassword';
+import ResetPassword from './pages/ResetPassword';
+import AllModules from './components/AllModules';
 function App() {
   return (
     <div className="App">
@@ -19,7 +22,11 @@ function App() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/setting" element={<Setting />} />
-        <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path='/dashboard' element={<AllModules />} />
+
+        <Route path='/forget-password' element={<ForgetPassword />}/>
+        <Route path='/reset-password' element={<ResetPassword />} />
+
       </Routes>
     </div>
   );
