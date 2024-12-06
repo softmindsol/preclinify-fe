@@ -64,7 +64,7 @@ const SubModule = () => {
                         <input
                             type="search"
                             placeholder="Search for anything"
-                            className="p-2 pl-4 w-full max-w-[400px] rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            className="p-2 pl-4 w-full max-w-[400px] rounded-md "
                             value={query}
                             onChange={(e) => setQuery(e.target.value)} // Update query state on input change
                         />
