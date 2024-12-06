@@ -37,7 +37,7 @@ const Setting = () => {
                         </div>
 
                         <div
-                            className={`relative inline-flex items-center h-4 w-8 cursor-pointer ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
+                            className={`relative inline-flex items-center h-4 w-8 cursor-pointer sm:ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
                                 }`}
                         >
                             <span
@@ -54,20 +54,20 @@ const Setting = () => {
 
                 <div className='bg-white shadow-md lg:rounded-md mb-6 p-4 space-y-3'>
                     <p className="font-semibold text-[#000000] text-[14px] sm:text-[16px]">Appearance</p>
-                    <div className="flex items-center gap-x-60">
+                    <div className="flex items-center gap-x-56 sm:gap-x-60">
 
                         <div>
 
-                            <div className='flex items-center gap-x-2'>
+                            <div className='flex items-center gap-x-2 '>
                                 <PiCircleHalfFill />
 
-                                <p className="text-[12px] sm:text-[14px] text-[#3F3F46]">Dark Mode</p>
+                                <p className="text-[12px] sm:text-[14px] text-[#3F3F46] whitespace-nowrap ">Dark Mode</p>
                             </div>
 
 
                         </div>
                         <div
-                            className={`relative inline-flex items-center h-4 w-8 cursor-pointer ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
+                            className={`relative inline-flex items-center h-4 w-8  cursor-pointer sm:ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
                                 }`}
                         >
                             <span
@@ -83,14 +83,14 @@ const Setting = () => {
                 <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 text-[#000000]">
                     <div>
                         <h2 className= "text-[14px] sm:text-[16px]  font-semibold mb-4">Billing</h2>
-                        <div className='flex items-center gap-x-40'>
-                            <div className="mb-4">
+                        <div className='flex items-center gap-x-20 sm:gap-x-40'>
+                            <div className="sm:mb-4">
                                 <div className='flex items-center gap-x-2'>
                                     <MdOutlinePayments />
                                     <p className="font-medium text-[14px] sm:text-[16px] text-[#000000]">Subscription</p>
                                 </div>
 
-                                <p className="text-[12px] sm:text-[14px] text-[#71717A]">
+                                <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap">
                                     Your current subscription package.
                                 </p>
                                 <div className="flex justify-between items-center mt-2">
@@ -103,14 +103,14 @@ const Setting = () => {
                     </div>
 
                     <div>
-                        <div className='flex items-center gap-x-40'>
+                        <div className='flex items-center gap-x-20 mt-5 sm:mt-0 sm:gap-x-40'>
                             <div className="mb-4">
                                 <div className='flex items-center gap-x-2'>
                                     <FaRobot />
                                     <p className="font-medium text-[#000000] text-[14px] sm:text-[16px]">OSCE Credits</p>
                                 </div>
 
-                                <p className="text-[12px] sm:text-[14px] text-[#71717A]">
+                                <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap">
                                     Your remaining credit for OSCE
                                 </p>
                                 <div className="flex justify-between items-center mt-2">
