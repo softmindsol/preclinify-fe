@@ -1,5 +1,5 @@
 import React from 'react'
-import Siderbar from '../components/Siderbar'
+import Siderbar from '../components/Sidebar'
 const Dashboard = () => {
 
     const days = [

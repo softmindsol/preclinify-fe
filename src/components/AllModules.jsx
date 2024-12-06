@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Fuse from "fuse.js"; // Import Fuse.js
-import Sidebar from "./Siderbar";
+import Sidebar from "./Sidebar";
 import { LiaSearchSolid } from "react-icons/lia";
 
 const Dashboard = () => {
