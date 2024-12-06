@@ -166,7 +166,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">Display Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
                             placeholder="Sainavi Mahajan"
                         />
                     </div>
@@ -174,7 +174,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">First Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
                             placeholder="Sainavi"
                         />
                     </div>
@@ -182,7 +182,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1">Last Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
                             placeholder="Mahajan"
                         />
                     </div>
@@ -190,14 +190,14 @@ const Setting = () => {
                         <label className="block font-medium mb-1">University</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
                             placeholder="University of Leicester"
                         />
                     </div>
 
                     <div className="mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between">
                         <label className="block font-medium mb-1">Year of Study</label>
-                        <select name="" id="" className='w-[320px] p-2 border rounded-[8px]'>
+                        <select name="" id="" className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]'>
                             <option value="" disabled>Select Year of Study</option>
                             <option value="">Year 1</option>
                             <option value="">Year 2</option>
@@ -245,7 +245,7 @@ const Setting = () => {
                 <div className='m-5' onClick={toggleDrawer}>
                     <RxCross2/>
                 </div>
-                <div className='flex min-h-screen  flex-col  justify-between'>
+                <div className='flex min-h-screen overflow-y-auto  flex-col  justify-between'>
 
               
                 <nav className="space-y-5 w-full  text-[#3F3F46]">
