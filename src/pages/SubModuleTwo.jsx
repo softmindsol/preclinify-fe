@@ -3,19 +3,29 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { FaAngleLeft } from "react-icons/fa";
+import SearchResults from "../components/FuzzySearch";
 
 const SubModuleTwo = () => {
     const [notes, setNotes] = useState("");
     const [showContents, setShowContents] = useState(true);
     const [showSiblingArticles, setShowSiblingArticles] = useState(true);
-
     const [query, setQuery] = useState("");
+    const [showModal, setShowModal] = useState(false); // State to control modal visibility
+
     const fuse = new Fuse([], { keys: ["name"], threshold: 0.4 });
     const { id } = useParams();
     const navigate = useNavigate();
 
     // Perform fuzzy search
     const results = query ? fuse.search(query).map((result) => result.item) : [];
+
+    const handleSearchClick = () => {
+        setShowModal(true); // Show modal when the input is clicked
+    };
+
+    const closeModal = () => {
+        setShowModal(false); // Close modal
+    };
 
     return (
         <div className="flex h-screen w-full">
@@ -47,9 +57,18 @@ const SubModuleTwo = () => {
                             className="p-2 pl-4 w-[320px] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 placeholder:text-[12px] md:placeholder:text-[14px] placeholder:text-[#D4D4D8]"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
+                            onClick={handleSearchClick} // Open modal on input click
                         />
                     </div>
                 </div>
+
+                {/* Modal */}
+                {showModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                       
+                            <SearchResults results={results} />
+                    </div>
+                )}
 
                 {/* Module Details */}
                 <div className="flex justify-center gap-5 ">
@@ -102,17 +121,13 @@ const SubModuleTwo = () => {
                                     "High noise exposure",
                                     "Consistently high mobile phone use",
                                 ],
-                            },
-                        ].map((section, index) => (
+                            }].map((section, index) => (
                             <div key={index} className="space-y-3">
                                 <h2 className="text-[#3CC8A1] text-lg font-extrabold">
                                     {section.title}
                                 </h2>
                                 {section.content.map((paragraph, i) => (
-                                    <p
-                                        key={i}
-                                        className="text-[16px] text-[#3F3F46] font-light"
-                                    >
+                                    <p key={i} className="text-[16px] text-[#3F3F46] font-light">
                                         {paragraph}
                                     </p>
                                 ))}
@@ -131,7 +146,6 @@ const SubModuleTwo = () => {
                                 <div>
                                     <hr />
                                 </div>
-                               
                             </div>
                             <div className="mt-4">
                                 <textarea
@@ -145,7 +159,6 @@ const SubModuleTwo = () => {
                                         Save My Notes
                                     </button>
                                 </div>
-                               
                             </div>
                         </div>
 
@@ -156,7 +169,7 @@ const SubModuleTwo = () => {
                                 onClick={() => setShowContents(!showContents)}
                             >
                                 <h2 className="text-sm font-semibold text-[#27272A] ">
-                                   - Contents
+                                    - Contents
                                 </h2>
                             </div>
                             {showContents && (
@@ -208,6 +221,7 @@ const SubModuleTwo = () => {
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };

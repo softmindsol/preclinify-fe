@@ -1,89 +1,107 @@
 import React, { useState } from "react";
-import { LiaSearchSolid } from "react-icons/lia";
 
-const SearchComponent = () => {
-    const [query, setQuery] = useState("");
+const SearchResults = () => {
+    const [searchTerm, setSearchTerm] = useState("");
 
-    // Sample data
-    const data = {
-        "Modules / Conditions": [
-            { type: "Mod", label: "Acute Emergency", category: "" },
-            { type: "Con", label: "Acoustic Neuroma", category: "Ears, Nose and Throat" },
-        ],
-        "Also Mentioned In...": [
-            { type: "Con", label: "Acne", category: "Dermatology" },
-            { type: "Con", label: "Acute Bronchitis", category: "Respiratory" },
-            { type: "Con", label: "Acute Bronchitis", category: "Respiratory" },
-            { type: "Con", label: "Acute Bronchitis", category: "Respiratory" },
-        ],
-    };
+    const results = [
+        {
+            category: "Modules / Conditions",
+            items: [
+                {
+                    type: "Mod",
+                    label: "Acute Emergency",
+                    description: "",
+                    color: "bg-green-200 text-green-800",
+                },
+                {
+                    type: "Con",
+                    label: "Acoustic Neuroma",
+                    description: "Ears, Nose and Throat",
+                    color: "bg-orange-200 text-orange-800",
+                },
+            ],
+        },
+       
+    ];
 
-    const filteredData = Object.entries(data).reduce((acc, [section, items]) => {
-        const filteredItems = items.filter((item) =>
-            item.label.toLowerCase().includes(query.toLowerCase())
-        );
-        if (filteredItems.length > 0) {
-            acc[section] = filteredItems;
-        }
-        return acc;
-    }, {});
+    const filteredResults = results.map((section) => ({
+        ...section,
+        items: section.items.filter(
+            (item) =>
+                item.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (item.description &&
+                    item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        ),
+    }));
 
     return (
-        <div className="max-w-2xl mx-auto p-4">
-            {/* Search Bar */}
+        <div className="w-[720px]  p-4">
             <div className="relative mb-6">
                 <input
                     type="text"
-                    placeholder="Search for anything"
-                    className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full p-3 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                    <LiaSearchSolid />
-                </span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
             </div>
 
-            {/* Search Results */}
-            {Object.entries(filteredData).map(([section, items], index) => (
-                <div key={index} className="mb-6">
-                    <h3 className="text-sm font-bold text-gray-600 mb-2">{section}</h3>
-                    <ul className="space-y-3">
-                        {items.map((item, idx) => (
-                            <li
-                                key={idx}
-                                className="flex items-start justify-between p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
-                            >
-                                <div className="flex items-center gap-3">
-                                    {/* Tag */}
-                                    <span
-                                        className={`px-2 py-1 rounded text-white text-xs ${item.type === "Mod"
-                                                ? "bg-green-500"
-                                                : "bg-orange-500"
-                                            }`}
-                                    >
-                                        {item.type}
-                                    </span>
-                                    {/* Label */}
-                                    <div>
-                                        <p className="font-medium text-gray-900">{item.label}</p>
-                                        {item.category && (
-                                            <p className="text-xs text-gray-500">{item.category}</p>
-                                        )}
+
+            {/* Display filtered results */}
+            {filteredResults.map((section, index) => (
+                <div key={index} className="mb-6 bg-white rounded-[8px]">
+                    <h2 className="text-sm font-semibold text-[#27272A] mb-3 px-4 py-2">
+                        {section.category}
+
+                    </h2>
+                    <hr />
+                    <ul className="">
+                        {section.items.length === 0 ? (
+                            <p>No results found</p>
+                        ) : (
+                            section.items.map((item, idx) => (
+                                <li
+                                    key={idx}
+                                    className="flex justify-between items-center  p-4 "
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span
+                                            className={`text-[12px] font-bold px-2 py-1 rounded-[4px] ${item.color}`}
+                                        >
+                                            {item.type}
+                                        </span>
+                                        <div className="flex items-center gap-x-3">
+                                            <p className="text-[#3F3F46] text-sm font-bold ">{item.label}</p>
+                                            {item.description && (
+                                                <p className="text-[#71717A] italic text-[14px] ">
+                                                    {item.description}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                        ))}
+                                </li>
+                            ))
+                        )}
                     </ul>
                 </div>
             ))}
-
-            {/* No Results */}
-            {query && Object.keys(filteredData).length === 0 && (
-                <p className="text-center text-gray-500">No results found.</p>
-            )}
         </div>
     );
 };
 
-export default SearchComponent;
+export default SearchResults;
