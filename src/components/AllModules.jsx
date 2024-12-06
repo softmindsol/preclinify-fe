@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Fuse from "fuse.js"; // Import Fuse.js
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import Sidebar from "./Sidebar";
 import { LiaSearchSolid } from "react-icons/lia";
 
@@ -43,7 +44,6 @@ const Dashboard = () => {
             <div>
                 <Sidebar />
             </div>
-            
 
             <div className="py-8 px-4 w-full">
                 {/* Search Bar */}
@@ -67,11 +67,13 @@ const Dashboard = () => {
                     <ul className="divide-y divide-gray-200">
                         {results.length > 0 ? (
                             results.map((category, index) => (
-                                <li
-                                    key={index}
-                                    className="py-4 text-[#000000] text-[14px] font-semibold hover:bg-gray-100 cursor-pointer"
-                                >
-                                    {category}
+                                <li key={index} className="py-4">
+                                    <Link
+                                        to={`/dashboard/${category.replace(/ /g, "-")}`} // Dynamic route
+                                        className="text-[#000000] text-[14px] font-semibold hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        {category}
+                                    </Link>
                                 </li>
                             ))
                         ) : (

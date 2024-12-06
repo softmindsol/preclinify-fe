@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
 import AllModules from './components/AllModules';
+import SubModule from './pages/SubModule';
 function App() {
   return (
     <div className="App">
@@ -23,6 +24,7 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/setting" element={<Setting />} />
         <Route path='/dashboard' element={<AllModules />} />
+        <Route path='/dashboard/:id' element={<SubModule />} />
 
         <Route path='/forget-password' element={<ForgetPassword />}/>
         <Route path='/reset-password' element={<ResetPassword />} />
