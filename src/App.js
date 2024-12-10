@@ -25,6 +25,8 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/setting" element={<Setting />} />
         <Route path='/dashboard' element={<AllModules />} />
+        <Route path='/home' element={<Dashboard />} />
+
         <Route path='/dashboard/:id' element={<SubModule />} />
         <Route path='/dashboard/detail/:id' element={<SubModuleTwo />} />
 
