@@ -1,5 +1,6 @@
 import React from 'react';
 import Logo from './Logo';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
     return (
@@ -12,17 +13,19 @@ const Sidebar = () => {
             {/* Menu Items */}
             <nav className="space-y-8 w-full text-[#3F3F46]">
                 {[
-                    { name: "Dashboard", icon: "house" },
-                    { name: "Practice", icon: "dumbbell" },
-                    { name: "Performance", icon: "chart-line" },
-                    { name: "Friends", icon: "git-merge" },
-                    { name: "Textbook", icon: "book-open" },
-                    { name: "OSCE", icon: "bed" },
+                    { id:"/dashboard", name: "Dashboard", icon: "house" },
+                    { id: "/dashboard", name: "Practice", icon: "dumbbell" },
+                    { id: "/dashboard", name: "Performance", icon: "chart-line" },
+                    { id: "/dashboard", name: "Friends", icon: "git-merge" },
+                    { id: "/dashboard", name: "Textbook", icon: "book-open" },
+                    { id: "/dashboard", name: "OSCE", icon: "bed" },
                 ].map((item, index) => (
+                    
                     <div
                         key={index}
                         className="flex items-center space-x-3 px-6 group cursor-pointer"
                     >
+                       
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -79,21 +82,28 @@ const Sidebar = () => {
                                 </>
                             )}
                         </svg>
+                        <Link to={item.id}>
                         <span className="text-lg font-medium group-hover:text-[#3CC8A1]">
                             {item.name}
                         </span>
+                    </Link>
                     </div>
+                   
                 ))}
             </nav>
 
             {/* Bottom Settings */}
             <div className="mt-auto w-full px-6">
+                <Link to='/setting'>
                 <div className="flex items-center space-x-3 text-[#3F3F46] group cursor-pointer">
+
                     <i className="fa fa-cog text-xl group-hover:text-[#3CC8A1]"></i>
+                    
                     <span className="text-lg font-medium group-hover:text-[#3CC8A1]">
                         Settings
                     </span>
                 </div>
+                </Link>
             </div>
         </div>
     );
