@@ -13,6 +13,7 @@ import ResetPassword from './pages/ResetPassword';
 import AllModules from './components/AllModules';
 import SubModule from './pages/SubModule';
 import SubModuleTwo from './pages/SubModuleTwo';
+import ProgressTable from './components/Questioning';
 function App() {
   return (
     <div className="App">
@@ -26,7 +27,9 @@ function App() {
         <Route path="/setting" element={<Setting />} />
         <Route path='/dashboard' element={<AllModules />} />
         <Route path='/home' element={<Dashboard />} />
+        <Route path='/ProgressTable' element={<ProgressTable />} />
 
+        
         <Route path='/dashboard/:id' element={<SubModule />} />
         <Route path='/dashboard/detail/:id' element={<SubModuleTwo />} />
 

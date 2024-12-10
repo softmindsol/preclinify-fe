@@ -1,5 +1,5 @@
 import React from 'react'
-import Siderbar from '../components/Sidebar'
+import Sidebar from '../components/Sidebar'
 const Dashboard = () => {
 
     const days = [
@@ -53,7 +53,7 @@ const Dashboard = () => {
     return (
         <div className='flex'>
             <div className="">
-                <Siderbar />
+                <Sidebar />
             </div>
             <div className='w-full py-10'>
                 <div className='flex flex-row items-center h-[150px]  justify-evenly w-full p-5'>
