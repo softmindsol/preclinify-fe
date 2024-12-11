@@ -10,9 +10,9 @@ const Score = () => {
             <div className='w-full'>
 
 
-                <div className='flex items-center justify-center flex-col'>
+                <div className='flex items-center justify-center flex-col mt-5'>
                     <div>
-                        <img src="/assets/score.png" alt="" />
+                        <img src="/assets/score.png" alt="" className='w-[350px]' />
                     </div>
 
                     <div className='text-center  '>
@@ -27,7 +27,7 @@ const Score = () => {
 
 
                 <div className='space-y-3'>
-                    <div className='text-center mr-[280px] mt-5'>
+                    <div className='text-center mr-[380px] mt-5'>
                         <p className='font-semibold text-[24px] text-[#3F3F46]'>Total Attempted: 258</p>
                     </div>
                     <div className='text-[#3F3F46] font-medium text-[24px] flex items-center justify-center gap-x-16'>
