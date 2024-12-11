@@ -15,6 +15,7 @@ import SubModule from './pages/SubModule';
 import SubModuleTwo from './pages/SubModuleTwo';
 import ProgressTable from './components/Questioning';
 import QuestionCard from './components/QuestionCard';
+import Score from './components/Score';
 function App() {
   return (
     <div className="App">
@@ -34,7 +35,7 @@ function App() {
         <Route path='/forget-password' element={<ForgetPassword />}/>
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/question-card' element={<QuestionCard />} />
-
+        <Route path='/score' element={<Score />} />
         
       </Routes>
     </div>
