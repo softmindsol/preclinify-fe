@@ -28,7 +28,7 @@ const DiscussionBoard = () => {
 
     return (
         <div className="p-6 bg-gray-100">
-            <div className="max-w-2xl mx-auto bg-white shadow rounded-lg h-auto">
+            <div className="max-w-2xl mx-auto bg-white shadow rounded-lg py-5">
                 <div
                     className="flex justify-between items-center gap-x-5 mb-2 p-4 cursor-pointer"
                     onClick={() => setShowComments(!showComments)}
@@ -94,13 +94,14 @@ const DiscussionBoard = () => {
                 )}
 
                 {showComments && <div className=""> <hr className="mt-10" />
-                    <div className="flex items-center justify-center mt-5 ">
+                    <div className="flex items-center justify-center my-5 ">
                         <input
                             type="text"
                             className="w-[90%] bg-[#F4F4F5] rounded-[4px] p-3 placeholder:text-[12px]"
                             placeholder="Write your comment here..."
                         />
-                    </div></div>}
+                    </div>
+                    </div>}
                
             </div>
         </div>
