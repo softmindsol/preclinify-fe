@@ -102,9 +102,16 @@ const ShortQuestion = () => {
                             />
 
                         </div>
+
+                        <div className="space-x-2">
+                            <button className="bg-[#FFCACA] w-[230px] text-[#EF4444] p-2 rounded-[8px] ">Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span></button>
+                            <button className="bg-[#FFE9D6] w-[230px] text-[#FF9741] p-2 rounded-[8px] space-x-4">Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">2</span></button>
+                            <button className="bg-[#C0F3E4] w-[230px] text-[#3CC8A1] p-2 rounded-[8px] space-x-4">Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">3</span></button>
+
+                        </div>
                        
 <div>
-    
+
 </div>
                        
 
