@@ -44,7 +44,7 @@ const Dashboard = () => {
             <div>
                 <Sidebar />
             </div>
-
+ 
             <div className="py-8 px-4 w-full">
                 {/* Search Bar */}
                 <div className="flex justify-end">
@@ -64,13 +64,13 @@ const Dashboard = () => {
 
                 {/* Categories List */}
                 <div className="bg-white rounded-[2px] p-5 mt-10">
-                    <ul className="divide-y divide-gray-200">
+                    <ul className="divide-y divide-gray-200 w-full">
                         {results.length > 0 ? (
                             results.map((category, index) => (
-                                <li key={index} className="py-4">
+                                <li key={index} className="py-4 hover:bg-gray-100">
                                     <Link
                                         to={`/dashboard/${category.replace(/ /g, "-")}`} // Dynamic route
-                                        className="text-[#000000] text-[14px] font-semibold hover:bg-gray-100 cursor-pointer"
+                                        className="text-[#000000] text-[14px] font-semibold p-4   cursor-pointer"
                                     >
                                         {category}
                                     </Link>

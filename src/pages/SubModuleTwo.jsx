@@ -54,7 +54,7 @@ const SubModuleTwo = () => {
                         <input
                             type="search"
                             placeholder="Search for anything"
-                            className="p-2 pl-4 w-[320px] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 placeholder:text-[12px] md:placeholder:text-[14px] placeholder:text-[#D4D4D8]"
+                            className="p-2 pl-4 w-[320px]  rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 placeholder:text-[12px] md:placeholder:text-[14px] placeholder:text-[#D4D4D8]"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             onClick={handleSearchClick} // Open modal on input click
@@ -149,7 +149,7 @@ const SubModuleTwo = () => {
                             </div>
                             <div className="mt-4">
                                 <textarea
-                                    className="w-full h-32 bg-transparent border border-gray-400 rounded-md p-2 text-sm"
+                                    className="w-full h-32 bg-transparent text-black border border-gray-400 rounded-md p-2 text-sm"
                                     placeholder="This is an example note that a user would have for this topic."
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}

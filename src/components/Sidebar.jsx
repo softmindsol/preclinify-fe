@@ -83,7 +83,7 @@ const Sidebar = () => {
                             )}
                         </svg>
                         <Link to={item.id}>
-                        <span className="text-lg font-medium group-hover:text-[#3CC8A1]">
+                        <span className="text-[16px] font-medium group-hover:text-[#3CC8A1]">
                             {item.name}
                         </span>
                     </Link>
