@@ -29,11 +29,8 @@ function App() {
         <Route path='/dashboard' element={<AllModules />} />
         <Route path='/home' element={<Dashboard />} />
         <Route path='/progress-table' element={<ProgressTable />} />
-
-        
         <Route path='/dashboard/:id' element={<SubModule />} />
         <Route path='/dashboard/detail/:id' element={<SubModuleTwo />} />
-
         <Route path='/forget-password' element={<ForgetPassword />}/>
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/question-card' element={<QuestionCard />} />

@@ -155,7 +155,7 @@ const SubModuleTwo = () => {
                                     onChange={(e) => setNotes(e.target.value)}
                                 />
                                 <div className="text-end">
-                                    <button className=" text-[#3CC8A1]  border border-[#3CC8A1] w-[125px] h-[32px]  font-semibold text-[14px] rounded-md ">
+                                    <button className=" text-[#3CC8A1]  border border-[#3CC8A1] w-[125px] h-[32px]  font-semibold text-[14px] rounded-md transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white">
                                         Save My Notes
                                     </button>
                                 </div>
