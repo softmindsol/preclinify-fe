@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Logo from './Logo'
 
 const SceneriosDetail = () => {
+    const [openPanel, setOpenPanel] = useState(null);
+
+    // Function to toggle panels
+    const togglePanel = (panel) => {
+        setOpenPanel(openPanel === panel ? null : panel);
+    };
     return (
         <div>
-            <div>
-
-            </div>
 
             <div className="absolute left-0 top-0 bg-white w-[20%]   h-screen">
                 <div className="flex items-center justify-between mt-5">
@@ -17,23 +20,7 @@ const SceneriosDetail = () => {
                         <Logo />
                     </div>
 
-                    <div className="flex items-center mr-5">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-chevrons-right"
-                        >
-                            <path d="m6 17 5-5-5-5" />
-                            <path d="m13 17 5-5-5-5" />
-                        </svg>
-                    </div>
+
                 </div>
 
                 <div className='text-[#3F3F46] text-[12px] font-semibold px-6 mt-5 '>
@@ -79,6 +66,52 @@ const SceneriosDetail = () => {
 
 
             </div>
+
+            <div className="max-w-3xl mx-auto mt-8 shadow-lg rounded-lg border">
+                {/* Header */}
+                <div className="bg-[#3CC8A1] text-white p-4 rounded-t-lg">
+                    <h1 className="text-lg font-bold">Gastroenterology #1</h1>
+                    <div className="flex justify-between items-center text-sm mt-2">
+                        <span>By Rahul Sagu</span>
+                        <span>04.10.24</span>
+                        <button className="bg-teal-600 px-2 py-1 rounded text-xs">
+                            Report a problem
+                        </button>
+                    </div>
+                </div>
+
+                {/* Panels */}
+                {[
+                    {
+                        id: 1, title: "Candidate Brief", content: `You are an FY1 in the emergency department. Riley Harrington has attended with difficulties with his bowels.Please take a history and present your thoughts to the examiner. Please note that the above timing breakdown is based on our suggested timing. You may wish to adjust this breakdown according to your medical school’s usual OSCE format and timing.` },
+                    { id: 2, title: "Actor Brief", content: "Actor Brief Content" },
+                    { id: 3, title: "Examiner Brief", content: "Examiner Brief Content" },
+                    { id: 4, title: "Mark Scheme", content: "Mark Scheme Content" },
+                ].map((panel) => (
+                    <div key={panel.id} className="border-b last:border-b-0">
+                        <button
+                            onClick={() => togglePanel(panel.id)}
+                            className="w-full text-left p-4 bg-white hover:bg-gray-100 flex justify-between items-center"
+                        >
+                            <span className="font-bold text-[24px]">{panel.title}</span>
+                            <span>{openPanel === panel.id ? <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up"><path d="m18 15-6-6-6 6" /></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6" /></svg>}</span>
+                        </button>
+                        {openPanel === panel.id && (
+                            <div className="p-4 bg-gray-50">
+                                <p>{panel.content}</p>
+                            </div>
+                        )}
+                    </div>
+                ))}
+
+                {/* Score */}
+                <div className="p-4 bg-gray-100 text-center">
+                    <button className="bg-teal-500 text-white px-4 py-2 rounded">
+                        Score
+                    </button>
+                </div>
+            </div>
+
         </div>
     )
 }
