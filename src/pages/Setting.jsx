@@ -6,9 +6,9 @@ import { MdOutlinePayments } from 'react-icons/md';
 import Logo from '../components/Logo';
 import { TbBaselineDensityMedium } from "react-icons/tb";
 // import component 👇
-import Drawer from 'react-modern-drawer'
 import { RxCross2 } from "react-icons/rx";
 
+import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
 import { Link } from 'react-router-dom';
