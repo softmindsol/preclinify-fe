@@ -49,8 +49,8 @@ const Score = () => {
 
                 <div className='flex flex-col-reverse md:flex-col '>
 
-                    <div className='space-y-3'>
-                        <div className='text-center md:mr-[380px] mt-5'>
+                    <div className='space-y-3 flex flex-col-reverse md:flex-col'>
+                        <div className='text-center md:mr-[380px] mt-2 md:mt-5'>
                             <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46]'>Total Attempted: 258</p>
                         </div>
                         <div className='text-[#3F3F46] font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
@@ -60,12 +60,12 @@ const Score = () => {
                         </div>
                     </div>
 
-                    <div className='flex justify-center mt-5 items-center gap-x-1'>
-                        <div className='w-[470px] p-1.5 rounded-[6px] bg-[#3CC8A1]'>
-                            <span className='text-[20px] lg:text-[24px] font-extrabold text-white flex items-center md:block hidden'>248</span>
+                    <div className='flex justify-center mt-5 items-center gap-x-1 '>
+                        <div className='w-[470px] p-1.5  ml-5 md:ml-0   rounded-[6px] bg-[#3CC8A1]'>
+                            <span className='text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden'>248</span>
                         </div>
 
-                        <div className='w-[144px] bg-[#FF453A] text-right p-1.5'>
+                        <div className='w-[144px] bg-[#FF453A] rounded-[6px] text-right p-1.5 mr-5 md:mr-0'>
                             <span className=' text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden'>10</span>
                         </div>
                     </div>
