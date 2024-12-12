@@ -9,7 +9,7 @@ const SceneriosDetail = () => {
         setOpenPanel(openPanel === panel ? null : panel);
     };
     return (
-        <div>
+        <div className='w-full'>
 
             <div className="absolute left-0 top-0 bg-white w-[20%]   h-screen">
                 <div className="flex items-center justify-between mt-5">
@@ -66,52 +66,58 @@ const SceneriosDetail = () => {
 
 
             </div>
-
-            <div className="max-w-3xl mx-auto mt-8 shadow-lg rounded-lg border">
+            {/* Content */}
+        <div className='flex items-center justify-center  ml-60'>
+            <div className="w-[991px] mt-20   rounded-tl-[4px] rounded-tr-[4px] ">
                 {/* Header */}
-                <div className="bg-[#3CC8A1] text-white p-4 rounded-t-lg">
-                    <h1 className="text-lg font-bold">Gastroenterology #1</h1>
-                    <div className="flex justify-between items-center text-sm mt-2">
-                        <span>By Rahul Sagu</span>
-                        <span>04.10.24</span>
-                        <button className="bg-teal-600 px-2 py-1 rounded text-xs">
+                <div className="bg-[#3CC8A1] text-white p-4 rounded-t-lg mb-5">
+                    <h1 className="text-[24px] font-bold">Gastroenterology #1</h1>
+
+                    <div className="flex justify-between items-center font-medium text-[16px] mt-2">
+                        <div className='space-x-5'>
+                            <span>By Rahul Sagu</span>
+                            <span>04.10.24</span>
+                        </div>
+                        
+                        <button className="bg-transparent px-2 py-1 rounded text-xs border border-white">
                             Report a problem
                         </button>
                     </div>
+
                 </div>
 
                 {/* Panels */}
                 {[
                     {
                         id: 1, title: "Candidate Brief", content: `You are an FY1 in the emergency department. Riley Harrington has attended with difficulties with his bowels.Please take a history and present your thoughts to the examiner. Please note that the above timing breakdown is based on our suggested timing. You may wish to adjust this breakdown according to your medical school’s usual OSCE format and timing.` },
-                    { id: 2, title: "Actor Brief", content: "Actor Brief Content" },
-                    { id: 3, title: "Examiner Brief", content: "Examiner Brief Content" },
-                    { id: 4, title: "Mark Scheme", content: "Mark Scheme Content" },
+                    { id: 2, title: "Actor Brief", content: `You are an FY1 in the emergency department. Riley Harrington has attended with difficulties with his bowels.Please take a history and present your thoughts to the examiner. Please note that the above timing breakdown is based on our suggested timing. You may wish to adjust this breakdown according to your medical school’s usual OSCE format and timing.` },
+                    { id: 3, title: "Examiner Brief", content: `You are an FY1 in the emergency department. Riley Harrington has attended with difficulties with his bowels.Please take a history and present your thoughts to the examiner. Please note that the above timing breakdown is based on our suggested timing. You may wish to adjust this breakdown according to your medical school’s usual OSCE format and timing.` },
+                    { id: 4, title: "Mark Scheme", content: `You are an FY1 in the emergency department. Riley Harrington has attended with difficulties with his bowels.Please take a history and present your thoughts to the examiner. Please note that the above timing breakdown is based on our suggested timing. You may wish to adjust this breakdown according to your medical school’s usual OSCE format and timing.` },
                 ].map((panel) => (
-                    <div key={panel.id} className="border-b last:border-b-0">
-                        <button
+                    <div key={panel.id} className="border-b last:border-b-0 mb-2 ">
+                        <button   
                             onClick={() => togglePanel(panel.id)}
-                            className="w-full text-left p-4 bg-white hover:bg-gray-100 flex justify-between items-center"
+                            className="w-full text-left p-4 bg-white flex justify-between items-center "
                         >
-                            <span className="font-bold text-[24px]">{panel.title}</span>
+                            <span className="font-bold text-[16px] text-[#52525B]">{panel.title}</span>
                             <span>{openPanel === panel.id ? <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up"><path d="m18 15-6-6-6 6" /></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6" /></svg>}</span>
                         </button>
                         {openPanel === panel.id && (
                             <div className="p-4 bg-gray-50">
-                                <p>{panel.content}</p>
+                                <p className='text-[#52525B] text-[20px]'>{panel.content}</p>
                             </div>
                         )}
                     </div>
                 ))}
 
                 {/* Score */}
-                <div className="p-4 bg-gray-100 text-center">
+                {/* <div className="p-4  text-center">
                     <button className="bg-teal-500 text-white px-4 py-2 rounded">
                         Score
                     </button>
-                </div>
+                </div> */}
             </div>
-
+            </div>
         </div>
     )
 }
