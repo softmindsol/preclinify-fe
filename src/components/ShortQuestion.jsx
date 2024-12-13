@@ -1,17 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo from "./Logo";
 import DiscussionBoard from "./Discussion";
 
+import Drawer from 'react-modern-drawer'
+//import styles 👇
+import 'react-modern-drawer/dist/index.css'
+import { Link } from 'react-router-dom';
+import { RxCross2 } from "react-icons/rx";
+import { TbBaselineDensityMedium } from "react-icons/tb";
 const ShortQuestion = () => {
+    const [isOpen, setIsOpen] = useState(false)
+    const toggleDrawer = () => {
+        setIsOpen((prevState) => !prevState)
+    }
     return (
-        <div className=" min-h-screen p-6 " >
-            <div className=" mx-auto flex items-center justify-center ">
+        <div className=" min-h-screen lg:p-6 " >
+
+            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
+                <div className=''>
+                    <img src="/assets/small-logo.png" alt="" />
+                </div>
+
+                <div className='' onClick={toggleDrawer}>
+                    <TbBaselineDensityMedium />
+                </div>
+            </div>
+            <div className=" mx-auto flex items-center justify-center mt-5 lg:mt-0">
 
 
-                <div className="w-[45%]  ">
+                <div className=" lg:w-[92%] xl:w-[65%] 2xl:w-[45%]  ">
 
                     {/* Header Section */}
-                    <div className="bg-[#3CC8A1] text-white p-6 rounded-md flex items-center justify-between relative">
+                    <div className="bg-[#3CC8A1] text-white p-6 w-[720px] ml-6   rounded-md flex items-center justify-between relative">
                         <div className="absolute left-4">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +94,7 @@ const ShortQuestion = () => {
 
                     {/* Question Section */}
                     <div className="mt-6  p-6 ">
-                        <p className="text-[#000000] text-justify">
+                        <p className="text-[#000000] text-justify w-[720px]">
                             Eric, a 30-year-old software developer with chronic fatigue syndrome,
                             reports significant improvement in his symptoms after following a
                             self-management strategy focusing on energy management. He credits
@@ -164,7 +184,147 @@ const ShortQuestion = () => {
                 {/* Sidebar Section */}
 
 
-                <div className="absolute right-0 top-0 bg-white w-[20%]   h-screen">
+
+                <div className="hidden lg:block">
+
+
+                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[20%]   h-screen ">
+                        <div className="flex items-center justify-between mt-5">
+                            <div className="flex items-center">
+                            </div>
+
+                            <div className="absolute left-1/2 transform -translate-x-1/2">
+                                <Logo />
+                            </div>
+
+                            <div className="flex items-center mr-5">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-chevrons-right"
+                                >
+                                    <path d="m6 17 5-5-5-5" />
+                                    <path d="m13 17 5-5-5-5" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col  items-center justify-center mt-10">
+
+                            <div className="w-[90%]  h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                                <p className="text-[12px] mt-3">Accuracy</p>
+                                <p className="font-black text-[36px]">88.3%</p>
+                            </div>
+                        </div>
+
+                        <div className="">
+                            <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
+                                <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
+                                <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
+                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
+                        </div>
+
+                        <div className="flex justify-center items-center ">
+                            <div className="grid grid-cols-5 gap-2">
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
+                                    <p>1A</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                        </div>
+                        <div className="py-5 px-10 text-[#D4D4D8]">
+                            <hr />
+                        </div>
+
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
+                            <div className="flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center ">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
+                                    <path d="M20 6 9 17l-5-5" />
+                                </svg>
+                                <p>Finish and Review</p>
+                            </div>
+                            <hr className="w-[200px] my-2" />
+                            <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center  whitespace-nowrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
+                                    <path d="m15 18-6-6 6-6" />
+                                </svg>
+                                <p className="">Back to Dashboard</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+            {/* <DiscussionBoard /> */}
+            <Drawer
+                open={isOpen}
+                onClose={toggleDrawer}
+                direction='right'
+                className='bla bla bla'
+                lockBackgroundScroll={true}
+            >
+                <div className='m-5' onClick={toggleDrawer}>
+                    <RxCross2 />
+                </div>
+
+                <div className=" bg-white    h-screen ">
                     <div className="flex items-center justify-between mt-5">
                         <div className="flex items-center">
                         </div>
@@ -173,7 +333,7 @@ const ShortQuestion = () => {
                             <Logo />
                         </div>
 
-                        <div className="flex items-center mr-5">
+                        {/* <div className="flex items-center mr-5">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -189,20 +349,20 @@ const ShortQuestion = () => {
                                 <path d="m6 17 5-5-5-5" />
                                 <path d="m13 17 5-5-5-5" />
                             </svg>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="flex flex-col  items-center justify-center mt-10">
 
-                        <div className="w-[308px] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                        <div className="w-[90%] 2xl:w-[308px] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
                             <p className="text-[12px] mt-3">Accuracy</p>
                             <p className="font-black text-[36px]">88.3%</p>
                         </div>
                     </div>
 
                     <div className="">
-                        <div className="flex items-center justify-between p-5 w-full ">
-                            <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer">All</span>
+                        <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
+                            <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
                             <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
                             <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
                     </div>
@@ -266,14 +426,14 @@ const ShortQuestion = () => {
                         <hr />
                     </div>
 
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div className="flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center mb-4">
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
+                        <div className="flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center ">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
                                 <path d="M20 6 9 17l-5-5" />
                             </svg>
                             <p>Finish and Review</p>
                         </div>
-
+                        <hr className="w-[200px] my-2" />
                         <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center  whitespace-nowrap">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
                                 <path d="m15 18-6-6 6-6" />
@@ -284,10 +444,7 @@ const ShortQuestion = () => {
 
 
                 </div>
-            </div>
-
-
-            <DiscussionBoard />
+            </Drawer>
         </div>
     );
 };
