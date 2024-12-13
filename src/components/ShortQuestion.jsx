@@ -25,13 +25,13 @@ const ShortQuestion = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className=" mx-auto flex items-center justify-center mt-5 lg:mt-0">
+            <div className="  flex items-center justify-center mt-3 lg:mt-0  ">
 
 
-                <div className=" lg:w-[92%] xl:w-[65%] 2xl:w-[45%]  ">
+                <div className="w-[100%] lg:w-[92%] xl:w-[65%] 2xl:w-[45%]  ">
 
                     {/* Header Section */}
-                    <div className="bg-[#3CC8A1] text-white p-6 w-[720px] ml-6   rounded-md flex items-center justify-between relative">
+                    <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6  lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
                         <div className="absolute left-4">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +94,7 @@ const ShortQuestion = () => {
 
                     {/* Question Section */}
                     <div className="mt-6  p-6 ">
-                        <p className="text-[#000000] text-justify w-[720px]">
+                        <p className="text-[#000000] text-justify w-[100%] lg:w-[720px]">
                             Eric, a 30-year-old software developer with chronic fatigue syndrome,
                             reports significant improvement in his symptoms after following a
                             self-management strategy focusing on energy management. He credits
@@ -110,20 +110,20 @@ const ShortQuestion = () => {
                         {/* Options Section */}
                         <div>
                             <textarea
-                                className="rounded-[6px] bg-[#E4E4E7] w-[720px] h-[120px] mt-2  p-5 text-wrap"
+                                className="rounded-[6px] bg-[#E4E4E7] w-[100%] lg:w-[720px] h-[120px] mt-2  p-5 text-wrap"
                                 placeholder="This is the user’s answer"
                             />
 
                         </div>
                         <div>
                             <textarea
-                                className="rounded-[6px]  w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
+                                className="rounded-[6px]  w-[100%] lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                 placeholder="This is the user’s answer"
                             />
 
                         </div>
 
-                        <div className="space-x-2">
+                        <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-2 w-[100%] flex items-center justify-center">
                             <button className="bg-[#FFCACA] w-[230px] text-[#EF4444] p-2 rounded-[8px] ">Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span></button>
                             <button className="bg-[#FFE9D6] w-[230px] text-[#FF9741] p-2 rounded-[8px] space-x-4">Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">2</span></button>
                             <button className="bg-[#C0F3E4] w-[230px] text-[#3CC8A1] p-2 rounded-[8px] space-x-4">Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">3</span></button>
