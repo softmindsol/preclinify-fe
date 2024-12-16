@@ -12,11 +12,25 @@ import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
 import { Link } from 'react-router-dom';
+import  supabase  from '../helper'; // Import the Supabase client
+
 const Setting = () => {
     const [isOpen, setIsOpen] = useState(false)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
+    // Logout function
+    const handleLogout = async () => {
+        try {
+            await supabase.auth.signOut();
+            console.log("User logged out successfully");
+            // Optionally, redirect the user to the login page
+            window.location.href = '/login'; // You can replace this with a routing library like react-router if you prefer
+        } catch (error) {
+            console.error("Error logging out:", error.message);
+        }
+    };
+
 
     return (
         <div className=' lg:flex  min-h-screen w-full'>
@@ -213,7 +227,7 @@ const Setting = () => {
                     </div>
 
                     <div className='flex flex-col gap-y-5 mt-10'>
-                        <button className="border-[1px] w-[91px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Log out</button>
+                        <button className="border-[1px] w-[91px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1" onClick={handleLogout}>Log out</button>
                         <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Reset Password</button>
 
                         <button className="border-[1px] w-[152px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Delete Account</button>

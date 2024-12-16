@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation after successful registration
-import supabase from '../supabase'; // Import the Supabase client
+import supabase from '../helper'; // Import the Supabase client
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -33,7 +33,8 @@ const Register = () => {
 
             if (error) {
                 // Show error toast
-                toast.error(error.message);
+                toast.error("Error occur while register");
+                console.log("Error occur while register",error)
             } else {
                 // Show success toast
                 navigate('/login')

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import  supabase  from '../supabase'; // Import the supabase instance
+import  supabase  from '../helper'; // Import the supabase instance
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import {toast} from 'sonner'; // Import the toast module
