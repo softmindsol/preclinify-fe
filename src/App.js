@@ -40,7 +40,7 @@ function App() {
         <Route path="/progress-table" element={<ProtectedRoute><ProgressTable /></ProtectedRoute>} />
         <Route path="/dashboard/:id" element={<ProtectedRoute><SubModule /></ProtectedRoute>} />
         <Route path="/dashboard/detail/:id" element={<ProtectedRoute><SubModuleTwo /></ProtectedRoute>} />
-        <Route path="/reset-password" element={<ProtectedRoute><ResetPassword /></ProtectedRoute>} />
+        <Route path="/reset-password" element={<><ResetPassword /></>} />
         <Route path="/question-card" element={<ProtectedRoute><QuestionCard /></ProtectedRoute>} />
         <Route path="/score" element={<ProtectedRoute><Score /></ProtectedRoute>} />
         <Route path="/short-question" element={<ProtectedRoute><ShortQuestion /></ProtectedRoute>} />
