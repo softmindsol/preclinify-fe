@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import {toast} from 'sonner'; // Import the toast module
 import Loader from '../components/Loader';
+import { resendVerificationEmail } from '../utils/authUtils';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -25,7 +26,8 @@ const Login = () => {
             });
 
             if (error) {
-                setErrorMessage(error.message);
+                toast.error(error.message)
+                await resendVerificationEmail(email)
                 setLoading(false); // Set loading to false if there is an error
             } else {
                 // On success, store the session (if needed)
