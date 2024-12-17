@@ -37,6 +37,16 @@ border-radius: 48px;
   object-fit: cover;
 }
 
+@media (max-width: 1536px) {
+  .swiper-slide img {
+    display: block;
+    border-radius: 100%;
+    width: 300px; /* Adjust width for screens 1536px and above */
+    height: 200px; /* Adjust height for screens 1536px and above */
+    object-fit: cover;
+  }
+}
+
 
 
 .swiper-slide:nth-child(1n) {

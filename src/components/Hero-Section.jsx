@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
 import Slider from "./Slider";
-
+ 
 const Hero = () => {
 
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -16,27 +16,27 @@ const Hero = () => {
     ];
     return (
         <div className="mt-8  ">
-            <div className="relative w-full h-screen  flex items-center justify-center">
+            <div className="relative w-screen h-screen  flex items-center justify-center">
                 {/* Left Background Image */}
 
                 <div
-                    className="absolute top-32 left-0 w-[273px] h-[557px] bg-cover bg-no-repeat"
+                    className="absolute top-32 left-0 w-[200px] h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat"
                     style={{ backgroundImage: `url('/assets/HomePageBG-1.png') ` }}
                 ></div>
 
                 {/* Right Background Image */}
                 <div
-                    className="absolute top-32 right-0 w-[273px] h-[557px] bg-cover bg-no-repeat "
+                    className="absolute top-32  right-0  w-[200px] h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat "
                     style={{ backgroundImage: ` url('/assets/HomePageBG-2.png')` }}
                 ></div>
 
                 {/* Center Content */}
-                <div className="text-center w-[40%] space-y-10 ">
-                    <p className="text-[64px] font-bold leading-[77px]">
+                <div className="text-center w-[35%] xl:w-[40%] space-y-5 2xl:space-y-10 ">
+                    <p className="text-[40px] leading-[50px] 2xl:text-[64px] font-bold 2xl:leading-[77px]">
                         <span className="text-[#3CC8A1]">Supercharge</span> your medicine
                         journey!
                     </p>
-                    <p className="text-[24px]">
+                    <p className="text-[20px] 2xl:text-[24px]">
                         <span className="font-bold">MLA. SAQ. AI patients</span> and much much
                         more...
                     </p>
@@ -49,7 +49,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-around -mt-48">
+            <div className="flex items-center flex-wrap justify-around -mt-48">
                 <img src="/assets/LeicesterLogo-1.png" alt="" />
                 <img src="/assets/university-of-birmingham-logo.png" alt="" />
                 <img src="/assets/University_of_Manchester-Logo.png" alt="" />
@@ -57,14 +57,14 @@ const Hero = () => {
                 <img src="/assets/Newcastle-University-Logo.png" alt="" />
             </div>
 
-            <div className="w-full max-w-7xl mx-auto p-16 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
+            <div className="w-[58rem] xl:w-[75rem] 2xl:w-7xl mx-auto p-16 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
                     {/* Left Column: Answers */}
                     <div>
                         {answers.map((answer) => (
                             <div
                                 key={answer.id}
-                                className={`flex items-center justify-between p-4 border rounded-lg mb-4 ${selectedAnswer === answer.id
+                                className={`flex items-center justify-between p-[0.5rem] 2xl:p-4 border rounded-lg mb-4 ${selectedAnswer === answer.id
                                     ? "border-green-500"
                                     : "border-[#FF9741]"
                                     }`}
@@ -101,10 +101,10 @@ const Hero = () => {
 
                     {/* Right Column: Info Section */}
                     <div>
-                        <h2 className="text-[32px] font-semibold text-[#3F3F46] mb-4">
+                        <h2 className="text-[25px] 2xl:text-[32px] font-semibold text-[#3F3F46] mb-4">
                             Want to become a <span className="text-[#FF9741]">doctor</span> in the UK?
                         </h2>
-                        <ul className="text-[#3F3F46] space-y-2 text-[20px]">
+                        <ul className="text-[#3F3F46] space-y-2 text-[16px] 2xl:text-[20px]">
                             <li>• We’re building the <strong>largest</strong> bank of high-quality UKMLA questions</li>
                             <li>• Built for UK medical students and international medical graduates</li>
                             <li>• All according to the relevant and <strong>updated UK guidelines</strong></li>
@@ -117,10 +117,10 @@ const Hero = () => {
 
 
 
-            <div className="flex items-center gap-x-72 justify-center mt-32">
+            <div className="flex items-center mx-auto  xl:gap-x-0  2xl:gap-x-72 justify-between 2xl:justify-center mt-32 w-[58rem] xl:w-[75rem] 2xl:w-7xl">
                 <div>
-                    <h1 className="text-[#3F3F46] text-[32px] font-extrabold">See yourself improve in <span className="text-[#FF9741]">real-time</span> </h1>
-                    <ul className="text-[#3F3F46] space-y-2 text-[20px]">
+                    <h1 className="text-[#3F3F46] text-[32px] xl:text-[40px] 2xl:text-[32px] font-extrabold">See yourself improve in <span className="text-[#FF9741]">real-time</span> </h1>
+                    <ul className="text-[#3F3F46] space-y-2 text-[24px] 2xl:text-[20px]">
                         <li>• <span className="text">Track</span> your progress</li>
                         <li>• See how you <span>compare</span></li>
                         <li>• Understand how to  <span>improve</span></li>
@@ -128,20 +128,20 @@ const Hero = () => {
                     </ul>
                 </div>
 
-                <div className="bg-[#FFFFFF] rounded-[24px] w-[489px] h-[503px] relative">
+                <div className="bg-[#FFFFFF] rounded-[24px] w-[400px] h-[410px] xl:w-[489px] xl:h-[503px] relative">
                     <img src="/assets/sling.png" alt="" className="" />
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-center  px-8 py-12  md:space-y-0 md:space-x-[300px]">
+            <div className="flex flex-col md:flex-row items-center xl:justify-between 2xl:justify-center  px-8 py-12  md:space-y-0 space-x-16 2xl:space-x-[300px]">
                 <div className="flex gap-x-3">
 
                 {/* Left Column: Blocks */}
                     <div className="space-y-3">
                     {/* Block 1 */}
-                    <div className="w-[308px] h-[274px] bg-[#FCE8D8] rounded-lg"></div>
+                    <div className="w-[263px] xl:w-[308px] h-[274px] bg-[#FCE8D8] rounded-lg"></div>
                     {/* Block 2 */}
-                        <div className="w-[308px] h-[138px] bg-white  rounded-lg"></div>
+                        <div className="w-[263px] xl:w-[308px] h-[138px] bg-white  rounded-lg"></div>
 
                      </div>
                      
@@ -158,7 +158,7 @@ const Hero = () => {
 
                 {/* Right Column: Text Content */}
                 <div>
-                    <h2 className="text-[32px]  font-bold text-[#3F3F46]">
+                    <h2 className="text-[32px] xl:text-[40px] 2xl:text-[32px]   font-bold text-[#3F3F46]">
                         Everything you need in{" "}
                         <span className="text-[#FF9741]">one place</span>
                     </h2>
@@ -196,8 +196,8 @@ const Hero = () => {
 
             <div className=" space-y-10 text-center w-full mt-56 ">
                 <div className="flex items-center justify-center flex-col ">
-                    <div className="text-[64px] text-center font-bold leading-[77px]">
-                        <p className="text-[48px] font-extrabold text-[#3F3F46]">Ready to</p>
+                    <div className="text-[48px] 2xl:text-[64px] text-center font-bold leading-[55px] 2xl:leading-[77px]">
+                        <p className= "text-[36px] 2xl:text-[48px] font-extrabold text-[#3F3F46]">Ready to</p>
                         <p className="text-[#3CC8A1]">Supercharge your</p>  
                         <p>medicine journey!</p>
                     </div>
