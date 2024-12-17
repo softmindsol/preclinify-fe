@@ -16,22 +16,22 @@ const Hero = () => {
     ];
     return (
         <div className="mt-8  ">
-            <div className="relative w-screen h-screen  flex items-center justify-center">
+            <div className="relative  h-[60vh] md:h-[77vh] lg:h-screen  flex items-center justify-center">
                 {/* Left Background Image */}
 
                 <div
-                    className="absolute top-32 left-0 w-[200px] h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat"
+                    className="hidden  md:absolute top-32 left-0 w-[150px] h-[450px] lg:w-[200px] lg:h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat"
                     style={{ backgroundImage: `url('/assets/HomePageBG-1.png') ` }}
                 ></div>
 
                 {/* Right Background Image */}
                 <div
-                    className="absolute top-32  right-0  w-[200px] h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat "
+                    className=" hidden  md:absolute top-32  right-0 w-[150px] h-[450px]  lg:w-[200px] lg:h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat "
                     style={{ backgroundImage: ` url('/assets/HomePageBG-2.png')` }}
                 ></div>
 
                 {/* Center Content */}
-                <div className="text-center w-[35%] xl:w-[40%] space-y-5 2xl:space-y-10 ">
+                <div className="text-center w-[90%] md:w-[35%] xl:w-[40%] space-y-5 2xl:space-y-10 ">
                     <p className="text-[40px] leading-[50px] 2xl:text-[64px] font-bold 2xl:leading-[77px]">
                         <span className="text-[#3CC8A1]">Supercharge</span> your medicine
                         journey!
@@ -49,7 +49,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className="flex items-center flex-wrap justify-around -mt-48">
+            <div className="flex items-center flex-wrap justify-around  md:-mt-48">
                 <img src="/assets/LeicesterLogo-1.png" alt="" />
                 <img src="/assets/university-of-birmingham-logo.png" alt="" />
                 <img src="/assets/University_of_Manchester-Logo.png" alt="" />
@@ -57,8 +57,8 @@ const Hero = () => {
                 <img src="/assets/Newcastle-University-Logo.png" alt="" />
             </div>
 
-            <div className="w-[58rem] xl:w-[75rem] 2xl:w-7xl mx-auto p-16 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+            <div className="w-[90%] lg:w-[58rem] xl:w-[75rem] 2xl:w-7xl mx-auto p-[2rem] lg:p-16 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-[2rem] md:gap-20 items-center">
                     {/* Left Column: Answers */}
                     <div>
                         {answers.map((answer) => (
@@ -90,7 +90,7 @@ const Hero = () => {
                                             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                         )}
                                     </div>
-                                    <label htmlFor={answer.id} className="text-[#3F3F46] font-medium text-16px cursor-pointer">
+                                    <label htmlFor={answer.id} className="text-[#3F3F46] font-medium text-[14px] lg:text-[16px] cursor-pointer">
                                         {answer.text}
                                     </label>
                                 </div>
@@ -101,10 +101,10 @@ const Hero = () => {
 
                     {/* Right Column: Info Section */}
                     <div>
-                        <h2 className="text-[25px] 2xl:text-[32px] font-semibold text-[#3F3F46] mb-4">
+                        <h2 className="text-[20px] lg:text-[25px] 2xl:text-[32px] font-semibold text-[#3F3F46] mb-4">
                             Want to become a <span className="text-[#FF9741]">doctor</span> in the UK?
                         </h2>
-                        <ul className="text-[#3F3F46] space-y-2 text-[16px] 2xl:text-[20px]">
+                        <ul className="text-[#3F3F46] space-y-2 text-[14px] lg:text-[16px] 2xl:text-[20px]">
                             <li>• We’re building the <strong>largest</strong> bank of high-quality UKMLA questions</li>
                             <li>• Built for UK medical students and international medical graduates</li>
                             <li>• All according to the relevant and <strong>updated UK guidelines</strong></li>
@@ -117,10 +117,10 @@ const Hero = () => {
 
 
 
-            <div className="flex items-center mx-auto  xl:gap-x-0  2xl:gap-x-72 justify-between 2xl:justify-center mt-32 w-[58rem] xl:w-[75rem] 2xl:w-7xl">
-                <div>
-                    <h1 className="text-[#3F3F46] text-[32px] xl:text-[40px] 2xl:text-[32px] font-extrabold">See yourself improve in <span className="text-[#FF9741]">real-time</span> </h1>
-                    <ul className="text-[#3F3F46] space-y-2 text-[24px] 2xl:text-[20px]">
+            <div className="flex flex-col-reverse  md:flex-row items-center mx-auto gap-x-5  lg:gap-x-0  2xl:gap-x-72 justify-between 2xl:justify-center mt-32 w-[90%] lg:w-[58rem] xl:w-[75rem] 2xl:w-7xl">
+                <div className="mt-5 md:mt-0">
+                    <h1 className="text-[#3F3F46] text-[24px] lg:text-[32px] xl:text-[40px] 2xl:text-[32px] font-extrabold">See yourself improve in <span className="text-[#FF9741]">real-time</span> </h1>
+                    <ul className="text-[#3F3F46] space-y-2 text-[18px] lg:text-[24px] 2xl:text-[20px]">
                         <li>• <span className="text">Track</span> your progress</li>
                         <li>• See how you <span>compare</span></li>
                         <li>• Understand how to  <span>improve</span></li>
@@ -133,36 +133,36 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center xl:justify-between 2xl:justify-center  px-8 py-12  md:space-y-0 space-x-16 2xl:space-x-[300px]">
+            <div className="flex flex-col md:flex-row items-center xl:justify-between 2xl:justify-center  px-8 py-12  md:space-y-0 space-x-8 lg:space-x-16 2xl:space-x-[300px]  ">
                 <div className="flex gap-x-3">
 
                 {/* Left Column: Blocks */}
                     <div className="space-y-3">
                     {/* Block 1 */}
-                    <div className="w-[263px] xl:w-[308px] h-[274px] bg-[#FCE8D8] rounded-lg"></div>
+                    <div className="w-[180px]  lg:w-[263px] xl:w-[308px] h-[210px] lg:h-[274px] bg-[#FCE8D8] rounded-lg"></div>
                     {/* Block 2 */}
-                        <div className="w-[263px] xl:w-[308px] h-[138px] bg-white  rounded-lg"></div>
+                        <div className="w-[180px]  lg:w-[263px] xl:w-[308px] h-[138px] bg-white  rounded-lg"></div>
 
                      </div>
                      
                     <div className="space-y-3">
                     {/* Block 3 */}
-                        <div className="w-[185px] h-[172px] bg-white rounded-lg"></div>
+                        <div className="w-[130px] lg:w-[185px] h-[140px] lg:h-[172px] bg-white rounded-lg"></div>
 
                     {/* Block 4 */}
-                    <div className="w-[185px] h-[248px] bg-[#FCE8D8] rounded-lg"></div>
+                        <div className="w-[130px] lg:w-[185px] h-[209px] lg:h-[248px] bg-[#FCE8D8] rounded-lg"></div>
 
                      </div>
                 </div>
 
 
                 {/* Right Column: Text Content */}
-                <div>
-                    <h2 className="text-[32px] xl:text-[40px] 2xl:text-[32px]   font-bold text-[#3F3F46]">
+                <div className="mt-5 md:mt-0">
+                    <h2 className="text-[25px] lg:text-[32px] xl:text-[40px] 2xl:text-[32px]   font-bold text-[#3F3F46]">
                         Everything you need in{" "}
                         <span className="text-[#FF9741]">one place</span>
                     </h2>
-                    <ul className="mt-4 text-[#3F3F46] space-y-2 text-[20px] font-medium ">
+                    <ul className="mt-4 text-[#3F3F46] space-y-2 text-[18px] lg:text-[20px] font-medium ">
                         <li>• <span className="font-bold">MLA</span>  specific content</li>
                         <li>• High quality <span className="font-bold">SAQ</span>  questions</li>
                         <li>• Station specific <span className="font-bold"> OSCE scenarios</span> </li>
@@ -175,9 +175,9 @@ const Hero = () => {
                                 rel="noopener noreferrer"
                                 className="text-orange-500 underline"
                             >
-                                @Preclinify
+                                @Preclinify 
                             </a>{" "}
-                            <p className="ml-4"> on Instagram</p>
+                            <span>on Instagram</span>
                            
                         </li>
                     </ul>
@@ -185,7 +185,7 @@ const Hero = () => {
             </div>
 
             <div className="my-10">
-                <p className="font-bold text-[32px] text-[#3F3F46] leading-[38px] text-center">Here’s what students say about us....</p>
+                <p className="font-bold text-[24px] lg:text-[32px] text-[#3F3F46] leading-[38px] text-center">Here’s what students say about us....</p>
               
                 <div className="rounded-[48px] bg-[#ffff] ">
 
@@ -194,17 +194,17 @@ const Hero = () => {
 
             <Slider/>
 
-            <div className=" space-y-10 text-center w-full mt-56 ">
+            <div className=" space-y-10 text-center w-full mt-20 md:mt-56 ">
                 <div className="flex items-center justify-center flex-col ">
-                    <div className="text-[48px] 2xl:text-[64px] text-center font-bold leading-[55px] 2xl:leading-[77px]">
-                        <p className= "text-[36px] 2xl:text-[48px] font-extrabold text-[#3F3F46]">Ready to</p>
+                    <div className="text-[36px] lg:text-[48px] 2xl:text-[64px] text-center font-bold  leading-[45px] lg:leading-[55px] 2xl:leading-[77px]">
+                        <p className= "text-[26px] lg:text-[36px] 2xl:text-[48px] font-extrabold text-[#3F3F46]">Ready to</p>
                         <p className="text-[#3CC8A1]">Supercharge your</p>  
                         <p>medicine journey!</p>
                     </div>
                    
                 </div>
                 <Link to={'/signup'}>
-                    <button className="mt-4 rounded-[12px] bg-[#FF9741] px-5 py-3 text-white font-extrabold shadow-orangeBlur hover:shadow-lg transition">
+                    <button className="mt-4 rounded-[12px] text-[14px] lg:text-[16px] bg-[#FF9741] px-5 py-3 text-white font-extrabold shadow-orangeBlur hover:shadow-lg transition">
                         Sign Up Now
                     </button>
                 </Link>
