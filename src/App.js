@@ -19,7 +19,7 @@ import Score from './components/Score';
 import ShortQuestion from './components/ShortQuestion';
 import Scenarios from './components/Scenerio';
 import SceneriosDetail from './components/SceneriosDetail';
-import ProtectedRoute from './components/protectedRoute'; // Import the ProtectedRoute component
+import ProtectedRoute from './components/protectedRoute'; 
 
 function App() {
   return (
