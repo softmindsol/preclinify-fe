@@ -1,7 +1,7 @@
 // src/supabase.js
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://srwicoyzvrqsvigjkklq.supabase.co'; // Your Supabase URL
+const supabaseUrl = process.env.FE_SUPABASE_URL; // Your Supabase URL
 const supabaseKey = process.env.FE_SUPABASE_KEY; // Your public anon key
 
 if (!supabaseUrl || !supabaseKey) {
