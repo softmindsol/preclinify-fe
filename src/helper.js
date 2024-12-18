@@ -6,9 +6,6 @@ const supabaseKey = process.env.REACT_SUPABASE_KEY; // Your public anon key
 
 if (!supabaseUrl || !supabaseKey) {
 
-    console.log('supabaseUrl:', supabaseUrl)
-    console.log('supabaseKey:', supabaseKey)
-
     console.error('Supabase environment variables are missing!');
 }
 
