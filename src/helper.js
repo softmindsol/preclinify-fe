@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL; // Your Supabase URL
-const supabaseKey = process.env.REACT_APP_SUPABASE_SECRET; // Your public anon key
+const supabaseKey = process.env.REACT_APP_SUPABASE; // Your public anon key
 
 if (!supabaseUrl || !supabaseKey) {
     console.error('Supabase environment variables are missing!');
