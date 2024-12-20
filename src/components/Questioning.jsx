@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 
@@ -9,27 +9,58 @@ import { Link } from 'react-router-dom';
 import Logo from "./Logo";
 import { RxCross2 } from "react-icons/rx";
 import SetupSessionModal from "./SetupSessionModal";
+import supabase from "../helper";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchModules } from "../redux/features/categoryModules/module.service";
+import { setLoading } from "../redux/features/loader/loader.slice";
+import { setCategoryId } from "../redux/features/categoryModules/module.slice";
+import {  fetchMcqsByModule } from "../redux/features/mcqQuestions/mcqQuestion.service";
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
+    const isLoading = useSelector(
+        (state) => state?.loading?.[fetchModules.typePrefix]
+    );
+    const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
+    const [moduleId, setModuleId] = useState(null)
+    const [isOpen, setIsOpen] = useState(false);
+    const dispatch = useDispatch();
+    const data = useSelector((state) => state.categoryModule);
 
-    const [isOpen, setIsOpen] = useState(false)
+
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-
-    const handleCheckboxChange = () => {
-        setIsOpenSetUpSessionModal(true); // Modal open on checkbox click
+    
+    const handleCheckboxChange = (categoryId) => {
+        setModuleId(categoryId)
+        dispatch(setCategoryId(categoryId))
+        setIsOpenSetUpSessionModal((prev) => ({
+            ...prev,
+            [categoryId]: !prev[categoryId], // Toggle the checkbox state
+        }));
     };
-    const data = [
-        { topic: "Anaesthetics + Intensive Care", correct: 60, incorrect: 20, unanswered: 20 },
-        { topic: "Breast", correct: 40, incorrect: 30, unanswered: 30 },
-        { topic: "Cardiology", correct: 50, incorrect: 30, unanswered: 20 },
-        { topic: "Clinical Chemistry", correct: 70, incorrect: 20, unanswered: 10 },
-        { topic: "Dermatology", correct: 50, incorrect: 20, unanswered: 30 },
-        { topic: "ENT", correct: 40, incorrect: 30, unanswered: 30 },
-        { topic: "Emergency Medicine", correct: 80, incorrect: 10, unanswered: 10 },
-    ];
 
+    useEffect(() => {
+        dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
+        dispatch(fetchModules())
+            .unwrap()
+            .then(() => {
+                dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+            }).catch(err => {
+                dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+            })
+    }, []);
+
+    useEffect(() => {
+        dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+        dispatch(fetchMcqsByModule(moduleId))
+            .unwrap()
+            .then(() => {
+                dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+            }).catch(err => {
+                dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+            })
+    }, [moduleId])
     return (
         <div className=" lg:flex w-full">
             <div className="h-full hidden lg:block">
@@ -48,7 +79,6 @@ const Questioning = () => {
 
             {/* Table Header */}
             <div className="flex flex-col lg:w-full  sm:m-10 space-y-10">
-
 
                 <div className=" h-[137px] p-4 ">
                     {/* Tab Section */}
@@ -161,34 +191,43 @@ const Questioning = () => {
 
                     </div>
 
-                    {data.map((row, index) => (
-                        <div
-                            key={index}
-                            className="grid md:grid-cols-2      items-center py-3 "
-                        >
-                            <div className="text-left text-[14px] md:text-[16px]">
-                                <input type="checkbox" className="mr-2" onChange={handleCheckboxChange} />
-                                {row.topic}
-                            </div>
+                    <div>
+                        {isLoading ? (
+                            <p>Loading...</p>
+                        ) : (
+                            data?.data?.map((row) => (
+                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                    <div
+                                        className="text-left text-[14px] md:text-[16px] cursor-pointer"
+                                        onClick={() => handleCheckboxChange(row.categoryId)}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="mr-2"
+                                            checked={!!checkedItems[row.categoryId]}
+                                            onChange={() => handleCheckboxChange(row.categoryId)}
+                                        />
+                                        {row.categoryName}
+                                    </div>
 
-                            <div className=" flex items-center justify-center space-x-1">
-                                <div
-                                    className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                    style={{ width: `${row.correct}%` }}
-                                ></div>
-                                <div
-                                    className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                    style={{ width: `${row.incorrect}%` }}
-                                ></div>
-                                <div
-                                    className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                    style={{ width: `${row.unanswered}%` }}
-                                ></div>
-                            </div>
-
-
-                        </div>
-                    ))}
+                                    <div className="flex items-center justify-center space-x-1">
+                                        <div
+                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                            style={{ width: `50%` }}
+                                        ></div>
+                                        <div
+                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                            style={{ width: `30%` }}
+                                        ></div>
+                                        <div
+                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                            style={{ width: `20%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
 

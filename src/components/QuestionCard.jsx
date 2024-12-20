@@ -2,57 +2,39 @@ import React, { useEffect, useState } from "react";
 import Logo from "./Logo";
 import DiscussionBoard from "./Discussion";
 import { TbBaselineDensityMedium } from "react-icons/tb";
-import { Link } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-
 import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
-import axios from "axios";
+import { setLoading } from "../redux/features/loader/loader.slice";
+import { fetchMcqsByCategory, fetchMcqsQuestion } from "../redux/features/mcqQuestions/mcqQuestion.service";
+import { useDispatch, useSelector } from "react-redux";
+
 const QuestionCard = () => {
-    const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false)
-
-    // MCQ questions fetch karne ka function using Axios
-    const fetchQuestions = async () => {
-        try {
-            // Retrieve the token from localStorage
-            const token = localStorage.getItem('authToken');  // Change 'authToken' to your actual token key name
-            console.log("token:", token);
-
-            // Check if the token exists
-            if (!token) {
-                console.error("No token found");
-                return;
-            }
-            const response = await axios.get(`${process.env.REACT_APP_SUPABASE_URL}/rest/v1/mcqQuestions`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,  // Using environment variable
-                    'Content-Type': 'application/json',
-                },
-            });
-            setQuestions(response.data);
-        } catch (error) {
-            console.error("Error fetching questions:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    const data = useSelector(state => state.mcqsQuestion)
+   const dispatch=useDispatch()
+  const isLoading = useSelector(
+      (state) => state?.loading?.[fetchMcqsQuestion.typePrefix]
+    );
+    console.log("data:", data)
 
     useEffect(() => {
-        
-        fetchQuestions();  // Component mount hone par data fetch karein
+        dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: true }));
+        dispatch(fetchMcqsQuestion())
+                    .unwrap()
+                    .then(() => {
+                        dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: false }));
+                    }).catch(err => {
+                        dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: false }));
+                    })
     }, []);
+
+   
+
         const toggleDrawer = () => {
             setIsOpen((prevState) => !prevState)
         }
-
-
-    console.log("questions:", questions)
-
-
 
     return (
         <div className=" min-h-screen  " >
