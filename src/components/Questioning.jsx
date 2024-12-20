@@ -11,11 +11,11 @@ import { RxCross2 } from "react-icons/rx";
 import SetupSessionModal from "./SetupSessionModal";
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
-    
-        const [isOpen, setIsOpen] = useState(false)
-        const toggleDrawer = () => {
-            setIsOpen((prevState) => !prevState)
-        }
+
+    const [isOpen, setIsOpen] = useState(false)
+    const toggleDrawer = () => {
+        setIsOpen((prevState) => !prevState)
+    }
 
     const handleCheckboxChange = () => {
         setIsOpenSetUpSessionModal(true); // Modal open on checkbox click
@@ -36,160 +36,160 @@ const Questioning = () => {
                 <Sidebar />
             </div>
 
-              <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
-                            <div className=''>
-                                <img src="/assets/small-logo.png" alt="" />
-                            </div>
-            
-                            <div className='' onClick={toggleDrawer}>
-                                <TbBaselineDensityMedium/>
-                            </div>
-                        </div>
-                       
+            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
+                <div className=''>
+                    <img src="/assets/small-logo.png" alt="" />
+                </div>
+
+                <div className='' onClick={toggleDrawer}>
+                    <TbBaselineDensityMedium />
+                </div>
+            </div>
+
             {/* Table Header */}
             <div className="flex flex-col lg:w-full  sm:m-10 space-y-10">
 
 
-            <div className=" h-[137px] p-4 ">
-                {/* Tab Section */}
-                <div className="flex items-center justify-between space-x-2 text-[12px] md:text-[14px]">
-                    <button className="px-4 py-2 text-gray-800 bg-white w-[50%] sm:w-[33%] font-semibold  rounded-[8px]">
-                        Pre-clinical
-                    </button>
-                        <button className="px-4 py-2 text-gray-500 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
-                        Clinical
-                    </button>
-                        <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px]">
-                            Data <span className="md:block hidden ml-2 ">Interpretation</span> 
-                    </button>
-                         
-                </div>
-
-                {/* Search and Button Section */}
-                <div className="flex justify-between items-center h-[110px] bg-white">
-                    {/* Search Bar */}
-                    <div className="flex items-center p-8 gap-x-10  ">
-
-
-                    <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap">Pre clinical</p>
-                            <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                        <input
-                            type="text"
-                            placeholder="Search for anything"
-                            className="ml-2 w-[280px] focus:outline-none "
-                        />
-                        </div>                    </div>
-                    <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
-                        {/* Dropdown */}
-                        <select className="border border-[#A1A1AA] rounded-md px-3 py-2 text-[#3F3F46] text-[12px] md:text-[14px] font-medium">
-                            <option>SBA</option>
-                            <option>Option 2</option>
-                            <option>Option 3</option>
-                        </select>
-
-                        {/* Continue Button */}
-                            <button className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
-                            Continue &gt;
+                <div className=" h-[137px] p-4 ">
+                    {/* Tab Section */}
+                    <div className="flex items-center justify-between space-x-2 text-[12px] md:text-[14px]">
+                        <button className="px-4 py-2 text-gray-800 bg-white w-[50%] sm:w-[33%] font-semibold  rounded-[8px]">
+                            Pre-clinical
                         </button>
+                        <button className="px-4 py-2 text-gray-500 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
+                            Clinical
+                        </button>
+                        <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px]">
+                            Data <span className="md:block hidden ml-2 ">Interpretation</span>
+                        </button>
+
                     </div>
 
+                    {/* Search and Button Section */}
+                    <div className="flex justify-between items-center h-[110px] bg-white">
+                        {/* Search Bar */}
+                        <div className="flex items-center p-8 gap-x-10  ">
+
+
+                            <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap">Pre clinical</p>
+                            <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                                <input
+                                    type="text"
+                                    placeholder="Search for anything"
+                                    className="ml-2 w-[280px] focus:outline-none "
+                                />
+                            </div>                    </div>
+                        <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
+                            {/* Dropdown */}
+                            <select className="border border-[#A1A1AA] rounded-md px-3 py-2 text-[#3F3F46] text-[12px] md:text-[14px] font-medium">
+                                <option>SBA</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                            </select>
+
+                            {/* Continue Button */}
+                            <button className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
+                                Continue &gt;
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
-            <div className="bg-white flex items-center h-[212px]  p-5 m-4 ">
-                <div className="w-[35%] flex items-center justify-between mr-10">
-    <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center  w-full">
-        Recent Sessions
-    </p>
-    <div className="h-[212px] w-[1px] bg-red-300 " />
-</div>
-
-
-                <div className="w-[65%] space-y-3">
-
-
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">Geriatrics</p>
-                                <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">1 day ago</p>
+                <div className="bg-white flex items-center h-[212px]  p-5 m-4 ">
+                    <div className="w-[35%] flex items-center justify-between mr-10">
+                        <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center  w-full">
+                            Recent Sessions
+                        </p>
+                        <div className="h-[212px] w-[1px] bg-red-300 " />
                     </div>
-                    <div>
-                                <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                    </div>
-                    
-                </div>
-                <div className="flex items-center justify-between ">
-                    <div>
+
+
+                    <div className="w-[65%] space-y-3">
+
+
+                        <div className="flex items-center justify-between">
+                            <div>
                                 <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">Geriatrics</p>
                                 <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">1 day ago</p>
-                    </div>
-                    <div>
+                            </div>
+                            <div>
                                 <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                    </div>
+                            </div>
 
+                        </div>
+                        <div className="flex items-center justify-between ">
+                            <div>
+                                <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">Geriatrics</p>
+                                <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">1 day ago</p>
+                            </div>
+                            <div>
+                                <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
+                <div className="w-full p-5 text-[14px] md:text-[16px] ">
+                    <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700 border-b border-gray-200 pb-2 w-full">
+                        <div className="text-left">
+                            <input type="checkbox" className="mr-2" />
+                            Topics
+                        </div>
+                        <div className="text-right flex items-center gap-x-5">
+                            <div className="hidden sm:block text-center">Progress</div>
+
+                            <div className="flex items-center gap-x-3">
+                                <div className="h-4 w-4 bg-[#3CC8A1]"></div>
+                                <p>Correct</p>
+
+                            </div>
+                            <div className="flex items-center gap-x-3">
+                                <div className="h-4 w-4 bg-[#FF453A]"></div>
+                                <p>Incorrect</p>
+
+                            </div>
+                            <div className="flex items-center gap-x-3">
+                                <div className="h-4 w-4 bg-[#E4E4E7]"></div>
+                                <p>Unanswered</p>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                    {data.map((row, index) => (
+                        <div
+                            key={index}
+                            className="grid md:grid-cols-2      items-center py-3 "
+                        >
+                            <div className="text-left text-[14px] md:text-[16px]">
+                                <input type="checkbox" className="mr-2" onChange={handleCheckboxChange} />
+                                {row.topic}
+                            </div>
+
+                            <div className=" flex items-center justify-center space-x-1">
+                                <div
+                                    className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                    style={{ width: `${row.correct}%` }}
+                                ></div>
+                                <div
+                                    className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                    style={{ width: `${row.incorrect}%` }}
+                                ></div>
+                                <div
+                                    className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                    style={{ width: `${row.unanswered}%` }}
+                                ></div>
+                            </div>
+
+
+                        </div>
+                    ))}
                 </div>
-            </div>
-            <div className="w-full p-5 text-[14px] md:text-[16px] ">
-                <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700 border-b border-gray-200 pb-2 w-full">
-                    <div className="text-left">
-                        <input type="checkbox" className="mr-2" />
-                        Topics
-                    </div>
-                    <div className="text-right flex items-center gap-x-5">
-                        <div className="hidden sm:block text-center">Progress</div>
-
-                        <div className="flex items-center gap-x-3">
-                            <div className="h-4 w-4 bg-[#3CC8A1]"></div>
-                            <p>Correct</p>
-
-                        </div>
-                        <div className="flex items-center gap-x-3">
-                            <div className="h-4 w-4 bg-[#FF453A]"></div>
-                            <p>Incorrect</p>
-
-                        </div>
-                        <div className="flex items-center gap-x-3">
-                            <div className="h-4 w-4 bg-[#E4E4E7]"></div>
-                            <p>Unanswered</p>
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-                {data.map((row, index) => (
-                    <div
-                        key={index}
-                        className="grid md:grid-cols-2      items-center py-3 "
-                    >
-                        <div className="text-left text-[14px] md:text-[16px]">
-                            <input type="checkbox" className="mr-2" onChange={handleCheckboxChange} />
-                            {row.topic}
-                        </div>
-
-                        <div className=" flex items-center justify-center space-x-1">
-                            <div
-                                className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                style={{ width: `${row.correct}%` }}
-                            ></div>
-                            <div
-                                className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                style={{ width: `${row.incorrect}%` }}
-                            ></div>
-                            <div
-                                className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                style={{ width: `${row.unanswered}%` }}
-                            ></div>
-                        </div>
-
-
-                    </div>
-                ))}
-            </div>
             </div>
 
             <Drawer
@@ -302,7 +302,7 @@ const Questioning = () => {
 
             </Drawer>
 
-            {isOpenSetUpSessionModal && <SetupSessionModal isOpenSetUpSessionModal={isOpenSetUpSessionModal} setIsOpenSetUpSessionModal={setIsOpenSetUpSessionModal}  />}
+            {isOpenSetUpSessionModal && <SetupSessionModal isOpenSetUpSessionModal={isOpenSetUpSessionModal} setIsOpenSetUpSessionModal={setIsOpenSetUpSessionModal} />}
 
         </div>
     );

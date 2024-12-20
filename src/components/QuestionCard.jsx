@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "./Logo";
 import DiscussionBoard from "./Discussion";
 import { TbBaselineDensityMedium } from "react-icons/tb";
@@ -8,12 +8,52 @@ import { RxCross2 } from "react-icons/rx";
 import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
+import axios from "axios";
 const QuestionCard = () => {
+    const [questions, setQuestions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isOpen, setIsOpen] = useState(false)
 
-        const [isOpen, setIsOpen] = useState(false)
+    // MCQ questions fetch karne ka function using Axios
+    const fetchQuestions = async () => {
+        try {
+            // Retrieve the token from localStorage
+            const token = localStorage.getItem('authToken');  // Change 'authToken' to your actual token key name
+            console.log("token:", token);
+
+            // Check if the token exists
+            if (!token) {
+                console.error("No token found");
+                return;
+            }
+            const response = await axios.get(`${process.env.REACT_APP_SUPABASE_URL}/rest/v1/mcqQuestions`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Using environment variable
+                    'Content-Type': 'application/json',
+                },
+            });
+            setQuestions(response.data);
+        } catch (error) {
+            console.error("Error fetching questions:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    useEffect(() => {
+        
+        fetchQuestions();  // Component mount hone par data fetch karein
+    }, []);
         const toggleDrawer = () => {
             setIsOpen((prevState) => !prevState)
         }
+
+
+    console.log("questions:", questions)
+
+
+
     return (
         <div className=" min-h-screen  " >
                <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>
@@ -269,7 +309,7 @@ const QuestionCard = () => {
             </div>
 
 
-            <DiscussionBoard />
+            {/* <DiscussionBoard /> */}
 
 
             <Drawer
