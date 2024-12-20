@@ -8,11 +8,18 @@ import 'react-modern-drawer/dist/index.css'
 import { Link } from 'react-router-dom';
 import Logo from "./Logo";
 import { RxCross2 } from "react-icons/rx";
-const ProgressTable = () => {
+import SetupSessionModal from "./SetupSessionModal";
+const Questioning = () => {
+    const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
+    
         const [isOpen, setIsOpen] = useState(false)
         const toggleDrawer = () => {
             setIsOpen((prevState) => !prevState)
         }
+
+    const handleCheckboxChange = () => {
+        setIsOpenSetUpSessionModal(true); // Modal open on checkbox click
+    };
     const data = [
         { topic: "Anaesthetics + Intensive Care", correct: 60, incorrect: 20, unanswered: 20 },
         { topic: "Breast", correct: 40, incorrect: 30, unanswered: 30 },
@@ -160,7 +167,7 @@ const ProgressTable = () => {
                         className="grid md:grid-cols-2      items-center py-3 "
                     >
                         <div className="text-left text-[14px] md:text-[16px]">
-                            <input type="checkbox" className="mr-2" />
+                            <input type="checkbox" className="mr-2" onChange={handleCheckboxChange} />
                             {row.topic}
                         </div>
 
@@ -294,8 +301,11 @@ const ProgressTable = () => {
                 </div>
 
             </Drawer>
+
+            {isOpenSetUpSessionModal && <SetupSessionModal isOpenSetUpSessionModal={isOpenSetUpSessionModal} setIsOpenSetUpSessionModal={setIsOpenSetUpSessionModal}  />}
+
         </div>
     );
 };
 
-export default ProgressTable;
+export default Questioning;

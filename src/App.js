@@ -13,7 +13,7 @@ import ResetPassword from './pages/ResetPassword';
 import AllModules from './components/AllModules';
 import SubModule from './pages/SubModule';
 import SubModuleTwo from './pages/SubModuleTwo';
-import ProgressTable from './components/Questioning';
+import Questioning from './components/Questioning';
 import QuestionCard from './components/QuestionCard';
 import Score from './components/Score';
 import ShortQuestion from './components/ShortQuestion';
@@ -37,7 +37,7 @@ function App() {
         <Route path="/setting" element={<ProtectedRoute><Setting/></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><AllModules /></ProtectedRoute>} />
         <Route path="/home" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/progress-table" element={<ProtectedRoute><ProgressTable /></ProtectedRoute>} />
+        <Route path="/progress-table" element={<ProtectedRoute><Questioning /></ProtectedRoute>} />
         <Route path="/dashboard/:id" element={<ProtectedRoute><SubModule /></ProtectedRoute>} />
         <Route path="/dashboard/detail/:id" element={<ProtectedRoute><SubModuleTwo /></ProtectedRoute>} />
         <Route path="/reset-password" element={<><ResetPassword /></>} />
