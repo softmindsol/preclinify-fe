@@ -14,7 +14,33 @@ const QuestionCard = () => {
     const [isOpen, setIsOpen] = useState(false)
     const data = useSelector((state) => state.mcqsQuestion || []);
     const dispatch = useDispatch();
+    const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [showExplanation, setShowExplanation] = useState(false);
+    const [isCorrect, setIsCorrect] = useState(null);
+    const [isAnswered, setIsAnswered] = useState(false); // Track if answer is selected
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isButtonClicked, setIsButtonClicked] = useState(false); // Track if Check Answer button is clicked
+
+    const handleAnswerSelect = (answer, index) => {
+        setSelectedAnswer(answer);
+        setShowExplanation(false); // Hide explanation when the answer is selected
+        setIsAnswered(true); // Mark the question as answered
+    };
+
+    const handleCheckAnswer = () => {
+        setIsButtonClicked(true); // Set the flag to true when Check Answer is clicked
+        setShowExplanation(true); // Show explanation
+    };
+
+    const handleNextQuestion = () => {
+        setSelectedAnswer("");
+        setIsAnswered(false); // Reset for next question
+        setShowExplanation(false);
+        setIsButtonClicked(false); // Reset the button click state
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % data.data.length); // Loop through questions
+    };
+
+    
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchMcqsQuestion.typePrefix]
     );
@@ -119,55 +145,60 @@ const QuestionCard = () => {
                         </div>
                     </div>
                     {/* Question start */}
-                    {
-                        data?.data.map((mcq,index)=>{
-                            return (
-                        
-                                <div className="mt-6  p-6 " key={index}>
+                    {data?.data.length > 0 && (
+                        <div className="mt-6 p-6">
                             <p className="text-[#000000] text-[14px] text-justify lg:text-[16px]">
-                                        {data.data[currentIndex].questionStem}
+                                {data.data[currentIndex].questionStem}
                             </p>
 
                             <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold">
-                                Which of the following conditions might Eric's job be a risk factor
-                                for?
+                                {data.data[currentIndex].leadQuestion}
                             </h3>
 
                             {/* Options Section */}
-                            <div className="mt-4 space-y-4 ">
-                                {[
-                                    "Carpal Tunnel Syndrome",
-                                    "Rotator Cuff Tear",
-                                    "Inguinal Hernia",
-                                    "Acute Glaucoma",
-                                    "Chronic Glaucoma",
-                                ].map((option, index) => (
-                                    <label
-                                        key={index}
-                                        className="flex items-center space-x-3  bg-white p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px]"
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="answer"
-                                            className="form-radio h-5 w-5 text-green-500"
-                                        />
-                                        <span className="text-gray-700 flex-1">{option}</span>
-                                        <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-md">
-                                            {["Q", "W", "E", "R", "T"][index]}
-                                        </span>
-                                    </label>
-                                ))}
+                            <div className="mt-4 space-y-4">
+                                {data.data[currentIndex].explanationList.map((explanation, index) => {
+                                    const isSelected = selectedAnswer === explanation;
+                                    const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+
+                                    // Determine the border color based on whether the button has been clicked
+                                    const borderColor = isButtonClicked
+                                        ? isCorrectAnswer
+                                            ? "border-green-500"
+                                            : "border-red-500"
+                                        : "";
+
+                                    return (
+                                        <label
+                                            key={index}
+                                            className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${borderColor}`}
+                                            onClick={() => handleAnswerSelect(explanation, index)}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="answer"
+                                                className="form-radio h-5 w-5 text-green-500"
+                                                checked={isSelected}
+                                                readOnly
+                                            />
+                                            <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
+                                            <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-md">
+                                                {["A", "B", "C", "D", "E"][index]}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
                             </div>
 
                             {/* Submit Button */}
-                            <button className="mt-6  text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]">
+                            <button
+                                className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                onClick={handleCheckAnswer}
+                            >
                                 Check Answer &darr;
                             </button>
                         </div>
-
-                            )
-                        })
-                    }
+                    )}
                 </div>
 
                 {/* Sidebar Section */}
