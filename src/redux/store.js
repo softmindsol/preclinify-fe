@@ -1,28 +1,33 @@
 // src/redux/store.js
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Using localStorage for persistence
-import modulesReducer from './features/categoryModules/module.slice'; // Your slice
-import loaderReducer from './features/loader/loader.slice'
-import mcqsQuestion from './features/mcqQuestions/mcqQuestion.slice'
+import modulesReducer from './features/categoryModules/module.slice';
+import loaderReducer from './features/loader/loader.slice';
+import mcqsQuestion from './features/mcqQuestions/mcqQuestion.slice';
+import limitQuestion from './features/limit/limit.slice';
+
 // Configure redux-persist to use localStorage
 const persistConfig = {
-    key: 'root',  
-    storage,      
-    whitelist: ['categoryModule','mcqsQuestion'],  // Specify which reducers to persist (categoryModule in this case)
+    key: 'root',
+    storage,
+    whitelist: ['categoryModule', 'mcqsQuestion', 'limit'], // Specify reducers to persist
 };
 
-// Apply persistReducer to the module slice reducer
-const persistedReducer = persistReducer(persistConfig, modulesReducer);
+// Combine all reducers
+const rootReducer = combineReducers({
+    categoryModule: modulesReducer,
+    loading: loaderReducer,
+    mcqsQuestion: mcqsQuestion,
+    limit: limitQuestion,
+});
+
+// Wrap the root reducer with persistReducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Create the store
 export const store = configureStore({
-    reducer: {
-        categoryModule: persistedReducer,  // Use the persisted reducer for categoryModule
-        loading: loaderReducer,
-        mcqsQuestion: mcqsQuestion
-
-    },
+    reducer: persistedReducer, // Use the persisted root reducer
 });
 
 // Create the persistor to persist the store

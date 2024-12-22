@@ -1,39 +1,54 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMcqsQuestion } from "./mcqQuestion.service";
+import { fetchMcqsQuestion, fetchMcqsByModule } from "./mcqQuestion.service";
 
-// Create the slice
 const mcqsSlice = createSlice({
     name: 'mcqsQuestion',
     initialState: {
-        data: [],   // To store the modules data
+        data: [],   // To store fetched MCQs data
         loading: false,  // To track loading state
         error: null,    // To store error message, if any
     },
     reducers: {
-        // Reducer to set the categoryId
-      
+        // Reducer to reset the state
+        resetState: (state) => {
+            state.data = [];
+            state.loading = false;
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
-            // When the fetchModules thunk is pending (started)
+            // Handle fetchMcqsQuestion lifecycle
             .addCase(fetchMcqsQuestion.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            // When the fetchModules thunk is fulfilled (success)
             .addCase(fetchMcqsQuestion.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = action.payload;  // Save the fetched data in state
+                state.data = action.payload; // Save fetched data
             })
-            // When the fetchModules thunk is rejected (failure)
             .addCase(fetchMcqsQuestion.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;  // Save the error message in state
+                state.error = action.payload; // Save error message
+            })
+            // Handle fetchMcqsByModule lifecycle
+            .addCase(fetchMcqsByModule.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMcqsByModule.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload; // Save fetched data
+            })
+            .addCase(fetchMcqsByModule.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload; // Save error message
             });
     },
 });
 
-// Export the action to be used in your components
+// Export synchronous actions
+export const { resetState } = mcqsSlice.actions;
 
 // Export the reducer to be used in the store
 export default mcqsSlice.reducer;

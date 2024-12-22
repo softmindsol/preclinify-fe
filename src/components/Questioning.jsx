@@ -25,8 +25,11 @@ const Questioning = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
     const data = useSelector((state) => state.categoryModule);
+    const {limit} = useSelector((state) => state.limit);
+    const dataTwo = useSelector((state) => state.mcqsQuestion);
 
 
+    console.log("dataTwo:", dataTwo)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -53,14 +56,14 @@ const Questioning = () => {
 
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
-        dispatch(fetchMcqsByModule(moduleId))
+        dispatch(fetchMcqsByModule({ moduleId, limit}))
             .unwrap()
             .then(() => {
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
             }).catch(err => {
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
             })
-    }, [moduleId])
+    }, [moduleId, limit])
     return (
         <div className=" lg:flex w-full">
             <div className="h-full hidden lg:block">

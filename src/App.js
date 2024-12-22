@@ -37,7 +37,7 @@ function App() {
         <Route path="/setting" element={<ProtectedRoute><Setting/></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><AllModules /></ProtectedRoute>} />
         <Route path="/home" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/Questioning" element={<ProtectedRoute><Questioning /></ProtectedRoute>} />
+        <Route path="/questioning" element={<><Questioning /></>} />
         <Route path="/dashboard/:id" element={<ProtectedRoute><SubModule /></ProtectedRoute>} />
         <Route path="/dashboard/detail/:id" element={<ProtectedRoute><SubModuleTwo /></ProtectedRoute>} />
         <Route path="/reset-password" element={<><ResetPassword /></>} />

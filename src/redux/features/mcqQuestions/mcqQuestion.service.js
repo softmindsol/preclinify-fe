@@ -22,25 +22,33 @@ export const fetchMcqsQuestion = createAsyncThunk(
 );
 
 
-// Define an async thunk to fetch mcqQuestions based on categoryId
+// Fetch MCQs by moduleId with limit
 export const fetchMcqsByModule = createAsyncThunk(
     'modules/fetchMcqsByModule',
-    async (Id, { rejectWithValue }) => {
+    async ({ moduleId, limit }, { rejectWithValue }) => {
         try {
-            const { data, error } = await supabase
+            if (!moduleId) return rejectWithValue('Invalid moduleId');
+
+            const query = supabase
                 .from('mcqQuestions')
                 .select('*')
-                .eq('moduleId', Id); // Filter by categoryId
+                .eq('moduleId', moduleId);
 
-            // If there's an error in the response, reject it
-            if (error) {
-                return rejectWithValue(error.message);
+            // Apply limit if provided
+            if (limit) {
+                query.limit(limit);
             }
-            console.log("data:", data)
 
-            return data; // Return the filtered data
+            const { data, error } = await query;
+
+           
+            if (error) {
+                return rejectWithValue(error.message || 'Failed to fetch module questions');
+            }
+
+            return data;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error?.message || 'An unexpected error occurred');
         }
     }
 );

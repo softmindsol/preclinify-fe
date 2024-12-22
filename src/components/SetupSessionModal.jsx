@@ -1,6 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { setQuestionLimit } from "../redux/features/limit/limit.slice";
+import { useDispatch } from "react-redux";
+import { debounce } from "../utils/GlobalApiHandler";
+import { Link } from "react-router-dom";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
+    const dispatch = useDispatch();
+    const modalRef = useRef(null); // Reference for modal container
+
     const [numQuestions, setNumQuestions] = useState(20);
     const [modeType, setModeType] = useState("Endless");
     const [questionTypes, setQuestionTypes] = useState({
@@ -16,15 +23,49 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
         }));
     };
 
-    return (
-        <div className="flex items-center justify-center  bg-white rounded-[4px]">
-           
+    // Debounced dispatch handler
+    const debouncedDispatch = useCallback(
+        debounce((value) => {
+            dispatch(setQuestionLimit(value));
+        }, 1000), // 1000ms delay
+        [dispatch]
+    );
 
+    // Update state and call debounced handler
+    const handleNumQuestionsChange = (e) => {
+        const value = parseInt(e.target.value, 10) || 0; // Ensure it's a number
+        if (value <= 200) {
+            setNumQuestions(value);
+            debouncedDispatch(value); // Call debounced function
+        }
+    };
+
+    // Close modal when clicking outside
+    const handleClickOutside = (event) => {
+        if (modalRef.current && !modalRef.current.contains(event.target)) {
+            setIsOpenSetUpSessionModal(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpenSetUpSessionModal) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpenSetUpSessionModal]);
+
+    return (
+        <div className="flex items-center justify-center bg-white rounded-[4px]">
             {/* Modal */}
             {isOpenSetUpSessionModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50  flex items-center justify-center">
-                    <div className="relative bg-white rounded-[4px] p-6 shadow-lg h-[646px] w-[451px]">
-                        <h2 className="text-[20px] text-[#3F3F46] font-bold  mb-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div
+                        ref={modalRef} // Attach ref to modal container
+                        className="relative bg-white rounded-[4px] p-6 shadow-lg h-[646px] w-[451px]"
+                    >
+                        <h2 className="text-[20px] text-[#3F3F46] font-bold mb-4">
                             Set up session
                         </h2>
 
@@ -37,7 +78,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                                 <input
                                     type="text"
                                     value={numQuestions}
-                                    onChange={(e) => setNumQuestions(e.target.value)}
+                                    onChange={handleNumQuestionsChange}
                                     max={200}
                                     className="w-full px-3 py-2 border rounded placeholder-transparent text-end"
                                 />
@@ -47,9 +88,8 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                             </div>
                         </div>
 
-
                         {/* Mode Type */}
-                        <div className=" flex items-center justify-between mt-8 mb-4">
+                        <div className="flex items-center justify-between mt-8 mb-4">
                             <label className="block text-[#52525B] text-[20px] font-semibold mb-1">
                                 Mode Type
                             </label>
@@ -87,17 +127,16 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                             ))}
                         </div>
 
-
                         {/* Action Buttons */}
-                        <div className="absolute left-5 right-5 bottom-5    ">
+                        <Link to="/question-card">
+                        <div className="absolute left-5 right-5 bottom-5">
                             <button
-                                onClick={() => alert("Session Started!")}
                                 className="py-2 bg-[#3CC8A1] w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e]"
                             >
                                 Start Questions
                             </button>
                         </div>
-
+                        </Link>
                     </div>
                 </div>
             )}

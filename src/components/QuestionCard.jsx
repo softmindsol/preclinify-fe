@@ -12,23 +12,27 @@ import { useDispatch, useSelector } from "react-redux";
 
 const QuestionCard = () => {
     const [isOpen, setIsOpen] = useState(false)
-    const data = useSelector(state => state.mcqsQuestion)
+    const data = useSelector((state) => state.mcqsQuestion);
    const dispatch=useDispatch()
-  const isLoading = useSelector(
-      (state) => state?.loading?.[fetchMcqsQuestion.typePrefix]
-    );
+    const isLoading = useSelector(
+        (state) => state?.loading?.[fetchMcqsQuestion.typePrefix]
+        );
+    const {limit} = useSelector((state) => state.limit);
+
     console.log("data:", data)
 
-    useEffect(() => {
-        dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: true }));
-        dispatch(fetchMcqsQuestion())
-                    .unwrap()
-                    .then(() => {
-                        dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: false }));
-                    }).catch(err => {
-                        dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: false }));
-                    })
-    }, []);
+    // useEffect(() => {
+    //     dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: true }));
+    //     dispatch(fetchMcqsQuestion())
+    //                 .unwrap()
+    //                 .then(() => {
+    //                     dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: false }));
+    //                 }).catch(err => {
+    //                     dispatch(setLoading({ key: 'modules/fetchMcqsQuestion', value: false }));
+    //                 })
+    // }, []);
+
+    
 
    
 
