@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Logo from "./Logo";
 import DiscussionBoard from "./Discussion";
 import { TbBaselineDensityMedium } from "react-icons/tb";
@@ -14,33 +14,63 @@ import Accordion from "./Accordion";
 const QuestionCard = () => {
     const [isOpen, setIsOpen] = useState(false)
     const data = useSelector((state) => state.mcqsQuestion || []);
-    const dispatch = useDispatch();
-    const [selectedAnswer, setSelectedAnswer] = useState("");
-    const [showExplanation, setShowExplanation] = useState(false);
-    const [isCorrect, setIsCorrect] = useState(null);
-    const [isAnswered, setIsAnswered] = useState(false); // Track if answer is selected
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isButtonClicked, setIsButtonClicked] = useState(false); // Track if Check Answer button is clicked
 
-    const handleAnswerSelect = (answer, index) => {
+    const [isAccordionVisible, setIsAccordionVisible] = useState(false); // Visibility of the accordion
+    const [isAccordionOpen, setIsAccordionOpen] = useState(
+        new Array(data.data.length).fill(false) // Assuming `data` is your list of items
+    );
+    const [isAnswered, setIsAnswered] = useState(false);
+    const [isButtonClicked, setIsButtonClicked] = useState(false); // "Check Answer" click state
+    const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [currentIndex, setCurrentIndex] = useState(0);
+    console.log("data:", data)
+    const dispatch = useDispatch();
+
+    const handleAnswerSelect = (answer) => {
         setSelectedAnswer(answer);
-        setShowExplanation(false); // Hide explanation when the answer is selected
-        setIsAnswered(true); // Mark the question as answered
+        setIsAnswered(true);
     };
 
     const handleCheckAnswer = () => {
-        setIsButtonClicked(true); // Set the flag to true when Check Answer is clicked
-        setShowExplanation(true); // Show explanation
+        setIsButtonClicked(true);
+        setIsAccordionVisible(true); // Show the accordion
+
+        setIsAccordionOpen((prev) => {
+            const newAccordionState = [...prev];
+            newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true; // Open the accordion for the current question
+            return newAccordionState;
+        });
     };
 
+    const toggleAccordion = (index) => {
+        setIsAccordionOpen((prev) => {
+            if (Array.isArray(prev)) {
+                const newAccordionState = [...prev]; // Create a copy to avoid mutation
+                newAccordionState[index] = !newAccordionState[index]; // Toggle the state at the given index
+                return newAccordionState; // Return the updated array
+            } else {
+                // If prev is not an array, initialize it with a new array based on data length
+                return new Array(data.data.length).fill(false);
+            }
+        });
+    };
+
+
+
+
+
+    useEffect(() => {
+        if (data.date?.length) {
+            setIsAccordionOpen(Array(data.data.length).fill(false));
+        }
+    }, [data]);
     const handleNextQuestion = () => {
         setSelectedAnswer("");
-        setIsAnswered(false); // Reset for next question
-        setShowExplanation(false);
-        setIsButtonClicked(false); // Reset the button click state
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % data.data.length); // Loop through questions
+        setIsAnswered(false);
+        setIsButtonClicked(false);
+        setIsAccordionVisible(false); // Reset accordion visibility
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % data.data.length);
     };
-
 
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchMcqsQuestion.typePrefix]
@@ -67,6 +97,13 @@ const QuestionCard = () => {
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
+
+    data.data[currentIndex].explanationList.map((explanation, index) => {
+        let isSelected = selectedAnswer === explanation;
+        const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+        console.log("explanation:", explanation);
+    })
+       
 
     return (
         <div className=" min-h-screen " >
@@ -156,7 +193,7 @@ const QuestionCard = () => {
                             </h3>
 
                             {/* Options Section */}
-                            <div className="mt-4 space-y-4">
+                            <div className="mt-4 space-y-4 " >
                                 {data.data[currentIndex].explanationList.map((explanation, index) => {
                                     const isSelected = selectedAnswer === explanation;
                                     const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
@@ -164,84 +201,102 @@ const QuestionCard = () => {
                                     // Determine the border color based on whether the button has been clicked
                                     const borderColor = isButtonClicked
                                         ? isCorrectAnswer
-                                            ? "border-green-500"
-                                            : "border-red-500"
+                                            ? "border-[#22C55E]"
+                                            : "border-[#EF4444]"
                                         : "";
+                                    const bgColor = isButtonClicked
+                                        ? isCorrectAnswer
+                                            ? "bg-[#DCFCE7]"
+                                            : "bg-[#FEE2E2]"
+                                        : "";
+
 
                                     return (
                                         <div>
-                                            {showExplanation ? <label
-                                                key={index}
-                                                className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${borderColor}`}
-                                                onClick={() => handleAnswerSelect(explanation, index)}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name="answer"
-                                                    className="form-radio h-5 w-5 text-green-500"
-                                                    checked={isSelected}
-                                                    readOnly
-                                                />
-                                                <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
-                                                <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-md">
-                                                    {["A", "B", "C", "D", "E"][index]}
-                                                </span>
-                                            </label> : <div className={`border-2 ${borderColor} rounded-[6px]`}>
+                                            {!isAccordionVisible ? (
                                                 <label
                                                     key={index}
-                                                    className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px]`}
+                                                    className={`flex bg-white items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${borderColor}`}
                                                     onClick={() => handleAnswerSelect(explanation, index)}
                                                 >
                                                     <input
                                                         type="radio"
                                                         name="answer"
                                                         className="form-radio h-5 w-5 text-green-500"
-                                                        checked={isSelected} // Reflect selection visually
-                                                        readOnly // Keeps the input read-only
+                                                        checked={isSelected}
+                                                        readOnly
                                                     />
                                                     <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
-                                                        {showExplanation ? (
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="2"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            className="lucide lucide-chevron-up"
-                                                        >
-                                                            <path d="m18 15-6-6-6 6" />
-                                                        </svg>
-                                                    ) : (
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="2"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            className="lucide lucide-chevron-down"
-                                                        >
-                                                            <path d="m6 9 6 6 6-6" />
-                                                        </svg>
-                                                    )}
+                                                    <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-md">
+                                                        {["A", "B", "C", "D", "E"][index]}
+                                                    </span>
                                                 </label>
-                                                <hr className="mx-5" />
-                                                <p className="py-2 px-5 text-[12px]">
-                                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam quis sapiente nulla, tempore natus incidunt?
-                                                    Impedit, pariatur magnam. Optio, provident quaerat? Veritatis quae asperiores laborum consequatur totam pariatur
-                                                    minus nemo!
-                                                </p>
-                                            </div>
+                                            ) : (
+                                                <div
+                                                
+                                                        className={`border-2 ${borderColor}  ${bgColor} rounded-[6px] `}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent propagation
+                                                        toggleAccordion(index)
+                                                    }}
+                                                >
+                                                    <label
+                                                        key={index}
+                                                        className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer  text-[14px] lg:text-[16px]`}
+                                                        onClick={() => handleAnswerSelect(explanation, index)}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name="answer"
+                                                            className="form-radio h-5 w-5 text-green-500"
+                                                            checked={isSelected}
+                                                            readOnly
+                                                        />
+                                                        <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
+                                                        {isAccordionOpen[index] ? (
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="24"
+                                                                height="24"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="lucide lucide-chevron-up"
+                                                            >
+                                                                <path d="m18 15-6-6-6 6" />
+                                                            </svg>
+                                                        ) : (
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="24"
+                                                                height="24"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="lucide lucide-chevron-down"
+                                                            >
+                                                                <path d="m6 9 6 6 6-6" />
+                                                            </svg>
+                                                        )}
+                                                    </label>
+                                                    {/* Conditionally render the hr and p tags */}
+                                                    {isAccordionOpen[index] && (
+                                                        <>
+                                                                <hr className={`mx-5 ${borderColor}`} />
+                                                                <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
+                                                                    {explanation}
+                                                            </p>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )}
 
-
-                                            }
 
 
 
