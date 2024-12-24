@@ -34,18 +34,18 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
-        <Route path="/setting" element={<ProtectedRoute><Setting/></ProtectedRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><AllModules /></ProtectedRoute>} />
-        <Route path="/home" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/setting" element={<><Setting/></>} />
+        <Route path="/dashboard" element={<><AllModules /></>} />
+        <Route path="/home" element={<><Dashboard /></>} />
         <Route path="/questioning" element={<><Questioning /></>} />
-        <Route path="/dashboard/:id" element={<ProtectedRoute><SubModule /></ProtectedRoute>} />
-        <Route path="/dashboard/detail/:id" element={<ProtectedRoute><SubModuleTwo /></ProtectedRoute>} />
+        <Route path="/dashboard/:id" element={<><SubModule /></>} />
+        <Route path="/dashboard/detail/:id" element={<><SubModuleTwo /></>} />
         <Route path="/reset-password" element={<><ResetPassword /></>} />
-        <Route path="/question-card" element={<ProtectedRoute><QuestionCard /></ProtectedRoute>} />
-        <Route path="/score" element={<ProtectedRoute><Score /></ProtectedRoute>} />
-        <Route path="/short-question" element={<ProtectedRoute><ShortQuestion /></ProtectedRoute>} />
-        <Route path="/scenarios" element={<ProtectedRoute><Scenarios /></ProtectedRoute>} />
-        <Route path="/scenerios-detail" element={<ProtectedRoute><SceneriosDetail /></ProtectedRoute>} />
+        <Route path="/question-card" element={<><QuestionCard /></>} />
+        <Route path="/score" element={<><Score /></>} />
+        <Route path="/short-question" element={<><ShortQuestion /></>} />
+        <Route path="/scenarios" element={<><Scenarios /></>} />
+        <Route path="/scenerios-detail" element={<><SceneriosDetail /></>} />
       </Routes>
     </div>
   );
