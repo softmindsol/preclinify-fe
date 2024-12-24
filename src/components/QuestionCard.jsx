@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Accordion from "./Accordion";
 
 const QuestionCard = () => {
-      const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState([]);
     const [isAnswered, setIsAnswered] = useState(false);
@@ -25,6 +25,7 @@ const QuestionCard = () => {
     const [correctCount, setCorrectCount] = useState(0); // State for correct answers
     const [incorrectCount, setIncorrectCount] = useState(0); // State for incorrect answers
     const [unseenCount, setUnseenCount] = useState(0); // State for unseen questions
+    const [border, setBorder] = useState(true)
     const data = useSelector((state) => state.mcqsQuestion || []);
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
@@ -39,7 +40,6 @@ const QuestionCard = () => {
         });
     };
 
-
     const handleAnswerSelect = (answer) => {
         setSelectedAnswer(answer);
         setIsAnswered(true);
@@ -49,6 +49,7 @@ const QuestionCard = () => {
         if (selectedAnswer) {
             setIsButtonClicked(true);
             setIsAccordionVisible(true);
+            setBorder(false)
 
             const isCorrect =
                 selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
@@ -72,6 +73,10 @@ const QuestionCard = () => {
     const nextQuestion = () => {
         if (currentIndex < data?.data.length - 1) {
             setCurrentIndex((prev) => prev + 1);
+            setSelectedAnswer(false)
+            setIsAnswered(false)
+            setIsAccordionVisible(false)
+
         }
     };
 
@@ -79,6 +84,8 @@ const QuestionCard = () => {
     const prevQuestion = () => {
         if (currentIndex > 0) {
             setCurrentIndex((prev) => prev - 1);
+
+
         }
     };
 
@@ -92,7 +99,7 @@ const QuestionCard = () => {
         let isSelected = selectedAnswer === explanation;
         const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
     })
-       
+
     // Update attempts based on user actions
     const markQuestion = (index, status) => {
         setAttempts((prev) => {
@@ -228,7 +235,7 @@ const QuestionCard = () => {
                                             {!isAccordionVisible ? (
                                                 <label
                                                     key={index}
-                                                    className={`flex bg-white items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${borderColor}`}
+                                                    className={`flex bg-white items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${ 'border-[#F4F4F5]'}`}
                                                     onClick={() => handleAnswerSelect(explanation, index)}
                                                 >
                                                     <input
@@ -245,8 +252,8 @@ const QuestionCard = () => {
                                                 </label>
                                             ) : (
                                                 <div
-                                                
-                                                        className={`border-2 ${borderColor}  ${bgColor} rounded-[6px] `}
+
+                                                    className={`border-[1px] ${borderColor}    ${bgColor} rounded-[6px] `}
                                                     onClick={(e) => {
                                                         e.stopPropagation(); // Prevent propagation
                                                         toggleAccordion(index)
@@ -300,9 +307,9 @@ const QuestionCard = () => {
                                                     {/* Conditionally render the hr and p tags */}
                                                     {isAccordionOpen[index] && (
                                                         <>
-                                                                <hr className={`mx-5 ${borderColor}`} />
-                                                                <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
-                                                                    {explanation}
+                                                            <hr className={`mx-5 ${borderColor}`} />
+                                                            <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
+                                                                {explanation}
                                                             </p>
                                                         </>
                                                     )}
@@ -320,12 +327,20 @@ const QuestionCard = () => {
                             </div>
 
                             {/* Submit Button */}
-                            <button
-                                className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                onClick={handleCheckAnswer}
-                            >
-                                Check Answer &darr;
-                            </button>
+                            {
+                                isAccordionVisible ? <button
+                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                    onClick={nextQuestion}
+                                >
+                                    Next Question &darr;
+                                </button> : <button
+                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                    onClick={handleCheckAnswer}
+                                >
+                                    Check Answer &darr;
+                                </button>
+                            }
+
                         </div>
                     )}
 
