@@ -12,35 +12,18 @@ import { useDispatch, useSelector } from "react-redux";
 import Accordion from "./Accordion";
 
 const QuestionCard = () => {
-    const [isOpen, setIsOpen] = useState(false)
-    const data = useSelector((state) => state.mcqsQuestion || []);
-
-    const [isAccordionVisible, setIsAccordionVisible] = useState(false); // Visibility of the accordion
-    const [isAccordionOpen, setIsAccordionOpen] = useState(
-        new Array(data.data.length).fill(false) // Assuming `data` is your list of items
-    );
+      const [isOpen, setIsOpen] = useState(false);
+    const [isAccordionVisible, setIsAccordionVisible] = useState(false);
+    const [isAccordionOpen, setIsAccordionOpen] = useState([]);
     const [isAnswered, setIsAnswered] = useState(false);
-    const [isButtonClicked, setIsButtonClicked] = useState(false); // "Check Answer" click state
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
-    console.log("data:", data)
+    const [attempts, setAttempts] = useState([]); // Array to track attempts
+    const data = useSelector((state) => state.mcqsQuestion || []);
     const dispatch = useDispatch();
 
-    const handleAnswerSelect = (answer) => {
-        setSelectedAnswer(answer);
-        setIsAnswered(true);
-    };
 
-    const handleCheckAnswer = () => {
-        setIsButtonClicked(true);
-        setIsAccordionVisible(true); // Show the accordion
-
-        setIsAccordionOpen((prev) => {
-            const newAccordionState = [...prev];
-            newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true; // Open the accordion for the current question
-            return newAccordionState;
-        });
-    };
 
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
@@ -56,27 +39,34 @@ const QuestionCard = () => {
     };
 
 
-
-
-
-    useEffect(() => {
-        if (data.date?.length) {
-            setIsAccordionOpen(Array(data.data.length).fill(false));
-        }
-    }, [data]);
-    const handleNextQuestion = () => {
-        setSelectedAnswer("");
-        setIsAnswered(false);
-        setIsButtonClicked(false);
-        setIsAccordionVisible(false); // Reset accordion visibility
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % data.data.length);
+    const handleAnswerSelect = (answer) => {
+        setSelectedAnswer(answer);
+        setIsAnswered(true);
     };
 
-    const isLoading = useSelector(
-        (state) => state?.loading?.[fetchMcqsQuestion.typePrefix]
-    );
+    const handleCheckAnswer = () => {
+        if (selectedAnswer) {
+            setIsButtonClicked(true);
+            setIsAccordionVisible(true);
 
+            const isCorrect =
+                selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
 
+            // Update attempts
+            setAttempts((prev) => {
+                const updatedAttempts = [...prev];
+                updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
+                return updatedAttempts;
+            });
+
+            // Expand accordion for the correct answer
+            setIsAccordionOpen((prev) => {
+                const newAccordionState = [...prev];
+                newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true;
+                return newAccordionState;
+            });
+        }
+    };
 
     // Function to navigate to the next question
     const nextQuestion = () => {
@@ -101,10 +91,22 @@ const QuestionCard = () => {
     data.data[currentIndex].explanationList.map((explanation, index) => {
         let isSelected = selectedAnswer === explanation;
         const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
-        console.log("explanation:", explanation);
     })
        
 
+    useEffect(() => {
+        if (data?.data?.length) {
+            setIsAccordionOpen(Array(data.data.length).fill(false));
+            setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
+        }
+    }, [data]);
+
+    // Calculate counts
+    const correctCount = attempts.filter((attempt) => attempt === true).length;
+    const incorrectCount = attempts.filter((attempt) => attempt === false).length;
+    const unseenCount = attempts.filter((attempt) => attempt === null).length;
+
+    console.log("correctCount:", correctCount, "incorrectCount:", incorrectCount, "unseenCount:", unseenCount)
     return (
         <div className=" min-h-screen " >
             <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>

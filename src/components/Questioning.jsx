@@ -29,7 +29,6 @@ const Questioning = () => {
     const dataTwo = useSelector((state) => state.mcqsQuestion);
 
 
-    console.log("dataTwo:", dataTwo)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
