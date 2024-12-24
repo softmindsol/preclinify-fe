@@ -19,13 +19,13 @@ const QuestionCard = () => {
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [attempts, setAttempts] = useState([]); // Array to track attempts
-    const data = useSelector((state) => state.mcqsQuestion || []);
+    const [attempts, setAttempts] = useState([]); // Array to track question status: null = unseen, true = correct, false = incorrect
+    const [accuracy, setAccuracy] = useState(0); // Calculated accuracy    const data = useSelector((state) => state.mcqsQuestion || []);
     const dispatch = useDispatch();
     const [correctCount, setCorrectCount] = useState(0); // State for correct answers
     const [incorrectCount, setIncorrectCount] = useState(0); // State for incorrect answers
     const [unseenCount, setUnseenCount] = useState(0); // State for unseen questions
-
+    const data = useSelector((state) => state.mcqsQuestion || []);
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
             if (Array.isArray(prev)) {
@@ -93,6 +93,14 @@ const QuestionCard = () => {
         const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
     })
        
+    // Update attempts based on user actions
+    const markQuestion = (index, status) => {
+        setAttempts((prev) => {
+            const updatedAttempts = [...prev];
+            updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
+            return updatedAttempts;
+        });
+    };
 
     useEffect(() => {
         if (data?.data?.length) {
@@ -101,18 +109,14 @@ const QuestionCard = () => {
         }
     }, [data]);
 
-    // Update counts when attempts array changes
     useEffect(() => {
         const correct = attempts.filter((attempt) => attempt === true).length;
-        const incorrect = attempts.filter((attempt) => attempt === false).length;
-        const unseen = attempts.filter((attempt) => attempt === null).length;
-
-        setCorrectCount(correct);
-        setIncorrectCount(incorrect);
-        setUnseenCount(unseen);
+        const totalAttempted = attempts.filter((attempt) => attempt !== null).length;
+        setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
     }, [attempts]);
 
-    console.log("correctCount:", correctCount, "incorrectCount:", incorrectCount, "unseenCount:", unseenCount)
+
+    // console.log("correctCount:", correctCount, "incorrectCount:", incorrectCount, "unseenCount:", unseenCount)
     return (
         <div className=" min-h-screen " >
             <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>
@@ -360,11 +364,10 @@ const QuestionCard = () => {
                             </div>
                         </div>
 
-                        <div className="flex flex-col  items-center justify-center mt-10">
-
-                            <div className="w-[90%]  h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                        <div className="flex flex-col items-center justify-center mt-10">
+                            <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
                                 <p className="text-[12px] mt-3">Accuracy</p>
-                                <p className="font-black text-[36px]">88.3%</p>
+                                <p className="font-black text-[36px]">{accuracy}%</p>
                             </div>
                         </div>
 
@@ -375,21 +378,28 @@ const QuestionCard = () => {
                                 <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
                         </div>
 
-                        <div className="flex justify-center items-center ">
+                        <div className="flex justify-center items-center">
                             <div className="grid grid-cols-5 gap-2">
-                               
-                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                               
-                            </div>
+                                {data.data.map((question, index) => {
+                                    // Determine background color based on the question's status
+                                    const bgColor =
+                                        attempts[index] === true
+                                            ? "bg-[#3CC8A1]" // Correct: Green
+                                            : attempts[index] === false
+                                                ? "bg-[#FF453A]" // Incorrect: Red
+                                                : "bg-gray-300"; // Unseen: Gray
 
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                            onClick={() => markQuestion(index, true)} // Example: Mark as correct on click
+                                        >
+                                            <p>{index + 1}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                         <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
