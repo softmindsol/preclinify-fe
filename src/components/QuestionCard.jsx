@@ -22,8 +22,9 @@ const QuestionCard = () => {
     const [attempts, setAttempts] = useState([]); // Array to track attempts
     const data = useSelector((state) => state.mcqsQuestion || []);
     const dispatch = useDispatch();
-
-
+    const [correctCount, setCorrectCount] = useState(0); // State for correct answers
+    const [incorrectCount, setIncorrectCount] = useState(0); // State for incorrect answers
+    const [unseenCount, setUnseenCount] = useState(0); // State for unseen questions
 
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
@@ -67,7 +68,6 @@ const QuestionCard = () => {
             });
         }
     };
-
     // Function to navigate to the next question
     const nextQuestion = () => {
         if (currentIndex < data?.data.length - 1) {
@@ -101,10 +101,16 @@ const QuestionCard = () => {
         }
     }, [data]);
 
-    // Calculate counts
-    const correctCount = attempts.filter((attempt) => attempt === true).length;
-    const incorrectCount = attempts.filter((attempt) => attempt === false).length;
-    const unseenCount = attempts.filter((attempt) => attempt === null).length;
+    // Update counts when attempts array changes
+    useEffect(() => {
+        const correct = attempts.filter((attempt) => attempt === true).length;
+        const incorrect = attempts.filter((attempt) => attempt === false).length;
+        const unseen = attempts.filter((attempt) => attempt === null).length;
+
+        setCorrectCount(correct);
+        setIncorrectCount(incorrect);
+        setUnseenCount(unseen);
+    }, [attempts]);
 
     console.log("correctCount:", correctCount, "incorrectCount:", incorrectCount, "unseenCount:", unseenCount)
     return (
@@ -371,9 +377,7 @@ const QuestionCard = () => {
 
                         <div className="flex justify-center items-center ">
                             <div className="grid grid-cols-5 gap-2">
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
+                               
                                 <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
                                     <p>1A</p>
                                 </div>
@@ -383,40 +387,7 @@ const QuestionCard = () => {
                                 <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
                                     <p>1A</p>
                                 </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-
+                               
                             </div>
 
                         </div>
