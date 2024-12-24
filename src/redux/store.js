@@ -11,7 +11,7 @@ import limitQuestion from './features/limit/limit.slice';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['categoryModule', 'mcqsQuestion', 'limit'], // Specify reducers to persist
+    whitelist: ['categoryModule', 'mcqsQuestion'], // Specify reducers to persist
 };
 
 // Combine all reducers

@@ -25,7 +25,9 @@ const QuestionCard = () => {
     const [correctCount, setCorrectCount] = useState(0); // State for correct answers
     const [incorrectCount, setIncorrectCount] = useState(0); // State for incorrect answers
     const [unseenCount, setUnseenCount] = useState(0); // State for unseen questions
-    const [border, setBorder] = useState(true)
+    const [border, setBorder] = useState(true);
+        const {limit} = useSelector((state) => state.limit);
+    console.log("limit:", limit);
     const data = useSelector((state) => state.mcqsQuestion || []);
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
@@ -39,6 +41,8 @@ const QuestionCard = () => {
             }
         });
     };
+
+    console.log("data:", data.data)
 
     const handleAnswerSelect = (answer) => {
         setSelectedAnswer(answer);
@@ -390,7 +394,8 @@ const QuestionCard = () => {
                             <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
                                 <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
                                 <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
-                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
+                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span>
+                                </div>
                         </div>
 
                         <div className="flex justify-center items-center">

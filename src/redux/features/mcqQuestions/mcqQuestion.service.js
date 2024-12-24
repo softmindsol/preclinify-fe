@@ -21,7 +21,6 @@ export const fetchMcqsQuestion = createAsyncThunk(
     }
 );
 
-
 // Fetch MCQs by moduleId with limit
 export const fetchMcqsByModule = createAsyncThunk(
     'modules/fetchMcqsByModule',
@@ -34,14 +33,15 @@ export const fetchMcqsByModule = createAsyncThunk(
                 .select('*')
                 .eq('moduleId', moduleId);
 
-            // Apply limit if provided
+            // Apply limit only if limit is provided
             if (limit) {
                 query.limit(limit);
             }
 
             const { data, error } = await query;
+            console.log("service:", data);
+            console.log("limit services:", limit)
 
-           
             if (error) {
                 return rejectWithValue(error.message || 'Failed to fetch module questions');
             }

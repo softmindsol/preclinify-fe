@@ -8,7 +8,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const dispatch = useDispatch();
     const modalRef = useRef(null); // Reference for modal container
 
-    const [numQuestions, setNumQuestions] = useState(20);
+    const [numQuestions, setNumQuestions] = useState();
     const [modeType, setModeType] = useState("Endless");
     const [questionTypes, setQuestionTypes] = useState({
         notAnswered: true,
@@ -79,7 +79,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                                     type="text"
                                     value={numQuestions}
                                     onChange={handleNumQuestionsChange}
-                                    max={200}
+                                
                                     className="w-full px-3 py-2 border rounded placeholder-transparent text-end"
                                 />
                                 <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#A1A1AA] text-[14px] font-medium pointer-events-none">
