@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from './Sidebar'
 // import component 👇
 import Drawer from 'react-modern-drawer'
@@ -9,12 +9,30 @@ import 'react-modern-drawer/dist/index.css'
 import { TbBaselineDensityMedium } from 'react-icons/tb';
 import Logo from './Logo';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 const Score = () => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
+    const result = useSelector(state => state.result);
+    const [correct, setCorrect] = useState(0);
+    const [incorrect, setIncorrect] = useState(0);
+    const [unseen, setUnseen] = useState(0);
+const [totalAttemped,setTotalAttemped]=useState(0)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-    return (
+
+    useEffect(() => {
+        // Calculate counts for correct, incorrect, and unseen
+        const correctCount = result.result.filter(value => value === true).length;
+        const incorrectCount = result.result.filter(value => value === false).length;
+        const unseenCount = result.result.filter(value => value === null || value === undefined).length;
+
+        // Update the states
+        setCorrect(correctCount);
+        setIncorrect(incorrectCount);
+        setUnseen(unseenCount);
+        setTotalAttemped(correctCount + incorrectCount)
+    }, [result.result]); return (
         <div className='lg:flex  min-h-screen w-full'>
             <div className='hidden lg:block'>
                 <Sidebar />
@@ -39,7 +57,7 @@ const Score = () => {
 
                     <div className='text-center  '>
                         <p className='text-[#3F3F46] font-bold text-[18px] md:text-[24px] lg:text-[30px] '>Final Score:</p>
-                        <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>96%</p>
+                        <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>{result.accuracy}%</p>
                         <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>Sure you weren’t cheating?</p>
                     </div>
                     <div>
@@ -51,24 +69,41 @@ const Score = () => {
 
                     <div className='space-y-3 flex flex-col-reverse md:flex-col'>
                         <div className='text-center md:mr-[380px] mt-2 md:mt-5'>
-                            <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46]'>Total Attempted: 258</p>
+                            <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46]'>Total Attempted: {totalAttemped}</p>
                         </div>
                         <div className='text-[#3F3F46] font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
-                            <p>Correct: 248</p>
-                            <p>Incorrect: 10</p>
-                            <p>Not Attempted: 37</p>
+                            <p>Correct:{correct || 0}</p>
+                            <p>Incorrect: {incorrect || 0}</p>
+                            <p>Not Attempted: {unseen || 0}</p>
+                        </div>
+                    </div>
+                    <div className='flex justify-center mt-5 items-center'>
+                        <div className="flex justify-center mt-5 items-center space-x-1 w-[80%] ">
+                            <div
+                                className="p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]"
+                                style={{
+                                    width: `${(correct / (correct + incorrect)) * 100 || 0}%`,
+                                }}
+                            >
+                                <span className="text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden">
+                                    {correct}
+                                </span>
+                            </div>
+
+                            <div
+                                className="rounded-[6px] text-right p-1.5 mr-5 md:mr-0 bg-[#FF453A]"
+                                style={{
+                                    width: `${(incorrect / (correct + incorrect)) * 100 || 0}%`,
+                                }}
+                            >
+                                <span className="text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden">
+                                    {incorrect}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className='flex justify-center mt-5 items-center gap-x-1 '>
-                        <div className='w-[470px] p-1.5  ml-5 md:ml-0   rounded-[6px] bg-[#3CC8A1]'>
-                            <span className='text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden'>248</span>
-                        </div>
 
-                        <div className='w-[144px] bg-[#FF453A] rounded-[6px] text-right p-1.5 mr-5 md:mr-0'>
-                            <span className=' text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden'>10</span>
-                        </div>
-                    </div>
                 </div>
 
 
