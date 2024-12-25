@@ -15,6 +15,8 @@ import { fetchModules } from "../redux/features/categoryModules/module.service";
 import { setLoading } from "../redux/features/loader/loader.slice";
 import { setCategoryId } from "../redux/features/categoryModules/module.slice";
 import {  fetchMcqsByModule } from "../redux/features/mcqQuestions/mcqQuestion.service";
+import { clearResult } from "../redux/features/result/result.slice";
+import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const isLoading = useSelector(
@@ -49,6 +51,12 @@ const Questioning = () => {
             }).catch(err => {
                 dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
             })
+     
+        sessionStorage.removeItem('persist:result');
+        // Dispatch Redux action to clear 'result' from Redux store
+        dispatch(clearResult());
+        dispatch(setRemoveQuestionLimit())
+
     }, []);
 
     useEffect(() => {

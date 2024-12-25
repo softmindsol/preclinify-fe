@@ -9,9 +9,12 @@ const questionLimit = createSlice({
 reducers:{
     setQuestionLimit:(state,action)=>{
         state.limit=action.payload
+    },
+    setRemoveQuestionLimit(state, action){
+        state.limit=0
     }
 }
 })
 
-export const { setQuestionLimit } = questionLimit.actions;
+export const { setQuestionLimit, setRemoveQuestionLimit } = questionLimit.actions;
 export default questionLimit.reducer;

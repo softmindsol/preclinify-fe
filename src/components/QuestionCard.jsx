@@ -10,6 +10,7 @@ import { setLoading } from "../redux/features/loader/loader.slice";
 import { fetchMcqsByCategory, fetchMcqsQuestion } from "../redux/features/mcqQuestions/mcqQuestion.service";
 import { useDispatch, useSelector } from "react-redux";
 import Accordion from "./Accordion";
+import { setResult } from "../redux/features/result/result.slice";
 
 const QuestionCard = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,9 +27,17 @@ const QuestionCard = () => {
     const [incorrectCount, setIncorrectCount] = useState(0); // State for incorrect answers
     const [unseenCount, setUnseenCount] = useState(0); // State for unseen questions
     const [border, setBorder] = useState(true);
-        const {limit} = useSelector((state) => state.limit);
-    console.log("limit:", limit);
+    const { limit } = useSelector((state) => state.limit);
     const data = useSelector((state) => state.mcqsQuestion || []);
+    const result = useSelector((state) => state.result);
+    const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
+    const itemsPerPage = 20;
+    // Get the items to show for the current page
+    const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+    console.log("accuracy slice:", result.accuracy);
+    console.log("accuracy component:", result.accuracy);
+ 
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
             if (Array.isArray(prev)) {
@@ -42,7 +51,6 @@ const QuestionCard = () => {
         });
     };
 
-    console.log("data:", data.data)
 
     const handleAnswerSelect = (answer) => {
         setSelectedAnswer(answer);
@@ -62,6 +70,8 @@ const QuestionCard = () => {
             setAttempts((prev) => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
+                dispatch(setResult({ updatedAttempts, accuracy }))
+
                 return updatedAttempts;
             });
 
@@ -80,25 +90,35 @@ const QuestionCard = () => {
             setSelectedAnswer(false)
             setIsAnswered(false)
             setIsAccordionVisible(false)
-
         }
+       
     };
 
     // Function to navigate to the previous question
     const prevQuestion = () => {
         if (currentIndex > 0) {
             setCurrentIndex((prev) => prev - 1);
-
-
         }
+      
     };
 
+    const nextPage=()=>{
+        if ((currentPage + 1) * itemsPerPage < data.data.length) {
+            setCurrentPage(currentPage + 1);
+        }
+    }
+
+    // Function to go to the previous page
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
 
 
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-
     data.data[currentIndex].explanationList.map((explanation, index) => {
         let isSelected = selectedAnswer === explanation;
         const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
@@ -126,6 +146,8 @@ const QuestionCard = () => {
         setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
     }, [attempts]);
 
+
+    console.log("result:", result.result);
 
     // console.log("correctCount:", correctCount, "incorrectCount:", incorrectCount, "unseenCount:", unseenCount)
     return (
@@ -239,7 +261,7 @@ const QuestionCard = () => {
                                             {!isAccordionVisible ? (
                                                 <label
                                                     key={index}
-                                                    className={`flex bg-white items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${ 'border-[#F4F4F5]'}`}
+                                                    className={`flex bg-white items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'}`}
                                                     onClick={() => handleAnswerSelect(explanation, index)}
                                                 >
                                                     <input
@@ -395,35 +417,40 @@ const QuestionCard = () => {
                                 <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
                                 <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
                                 <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span>
-                                </div>
+                            </div>
                         </div>
 
                         <div className="flex justify-center items-center">
                             <div className="grid grid-cols-5 gap-2">
-                                {data.data.map((question, index) => {
+                                {currentItems.map((question, index) => {
+
+                                    const displayNumber = currentPage * itemsPerPage + index;
                                     // Determine background color based on the question's status
                                     const bgColor =
-                                        attempts[index] === true
+                                        result.result[displayNumber] === true
                                             ? "bg-[#3CC8A1]" // Correct: Green
-                                            : attempts[index] === false
+                                            : result.result[displayNumber] === false
                                                 ? "bg-[#FF453A]" // Incorrect: Red
                                                 : "bg-gray-300"; // Unseen: Gray
-
+                                    console.log("bgColor:", bgColor)
                                     return (
-                                        <div
-                                            key={index}
-                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                            onClick={() => markQuestion(index, true)} // Example: Mark as correct on click
-                                        >
-                                            <p>{index + 1}</p>
+                                        <div>
+                                            <div
+                                                key={index}
+                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                onClick={() => markQuestion(index)} // Example: Mark as correct on click
+                                            >
+                                                <p>{displayNumber+1}</p>
+                                            </div>
                                         </div>
+                                      
                                     );
                                 })}
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22"  /></svg>
                         </div>
                         <div className="py-5 px-10 text-[#D4D4D8]">
                             <hr />
