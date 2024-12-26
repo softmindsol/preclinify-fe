@@ -30,10 +30,9 @@ const QuestionCard = () => {
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
-    const itemsPerPage = 20;
+    const itemsPerPage = 5;
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-
 
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
@@ -95,6 +94,8 @@ const QuestionCard = () => {
 
     };
 
+    
+
     // Function to navigate to the previous question
     const prevQuestion = () => {
         if (currentIndex > 0) {
@@ -107,6 +108,7 @@ const QuestionCard = () => {
         if ((currentPage + 1) * itemsPerPage < data.data.length) {
             setCurrentPage(currentPage + 1);
         }
+
     }
 
     // Function to go to the previous page
@@ -133,6 +135,16 @@ const QuestionCard = () => {
             return updatedAttempts;
         });
     };
+
+    useEffect(()=>{
+        if (itemsPerPage >5){
+            setCurrentPage(currentPage + 1);
+            
+        }
+    }, [attempts])
+
+
+
 
     useEffect(() => {
         if (data?.data?.length) {
