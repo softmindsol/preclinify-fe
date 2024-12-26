@@ -30,10 +30,43 @@ const QuestionCard = () => {
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
-    const itemsPerPage = 5;
+    const itemsPerPage = 20;
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+    const[selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
 
+
+
+    const handleFilterChange = (filter) => {
+        setSelectedFilter(filter);
+    };
+
+    // Filter items based on the selected filter
+    const filteredItems = currentItems.filter((question, index) => {
+        const displayNumber = currentPage * itemsPerPage + index;
+
+        if (selectedFilter === 'All') {
+            // Show all items (both flagged and unseen)
+            return true; // Include all items
+        }
+
+        if (selectedFilter === 'Flagged') {
+
+            // Show only flagged items (those with true or false value in attempts)
+            return attempts[displayNumber] === true || attempts[displayNumber] === false;
+        }
+
+        if (selectedFilter === 'Unseen') {
+            console.log(`Item ${displayNumber} attempts Unseen:`, attempts[displayNumber]);
+
+            // Show only unseen items (those with a null value in attempts)
+            return attempts[displayNumber] === null;
+        }
+
+        return false; // Hide items that don't match the filter
+    });
+
+    
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
             if (Array.isArray(prev)) {
@@ -94,7 +127,7 @@ const QuestionCard = () => {
 
     };
 
-    
+
 
     // Function to navigate to the previous question
     const prevQuestion = () => {
@@ -136,12 +169,6 @@ const QuestionCard = () => {
         });
     };
 
-    useEffect(()=>{
-        if (itemsPerPage >5){
-            setCurrentPage(currentPage + 1);
-            
-        }
-    }, [attempts])
 
 
 
@@ -166,9 +193,10 @@ const QuestionCard = () => {
     // Handler for Finish and Review
     const handleFinishAndReview = () => {
         if (isFinishEnabled) {
-            navigation('/score');                              
+            navigation('/score');
         }
     };
+
 
     
 
@@ -439,36 +467,32 @@ const QuestionCard = () => {
                         </div>
 
                         <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
-                                <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
-                                <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
-                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span>
+                            <div className="flex items-center justify-between p-5 w-full text-[12px]">
+                                <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer " onClick={() => handleFilterChange('All')}>All</span>
+                                <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer" onClick={() => handleFilterChange('Flagged')}>Flagged</span>
+                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer" onClick={() => handleFilterChange('Unseen')}>Unseen</span>
                             </div>
                         </div>
 
                         <div className="flex justify-center items-center">
                             <div className="grid grid-cols-5 gap-2">
-                                {currentItems.map((question, index) => {
-
+                                {filteredItems.map((question, index) => {
                                     const displayNumber = currentPage * itemsPerPage + index;
-                                    // Determine background color based on the question's status
                                     const bgColor =
                                         result.result[displayNumber] === true
-                                            ? "bg-[#3CC8A1]" // Correct: Green
+                                            ? "bg-[#3CC8A1]" // Correct
                                             : result.result[displayNumber] === false
-                                                ? "bg-[#FF453A]" // Incorrect: Red
-                                                : "bg-gray-300"; // Unseen: Gray
+                                                ? "bg-[#FF453A]" // Incorrect (Flagged)
+                                                : "bg-gray-300"; // Unseen (null)
                                     return (
-                                        <div>
+                                        <div key={index}>
                                             <div
-                                                key={index}
                                                 className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                onClick={() => markQuestion(index)} // Example: Mark as correct on click
+                                                onClick={() => markQuestion(index)} // Mark as correct on click
                                             >
                                                 <p>{displayNumber + 1}</p>
                                             </div>
                                         </div>
-
                                     );
                                 })}
                             </div>
@@ -591,7 +615,7 @@ const QuestionCard = () => {
                     </div>
 
                     <div className="">
-                        <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
+                        <div className="flex items-center justify-between p-5 w-full text-[12px]">
                             <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
                             <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
                             <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
