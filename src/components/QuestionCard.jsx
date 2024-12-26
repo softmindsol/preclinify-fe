@@ -185,7 +185,8 @@ const QuestionCard = () => {
     };
 
 
-    const toggleMenu = () => {
+    const toggleMenu = (event) => {
+        event.stopPropagation();
         setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
     };
 
@@ -222,7 +223,9 @@ const QuestionCard = () => {
                 : selectedFilter === 'Unseen' ? unseenIndices
                     : []; // Default to an empty array if no filter is selected
 
+                    
     const handleClickOutside = (event) => {
+        
         if (menuRef.current && !menuRef.current.contains(event.target)) {
             setIsSubMenuOpen(false); // Close the menu if the click is outside
         }
@@ -241,6 +244,8 @@ const QuestionCard = () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, [isSubMenuOpen]);
+
+    console.log("isSubMenuOpen:", isSubMenuOpen)
 
     return (
         <div className=" min-h-screen  " >
@@ -280,7 +285,7 @@ const QuestionCard = () => {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer"
-                                    onClick={toggleMenu} // Toggle submenu on click
+                                    onClick={(e)=>toggleMenu(e)} // Toggle submenu on click
                                 >
                                     <circle cx="12" cy="12" r="1" />
                                     <circle cx="19" cy="12" r="1" />
@@ -289,9 +294,15 @@ const QuestionCard = () => {
 
                                 {/* Submenu */}
                                 {isSubMenuOpen && (
-                                    <div   ref={menuRef} className="absolute right-0 mt-2 w-[150px] bg-white shadow-lg rounded-md border border-gray-300">
+                                    <div
+                                        ref={menuRef} // Attach ref to the submenu container
+                                        className="absolute right-0 mt-2 w-[150px] bg-white shadow-lg rounded-md border border-gray-300"
+                                    >
                                         <ul>
-                                            <li className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2" onClick={() => alert('Report clicked')}>
+                                            <li
+                                                className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2"
+                                                onClick={() => alert('Report clicked')}
+                                            >
                                                 Report
                                             </li>
                                         </ul>
