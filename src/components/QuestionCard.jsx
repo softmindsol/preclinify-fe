@@ -383,7 +383,7 @@ const QuestionCard = () => {
                 <div className="hidden md:block">
 
 
-                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[20%]   h-screen ">
+                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ">
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
