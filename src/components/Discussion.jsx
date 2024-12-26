@@ -27,8 +27,8 @@ const DiscussionBoard = () => {
     const [showComments, setShowComments] = useState(true);
 
     return (
-        <div className="p-6 bg-gray-100">
-            <div className="max-w-2xl mx-auto bg-white shadow rounded-lg py-5">
+        <div className="p-6 bg-gray-100  xl:w-[85%] 2xl:w-[90%] ">
+            <div className="w-[700px] mx-auto bg-white  shadow rounded-lg py-5">
                 <div
                     className="flex justify-between items-center gap-x-5 mb-2 p-4 cursor-pointer"
                     onClick={() => setShowComments(!showComments)}

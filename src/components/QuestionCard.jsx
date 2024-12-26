@@ -510,9 +510,18 @@ const QuestionCard = () => {
                     </div>
                 </div>
             </div>
+            {
+                isAccordionVisible && <div>
+                    <p className="font-medium text-[16px] text-[#3F3F46]">How did you find this question?</p>
+                    <button>Report</button>
+                </div>
+            }
+            {
 
+                isAccordionVisible && <DiscussionBoard />
+            }
 
-            {/* <DiscussionBoard /> */}
+            {/*  */}
 
 
             <Drawer

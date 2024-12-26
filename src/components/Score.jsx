@@ -10,12 +10,14 @@ import { TbBaselineDensityMedium } from 'react-icons/tb';
 import Logo from './Logo';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { getFeedbackMessage } from '../utils/GlobalApiHandler';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
     const [correct, setCorrect] = useState(0);
     const [incorrect, setIncorrect] = useState(0);
     const [unseen, setUnseen] = useState(0);
+    const [feedback, setFeedback] = useState(null);
 const [totalAttemped,setTotalAttemped]=useState(0)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -31,7 +33,11 @@ const [totalAttemped,setTotalAttemped]=useState(0)
         setCorrect(correctCount);
         setIncorrect(incorrectCount);
         setUnseen(unseenCount);
-        setTotalAttemped(correctCount + incorrectCount)
+        setTotalAttemped(correctCount + incorrectCount);
+        const response = getFeedbackMessage(Math.floor(result.accuracy));
+       console.log(response);
+       
+        setFeedback(response)
     }, [result.result]); return (
         <div className='lg:flex  min-h-screen w-full'>
             <div className='hidden lg:block'>
@@ -58,7 +64,7 @@ const [totalAttemped,setTotalAttemped]=useState(0)
                     <div className='text-center  '>
                         <p className='text-[#3F3F46] font-bold text-[18px] md:text-[24px] lg:text-[30px] '>Final Score:</p>
                         <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>{result.accuracy}%</p>
-                        <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>Sure you weren’t cheating?</p>
+                        <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>{feedback}</p>
                     </div>
                     <div>
                         <button className='text-[#FF9741] text-[12px] md:text-[14px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'>REVIEW QUESTIONS</button>
