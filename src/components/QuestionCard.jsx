@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Logo from "./Logo";
 import DiscussionBoard from "./Discussion";
 import { TbBaselineDensityMedium } from "react-icons/tb";
@@ -34,8 +34,9 @@ const QuestionCard = () => {
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
 
-
+    const menuRef = useRef(null);
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
@@ -78,10 +79,6 @@ const QuestionCard = () => {
         return false; // Hide items that don't match the filter
     });
 
-    // Logs for debugging
-    console.log("Unseen Indices:", unseenIndices);
-    console.log("Flagged Indices:", flaggedIndices);
-    console.log("All Indices:", allIndices);
 
 
 
@@ -188,6 +185,10 @@ const QuestionCard = () => {
     };
 
 
+    const toggleMenu = () => {
+        setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
+    };
+
 
 
 
@@ -221,7 +222,25 @@ const QuestionCard = () => {
                 : selectedFilter === 'Unseen' ? unseenIndices
                     : []; // Default to an empty array if no filter is selected
 
+    const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setIsSubMenuOpen(false); // Close the menu if the click is outside
+        }
+    };
 
+    // Attach the click event listener to the document when the menu is open
+    useEffect(() => {
+        if (isSubMenuOpen) {
+            document.addEventListener('click', handleClickOutside);
+        } else {
+            document.removeEventListener('click', handleClickOutside);
+        }
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isSubMenuOpen]);
 
     return (
         <div className=" min-h-screen  " >
@@ -251,20 +270,35 @@ const QuestionCard = () => {
 
                         {/* Left Icon */}
                         <div className="absolute left-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4"
-                            >
-                                <circle cx="12" cy="12" r="1" />
-                                <circle cx="19" cy="12" r="1" />
-                                <circle cx="5" cy="12" r="1" />
-                            </svg>
+                            <div className="relative">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer"
+                                    onClick={toggleMenu} // Toggle submenu on click
+                                >
+                                    <circle cx="12" cy="12" r="1" />
+                                    <circle cx="19" cy="12" r="1" />
+                                    <circle cx="5" cy="12" r="1" />
+                                </svg>
+
+                                {/* Submenu */}
+                                {isSubMenuOpen && (
+                                    <div   ref={menuRef} className="absolute right-0 mt-2 w-[150px] bg-white shadow-lg rounded-md border border-gray-300">
+                                        <ul>
+                                            <li className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2" onClick={() => alert('Report clicked')}>
+                                                Report
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                           
                         </div>
 
                         {/* Question Navigation */}
@@ -308,7 +342,8 @@ const QuestionCard = () => {
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                className="lucide lucide-flag"
+                                className="lucide lucide-flag cursor-pointer"
+                                onClick={() => handleFilterChange('Unseen')}
                             >
                                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                 <line x1="4" x2="4" y1="22" y2="15" />
@@ -490,10 +525,29 @@ const QuestionCard = () => {
 
                         <div className="">
                             <div className="flex items-center justify-between p-5 w-full text-[12px]">
-                                <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer " onClick={() => handleFilterChange('All')}>All</span>
-                                <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer" onClick={() => handleFilterChange('Flagged')}>Flagged</span>
-                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer" onClick={() => handleFilterChange('Unseen')}>Unseen</span>
+                                <span
+                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                        }`}
+                                    onClick={() => handleFilterChange('All')}
+                                >
+                                    All
+                                </span>
+                                <span
+                                    className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                        }`}
+                                    onClick={() => handleFilterChange('Flagged')}
+                                >
+                                    Flagged
+                                </span>
+                                <span
+                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                        }`}
+                                    onClick={() => handleFilterChange('Unseen')}
+                                >
+                                    Unseen
+                                </span>
                             </div>
+
                         </div>
 
                         <div className="flex justify-center items-center">
