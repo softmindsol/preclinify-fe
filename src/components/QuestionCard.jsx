@@ -33,7 +33,7 @@ const QuestionCard = () => {
     const itemsPerPage = 20;
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-    const[selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
+    const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
 
 
 
@@ -41,32 +41,50 @@ const QuestionCard = () => {
         setSelectedFilter(filter);
     };
 
+    // Arrays to store indices
+    const unseenIndices = [];
+    const flaggedIndices = [];
+    const allIndices = [];
+
     // Filter items based on the selected filter
     const filteredItems = currentItems.filter((question, index) => {
         const displayNumber = currentPage * itemsPerPage + index;
 
+        // All items
+        allIndices.push(displayNumber);
+
         if (selectedFilter === 'All') {
-            // Show all items (both flagged and unseen)
             return true; // Include all items
         }
 
         if (selectedFilter === 'Flagged') {
-
-            // Show only flagged items (those with true or false value in attempts)
-            return attempts[displayNumber] === true || attempts[displayNumber] === false;
+            // Check if item is flagged
+            const isFlagged = attempts[displayNumber] === true || attempts[displayNumber] === false;
+            if (isFlagged) {
+                flaggedIndices.push(displayNumber); // Store index for flagged items
+                return true;
+            }
         }
 
         if (selectedFilter === 'Unseen') {
-            console.log(`Item ${displayNumber} attempts Unseen:`, attempts[displayNumber]);
-
-            // Show only unseen items (those with a null value in attempts)
-            return attempts[displayNumber] === null;
+            // Check if item is unseen
+            const isUnseen = attempts[displayNumber] === null;
+            if (isUnseen) {
+                unseenIndices.push(displayNumber); // Store index for unseen items
+                return true;
+            }
         }
 
         return false; // Hide items that don't match the filter
     });
 
-    
+    // Logs for debugging
+    console.log("Unseen Indices:", unseenIndices);
+    console.log("Flagged Indices:", flaggedIndices);
+    console.log("All Indices:", allIndices);
+
+
+
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
             if (Array.isArray(prev)) {
@@ -197,8 +215,12 @@ const QuestionCard = () => {
         }
     };
 
+    const indicesToDisplay =
+        selectedFilter === 'All' ? allIndices
+            : selectedFilter === 'Flagged' ? flaggedIndices
+                : selectedFilter === 'Unseen' ? unseenIndices
+                    : []; // Default to an empty array if no filter is selected
 
-    
 
 
     return (
@@ -476,25 +498,28 @@ const QuestionCard = () => {
 
                         <div className="flex justify-center items-center">
                             <div className="grid grid-cols-5 gap-2">
-                                {filteredItems.map((question, index) => {
-                                    const displayNumber = currentPage * itemsPerPage + index;
-                                    const bgColor =
-                                        result.result[displayNumber] === true
-                                            ? "bg-[#3CC8A1]" // Correct
-                                            : result.result[displayNumber] === false
-                                                ? "bg-[#FF453A]" // Incorrect (Flagged)
-                                                : "bg-gray-300"; // Unseen (null)
-                                    return (
-                                        <div key={index}>
-                                            <div
-                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                onClick={() => markQuestion(index)} // Mark as correct on click
-                                            >
-                                                <p>{displayNumber + 1}</p>
+                                {
+                                    indicesToDisplay.map((num, i) => {
+                                        const bgColor =
+                                            result.result[num] === true
+                                                ? "bg-[#3CC8A1]" // Correct
+                                                : result.result[num] === false
+                                                    ? "bg-[#FF453A]" // Incorrect (Flagged)
+                                                    : "bg-gray-300"; // Unseen (null)
+
+                                        return (
+                                            <div key={i}>
+                                                <div
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                    onClick={() => markQuestion(num)} // Use `num` for marking
+                                                >
+                                                    <p>{num + 1}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })
+
+                               }
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
