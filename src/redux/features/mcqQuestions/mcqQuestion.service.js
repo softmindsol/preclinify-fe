@@ -52,3 +52,35 @@ export const fetchMcqsByModule = createAsyncThunk(
         }
     }
 );
+
+
+// Fetch MCQs by moduleId with limit
+export const fetchConditionNameById= createAsyncThunk(
+    'mcqs/fetchConditionNameById',
+    async ({ Id }, { rejectWithValue }) => {
+        console.log(Id);
+        
+        try {
+            if (!Id) return rejectWithValue('Invalid conditionNames ID.');
+
+            const query = supabase
+                .from('conditionNames')
+                .select('*')
+                .eq('id', Id);
+
+       
+
+            const { data, error } = await query;
+            console.log("service:", data);
+     
+
+            if (error) {
+                return rejectWithValue(error.message || 'Failed to fetch module questions');
+            }
+
+            return data;
+        } catch (error) {
+            return rejectWithValue(error?.message || 'An unexpected error occurred');
+        }
+    }
+);
