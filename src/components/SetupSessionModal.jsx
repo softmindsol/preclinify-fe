@@ -116,7 +116,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                                     className="w-full h-[42px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
                                 >
                                     <option value="Endless">Endless</option>
-                                    <option value="Timer">Timer</option>
+                                    <option value="Exam">Exam</option>
                                 </select>
                                 <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                     <svg
