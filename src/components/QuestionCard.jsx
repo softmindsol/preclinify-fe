@@ -139,11 +139,11 @@ const QuestionCard = () => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
                 dispatch(setResult({ updatedAttempts, accuracy: accuracy }))
-                
+                console.log("accuracy:", accuracy);
+   
                 return updatedAttempts;
             });
             
-            console.log("accuracy:", accuracy);
             // Expand accordion for the correct answer
             setIsAccordionOpen((prev) => {
                 const newAccordionState = [...prev];
@@ -267,23 +267,25 @@ const QuestionCard = () => {
 
 
     useEffect(() => {
-        // If time reaches 0, trigger finish and review handler
-        if (timer === 0) {
-            handleFinishAndReview();
-        }
-
-        const interval = setInterval(() => {
-            if (timer > 0) {
-                setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
+        if (isTimerMode === 'Exam') { // Check if the selected mode is Exam Mode
+            // If time reaches 0, trigger finish and review handler
+            if (timer === 0) {
+                handleFinishAndReview();
             }
-        }, 1000);
-        console.log("timer:", timer);
 
-        // Cleanup the interval when component unmounts or time reaches 0
-        return () => clearInterval(interval);
-    }, [timer, data.data.length, handleFinishAndReview]);
+            const interval = setInterval(() => {
+                if (timer > 0) {
+                    setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
+                }
+            }, 1000);
+            console.log("timer:", timer);
 
-    
+            // Cleanup the interval when component unmounts or time reaches 0
+            return () => clearInterval(interval);
+        }
+    }, [timer, isTimerMode, handleFinishAndReview]);
+
+
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
         if (isSubMenuOpen) {
