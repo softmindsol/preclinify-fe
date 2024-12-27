@@ -9,6 +9,8 @@ const resultSlice = createSlice({
 
     reducers: {
         setResult(state, action) {
+            console.log(action.payload.accuracy);
+            
             state.accuracy = action.payload.accuracy;
             state.result = action.payload.updatedAttempts;
         },

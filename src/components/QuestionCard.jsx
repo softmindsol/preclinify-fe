@@ -122,7 +122,7 @@ const QuestionCard = () => {
         setSelectedAnswer(answer);
         setIsAnswered(true);
     };
-
+  
     const handleCheckAnswer = () => {
 
         if (selectedAnswer) {
@@ -138,11 +138,12 @@ const QuestionCard = () => {
             setAttempts((prev) => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
-                dispatch(setResult({ updatedAttempts, accuracy }))
-
+                dispatch(setResult({ updatedAttempts, accuracy: accuracy }))
+                
                 return updatedAttempts;
             });
-
+            
+            console.log("accuracy:", accuracy);
             // Expand accordion for the correct answer
             setIsAccordionOpen((prev) => {
                 const newAccordionState = [...prev];
@@ -211,6 +212,8 @@ const QuestionCard = () => {
     };
 
 
+    console.log(result.accuracy);
+    
 
 
     useEffect(() => {
@@ -218,7 +221,7 @@ const QuestionCard = () => {
             setIsAccordionOpen(Array(data.data.length).fill(false));
             setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
         }
-        dispatch(clearResult());
+        // dispatch(clearResult());
     }, [data]);
 
     useEffect(() => {
@@ -232,11 +235,13 @@ const QuestionCard = () => {
 
     const handleFinishAndReview = () => {
         if (isReviewEnabled) {
+            setSelectedAnswer(true)
             handleCheckAnswer();
-           // Add a delay (for example, 2 seconds)
+            // handleAnswerSelect()
+        //    Add a delay (for example, 2 seconds)
         setTimeout(() => {
             navigation('/score');
-        }, 2000); // 2000 ms = 2 seconds
+        }, 3000); // 2000 ms = 2 seconds
         }
         
     };
