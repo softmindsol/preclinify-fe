@@ -35,7 +35,6 @@ const [totalAttemped,setTotalAttemped]=useState(0)
         setUnseen(unseenCount);
         setTotalAttemped(correctCount + incorrectCount);
         const response = getFeedbackMessage(Math.floor(result.accuracy));
-       console.log(response);
        
         setFeedback(response)
     }, [result.result]); return (

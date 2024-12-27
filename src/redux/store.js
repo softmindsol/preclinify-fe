@@ -7,7 +7,7 @@ import loaderReducer from './features/loader/loader.slice';
 import mcqsQuestion from './features/mcqQuestions/mcqQuestion.slice';
 import limitQuestion from './features/limit/limit.slice';
 import resultReducer from './features/result/result.slice';
-
+import modeReducer from './features/mode/mode.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
@@ -27,6 +27,7 @@ const rootReducer = combineReducers({
     loading: loaderReducer,
     mcqsQuestion: mcqsQuestion,
     limit: limitQuestion,
+    mode: modeReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 

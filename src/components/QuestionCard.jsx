@@ -13,6 +13,21 @@ import { useNavigate } from "react-router-dom";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import { fetchConditionNameById } from "../redux/features/mcqQuestions/mcqQuestion.service";
 
+
+
+// Function to format the time in MM:SS format
+const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+};
+
+// Function to calculate total time based on number of questions
+const calculateTimeForQuestions = (numQuestions) => {
+    const timePerQuestionInSeconds = 60; // 1 minute per question
+    const totalTimeInSeconds = numQuestions * timePerQuestionInSeconds; // Calculate total time
+    return totalTimeInSeconds; // Return total time in seconds
+};
 const QuestionCard = () => {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
@@ -30,12 +45,15 @@ const QuestionCard = () => {
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
+    const [isReviewEnabled, setIsReviewEnabled] = useState(false)
     const itemsPerPage = 20;
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
-
+    const isTimerMode = useSelector((state) => state.mode.mode);
+    const [timer, setTimer] = useState(calculateTimeForQuestions(data.data.length));
+    
     const menuRef = useRef(null);
 
     const handleFilterChange = (filter) => {
@@ -101,9 +119,7 @@ const QuestionCard = () => {
         setIsAnswered(true);
     };
 
-
     const handleCheckAnswer = () => {
-
 
         if (selectedAnswer) {
             setIsButtonClicked(true);
@@ -210,12 +226,18 @@ const QuestionCard = () => {
     }, [attempts]);
 
 
-    // Handler for Finish and Review
     const handleFinishAndReview = () => {
         if (isFinishEnabled) {
-            navigation('/score');
+            handleCheckAnswer();
+            // Add a delay (for example, 2 seconds)
+            setTimeout(() => {
+                navigation('/score');
+            }, 2000); // 2000 ms = 2 seconds
         }
     };
+
+
+
 
     const indicesToDisplay =
         selectedFilter === 'All' ? allIndices
@@ -223,13 +245,31 @@ const QuestionCard = () => {
                 : selectedFilter === 'Unseen' ? unseenIndices
                     : []; // Default to an empty array if no filter is selected
 
-                    
+
     const handleClickOutside = (event) => {
-        
+
         if (menuRef.current && !menuRef.current.contains(event.target)) {
             setIsSubMenuOpen(false); // Close the menu if the click is outside
         }
     };
+
+   
+
+    useEffect(() => {
+        // If time reaches 0, trigger finish and review handler
+        if (timer === 0) {
+            handleFinishAndReview();
+        }
+
+        const interval = setInterval(() => {
+            if (timer > 0) {
+                setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
+            }
+        }, 1000);
+
+        // Cleanup the interval when component unmounts or time reaches 0
+        return () => clearInterval(interval);
+    }, [timer, data.data.length, handleFinishAndReview]);
 
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
@@ -245,7 +285,17 @@ const QuestionCard = () => {
         };
     }, [isSubMenuOpen]);
 
-    console.log("isSubMenuOpen:", isSubMenuOpen)
+
+
+    // Check if it's time to enable the Finish button
+    useEffect(() => {
+        if (data.data.length === currentIndex + 1) {
+            setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
+        }
+    }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
+
+
+
 
     return (
         <div className=" min-h-screen  " >
@@ -285,7 +335,7 @@ const QuestionCard = () => {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer"
-                                    onClick={(e)=>toggleMenu(e)} // Toggle submenu on click
+                                    onClick={(e) => toggleMenu(e)} // Toggle submenu on click
                                 >
                                     <circle cx="12" cy="12" r="1" />
                                     <circle cx="19" cy="12" r="1" />
@@ -309,7 +359,7 @@ const QuestionCard = () => {
                                     </div>
                                 )}
                             </div>
-                           
+
                         </div>
 
                         {/* Question Navigation */}
@@ -490,18 +540,41 @@ const QuestionCard = () => {
 
                             {/* Submit Button */}
                             {
-                                isAccordionVisible ? <button
-                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                    onClick={nextQuestion}
-                                >
-                                    Next Question &darr;
-                                </button> : <button
-                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                    onClick={handleCheckAnswer}
-                                >
-                                    Check Answer &darr;
-                                </button>
+                                !isReviewEnabled && (
+                                    isAccordionVisible ? (
+                                        <button
+                                            className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                            onClick={nextQuestion}
+                                        >
+                                            Next Question &darr;
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                            onClick={handleCheckAnswer}
+                                        >
+                                            Check Answer &darr;
+                                        </button>
+                                    )
+                                )
                             }
+                            {isReviewEnabled && (
+                                <div
+                                    className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                        } justify-center`}
+                                    onClick={handleFinishAndReview}
+
+                                >
+                                    <button
+                                        className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+
+                                    >
+                                        Finish and Review &darr;
+                                    </button>
+
+
+                                </div>
+                            )}
 
                         </div>
                     )}
@@ -529,8 +602,14 @@ const QuestionCard = () => {
 
                         <div className="flex flex-col items-center justify-center mt-10">
                             <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
-                                <p className="text-[12px] mt-3">Accuracy</p>
-                                <p className="font-black text-[36px]">{accuracy}%</p>
+                                {
+                                    isTimerMode === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                        <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+
+                                        <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
+                                }
+
+
                             </div>
                         </div>
 
@@ -584,7 +663,7 @@ const QuestionCard = () => {
                                         );
                                     })
 
-                               }
+                                }
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">

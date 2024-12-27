@@ -3,6 +3,7 @@ import { setQuestionLimit } from "../redux/features/limit/limit.slice";
 import { useDispatch } from "react-redux";
 import { debounce } from "../utils/GlobalApiHandler";
 import { Link } from "react-router-dom";
+import { changeMode } from "../redux/features/mode/mode.slice";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
@@ -55,6 +56,9 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isOpenSetUpSessionModal]);
+    useEffect(()=>{
+        dispatch(changeMode(modeType))
+    })
 
     return (
         <div className="flex items-center justify-center bg-white rounded-[4px]">
@@ -99,7 +103,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                                 className="w-[145px] h-[42px] px-3 py-2 border border-[#A1A1AA] rounded text-[14px]"
                             >
                                 <option value="Endless">Endless</option>
-                                <option value="Fixed">Fixed</option>
+                                <option value="Timer">Timer</option>
                             </select>
                         </div>
 
