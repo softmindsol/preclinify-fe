@@ -30,7 +30,7 @@ const DeepChatAI = (props) => {
     const deepChatComponent = useMemo(() => (
         <DeepChat
             style={dynamicStyle}
-            directConnection={{ openAI: { key: process.env.REACT_APP_OPENAI_API_KEY } }}
+            directConnection={{ openAI: { key: process.env.REACT_APP_OPENAI_API } }}
         />
     ), [dynamicStyle]);
 
