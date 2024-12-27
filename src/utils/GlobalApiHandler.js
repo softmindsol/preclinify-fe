@@ -15,7 +15,6 @@ export function debounce(func, delay) {
 }
 
 export function getFeedbackMessage(accuracy) {
-  console.log("handler call",accuracy);
   
   if (accuracy >= 0 && accuracy <= 5) return "Bit of a rocky start, but don’t fret—you’ll get there!";
   if (accuracy >= 6 && accuracy <= 10) return "Alright, you’re off the mark! Let’s crack on!";
