@@ -4,12 +4,14 @@ const modeSlice=createSlice({
     name: 'mode',
 
     initialState:{
-        mode:"Endless"
+        mode:"Endless",
+        time:0
     },
 
     reducers:{
         changeMode:(state,action)=>{
-            state.mode=action.payload
+            state.mode=action.payload.mode
+            state.time = action.payload.timer
         }
     }
 })

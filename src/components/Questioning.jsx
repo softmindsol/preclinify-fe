@@ -17,6 +17,7 @@ import { setCategoryId } from "../redux/features/categoryModules/module.slice";
 import {  fetchMcqsByModule } from "../redux/features/mcqQuestions/mcqQuestion.service";
 import { clearResult } from "../redux/features/result/result.slice";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
+import Loader from "./Loader";
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const isLoading = useSelector(
@@ -201,7 +202,7 @@ const Questioning = () => {
 
                     <div>
                         {isLoading ? (
-                            <p>Loading...</p>
+                            <Loader/>
                         ) : (
                             data?.data?.map((row) => (
                                 <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">

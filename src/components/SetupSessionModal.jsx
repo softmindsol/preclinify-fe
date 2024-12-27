@@ -10,18 +10,21 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const modalRef = useRef(null); // Reference for modal container
 
     const [numQuestions, setNumQuestions] = useState();
-    const [modeType, setModeType] = useState("Endless");
+    const [timer,setTimer]=useState(5)
+    const [modeType, setModeType] = useState('Endless');
     const [questionTypes, setQuestionTypes] = useState({
         notAnswered: true,
         incorrect: true,
         correct: true,
     });
 
+    
     const toggleQuestionType = (type) => {
         setQuestionTypes((prev) => ({
             ...prev,
             [type]: !prev[type],
         }));
+
     };
 
     // Debounced dispatch handler
@@ -40,7 +43,14 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
             debouncedDispatch(value); // Call debounced function
         }
     };
-
+    // Update state and call debounced handler
+    const handleTimerChange = (e) => {
+        const value = parseInt(e.target.value, 10) || 0; // Ensure it's a number
+        if (value <= 200) {
+            setTimer(value);
+            debouncedDispatch(value); // Call debounced function
+        }
+    };
     // Close modal when clicking outside
     const handleClickOutside = (event) => {
         if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -56,9 +66,11 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isOpenSetUpSessionModal]);
-    useEffect(()=>{
-        dispatch(changeMode(modeType))
-    })
+
+
+    useEffect(() => {
+        dispatch(changeMode({ mode: modeType, timer }));
+    }, [modeType, timer, dispatch]);
 
     return (
         <div className="flex items-center justify-center bg-white rounded-[4px]">
@@ -97,15 +109,52 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                             <label className="block text-[#52525B] text-[20px] font-semibold mb-1">
                                 Mode Type
                             </label>
-                            <select
-                                value={modeType}
-                                onChange={(e) => setModeType(e.target.value)}
-                                className="w-[145px] h-[42px] px-3 py-2 border border-[#A1A1AA] rounded text-[14px]"
-                            >
-                                <option value="Endless">Endless</option>
-                                <option value="Timer">Timer</option>
-                            </select>
+                            <div className="relative w-[145px]">
+                                <select
+                                    value={modeType}
+                                    onChange={(e) => setModeType(e.target.value)}
+                                    className="w-full h-[42px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
+                                >
+                                    <option value="Endless">Endless</option>
+                                    <option value="Timer">Timer</option>
+                                </select>
+                                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                    <svg
+                                        className="w-4 h-4 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
+
+
+                        {
+                            modeType === "Timer" && <div className="relative w-full">
+                                <label className="block text-[#A1A1AA]  text-[20px] font-semibold mb-1">
+                                Amount of time
+                                </label>
+                                <div className="relative w-full">
+                                    <input
+                                        type="text"
+                                        value={timer}
+                                        onChange={handleTimerChange}
+
+                                        className="w-full px-3 py-2 border rounded placeholder-transparent text-end"
+                                    />
+                                    <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#A1A1AA] text-[14px] font-medium pointer-events-none">
+                                       In  Minutes
+                                    </span>
+                                </div>
+                            </div>
+                        }
 
                         {/* Question Type */}
                         <div className="mb-6 mt-8">

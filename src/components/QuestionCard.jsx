@@ -12,6 +12,8 @@ import { clearResult, setResult } from "../redux/features/result/result.slice";
 import { useNavigate } from "react-router-dom";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import { fetchConditionNameById } from "../redux/features/mcqQuestions/mcqQuestion.service";
+import { DeepChat } from "deep-chat-react";
+import DeepChatAI from "./DeepChat";
 
 
 
@@ -51,8 +53,10 @@ const QuestionCard = () => {
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
-    const isTimerMode = useSelector((state) => state.mode.mode);
-    const [timer, setTimer] = useState(calculateTimeForQuestions(data.data.length));
+    const isTimerMode = useSelector((state) => state.mode);
+    const [timer, setTimer] = useState(calculateTimeForQuestions(isTimerMode.time));
+
+
     
     const menuRef = useRef(null);
 
@@ -253,23 +257,23 @@ const QuestionCard = () => {
         }
     };
 
-   
 
-    useEffect(() => {
-        // If time reaches 0, trigger finish and review handler
-        if (timer === 0) {
-            handleFinishAndReview();
-        }
 
-        const interval = setInterval(() => {
-            if (timer > 0) {
-                setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
-            }
-        }, 1000);
+    // useEffect(() => {
+    //     // If time reaches 0, trigger finish and review handler
+    //     if (timer === 0) {
+    //         handleFinishAndReview();
+    //     }
 
-        // Cleanup the interval when component unmounts or time reaches 0
-        return () => clearInterval(interval);
-    }, [timer, data.data.length, handleFinishAndReview]);
+    //     const interval = setInterval(() => {
+    //         if (timer > 0) {
+    //             setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
+    //         }
+    //     }, 1000);
+
+    //     // Cleanup the interval when component unmounts or time reaches 0
+    //     return () => clearInterval(interval);
+    // }, [timer, data.data.length, handleFinishAndReview]);
 
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
@@ -427,8 +431,7 @@ const QuestionCard = () => {
                             <div className="mt-4 space-y-4 " >
                                 {data.data[currentIndex].explanationList.map((explanation, index) => {
                                     const isSelected = selectedAnswer === explanation;
-                                    const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
-
+                                    const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;                                    
                                     // Determine the border color based on whether the button has been clicked
                                     const borderColor = isButtonClicked
                                         ? isCorrectAnswer
@@ -483,6 +486,7 @@ const QuestionCard = () => {
                                                             checked={isSelected}
                                                             readOnly
                                                         />
+                                                            
                                                         <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
                                                         {isAccordionOpen[index] ? (
                                                             <svg
@@ -603,10 +607,10 @@ const QuestionCard = () => {
                         <div className="flex flex-col items-center justify-center mt-10">
                             <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
                                 {
-                                    isTimerMode === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                    isTimerMode["mode"] === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
                                         <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
 
-                                        <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
+                                            <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
                                 }
 
 
@@ -672,6 +676,11 @@ const QuestionCard = () => {
                         </div>
                         <div className="py-5 px-10 text-[#D4D4D8]">
                             <hr />
+                        </div>
+
+                        <div>
+                            <DeepChatAI W='200px'/>
+                            <hr className='mx-5' />
                         </div>
 
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
@@ -778,43 +787,67 @@ const QuestionCard = () => {
                     <div className="flex flex-col  items-center justify-center mt-10">
 
                         <div className="w-[90%] 2xl:w-[308px] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
-                            <p className="text-[12px] mt-3">Accuracy</p>
-                            <p className="font-black text-[36px]">{accuracy}%</p>
+                      
+                            {
+                                isTimerMode === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                    <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+
+                                    <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
+                            }
                         </div>
                     </div>
 
                     <div className="">
                         <div className="flex items-center justify-between p-5 w-full text-[12px]">
-                            <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
-                            <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
-                            <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
+                            <span
+                                className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                    }`}
+                                onClick={() => handleFilterChange('All')}
+                            >
+                                All
+                            </span>
+                            <span
+                                className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                    }`}
+                                onClick={() => handleFilterChange('Flagged')}
+                            >
+                                Flagged
+                            </span>
+                            <span
+                                className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                    }`}
+                                onClick={() => handleFilterChange('Unseen')}
+                            >
+                                Unseen
+                            </span>
+                        </div>
+
                     </div>
 
                     <div className="flex justify-center items-center">
                         <div className="grid grid-cols-5 gap-2">
-                            {currentItems.map((question, index) => {
+                            {
+                                indicesToDisplay.map((num, i) => {
+                                    const bgColor =
+                                        result.result[num] === true
+                                            ? "bg-[#3CC8A1]" // Correct
+                                            : result.result[num] === false
+                                                ? "bg-[#FF453A]" // Incorrect (Flagged)
+                                                : "bg-gray-300"; // Unseen (null)
 
-                                const displayNumber = currentPage * itemsPerPage + index;
-                                // Determine background color based on the question's status
-                                const bgColor =
-                                    result.result[displayNumber] === true
-                                        ? "bg-[#3CC8A1]" // Correct: Green
-                                        : result.result[displayNumber] === false
-                                            ? "bg-[#FF453A]" // Incorrect: Red
-                                            : "bg-gray-300"; // Unseen: Gray
-                                return (
-                                    <div>
-                                        <div
-                                            key={index}
-                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                            onClick={() => markQuestion(index)} // Example: Mark as correct on click
-                                        >
-                                            <p>{displayNumber + 1}</p>
+                                    return (
+                                        <div key={i}>
+                                            <div
+                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                onClick={() => markQuestion(num)} // Use `num` for marking
+                                            >
+                                                <p>{num + 1}</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    );
+                                })
 
-                                );
-                            })}
+                            }
                         </div>
                     </div>
                     <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
@@ -823,6 +856,11 @@ const QuestionCard = () => {
                     </div>
                     <div className="py-5 px-10 text-[#D4D4D8]">
                         <hr />
+                    </div>
+
+                    <div>
+                        <DeepChatAI W='250px' />
+                        <hr className='mx-5' />
                     </div>
 
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">

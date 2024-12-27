@@ -115,3 +115,19 @@ border-radius: 48px;
 
 }
 
+/* Style for the container */
+
+
+/* Style for the DeepChat component */
+.deep-chat {
+    border: none; /* Remove all borders */
+      width: 200px;/* Full width of the container */
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 768px) {
+    .deep-chat {
+        width: 180px; /* Reduce the width for smaller screens */
+    }
+}
+
