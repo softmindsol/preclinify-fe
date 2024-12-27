@@ -14,6 +14,7 @@ import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import { fetchConditionNameById } from "../redux/features/mcqQuestions/mcqQuestion.service";
 import { DeepChat } from "deep-chat-react";
 import DeepChatAI from "./DeepChat";
+import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 
 
 
@@ -138,8 +139,7 @@ const QuestionCard = () => {
             setAttempts((prev) => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
-                dispatch(setResult({ updatedAttempts, accuracy: accuracy }))
-                console.log("accuracy:", accuracy);
+                dispatch(setResult({ updatedAttempts }))
    
                 return updatedAttempts;
             });
@@ -235,8 +235,9 @@ const QuestionCard = () => {
 
     const handleFinishAndReview = () => {
         if (isReviewEnabled) {
-            setSelectedAnswer(true)
             handleCheckAnswer();
+            dispatch(setMcqsAccuracy({ accuracy }))
+
             // handleAnswerSelect()
         //    Add a delay (for example, 2 seconds)
         setTimeout(() => {

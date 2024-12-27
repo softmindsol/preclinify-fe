@@ -14,6 +14,8 @@ import { getFeedbackMessage } from '../utils/GlobalApiHandler';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
+    const accuracy = useSelector(state => state.accuracy.accuracy);
+
     const [correct, setCorrect] = useState(0);
     const [incorrect, setIncorrect] = useState(0);
     const [unseen, setUnseen] = useState(0);
@@ -22,6 +24,9 @@ const [totalAttemped,setTotalAttemped]=useState(0)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
+
+    console.log("accuracy:", accuracy);
+    
 
     useEffect(() => {
         // Calculate counts for correct, incorrect, and unseen
@@ -62,7 +67,7 @@ const [totalAttemped,setTotalAttemped]=useState(0)
 
                     <div className='text-center  '>
                         <p className='text-[#3F3F46] font-bold text-[18px] md:text-[24px] lg:text-[30px] '>Final Score:</p>
-                        <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>{result.accuracy}%</p>
+                        <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>{accuracy}%</p>
                         <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>{feedback}</p>
                     </div>
                     <div>

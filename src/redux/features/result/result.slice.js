@@ -4,18 +4,13 @@ const resultSlice = createSlice({
     name: 'result',
     initialState: {
         result: [],
-        accuracy: 0
     },
 
     reducers: {
         setResult(state, action) {
-            console.log(action.payload.accuracy);
-            
-            state.accuracy = action.payload.accuracy;
-            state.result = action.payload.updatedAttempts;
+                        state.result = action.payload.updatedAttempts;
         },
         clearResult(state) {
-            state.accuracy = 0;
             state.result = [];
         }
     }

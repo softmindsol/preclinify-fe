@@ -7,12 +7,14 @@ import loaderReducer from './features/loader/loader.slice';
 import mcqsQuestion from './features/mcqQuestions/mcqQuestion.slice';
 import limitQuestion from './features/limit/limit.slice';
 import resultReducer from './features/result/result.slice';
-import modeReducer from './features/mode/mode.slice'
+import modeReducer from './features/mode/mode.slice';
+import accuracyReducer from './features/accuracy/accuracy.slice'
+
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['modules', 'mcqsQuestion'], // Persist these in localStorage
+    whitelist: ['modules', 'mcqsQuestion', 'accuracy'], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -28,6 +30,8 @@ const rootReducer = combineReducers({
     mcqsQuestion: mcqsQuestion,
     limit: limitQuestion,
     mode: modeReducer,
+    accuracy: accuracyReducer,
+
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 
