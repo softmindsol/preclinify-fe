@@ -485,52 +485,79 @@ const QuestionCard = () => {
                                                         toggleAccordion(index)
                                                     }}
                                                 >
-                                                    <label
-                                                        key={index}
-                                                        className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer  text-[14px] lg:text-[16px]`}
-                                                        onClick={() => handleAnswerSelect(explanation, index)}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="answer"
-                                                            className="form-radio h-5 w-5 text-green-500"
-                                                            checked={isSelected}
-                                                            readOnly
-                                                        />
-                                                            
-                                                        <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
-                                                        {isAccordionOpen[index] ? (
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="24"
-                                                                height="24"
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className="lucide lucide-chevron-up"
+                                                        <label
+                                                            key={index}
+                                                            className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
+                                                            onClick={() => handleAnswerSelect(explanation, index)}
+                                                        >
+                                                            <div
+                                                                className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked
+                                                                        ? isCorrectAnswer
+                                                                            ? "bg-green-100 border border-green-500"
+                                                                            : "bg-red-100 border border-red-500"
+                                                                        : "bg-gray-100 border border-gray-300"
+                                                                    }`}
                                                             >
-                                                                <path d="m18 15-6-6-6 6" />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="24"
-                                                                height="24"
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className="lucide lucide-chevron-down"
-                                                            >
-                                                                <path d="m6 9 6 6 6-6" />
-                                                            </svg>
-                                                        )}
-                                                    </label>
+                                                                {isButtonClicked && (
+                                                                    isCorrectAnswer ? (
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            strokeWidth="2"
+                                                                            stroke="green"
+                                                                            className="w-4 h-4"
+                                                                        >
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            strokeWidth="2"
+                                                                            stroke="red"
+                                                                            className="w-4 h-4"
+                                                                        >
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                                        </svg>
+                                                                    )
+                                                                )}
+                                                            </div>
+                                                            <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
+                                                            {isAccordionOpen[index] ? (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="24"
+                                                                    height="24"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="lucide lucide-chevron-up"
+                                                                >
+                                                                    <path d="m18 15-6-6-6 6" />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="24"
+                                                                    height="24"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="lucide lucide-chevron-down"
+                                                                >
+                                                                    <path d="m6 9 6 6 6-6" />
+                                                                </svg>
+                                                            )}
+                                                        </label>
+
                                                     {/* Conditionally render the hr and p tags */}
                                                     {isAccordionOpen[index] && (
                                                         <>
