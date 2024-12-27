@@ -231,15 +231,17 @@ const QuestionCard = () => {
 
 
     const handleFinishAndReview = () => {
-        if (isFinishEnabled) {
+        if (isReviewEnabled) {
             handleCheckAnswer();
-            // Add a delay (for example, 2 seconds)
-            setTimeout(() => {
-                navigation('/score');
-            }, 2000); // 2000 ms = 2 seconds
+           // Add a delay (for example, 2 seconds)
+        setTimeout(() => {
+            navigation('/score');
+        }, 2000); // 2000 ms = 2 seconds
         }
+        
     };
 
+    
 
 
 
@@ -270,11 +272,13 @@ const QuestionCard = () => {
     //             setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
     //         }
     //     }, 1000);
+    //     console.log("timer:", timer);
 
     //     // Cleanup the interval when component unmounts or time reaches 0
     //     return () => clearInterval(interval);
     // }, [timer, data.data.length, handleFinishAndReview]);
 
+    
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
         if (isSubMenuOpen) {

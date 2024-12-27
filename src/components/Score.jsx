@@ -82,7 +82,7 @@ const [totalAttemped,setTotalAttemped]=useState(0)
                             <p>Not Attempted: {unseen || 0}</p>
                         </div>
                     </div>
-                    <div className='flex justify-center mt-5 items-center'>
+                    {/* <div className='flex justify-center mt-5 items-center'>
                         <div className="flex justify-center mt-5 items-center space-x-1 w-[80%] ">
                             <div
                                 className="p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]"
@@ -99,6 +99,31 @@ const [totalAttemped,setTotalAttemped]=useState(0)
                                 className="rounded-[6px] text-right p-1.5 mr-5 md:mr-0 bg-[#FF453A]"
                                 style={{
                                     width: `${(incorrect / (correct + incorrect)) * 100 || 0}%`,
+                                }}
+                            >
+                                <span className="text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden">
+                                    {incorrect}
+                                </span>
+                            </div>
+                        </div>
+                    </div> */}
+                    <div className='flex justify-center mt-5 items-center'>
+                        <div className="flex justify-center mt-5 items-center space-x-1 w-[80%]">
+                            <div
+                                className="p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]"
+                                style={{
+                                    width: `${correct === 0 ? 3 : (correct / (correct + incorrect)) * 100}%`, // Set width to 2% if correct is 0
+                                }}
+                            >
+                                <span className="text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden">
+                                    {correct}
+                                </span>
+                            </div>
+
+                            <div
+                                className="rounded-[6px] text-right p-1.5 mr-5 md:mr-0 bg-[#FF453A]"
+                                style={{
+                                    width: `${incorrect === 0 ? 3 : (incorrect / (correct + incorrect)) * 100}%`, // Set width to 2% if incorrect is 0
                                 }}
                             >
                                 <span className="text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden">

@@ -137,7 +137,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
 
 
                         {
-                            modeType === "Timer" && <div className="relative w-full">
+                            modeType === "Exam" && <div className="relative w-full">
                                 <label className="block text-[#A1A1AA]  text-[20px] font-semibold mb-1">
                                 Amount of time
                                 </label>
