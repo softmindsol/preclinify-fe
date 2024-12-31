@@ -226,9 +226,12 @@ const QuestionCard = () => {
 
     useEffect(() => {
         const correct = attempts.filter((attempt) => attempt === true).length;
+        const incorrect = attempts.filter((attempt) => attempt === false).length;
         const totalAttempted = attempts.filter((attempt) => attempt !== null).length;
         setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
+
         const hasAnswer = attempts.some(value => value === true || value === false);
+        
         setIsFinishEnabled(hasAnswer);
     }, [attempts]);
 
@@ -241,6 +244,7 @@ const QuestionCard = () => {
             // handleAnswerSelect()
         //    Add a delay (for example, 2 seconds)
         setTimeout(() => {
+
             navigation('/score');
         }, 3000); // 2000 ms = 2 seconds
         }

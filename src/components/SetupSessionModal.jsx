@@ -31,7 +31,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const debouncedDispatch = useCallback(
         debounce((value) => {
             dispatch(setQuestionLimit(value));
-        }, 1000), // 1000ms delay
+        },0), // 1000ms delay
         [dispatch]
     );
 

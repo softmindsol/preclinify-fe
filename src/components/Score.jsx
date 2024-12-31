@@ -9,15 +9,16 @@ import 'react-modern-drawer/dist/index.css'
 import { TbBaselineDensityMedium } from 'react-icons/tb';
 import Logo from './Logo';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getFeedbackMessage } from '../utils/GlobalApiHandler';
+import { addResultEntry } from '../redux/features/accuracy/accuracy.service';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
     const accuracy = useSelector(state => state.accuracy.accuracy);
-
-    const [correct, setCorrect] = useState(0);
-    const [incorrect, setIncorrect] = useState(0);
+const dispatch=useDispatch()
+    const [correct, setCorrect] = useState(null);
+    const [incorrect, setIncorrect] = useState(null);
     const [unseen, setUnseen] = useState(0);
     const [feedback, setFeedback] = useState(null);
 const [totalAttemped,setTotalAttemped]=useState(0)
@@ -25,8 +26,6 @@ const [totalAttemped,setTotalAttemped]=useState(0)
         setIsOpen((prevState) => !prevState)
     }
 
-    console.log("accuracy:", accuracy);
-    
 
     useEffect(() => {
         // Calculate counts for correct, incorrect, and unseen
@@ -41,8 +40,11 @@ const [totalAttemped,setTotalAttemped]=useState(0)
         setTotalAttemped(correctCount + incorrectCount);
         const response = getFeedbackMessage(Math.floor(result.accuracy));
        
-        setFeedback(response)
-    }, [result.result]); return (
+        setFeedback(response);
+        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount ,correct: correctCount, }))
+    }, []); 
+
+    return (
         <div className='lg:flex  min-h-screen w-full'>
             <div className='hidden lg:block'>
                 <Sidebar />
