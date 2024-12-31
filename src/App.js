@@ -35,8 +35,8 @@ function App() {
 
         {/* Protected Routes */}
         <Route path="/setting" element={<><Setting/></>} />
-        <Route path="/dashboard" element={<><AllModules /></>} />
-        <Route path="/home" element={<><Dashboard /></>} />
+        <Route path="/home" element={<><AllModules /></>} />
+        <Route path="/dashboard" element={<><Dashboard /></>} />
         <Route path="/questioning" element={<><Questioning /></>} />
         <Route path="/dashboard/:id" element={<><SubModule /></>} />
         <Route path="/dashboard/detail/:id" element={<><SubModuleTwo /></>} />
