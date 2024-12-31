@@ -43,11 +43,11 @@ const Dashboard = () => {
     ];
 
     const getColorClass = (streak) => {
-        if (streak > 99) return "bg-green-900";
-        if (streak > 75) return "bg-green-700";
-        if (streak > 50) return "bg-green-500";
-        if (streak > 25) return "bg-green-300";
-        return "bg-green-100";
+        if (streak > 99) return "bg-[#047857]";
+        if (streak > 75) return "bg-[#059669]";
+        if (streak > 50) return "bg-[#34D399]";
+        if (streak > 25) return "bg-[#6EE7B7]";
+        return "bg-[#A7F3D0]";
     };
 
     return (
@@ -112,23 +112,23 @@ const Dashboard = () => {
                                 {/* Legend */}
                                 <div className="flex flex-col mt-4 space-y-2">
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-900 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#047857] rounded-md"></div>
                                         <span className="ml-2"> &gt; 99</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-700 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#059669] rounded-md"></div>
                                         <span className="ml-2"> &gt; 75</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-500 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#34D399] rounded-md"></div>
                                         <span className="ml-2"> &gt; 50</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-300 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#6EE7B7] rounded-md"></div>
                                         <span className="ml-2"> &gt; 25</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-100 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#A7F3D0] rounded-md"></div>
                                         <span className="ml-2"> &lt; 25</span>
                                     </div>
                                 </div>
@@ -210,23 +210,23 @@ const Dashboard = () => {
                                 {/* Legend */}
                                 <div className="flex flex-col mt-4 space-y-2">
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-900 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#047857] rounded-md"></div>
                                         <span className="ml-2"> &gt; 99</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-700 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#059669] rounded-md"></div>
                                         <span className="ml-2"> &gt; 75</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-500 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#34D399] rounded-md"></div>
                                         <span className="ml-2"> &gt; 50</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-300 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#6EE7B7] rounded-md"></div>
                                         <span className="ml-2"> &gt; 25</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="h-12 w-12 bg-green-100 rounded-md"></div>
+                                        <div className="h-12 w-12 bg-[#A7F3D0] rounded-md"></div>
                                         <span className="ml-2"> &lt; 25</span>
                                     </div>
                                 </div>
