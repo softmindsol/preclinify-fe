@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Logo from "./Logo";
+import Logo from "./common/Logo";
 import DiscussionBoard from "./Discussion";
 
 import Drawer from 'react-modern-drawer'

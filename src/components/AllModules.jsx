@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Fuse from "fuse.js"; // Import Fuse.js
-import Sidebar from "./Sidebar";
+import Sidebar from "./common/Sidebar";
 import { LiaSearchSolid } from "react-icons/lia";
 import { RxCross2 } from "react-icons/rx";
 import { TbBaselineDensityMedium } from "react-icons/tb";
-import Logo from '../components/Logo';
+import Logo from '../components/common/Logo';
 
 import Drawer from 'react-modern-drawer'
 //import styles 👇

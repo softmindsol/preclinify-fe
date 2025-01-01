@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation after successful registration
 import supabase from '../helper'; // Import the Supabase client
-import Logo from '../components/Logo';
+import Logo from '../components/common/Logo';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import Loader from '../components/Loader';
+import Loader from '../components/common/Loader';
 
 const Register = () => {
     const [email, setEmail] = useState('');

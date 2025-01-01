@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "./Footer";
+import Footer from "./common/Footer";
 import Slider from "./Slider";
  
 const Hero = () => {

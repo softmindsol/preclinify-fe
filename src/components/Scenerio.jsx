@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./common/Sidebar";
 import { Link, NavLink } from "react-router-dom";
-import Logo from "./Logo";
+import Logo from "./common/Logo";
 import { RxCross2 } from "react-icons/rx";
 import Drawer from 'react-modern-drawer'
 //import styles 👇

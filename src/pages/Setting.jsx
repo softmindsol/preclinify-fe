@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import Siderbar from '../components/Sidebar'
+import Siderbar from '../components/common/Sidebar'
 import { FaClock, FaRobot } from "react-icons/fa";
 import { PiCircleHalfFill } from "react-icons/pi";
 import { MdOutlinePayments } from 'react-icons/md';
-import Logo from '../components/Logo';
+import Logo from '../components/common/Logo';
 import { TbBaselineDensityMedium } from "react-icons/tb";
 // import component 👇
 import { RxCross2 } from "react-icons/rx";

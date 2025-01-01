@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Logo from '../components/Logo';
+import Logo from '../components/common/Logo';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import supabase from '../helper';
 import { toast } from 'sonner';

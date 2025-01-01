@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/common/Sidebar';
 import { FaAngleLeft } from "react-icons/fa6";
 import Fuse from 'fuse.js';
-import Logo from '../components/Logo';
+import Logo from '../components/common/Logo';
 import { TbBaselineDensityMedium } from "react-icons/tb";
 // import component 👇
 import { RxCross2 } from "react-icons/rx";

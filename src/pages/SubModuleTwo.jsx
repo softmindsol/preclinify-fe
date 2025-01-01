@@ -1,11 +1,11 @@
 import Fuse from "fuse.js";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/common/Sidebar";
 import { FaAngleLeft } from "react-icons/fa";
 import SearchResults from "../components/FuzzySearch";
 import { RxCross2 } from "react-icons/rx";
-import Logo from '../components/Logo';
+import Logo from '../components/common/Logo';
 import { TbBaselineDensityMedium } from "react-icons/tb";
 
 import Drawer from 'react-modern-drawer'

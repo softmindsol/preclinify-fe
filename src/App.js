@@ -15,7 +15,7 @@ import SubModule from './pages/SubModule';
 import SubModuleTwo from './pages/SubModuleTwo';
 import Questioning from './components/Questioning';
 import QuestionCard from './components/QuestionCard';
-import Score from './components/Score';
+import Score from './components/common/Score';
 import ShortQuestion from './components/ShortQuestion';
 import Scenarios from './components/Scenerio';
 import SceneriosDetail from './components/SceneriosDetail';

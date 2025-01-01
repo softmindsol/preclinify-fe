@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./common/Sidebar";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 
 import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
 import { Link } from 'react-router-dom';
-import Logo from "./Logo";
+import Logo from "./common/Logo";
 import { RxCross2 } from "react-icons/rx";
 import SetupSessionModal from "./SetupSessionModal";
 import supabase from "../helper";
@@ -17,7 +17,7 @@ import { setCategoryId } from "../redux/features/categoryModules/module.slice";
 import {  fetchMcqsByModule } from "../redux/features/mcqQuestions/mcqQuestion.service";
 import { clearResult } from "../redux/features/result/result.slice";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
-import Loader from "./Loader";
+import Loader from "./common/Loader";
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const isLoading = useSelector(

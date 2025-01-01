@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Logo from "./Logo";
+import Logo from "./common/Logo";
 import DiscussionBoard from "./Discussion";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";

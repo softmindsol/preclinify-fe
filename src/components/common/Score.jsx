@@ -10,18 +10,18 @@ import { TbBaselineDensityMedium } from 'react-icons/tb';
 import Logo from './Logo';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFeedbackMessage } from '../utils/GlobalApiHandler';
-import { addResultEntry } from '../redux/features/accuracy/accuracy.service';
+import { getFeedbackMessage } from '../../utils/GlobalApiHandler';
+import { addResultEntry } from '../../redux/features/accuracy/accuracy.service';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
     const accuracy = useSelector(state => state.accuracy.accuracy);
-const dispatch=useDispatch()
+    const dispatch = useDispatch()
     const [correct, setCorrect] = useState(null);
     const [incorrect, setIncorrect] = useState(null);
     const [unseen, setUnseen] = useState(0);
     const [feedback, setFeedback] = useState(null);
-const [totalAttemped,setTotalAttemped]=useState(0)
+    const [totalAttemped, setTotalAttemped] = useState(0)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -39,10 +39,10 @@ const [totalAttemped,setTotalAttemped]=useState(0)
         setUnseen(unseenCount);
         setTotalAttemped(correctCount + incorrectCount);
         const response = getFeedbackMessage(Math.floor(result.accuracy));
-       
+
         setFeedback(response);
-        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount ,correct: correctCount, }))
-    }, []); 
+        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }))
+    }, []);
 
     return (
         <div className='lg:flex  min-h-screen w-full'>
