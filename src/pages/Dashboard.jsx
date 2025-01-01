@@ -8,19 +8,17 @@ import {
     endOfMonth,
     eachDayOfInterval,
     format,
-    endOfDay,
-    startOfDay,
 } from "date-fns";
 
 const Dashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);
-    const [percentage, setPercentage] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [days, setDays] = useState([]);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
+    
     useEffect(() => {
         const fetchDailyWork = async () => {
             try {
@@ -37,8 +35,10 @@ const Dashboard = () => {
                 });
 
                 setWorkEntries(formattedData);
+                setLoading(false);
             } catch (err) {
-                console.error('Error fetching daily work:', err.message);
+                setError('Error fetching daily work');
+                setLoading(false);
             }
         };
 
@@ -48,27 +48,39 @@ const Dashboard = () => {
     useEffect(() => {
         const start = startOfMonth(selectedDate);
         const end = endOfMonth(selectedDate);
-
+   
         const allDays = eachDayOfInterval({ start, end }).map((day) => {
             const formattedDate = format(day, "yyyy-MM-dd");
-            const workEntry = workEntries.find((entry) => entry.date === formattedDate);
-            const workCount = workEntry ? workEntry.workCount : 0;
+            const workEntry = workEntries.filter((entry) => entry.date === formattedDate);
+            const workCount = workEntry ? workEntry.length : 0;
+
+
+            console.log("workEntry:", workEntry);
+            console.log("formatted date:", formattedDate);
+            console.log("workCount:", workCount);
+            
 
             return {
                 date: formattedDate,
                 workCount,
+
             };
         });
 
         setDays(allDays);
     }, [selectedDate, workEntries]);
 
+
+console.log("days:",days);
+
+
+
     const getColorClass = (workCount) => {
-        if (workCount > 99) return "bg-[#047857]";
-        if (workCount > 75) return "bg-[#059669]";
-        if (workCount > 50) return "bg-[#34D399]";
-        if (workCount > 25) return "bg-[#6EE7B7]";
-        if (workCount > 0) return "bg-[#A7F3D0]";
+        if (workCount > 99) return "bg-[#047857]"; // > 99
+        if (workCount > 75) return "bg-[#059669]"; // > 75
+        if (workCount > 50) return "bg-[#34D399]"; // > 50
+        if (workCount > 25) return "bg-[#6EE7B7]"; // > 25
+        if (workCount > 0) return "bg-[#A7F3D0]"; // > 0
         return "bg-[#E4E4E7]"; // Default background for days with no workCount
     };
 
@@ -144,34 +156,28 @@ const Dashboard = () => {
                             <div className='flex justify-between gap-x-10'>
                                 <div className="grid grid-cols-7 gap-2 mt-4">
                                     {days.map((day, index) => {
-                                        const currentDate = new Date();
-                                        currentDate.setDate(currentDate.getDate() - (31 - index - 1));
-                                        const dateKey = currentDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-
-                                        // Fetch work entries for this day
-                                        const dayWorkEntries = workEntries.filter(
-                                            (entry) => entry.timeStamp.split('T')[0] === dateKey
-                                        );
-                                        const dataLength = workEntries.length
                                         // Calculate total result and percentage
-                                        const totalResult = dayWorkEntries.reduce((sum, entry) => sum + (entry.result || 0), 0);
+                                        const totalResult = workEntries.reduce((sum, entry) => sum + (entry.result || 0), 0);
+                                        const dataLength = workEntries.length;
                                         const target = 100 * dataLength; // Define daily target
                                         const workPercentage = Math.floor(Math.min((totalResult / target) * 100, 100));
 
+
+                                        // console.log("totalResult:", totalResult);
+                                        console.log("workPercentage:", workPercentage);
+
                                         // Determine background color class based on percentage
                                         const bgColorClass = getColorClass(workPercentage);
+                                        console.log("day:", day);
 
-                                        console.log("workPercentage:", workPercentage);
-                                        
                                         return (
                                             <div
                                                 key={index}
-                                                className={`h-12 w-12 rounded-md flex items-center justify-center text-white ${bgColorClass}`}
+                                                className={`h-12 w-12 rounded-md flex items-center justify-center text-white  ${day.workCount > 0 ? bgColorClass :'bg-[#E4E4E7]'}`}
                                             >
-                                               
-                                               
+                                                {day.workCount}
                                             </div>
-                                        )
+                                        );
                                     })}
                                 </div>
 
@@ -196,7 +202,6 @@ const Dashboard = () => {
                                         <div className="h-12 w-12 bg-[#A7F3D0] rounded-md"></div>
                                         <span className="ml-2"> &lt; 25</span>
                                     </div>
-                                   
                                 </div>
                             </div>
                         </div>
