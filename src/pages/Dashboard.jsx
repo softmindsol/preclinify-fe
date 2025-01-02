@@ -67,10 +67,6 @@ const Dashboard = () => {
     }, [selectedDate, workEntries]);
 
 
-
-
-
-
     const getColorClass = (workCount) => {
         if (workCount > 99) return "bg-[#047857]"; // > 99
         if (workCount > 75) return "bg-[#059669]"; // > 75
@@ -253,7 +249,7 @@ const Dashboard = () => {
 
                     <div className='flex flex-row-reverse justify-center gap-x-5 items-center w-full'>
 
-                        <div className="p-6 w-[720px] h-[443px]  bg-white rounded-lg shadow-md">
+                        <div className=" p-6 w-[720px] h-[443px]  bg-white rounded-lg shadow-md">
                             <StackedBar />
 
                             <div className='flex items-center justify-center gap-x-[75px]'>
