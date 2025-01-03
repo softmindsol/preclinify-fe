@@ -46,6 +46,17 @@ const Questioning = () => {
       
     };
 
+    const handleSelectAll = (isChecked) => {
+        if (isChecked) {
+            // Select all module IDs
+            const allModuleIds = data?.data?.map((row) => row.categoryId) || [];
+            setSelectedModules(allModuleIds);
+        } else {
+            // Deselect all module IDs
+            setSelectedModules([]);
+        }
+    };
+
     function handleContinue(){
         setIsOpenSetUpSessionModal((prev) => ({
             ...prev
@@ -85,6 +96,8 @@ const Questioning = () => {
         }
     }, [selectedModules, limit]);
 
+    console.log("selectedModules:", selectedModules);
+    
     
   
     return (
@@ -213,7 +226,12 @@ const Questioning = () => {
                 <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
                     <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700  pb-2 w-full">
                         <div className="text-left ">
-                            <input type="checkbox" className="mr-2" />
+                            <input
+                                type="checkbox"
+                                className="mr-2 custom-checkbox"
+                                checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
+                                onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
+                            />
                             Topics
                         </div>
                         <div className="text-right flex items-center gap-x-5">
