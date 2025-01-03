@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMcqsQuestion, fetchMcqsByModules } from "./mcqQuestion.service";
+import { fetchMcqsQuestion, fetchMcqsByModules } from "./sba.service";
 
 const mcqsSlice = createSlice({
     name: 'mcqsQuestion',

@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Logo from "./common/Logo";
 import DiscussionBoard from "./Discussion";
 import DeepChatAI from "./DeepChat";
@@ -11,7 +11,7 @@ import { TbBaselineDensityMedium } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { setResult } from "../redux/features/result/result.slice";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
-import { fetchConditionNameById } from "../redux/features/mcqQuestions/mcqQuestion.service";
+import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 
 
 
@@ -29,6 +29,9 @@ const calculateTimeForQuestions = (numQuestions) => {
     return totalTimeInSeconds; // Return total time in seconds
 };
 const ShortQuestion = () => {
+    const sqa = useSelector(state => state?.sqa)
+    console.log("sqa:", sqa);
+
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
@@ -42,7 +45,7 @@ const ShortQuestion = () => {
     const navigation = useNavigate();
     const [border, setBorder] = useState(true);
     const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
-
+    const saqQuestion = useSelector(state => state.sqa)
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
@@ -58,6 +61,12 @@ const ShortQuestion = () => {
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
     const menuRef = useRef(null);
+const [testCheckAnswer,setTestCheckAnswer]=useState(false)
+
+
+
+
+
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
@@ -123,32 +132,32 @@ const ShortQuestion = () => {
     };
 
     const handleCheckAnswer = () => {
+        setTestCheckAnswer(true)
+        // if (selectedAnswer) {
+        //     setIsButtonClicked(true);
+        //     setIsAccordionVisible(true);
+        //     setBorder(false)
 
-        if (selectedAnswer) {
-            setIsButtonClicked(true);
-            setIsAccordionVisible(true);
-            setBorder(false)
+        //     const isCorrect =
+        //         selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
 
-            const isCorrect =
-                selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
+        //     // Update attempts
+        //     dispatch(fetchConditionNameById({ Id: data.data.conditionName }))
+        //     setAttempts((prev) => {
+        //         const updatedAttempts = [...prev];
+        //         updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
+        //         dispatch(setResult({ updatedAttempts }))
 
-            // Update attempts
-            dispatch(fetchConditionNameById({ Id: data.data.conditionName }))
-            setAttempts((prev) => {
-                const updatedAttempts = [...prev];
-                updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
-                dispatch(setResult({ updatedAttempts }))
+        //         return updatedAttempts;
+        //     });
 
-                return updatedAttempts;
-            });
-
-            // Expand accordion for the correct answer
-            setIsAccordionOpen((prev) => {
-                const newAccordionState = [...prev];
-                newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true;
-                return newAccordionState;
-            });
-        }
+        //     // Expand accordion for the correct answer
+        //     setIsAccordionOpen((prev) => {
+        //         const newAccordionState = [...prev];
+        //         newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true;
+        //         return newAccordionState;
+        //     });
+        // }
     };
     // Function to navigate to the next question
     const nextQuestion = () => {
@@ -198,10 +207,10 @@ const ShortQuestion = () => {
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-    data.data[currentIndex].explanationList.map((explanation, index) => {
-        let isSelected = selectedAnswer === explanation;
-        const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
-    })
+    // data.data[currentIndex].explanationList.map((explanation, index) => {
+    //     let isSelected = selectedAnswer === explanation;
+    //     const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+    // })
 
     // Update attempts based on user actions
     const markQuestion = (index, status) => {
@@ -345,10 +354,10 @@ const ShortQuestion = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className="  flex items-center justify-center mt-3 lg:mt-0  ">
+            <div className="  flex items-center justify-center mt-3 lg:mt-0    ">
 
 
-                <div className="w-[100%] lg:w-[92%] xl:w-[65%] 2xl:w-[45%]  ">
+                <div className="w-[100%] lg:w-[92%] xl:w-[65%] 2xl:w-[41.5%]  ">
 
                     {/* Header Section */}
                     <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6  lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
@@ -415,40 +424,78 @@ const ShortQuestion = () => {
                     {/* Question Section */}
                     <div className="mt-6  p-6 ">
                         <p className="text-[#000000] text-justify w-[100%] lg:w-[720px]">
-                            Eric, a 30-year-old software developer with chronic fatigue syndrome,
-                            reports significant improvement in his symptoms after following a
-                            self-management strategy focusing on energy management. He credits
-                            the approach for helping him balance his activities and manage his
-                            energy limits. Eric is now inquiring about how to sustainably
-                            integrate physical activity into his routine.
+                            {sqa.shortQuestions[0].parentQuestion}
                         </p>
 
-                        <h3 className="mt-4 text-[14px] text-[#27272A] font-bold">
-                            Give 3 ways Eric can integrate physical activity into his routine?
+                        <h3 className="mt-4 text-[14px] text-[#27272A] font-bold text-wrap">
+                            {sqa.sqaChildData[1].questionLead}
                         </h3>
 
                         {/* Options Section */}
                         <div>
-                            <textarea
-                                className="rounded-[6px] bg-[#E4E4E7] w-[100%] lg:w-[720px] h-[120px] mt-2  p-5 text-wrap"
-                                placeholder="This is the user’s answer"
-                            />
+                           
 
                         </div>
+                        {
+                            !testCheckAnswer ? <textarea
+                                className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal"
+                                placeholder="Type here to answer the question..."
+                              
+                            /> :
+                            <div>
+                                    <textarea
+                                        className="rounded-[6px] bg-[#E4E4E7] w-[100%] lg:w-[720px] h-[120px] mt-2  p-5 text-wrap"
+                                        placeholder="This is the user’s answer"
+                                        readOnly
+                                    />
+                                    <textarea
+                                        className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
+                                        placeholder="This is the user’s answer"
+                                        value={sqa.sqaChildData[1].idealAnswer}
+                                    />
+                            </div>
+                        }
                         <div>
-                            <textarea
-                                className="rounded-[6px]  w-[100%] lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
-                                placeholder="This is the user’s answer"
-                            />
+                          
 
                         </div>
+                        {
+                            testCheckAnswer ?
+                                <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3  flex items-center  ">
+                                <button className="bg-[#FFCACA] w-[230px] text-[#EF4444] p-2 rounded-[8px] ">Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span></button>
+                                <button className="bg-[#FFE9D6] w-[230px] text-[#FF9741] p-2 rounded-[8px] ">Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">2</span></button>
+                                <button className="bg-[#C0F3E4] w-[230px] text-[#3CC8A1] p-2 rounded-[8px] ">Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">3</span></button>
 
-                        <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-2 w-[100%] flex items-center justify-center">
-                            <button className="bg-[#FFCACA] w-[230px] text-[#EF4444] p-2 rounded-[8px] ">Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span></button>
-                            <button className="bg-[#FFE9D6] w-[230px] text-[#FF9741] p-2 rounded-[8px] space-x-4">Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">2</span></button>
-                            <button className="bg-[#C0F3E4] w-[230px] text-[#3CC8A1] p-2 rounded-[8px] space-x-4">Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">3</span></button>
+                                </div> : 
+                                <div className="group">
+                                    <button
+                                        className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                        onClick={handleCheckAnswer}
+                                    >
+                                        Check Answer
+                                        <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="20"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                            >
+                                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
 
-                        </div>
+
+                               
+                        }
+                       
 
                         <div className="flex items-center gap-x-10 justify-center mt-5">
                             <div >

@@ -9,30 +9,37 @@ import { Link } from 'react-router-dom';
 import Logo from "./common/Logo";
 import { RxCross2 } from "react-icons/rx";
 import SetupSessionModal from "./SetupSessionModal";
-import supabase from "../helper";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchModules } from "../redux/features/categoryModules/module.service";
 import { setLoading } from "../redux/features/loader/loader.slice";
-import { setCategoryId } from "../redux/features/categoryModules/module.slice";
-import {   fetchMcqsByModules } from "../redux/features/mcqQuestions/mcqQuestion.service";
+import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
 import { clearResult } from "../redux/features/result/result.slice";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import Loader from "./common/Loader";
 import { resetQuestionReviewValue } from "../redux/features/question-review/question-review.slice";
+import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SAQ/saq.service";
+
+import { setPreclinicalType } from "../redux/features/mode/mode.slice";
+
+
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchModules.typePrefix]
     );
     const [selectedModules, setSelectedModules] = useState([]);
-
     const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
     const [moduleId, setModuleId] = useState(null)
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
     const data = useSelector((state) => state.categoryModule);
-    const {limit} = useSelector((state) => state.limit);
+    const { limit } = useSelector((state) => state.limit);
+    const [selectedOption, setSelectedOption] = useState('');
 
+    // Handler to update the selected option
+    const handleSelectChange = (event) => {
+        setSelectedOption(event.target.value); // Update state with the selected value
+    };
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -43,7 +50,7 @@ const Questioning = () => {
                 ? prev.filter((id) => id !== categoryId) // Remove if already selected
                 : [...prev, categoryId] // Add if not selected
         );
-      
+
     };
 
     const handleSelectAll = (isChecked) => {
@@ -57,10 +64,10 @@ const Questioning = () => {
         }
     };
 
-    function handleContinue(){
+    function handleContinue() {
         setIsOpenSetUpSessionModal((prev) => ({
             ...prev
-          
+
         }));
     }
 
@@ -74,7 +81,7 @@ const Questioning = () => {
             }).catch(err => {
                 dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
             })
-     
+
         sessionStorage.removeItem('persist:result');
         // Dispatch Redux action to clear 'result' from Redux store
         dispatch(clearResult());
@@ -83,23 +90,52 @@ const Questioning = () => {
     }, []);
 
     useEffect(() => {
+        dispatch(setPreclinicalType({ selectedOption}));
+        
         if (selectedModules.length > 0) {
-            dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
-            dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
-                .unwrap()
-                .then(() => {
-                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-                })
-                .catch((err) => {
-                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-                });
+            if (selectedOption==='SBA'){
+                dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+                dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
+                    .unwrap()
+                    .then(() => {
+                        dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                    })
+                    .catch((err) => {
+                        dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                    });
+            }
+            else if (selectedOption === 'SQA'){
+                dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
+                dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: 2 }))
+                    .unwrap()
+                    .then((res) => {
+                        dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
+                        console.log("SQA Parent Response:",res);
+                        // if (res.id !== null && res.id !== undefined){
+                            dispatch(fetchSqaChild({ parentIds: res[0].id, limit: 10}))
+                            .unwrap()
+                            .then(res=>{
+                                console.log("SQA Child Response", res);
+                                
+                            })
+                            .catch()
+
+                        // }
+                        
+                    })
+                    .catch((err) => {
+                        dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
+                    });
+            }
+
         }
     }, [selectedModules, limit]);
 
     console.log("selectedModules:", selectedModules);
-    
-    
-  
+
+    console.log("selectedOption:", selectedOption);
+
+
     return (
         <div className=" lg:flex w-full">
             <div className="h-full hidden lg:block">
@@ -151,10 +187,11 @@ const Questioning = () => {
                             </div>                    </div>
                         <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
                             <div className="relative w-[105px]">
-                                <select 
+                                <select
                                     className="w-full h-[37px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
-
-                                    >
+                                    value={selectedOption} // Bind the selected value to state
+                                    onChange={handleSelectChange} // Trigger the handler on change
+                                >
                                     <option>SBA</option>
                                     <option>SQA</option>
                                     <option>Mock</option>
@@ -176,13 +213,13 @@ const Questioning = () => {
                                 </div>
                             </div>
                             {/* Dropdown */}
-                            
+
 
                             {/* Continue Button */}
                             <button
-                            
-                            onClick={handleContinue}
-                            className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
+
+                                onClick={handleContinue}
+                                className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
                                 Continue &gt;
                             </button>
                         </div>
@@ -262,7 +299,7 @@ const Questioning = () => {
 
                     <div>
                         {isLoading ? (
-                            <Loader/>
+                            <Loader />
                         ) : (
                             data?.data?.map((row) => (
                                 <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">

@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { setQuestionLimit } from "../redux/features/limit/limit.slice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "../utils/GlobalApiHandler";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { changeMode } from "../redux/features/mode/mode.slice";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
-    const modalRef = useRef(null); // Reference for modal container
+    const type = useSelector((state) => state.mode?.questionMode?.selectedOption
+);
 
+    console.log("type:", type);
+    
+    const modalRef = useRef(null); // Reference for modal container
+const navigation=useNavigate()
     const [numQuestions, setNumQuestions] = useState();
     const [timer,setTimer]=useState(5)
     const [modeType, setModeType] = useState('Endless');
@@ -57,6 +62,20 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
             setIsOpenSetUpSessionModal(false);
         }
     };
+
+    const handleQuestion=()=>{
+        if (type=='SQA'){
+            navigation('/short-question');
+
+        }
+        else if (type == 'SQA'){
+
+            navigation("/question-card")
+        }
+    }
+
+
+
 
     useEffect(() => {
         if (isOpenSetUpSessionModal) {
@@ -181,15 +200,14 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                         </div>
 
                         {/* Action Buttons */}
-                        <Link to="/question-card">
                         <div className="absolute left-5 right-5 bottom-5">
                             <button
+                            onClick={handleQuestion}
                                 className="py-2 bg-[#3CC8A1] w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e]"
                             >
                                 Start Questions
                             </button>
                         </div>
-                        </Link>
                     </div>
                 </div>
             )}
