@@ -1,18 +1,338 @@
-import React, { useState } from "react";
+import React, { useRef, useState,useEffect } from "react";
 import Logo from "./common/Logo";
 import DiscussionBoard from "./Discussion";
-
+import DeepChatAI from "./DeepChat";
 import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import { TbBaselineDensityMedium } from "react-icons/tb";
+import { useDispatch, useSelector } from "react-redux";
+import { setResult } from "../redux/features/result/result.slice";
+import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
+import { fetchConditionNameById } from "../redux/features/mcqQuestions/mcqQuestion.service";
+
+
+
+// Function to format the time in MM:SS format
+const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+};
+
+// Function to calculate total time based on number of questions
+const calculateTimeForQuestions = (numQuestions) => {
+    const timePerQuestionInSeconds = 60; // 1 minute per question
+    const totalTimeInSeconds = numQuestions * timePerQuestionInSeconds; // Calculate total time
+    return totalTimeInSeconds; // Return total time in seconds
+};
 const ShortQuestion = () => {
-    const [isOpen, setIsOpen] = useState(false)
+    const dispatch = useDispatch();
+    const [isOpen, setIsOpen] = useState(false);
+    const [isAccordionVisible, setIsAccordionVisible] = useState(false);
+    const [isAccordionOpen, setIsAccordionOpen] = useState([]);
+    const [isAnswered, setIsAnswered] = useState(false);
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [attempts, setAttempts] = useState([]); // Array to track question status: null = unseen, true = correct, false = incorrect
+    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
+    const navigation = useNavigate();
+    const [border, setBorder] = useState(true);
+    const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
+
+    const data = useSelector((state) => state.mcqsQuestion || []);
+    const result = useSelector((state) => state.result);
+    const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
+    const [isReviewEnabled, setIsReviewEnabled] = useState(false)
+    const itemsPerPage = 20;
+    // Get the items to show for the current page
+    const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+    const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
+    const isTimerMode = useSelector((state) => state.mode);
+    const [timer, setTimer] = useState(calculateTimeForQuestions(isTimerMode.time));
+    const review = useSelector(state => state.questionReview.value)
+    const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
+    // const data = useSelector((state) => state.mcqsQuestion || []);
+    const menuRef = useRef(null);
+
+    const handleFilterChange = (filter) => {
+        setSelectedFilter(filter);
+    };
+
+    // Arrays to store indices
+    const unseenIndices = [];
+    const flaggedIndices = [];
+    const allIndices = [];
+
+    // Filter items based on the selected filter
+    const filteredItems = currentItems.filter((question, index) => {
+        const displayNumber = currentPage * itemsPerPage + index;
+
+        // All items
+        allIndices.push(displayNumber);
+
+        if (selectedFilter === 'All') {
+            return true; // Include all items
+        }
+
+        if (selectedFilter === 'Flagged') {
+            // Check if item is flagged
+            const isFlagged = attempts[displayNumber] === true || attempts[displayNumber] === false;
+            if (isFlagged) {
+                flaggedIndices.push(displayNumber); // Store index for flagged items
+                return true;
+            }
+        }
+
+        if (selectedFilter === 'Unseen') {
+            // Check if item is unseen
+            const isUnseen = attempts[displayNumber] === null;
+            if (isUnseen) {
+                unseenIndices.push(displayNumber); // Store index for unseen items
+                return true;
+            }
+        }
+
+        return false; // Hide items that don't match the filter
+    });
+
+
+
+
+    const toggleAccordion = (index) => {
+        setIsAccordionOpen((prev) => {
+            if (Array.isArray(prev)) {
+                const newAccordionState = [...prev]; // Create a copy to avoid mutation
+                newAccordionState[index] = !newAccordionState[index]; // Toggle the state at the given index
+                return newAccordionState; // Return the updated array
+            } else {
+                // If prev is not an array, initialize it with a new array based on data length
+                return new Array(data.data.length).fill(false);
+            }
+        });
+    };
+
+
+    const handleAnswerSelect = (answer) => {
+        setSelectedAnswer(answer);
+        setIsAnswered(true);
+    };
+
+    const handleCheckAnswer = () => {
+
+        if (selectedAnswer) {
+            setIsButtonClicked(true);
+            setIsAccordionVisible(true);
+            setBorder(false)
+
+            const isCorrect =
+                selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
+
+            // Update attempts
+            dispatch(fetchConditionNameById({ Id: data.data.conditionName }))
+            setAttempts((prev) => {
+                const updatedAttempts = [...prev];
+                updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
+                dispatch(setResult({ updatedAttempts }))
+
+                return updatedAttempts;
+            });
+
+            // Expand accordion for the correct answer
+            setIsAccordionOpen((prev) => {
+                const newAccordionState = [...prev];
+                newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true;
+                return newAccordionState;
+            });
+        }
+    };
+    // Function to navigate to the next question
+    const nextQuestion = () => {
+        if (currentIndex < data?.data.length - 1) {
+            setCurrentIndex((prev) => prev + 1);
+
+            if (review) {
+
+                setSelectedAnswer(true)
+                setIsAnswered(true)
+                setIsAccordionVisible(true)
+            }
+            else {
+                setSelectedAnswer(false)
+                setIsAnswered(false)
+                setIsAccordionVisible(false)
+            }
+
+        }
+
+    };
+
+
+    // Function to navigate to the previous question
+    const prevQuestion = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex((prev) => prev - 1);
+        }
+
+    };
+
+    const nextPage = () => {
+        if ((currentPage + 1) * itemsPerPage < data.data.length) {
+            setCurrentPage(currentPage + 1);
+        }
+
+    }
+
+    // Function to go to the previous page
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
+    data.data[currentIndex].explanationList.map((explanation, index) => {
+        let isSelected = selectedAnswer === explanation;
+        const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+    })
+
+    // Update attempts based on user actions
+    const markQuestion = (index, status) => {
+        setAttempts((prev) => {
+            const updatedAttempts = [...prev];
+            updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
+            return updatedAttempts;
+        });
+    };
+
+
+    const toggleMenu = (event) => {
+        event.stopPropagation();
+        setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
+    };
+
+
+
+
+
+    useEffect(() => {
+        if (data?.data?.length) {
+            setIsAccordionOpen(Array(data.data.length).fill(false));
+            setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
+        }
+        // dispatch(clearResult());
+    }, [data]);
+
+    useEffect(() => {
+        const correct = attempts.filter((attempt) => attempt === true).length;
+        const incorrect = attempts.filter((attempt) => attempt === false).length;
+        const totalAttempted = attempts.filter((attempt) => attempt !== null).length;
+        setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
+
+        const hasAnswer = attempts.some(value => value === true || value === false);
+
+        setIsFinishEnabled(hasAnswer);
+    }, [attempts]);
+
+
+    const handleFinishAndReview = () => {
+        if (isReviewEnabled) {
+            handleCheckAnswer();
+            dispatch(setMcqsAccuracy({ accuracy }))
+
+            // handleAnswerSelect()
+            //    Add a delay (for example, 2 seconds)
+            setTimeout(() => {
+                navigation('/score');
+            }, 3000); // 2000 ms = 2 seconds
+        }
+
+    };
+
+
+
+
+
+    const indicesToDisplay =
+        selectedFilter === 'All' ? allIndices
+            : selectedFilter === 'Flagged' ? flaggedIndices
+                : selectedFilter === 'Unseen' ? unseenIndices
+                    : []; // Default to an empty array if no filter is selected
+
+
+    const handleClickOutside = (event) => {
+
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setIsSubMenuOpen(false); // Close the menu if the click is outside
+        }
+    };
+
+
+
+    useEffect(() => {
+        if (isTimerMode === 'Exam') { // Check if the selected mode is Exam Mode
+            // If time reaches 0, trigger finish and review handler
+            if (timer === 0) {
+                handleFinishAndReview();
+            }
+
+            const interval = setInterval(() => {
+                if (timer > 0) {
+                    setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
+                }
+            }, 1000);
+            console.log("timer:", timer);
+
+            // Cleanup the interval when component unmounts or time reaches 0
+            return () => clearInterval(interval);
+        }
+    }, [timer, isTimerMode, handleFinishAndReview]);
+
+
+    // Attach the click event listener to the document when the menu is open
+    useEffect(() => {
+        if (isSubMenuOpen) {
+            document.addEventListener('click', handleClickOutside);
+        } else {
+            document.removeEventListener('click', handleClickOutside);
+        }
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isSubMenuOpen]);
+
+
+
+    // Check if it's time to enable the Finish button
+    useEffect(() => {
+        if (data.data.length === currentIndex + 1) {
+            setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
+        }
+    }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
+
+
+    useEffect(() => {
+        if (review) {
+            setAccuracy(100)
+            setIsButtonClicked(true);
+            setIsAccordionVisible(true);
+            setBorder(false)
+            setSelectedAnswer(true)
+            setIsAnswered(true)
+            // setIsAccordionVisible(true)
+        }
+    }, [review])
+
+
     return (
         <div className=" min-h-screen lg:p-6 " >
 
@@ -184,11 +504,10 @@ const ShortQuestion = () => {
                 {/* Sidebar Section */}
 
 
+                <div className="hidden md:block">
 
-                <div className="hidden lg:block">
 
-
-                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[20%]   h-screen ">
+                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ">
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
@@ -198,6 +517,96 @@ const ShortQuestion = () => {
                             </div>
 
                             <div className="flex items-center mr-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-center justify-center mt-10">
+                            <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                                {
+                                    isTimerMode["mode"] === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                        <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+
+                                        <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
+                                }
+
+
+                            </div>
+                        </div>
+
+                        <div className="">
+                            <div className="flex items-center justify-between p-5 w-full text-[12px]">
+                                <span
+                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                        }`}
+                                    onClick={() => handleFilterChange('All')}
+                                >
+                                    All
+                                </span>
+                                <span
+                                    className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                        }`}
+                                    onClick={() => handleFilterChange('Flagged')}
+                                >
+                                    Flagged
+                                </span>
+                                <span
+                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                        }`}
+                                    onClick={() => handleFilterChange('Unseen')}
+                                >
+                                    Unseen
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div className="flex justify-center items-center">
+                            <div className="grid grid-cols-5 gap-2">
+                                {
+                                    indicesToDisplay.map((num, i) => {
+                                        const bgColor =
+                                            result.result[num] === true
+                                                ? "bg-[#3CC8A1]" // Correct
+                                                : result.result[num] === false
+                                                    ? "bg-[#FF453A]" // Incorrect (Flagged)
+                                                    : "bg-gray-300"; // Unseen (null)
+
+                                        return (
+                                            <div key={i}>
+                                                <div
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                    onClick={() => markQuestion(num)} // Use `num` for marking
+                                                >
+                                                    <p>{num + 1}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+
+                                }
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                        </div>
+                        <div className="py-5 px-10 text-[#D4D4D8]">
+                            <hr />
+                        </div>
+
+                        <div>
+                            <DeepChatAI W='200px' />
+                            <hr className='mx-5' />
+                        </div>
+
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
+                            {/* Finish and Review Button */}
+                            <div
+                                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                    } justify-center`}
+                                onClick={handleFinishAndReview}
+                            >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -208,111 +617,52 @@ const ShortQuestion = () => {
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="lucide lucide-chevrons-right"
+                                    className="lucide lucide-check"
                                 >
-                                    <path d="m6 17 5-5-5-5" />
-                                    <path d="m13 17 5-5-5-5" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col  items-center justify-center mt-10">
-
-                            <div className="w-[90%]  h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
-                                <p className="text-[12px] mt-3">Accuracy</p>
-                                <p className="font-black text-[36px]">88.3%</p>
-                            </div>
-                        </div>
-
-                        <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
-                                <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
-                                <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
-                                <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
-                        </div>
-
-                        <div className="flex justify-center items-center ">
-                            <div className="grid grid-cols-5 gap-2">
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-                                <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                    <p>1A</p>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
-                        </div>
-                        <div className="py-5 px-10 text-[#D4D4D8]">
-                            <hr />
-                        </div>
-
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
-                            <div className="flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center ">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
                                     <path d="M20 6 9 17l-5-5" />
                                 </svg>
                                 <p>Finish and Review</p>
                             </div>
                             <hr className="w-[200px] my-2" />
-                            <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center  whitespace-nowrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
+                            {/* Back to Dashboard Button */}
+                            <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-chevron-left"
+                                >
                                     <path d="m15 18-6-6 6-6" />
                                 </svg>
-                                <p className="">Back to Dashboard</p>
+                                <p>Back to Dashboard</p>
                             </div>
                         </div>
 
 
                     </div>
                 </div>
+
             </div>
 
 
-            {/* <DiscussionBoard /> */}
+            {
+                isAccordionVisible && <div className="flex items-center gap-x-96 justify-center  w-[100%] md:w-[70%] xl:w-[55%] 2xl:w-[90%] ">
+                    <p className="font-medium text-[16px] text-[#3F3F46]">How did you find this question?</p>
+                    <button className="text-[14px] text-[#71717A] p-3 bg-gray-200">Report</button>
+                </div>
+            }
+            {
+
+                isAccordionVisible && <DiscussionBoard />
+            }
+
+
             <Drawer
                 open={isOpen}
                 onClose={toggleDrawer}
@@ -355,92 +705,126 @@ const ShortQuestion = () => {
                     <div className="flex flex-col  items-center justify-center mt-10">
 
                         <div className="w-[90%] 2xl:w-[308px] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
-                            <p className="text-[12px] mt-3">Accuracy</p>
-                            <p className="font-black text-[36px]">88.3%</p>
+
+                            {
+                                isTimerMode === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                    <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+
+                                    <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
+                            }
                         </div>
                     </div>
 
                     <div className="">
-                        <div className="flex items-center justify-between p-5 w-full text-[12px] xl:text-[16px]">
-                            <span className="w-[33%] text-left hover:text-[#3CC8A1] cursor-pointer ">All</span>
-                            <span className="w-[33%] bg-red-00 text-center hover:text-[#3CC8A1] cursor-pointer">Flagged</span>
-                            <span className="w-[33%] bg-red300 text-right hover:text-[#3CC8A1] cursor-pointer">Unseen</span></div>
-                    </div>
-
-                    <div className="flex justify-center items-center ">
-                        <div className="grid grid-cols-5 gap-2">
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#FF453A] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#FF9741] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-                            <div className="bg-[#3CC8A1] flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]">
-                                <p>1A</p>
-                            </div>
-
+                        <div className="flex items-center justify-between p-5 w-full text-[12px]">
+                            <span
+                                className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                    }`}
+                                onClick={() => handleFilterChange('All')}
+                            >
+                                All
+                            </span>
+                            <span
+                                className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                    }`}
+                                onClick={() => handleFilterChange('Flagged')}
+                            >
+                                Flagged
+                            </span>
+                            <span
+                                className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
+                                    }`}
+                                onClick={() => handleFilterChange('Unseen')}
+                            >
+                                Unseen
+                            </span>
                         </div>
 
                     </div>
+
+                    <div className="flex justify-center items-center">
+                        <div className="grid grid-cols-5 gap-2">
+                            {
+                                indicesToDisplay.map((num, i) => {
+                                    const bgColor =
+                                        result.result[num] === true
+                                            ? "bg-[#3CC8A1]" // Correct
+                                            : result.result[num] === false
+                                                ? "bg-[#FF453A]" // Incorrect (Flagged)
+                                                : "bg-gray-300"; // Unseen (null)
+
+                                    return (
+                                        <div key={i}>
+                                            <div
+                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                onClick={() => markQuestion(num)} // Use `num` for marking
+                                            >
+                                                <p>{num + 1}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+
+                            }
+                        </div>
+                    </div>
                     <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
                     </div>
                     <div className="py-5 px-10 text-[#D4D4D8]">
                         <hr />
                     </div>
 
+                    <div>
+                        <DeepChatAI W='250px' />
+                        <hr className='mx-5' />
+                    </div>
+
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
-                        <div className="flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center ">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
+                        {/* Finish and Review Button */}
+                        <div
+                            className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                } justify-center`}
+                            onClick={handleFinishAndReview}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-check"
+                            >
                                 <path d="M20 6 9 17l-5-5" />
                             </svg>
                             <p>Finish and Review</p>
                         </div>
                         <hr className="w-[200px] my-2" />
-                        <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center  whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
+                        {/* Back to Dashboard Button */}
+                        <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-chevron-left"
+                            >
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
-                            <p className="">Back to Dashboard</p>
+                            <p>Back to Dashboard</p>
                         </div>
                     </div>
+
 
 
                 </div>

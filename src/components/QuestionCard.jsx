@@ -58,7 +58,8 @@ const QuestionCard = () => {
     const isTimerMode = useSelector((state) => state.mode);
     const [timer, setTimer] = useState(calculateTimeForQuestions(isTimerMode.time));
     const review = useSelector(state => state.questionReview.value)
-    const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    const data = useSelector((state) => state.mcqsQuestion || []);
+    const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
+    // const data = useSelector((state) => state.mcqsQuestion || []);
 
     const menuRef = useRef(null);
 

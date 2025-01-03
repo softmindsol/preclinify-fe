@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchModules } from "../redux/features/categoryModules/module.service";
 import { setLoading } from "../redux/features/loader/loader.slice";
 import { setCategoryId } from "../redux/features/categoryModules/module.slice";
-import {  fetchMcqsByModule } from "../redux/features/mcqQuestions/mcqQuestion.service";
+import {   fetchMcqsByModules } from "../redux/features/mcqQuestions/mcqQuestion.service";
 import { clearResult } from "../redux/features/result/result.slice";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import Loader from "./common/Loader";
@@ -24,6 +24,8 @@ const Questioning = () => {
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchModules.typePrefix]
     );
+    const [selectedModules, setSelectedModules] = useState([]);
+
     const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
     const [moduleId, setModuleId] = useState(null)
     const [isOpen, setIsOpen] = useState(false);
@@ -34,15 +36,23 @@ const Questioning = () => {
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-    
+
     const handleCheckboxChange = (categoryId) => {
-        setModuleId(categoryId)
-        dispatch(setCategoryId(categoryId))
-        setIsOpenSetUpSessionModal((prev) => ({
-            ...prev,
-            [categoryId]: !prev[categoryId], // Toggle the checkbox state
-        }));
+        setSelectedModules((prev) =>
+            prev.includes(categoryId)
+                ? prev.filter((id) => id !== categoryId) // Remove if already selected
+                : [...prev, categoryId] // Add if not selected
+        );
+      
     };
+
+    function handleContinue(){
+        setIsOpenSetUpSessionModal((prev) => ({
+            ...prev
+          
+        }));
+    }
+
 
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
@@ -62,15 +72,20 @@ const Questioning = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
-        dispatch(fetchMcqsByModule({ moduleId, limit}))
-            .unwrap()
-            .then(() => {
-                dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-            }).catch(err => {
-                dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-            })
-    }, [moduleId, limit])
+        if (selectedModules.length > 0) {
+            dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+            dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
+                .unwrap()
+                .then(() => {
+                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                })
+                .catch((err) => {
+                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                });
+        }
+    }, [selectedModules, limit]);
+
+    
   
     return (
         <div className=" lg:flex w-full">
@@ -122,27 +137,51 @@ const Questioning = () => {
                                 />
                             </div>                    </div>
                         <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
+                            <div className="relative w-[105px]">
+                                <select 
+                                    className="w-full h-[37px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
+
+                                    >
+                                    <option>SBA</option>
+                                    <option>SQA</option>
+                                    <option>Mock</option>
+                                    <option>QuesGen</option>
+                                </select>
+                                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                    <svg
+                                        className="w-4 h-4 text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
                             {/* Dropdown */}
-                            <select className="border border-[#A1A1AA] rounded-md px-3 py-2 text-[#3F3F46] text-[12px] md:text-[14px] font-medium">
-                                <option>SBA</option>
-                                <option>Option 2</option>
-                                <option>Option 3</option>
-                            </select>
+                            
 
                             {/* Continue Button */}
-                            <button className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
+                            <button
+                            
+                            onClick={handleContinue}
+                            className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
                                 Continue &gt;
                             </button>
                         </div>
 
                     </div>
                 </div>
-                <div className="bg-white flex items-center h-[212px]  p-5 m-4 ">
+                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 ">
                     <div className="w-[35%] flex items-center justify-between mr-10">
                         <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center  w-full">
                             Recent Sessions
                         </p>
-                        <div className="h-[212px] w-[1px] bg-red-300 " />
+                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] " />
                     </div>
 
 
@@ -171,9 +210,9 @@ const Questioning = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full p-5 text-[14px] md:text-[16px] ">
-                    <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700 border-b border-gray-200 pb-2 w-full">
-                        <div className="text-left">
+                <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
+                    <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700  pb-2 w-full">
+                        <div className="text-left ">
                             <input type="checkbox" className="mr-2" />
                             Topics
                         </div>
@@ -201,6 +240,7 @@ const Questioning = () => {
 
 
                     </div>
+                    <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
                     <div>
                         {isLoading ? (
@@ -214,10 +254,11 @@ const Questioning = () => {
                                     >
                                         <input
                                             type="checkbox"
-                                            className="mr-2"
-                                            checked={!!checkedItems[row.categoryId]}
+                                            className="mr-2 custom-checkbox"
+                                            checked={selectedModules.includes(row.categoryId)}
                                             onChange={() => handleCheckboxChange(row.categoryId)}
                                         />
+
                                         {row.categoryName}
                                     </div>
 

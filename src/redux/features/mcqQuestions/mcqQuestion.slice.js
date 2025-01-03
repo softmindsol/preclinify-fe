@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMcqsQuestion, fetchMcqsByModule } from "./mcqQuestion.service";
+import { fetchMcqsQuestion, fetchMcqsByModules } from "./mcqQuestion.service";
 
 const mcqsSlice = createSlice({
     name: 'mcqsQuestion',
@@ -32,15 +32,15 @@ const mcqsSlice = createSlice({
                 state.error = action.payload; // Save error message
             })
             // Handle fetchMcqsByModule lifecycle
-            .addCase(fetchMcqsByModule.pending, (state) => {
+            .addCase(fetchMcqsByModules.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchMcqsByModule.fulfilled, (state, action) => {
+            .addCase(fetchMcqsByModules.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload; // Save fetched data
             })
-            .addCase(fetchMcqsByModule.rejected, (state, action) => {
+            .addCase(fetchMcqsByModules.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload; // Save error message
             });

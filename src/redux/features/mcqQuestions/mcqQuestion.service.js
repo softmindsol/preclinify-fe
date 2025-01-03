@@ -22,33 +22,57 @@ export const fetchMcqsQuestion = createAsyncThunk(
 );
 
 // Fetch MCQs by moduleId with limit
-export const fetchMcqsByModule = createAsyncThunk(
-    'modules/fetchMcqsByModule',
-    async ({ moduleId, limit }, { rejectWithValue }) => {
+// Fetch MCQs by moduleId with limit
+export const fetchMcqsByModules = createAsyncThunk(
+    'modules/fetchMcqsByModules',
+    async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
         try {
-            if (!moduleId) return rejectWithValue('Invalid moduleId');
-
-            const query = supabase
-                .from('mcqQuestions')
-                .select('*')
-                .eq('moduleId', moduleId);
-
-            // Apply limit only if limit is provided
-            if (limit) {
-                query.limit(limit);
+            if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
+                return rejectWithValue('Invalid moduleIds');
             }
 
-            const { data, error } = await query;
-            console.log("service:", data);
-            console.log("limit services:", limit)
+            // Calculate the limit for each module
+            const baseLimit = Math.floor(totalLimit / moduleIds.length);
+            const remainder = totalLimit % moduleIds.length;
 
-            if (error) {
-                return rejectWithValue(error.message || 'Failed to fetch module questions');
-            }
+            // Prepare limits for each module
+            const moduleLimits = moduleIds.map((moduleId, index) => {
+                return {
+                    moduleId,
+                    limit: baseLimit + (index < remainder ? 1 : 0),
+                };
+            });
 
-            return data;
+            // Run multiple requests in parallel
+            const promises = moduleLimits.map(async ({ moduleId, limit }) => {
+                let query = supabase
+                    .from('mcqQuestions')
+                    .select('*')
+                    .eq('moduleId', moduleId)
+                    .limit(limit);
+
+                const { data, error } = await query;
+                if (error) {
+                    throw new Error(`Error fetching data for moduleId ${moduleId}: ${error.message}`);
+                }
+              
+
+                return data; // Return the fetched data
+            });
+
+            const results = await Promise.all(promises); // Wait for all requests to complete
+            console.log("results:", results);
+
+            // Combine all fetched data into a single array
+            const combinedData = results.flat(); // Flatten the array of arrays into a single array
+            console.log("combinedData:", combinedData);
+
+            return combinedData; // Return the combined data
         } catch (error) {
-            return rejectWithValue(error?.message || 'An unexpected error occurred');
+            return rejectWithValue({
+                message: error?.message || 'An unexpected error occurred',
+                stack: error?.stack,
+            });
         }
     }
 );
