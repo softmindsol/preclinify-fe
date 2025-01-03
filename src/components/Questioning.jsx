@@ -18,6 +18,7 @@ import {  fetchMcqsByModule } from "../redux/features/mcqQuestions/mcqQuestion.s
 import { clearResult } from "../redux/features/result/result.slice";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import Loader from "./common/Loader";
+import { resetQuestionReviewValue } from "../redux/features/question-review/question-review.slice";
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const isLoading = useSelector(
@@ -57,7 +58,7 @@ const Questioning = () => {
         // Dispatch Redux action to clear 'result' from Redux store
         dispatch(clearResult());
         dispatch(setRemoveQuestionLimit())
-
+        dispatch(resetQuestionReviewValue());
     }, []);
 
     useEffect(() => {
@@ -70,6 +71,7 @@ const Questioning = () => {
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
             })
     }, [moduleId, limit])
+  
     return (
         <div className=" lg:flex w-full">
             <div className="h-full hidden lg:block">

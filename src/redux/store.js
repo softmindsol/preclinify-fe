@@ -9,12 +9,12 @@ import limitQuestion from './features/limit/limit.slice';
 import resultReducer from './features/result/result.slice';
 import modeReducer from './features/mode/mode.slice';
 import accuracyReducer from './features/accuracy/accuracy.slice'
-
+import questionReviewReducer from './features/question-review/question-review.slice';
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['modules', 'mcqsQuestion', 'accuracy'], // Persist these in localStorage
+    whitelist: ['modules', 'mcqsQuestion', 'accuracy','questionReview'], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -31,7 +31,7 @@ const rootReducer = combineReducers({
     limit: limitQuestion,
     mode: modeReducer,
     accuracy: accuracyReducer,
-
+    questionReview: questionReviewReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 

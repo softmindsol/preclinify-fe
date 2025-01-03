@@ -11,6 +11,9 @@ import {
 } from "date-fns";
 import StackedBar from '../components/charts/stacked-bar';
 import StackedBarWithSign from '../components/charts/stacked-barwith-sign';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearResult } from '../redux/features/result/result.slice';
+import { resetQuestionReviewValue } from '../redux/features/question-review/question-review.slice';
 
 const Dashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);
@@ -20,7 +23,7 @@ const Dashboard = () => {
     const [days, setDays] = useState([]);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [formattedMonth, setFormattedMonth] = useState("")
-
+const dispatch=useDispatch()
     useEffect(() => {
         const fetchDailyWork = async () => {
             try {
@@ -66,6 +69,8 @@ const Dashboard = () => {
         setDays(allDays);
     }, [selectedDate, workEntries]);
 
+    const result = useSelector((state) => state.result);
+
 
     const getColorClass = (workCount) => {
         if (workCount > 99) return "bg-[#047857]"; // > 99
@@ -75,6 +80,13 @@ const Dashboard = () => {
         if (workCount > 0) return "bg-[#A7F3D0]"; // > 0
         return "bg-[#E4E4E7]"; // Default background for days with no workCount
     };
+
+
+        useEffect(()=>{
+            dispatch(clearResult());
+            dispatch(resetQuestionReviewValue());
+        },[])
+
 
     return (
         <div className='flex'>

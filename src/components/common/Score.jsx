@@ -8,10 +8,11 @@ import { RxCross2 } from "react-icons/rx";
 import 'react-modern-drawer/dist/index.css'
 import { TbBaselineDensityMedium } from 'react-icons/tb';
 import Logo from './Logo';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFeedbackMessage } from '../../utils/GlobalApiHandler';
 import { addResultEntry } from '../../redux/features/accuracy/accuracy.service';
+import { setQuestionReview } from '../../redux/features/question-review/question-review.slice';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
@@ -22,9 +23,22 @@ const Score = () => {
     const [unseen, setUnseen] = useState(0);
     const [feedback, setFeedback] = useState(null);
     const [totalAttemped, setTotalAttemped] = useState(0)
+    const navigate=useNavigate();
+
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
+
+    console.log("result:", result);
+    
+    const handleQuestionReview=()=>{
+        
+        dispatch(setQuestionReview(true))
+        navigate("/question-card");
+    }
+
+
+
 
 
     useEffect(() => {
@@ -43,6 +57,8 @@ const Score = () => {
         setFeedback(response);
         dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }))
     }, []);
+
+
 
     return (
         <div className='lg:flex  min-h-screen w-full'>
@@ -73,7 +89,7 @@ const Score = () => {
                         <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>{feedback}</p>
                     </div>
                     <div>
-                        <button className='text-[#FF9741] text-[12px] md:text-[14px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'>REVIEW QUESTIONS</button>
+                        <button onClick={handleQuestionReview} className='text-[#FF9741] text-[12px] md:text-[14px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'>REVIEW QUESTIONS</button>
                     </div>
                 </div>
 
