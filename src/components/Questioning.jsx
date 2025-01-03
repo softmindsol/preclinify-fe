@@ -135,7 +135,7 @@ const Questioning = () => {
                     </div>
 
                     {/* Search and Button Section */}
-                    <div className="flex justify-between items-center h-[110px] bg-white">
+                    <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white">
                         {/* Search Bar */}
                         <div className="flex items-center p-8 gap-x-10  ">
 

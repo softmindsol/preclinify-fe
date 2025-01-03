@@ -21,7 +21,7 @@ export const fetchMcqsQuestion = createAsyncThunk(
     }
 );
 
-// Fetch MCQs by moduleId with limit
+
 // Fetch MCQs by moduleId with limit
 export const fetchMcqsByModules = createAsyncThunk(
     'modules/fetchMcqsByModules',
