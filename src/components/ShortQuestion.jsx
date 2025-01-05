@@ -218,9 +218,20 @@ const ShortQuestion = () => {
         setTotalAttempts(prev => prev + 1);
     };
 
-    const calculateAccuracy = () => {
+
+    const handleFinishAndReview = () => {
+        if (isReviewEnabled) {
+            dispatch(setMcqsAccuracy({ accuracy }))
+
+            // handleAnswerSelect()
+            //    Add a delay (for example, 2 seconds)
+            setTimeout(() => {
+                navigation('/score');
+            }, 3000); // 2000 ms = 2 seconds
+        }
 
     };
+
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
         if (isSubMenuOpen) {
@@ -247,12 +258,10 @@ const ShortQuestion = () => {
 
     // Check if it's time to enable the Finish button
     useEffect(() => {
-        if (data.data.length === currentIndex + 1) {
+        if (sqa?.sqaChildData.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
         }
     }, [currentIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
-
-    console.log("currentIndex:", currentIndex);
 
 
 
@@ -428,6 +437,23 @@ const ShortQuestion = () => {
 
 
                         }
+
+                        {isReviewEnabled && (
+                            <div
+                                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                    } justify-center`}
+                                onClick={handleFinishAndReview}
+
+                            >
+
+                                <button
+                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+
+                                >
+                                    Finish and Review &darr;
+                                </button>
+                            </div>
+                        )}
 
 
                         <div className="flex items-center gap-x-10 justify-center mt-5">
