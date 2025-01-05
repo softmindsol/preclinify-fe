@@ -64,12 +64,11 @@ const navigation=useNavigate()
     };
 
     const handleQuestion=()=>{
-        if (type=='SQA'){
+        if (type==='SQA'){
             navigation('/short-question');
 
         }
-        else if (type == 'SQA'){
-
+        else if (type === 'SBA'){
             navigation("/question-card")
         }
     }

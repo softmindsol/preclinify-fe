@@ -29,23 +29,22 @@ const calculateTimeForQuestions = (numQuestions) => {
     return totalTimeInSeconds; // Return total time in seconds
 };
 const ShortQuestion = () => {
-    const sqa = useSelector(state => state?.sqa)
-    console.log("sqa:", sqa);
+    const sqa = useSelector(state => state?.sqa || [])
+    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
 
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState([]);
-    const [isAnswered, setIsAnswered] = useState(false);
-    const [isButtonClicked, setIsButtonClicked] = useState(false);
-    const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [totalScore, setTotalScore] = useState(0);
+    const [totalAttempts, setTotalAttempts] = useState(0);
+    const [correctAnswers, setCorrectAnswers] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [attempts, setAttempts] = useState([]); // Array to track question status: null = unseen, true = correct, false = incorrect
-    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
+    const [userAnswer, setUserAnswer] = useState("")
+    const [attempts, setAttempts] = useState(Array(sqa?.sqaChildData.length).fill(null)); // Initialize with null    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
+
     const navigation = useNavigate();
-    const [border, setBorder] = useState(true);
     const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
-    const saqQuestion = useSelector(state => state.sqa)
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
@@ -59,17 +58,41 @@ const ShortQuestion = () => {
     const [timer, setTimer] = useState(calculateTimeForQuestions(isTimerMode.time));
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
-    // const data = useSelector((state) => state.mcqsQuestion || []);
     const menuRef = useRef(null);
-const [testCheckAnswer,setTestCheckAnswer]=useState(false)
+    const [testCheckAnswer, setTestCheckAnswer] = useState(false)
+    const [incorrectCount, setIncorrectCount] = useState(0);
+    const [partialCount, setPartialCount] = useState(0);
+    const [correctCount, setCorrectCount] = useState(0);
 
 
 
+    function handleCheckAnswer() {
+        setTestCheckAnswer(true)
+    }
 
 
+    const handleIncorrectClick = () => {
+        markQuestion(currentIndex, false); // Mark as incorrect
+        setCurrentIndex((prev) => prev + 1); // Move to the next question
+        setTestCheckAnswer(false); // Reset testCheckAnswer
+    };
+
+    const handlePartialClick = () => {
+        markQuestion(currentIndex, 'partial'); // Mark as partial
+        setCurrentIndex((prev) => prev + 1); // Move to the next question
+        setTestCheckAnswer(false); // Reset testCheckAnswer
+    };
+
+    const handleCorrectClick = () => {
+        markQuestion(currentIndex, true); // Mark as correct
+        setCurrentIndex((prev) => prev + 1); // Move to the next question
+        setTestCheckAnswer(false);
+    };
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
+        nextQuestion()
+
     };
 
     // Arrays to store indices
@@ -78,7 +101,7 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
     const allIndices = [];
 
     // Filter items based on the selected filter
-    const filteredItems = currentItems.filter((question, index) => {
+    const filteredItems = sqa?.sqaChildData.filter((question, index) => {
         const displayNumber = currentPage * itemsPerPage + index;
 
         // All items
@@ -112,69 +135,10 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
 
 
 
-    const toggleAccordion = (index) => {
-        setIsAccordionOpen((prev) => {
-            if (Array.isArray(prev)) {
-                const newAccordionState = [...prev]; // Create a copy to avoid mutation
-                newAccordionState[index] = !newAccordionState[index]; // Toggle the state at the given index
-                return newAccordionState; // Return the updated array
-            } else {
-                // If prev is not an array, initialize it with a new array based on data length
-                return new Array(data.data.length).fill(false);
-            }
-        });
-    };
-
-
-    const handleAnswerSelect = (answer) => {
-        setSelectedAnswer(answer);
-        setIsAnswered(true);
-    };
-
-    const handleCheckAnswer = () => {
-        setTestCheckAnswer(true)
-        // if (selectedAnswer) {
-        //     setIsButtonClicked(true);
-        //     setIsAccordionVisible(true);
-        //     setBorder(false)
-
-        //     const isCorrect =
-        //         selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
-
-        //     // Update attempts
-        //     dispatch(fetchConditionNameById({ Id: data.data.conditionName }))
-        //     setAttempts((prev) => {
-        //         const updatedAttempts = [...prev];
-        //         updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
-        //         dispatch(setResult({ updatedAttempts }))
-
-        //         return updatedAttempts;
-        //     });
-
-        //     // Expand accordion for the correct answer
-        //     setIsAccordionOpen((prev) => {
-        //         const newAccordionState = [...prev];
-        //         newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true;
-        //         return newAccordionState;
-        //     });
-        // }
-    };
     // Function to navigate to the next question
     const nextQuestion = () => {
-        if (currentIndex < data?.data.length - 1) {
+        if (currentIndex < sqa?.sqaChildData.length - 1) {
             setCurrentIndex((prev) => prev + 1);
-
-            if (review) {
-
-                setSelectedAnswer(true)
-                setIsAnswered(true)
-                setIsAccordionVisible(true)
-            }
-            else {
-                setSelectedAnswer(false)
-                setIsAnswered(false)
-                setIsAccordionVisible(false)
-            }
 
         }
 
@@ -189,83 +153,16 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
 
     };
 
-    const nextPage = () => {
-        if ((currentPage + 1) * itemsPerPage < data.data.length) {
-            setCurrentPage(currentPage + 1);
-        }
-
-    }
-
-    // Function to go to the previous page
-    const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
-
 
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-    // data.data[currentIndex].explanationList.map((explanation, index) => {
-    //     let isSelected = selectedAnswer === explanation;
-    //     const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
-    // })
-
-    // Update attempts based on user actions
-    const markQuestion = (index, status) => {
-        setAttempts((prev) => {
-            const updatedAttempts = [...prev];
-            updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
-            return updatedAttempts;
-        });
-    };
 
 
     const toggleMenu = (event) => {
         event.stopPropagation();
         setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
     };
-
-
-
-
-
-    useEffect(() => {
-        if (data?.data?.length) {
-            setIsAccordionOpen(Array(data.data.length).fill(false));
-            setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
-        }
-        // dispatch(clearResult());
-    }, [data]);
-
-    useEffect(() => {
-        const correct = attempts.filter((attempt) => attempt === true).length;
-        const incorrect = attempts.filter((attempt) => attempt === false).length;
-        const totalAttempted = attempts.filter((attempt) => attempt !== null).length;
-        setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
-
-        const hasAnswer = attempts.some(value => value === true || value === false);
-
-        setIsFinishEnabled(hasAnswer);
-    }, [attempts]);
-
-
-    const handleFinishAndReview = () => {
-        if (isReviewEnabled) {
-            handleCheckAnswer();
-            dispatch(setMcqsAccuracy({ accuracy }))
-
-            // handleAnswerSelect()
-            //    Add a delay (for example, 2 seconds)
-            setTimeout(() => {
-                navigation('/score');
-            }, 3000); // 2000 ms = 2 seconds
-        }
-
-    };
-
-
 
 
 
@@ -284,27 +181,46 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
     };
 
 
-
-    useEffect(() => {
-        if (isTimerMode === 'Exam') { // Check if the selected mode is Exam Mode
-            // If time reaches 0, trigger finish and review handler
-            if (timer === 0) {
-                handleFinishAndReview();
-            }
-
-            const interval = setInterval(() => {
-                if (timer > 0) {
-                    setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
-                }
-            }, 1000);
-            console.log("timer:", timer);
-
-            // Cleanup the interval when component unmounts or time reaches 0
-            return () => clearInterval(interval);
+    const nextPage = () => {
+        if ((currentPage + 1) * itemsPerPage < sqa?.sqaChildData.length) {
+            setCurrentPage(currentPage + 1);
         }
-    }, [timer, isTimerMode, handleFinishAndReview]);
 
+    }
 
+    // Function to go to the previous page
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const markQuestion = (index, status) => {
+        setAttempts((prev) => {
+            const updatedAttempts = [...prev];
+            updatedAttempts[index] = status; // Update specific question status
+            return updatedAttempts;
+        });
+
+        // Update scores based on the status
+        if (status === true) {
+            setCorrectCount(prev => prev + 1);
+            setTotalScore(prev => prev + 2); // Increment score by 2 for correct answers
+        } else if (status === false) {
+            setIncorrectCount(prev => prev + 1);
+            // No score increment for incorrect answers
+        } else if (status === 'partial') {
+            setPartialCount(prev => prev + 1);
+            setTotalScore(prev => prev + 1); // Increment score by 1 for partial answers
+        }
+
+        // Increment total attempts
+        setTotalAttempts(prev => prev + 1);
+    };
+
+    const calculateAccuracy = () => {
+
+    };
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
         if (isSubMenuOpen) {
@@ -320,26 +236,24 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
     }, [isSubMenuOpen]);
 
 
+    useEffect(() => {
+        const maxScore = totalAttempts * 2; // Maximum score if all answers are correct
+        if (maxScore === 0) {
+            setAccuracy(0); // Avoid division by zero
+        } else {
+            setAccuracy(((totalScore / maxScore) * 100).toFixed(2)); // Calculate accuracy
+        }
+    }, [totalScore, totalAttempts]);
 
     // Check if it's time to enable the Finish button
     useEffect(() => {
         if (data.data.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
         }
-    }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
+    }, [currentIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
 
+    console.log("currentIndex:", currentIndex);
 
-    useEffect(() => {
-        if (review) {
-            setAccuracy(100)
-            setIsButtonClicked(true);
-            setIsAccordionVisible(true);
-            setBorder(false)
-            setSelectedAnswer(true)
-            setIsAnswered(true)
-            // setIsAccordionVisible(true)
-        }
-    }, [review])
 
 
     return (
@@ -381,9 +295,15 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                         </div>
 
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2">
-                            <button className="text-white text-lg">&larr;</button>
-                            <h2 className="font-semibold text-center">Question 1A</h2>
-                            <button className="text-white text-lg">&rarr;</button>
+                            <button className="text-white" onClick={prevQuestion}>
+                                &larr;
+                            </button>
+                            <h2 className="font-semibold text-center">
+                                Question {currentIndex + 1} of {sqa?.sqaChildData.length}
+                            </h2>
+                            <button className="text-white" onClick={nextQuestion}>
+                                &rarr;
+                            </button>
                         </div>
 
                         <div className="absolute right-4 flex space-x-4">
@@ -424,28 +344,33 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                     {/* Question Section */}
                     <div className="mt-6  p-6 ">
                         <p className="text-[#000000] text-justify w-[100%] lg:w-[720px]">
-                            {sqa.shortQuestions[0].parentQuestion}
+                            {sqa?.shortQuestions[0].parentQuestion}
                         </p>
 
                         <h3 className="mt-4 text-[14px] text-[#27272A] font-bold text-wrap">
-                            {sqa.sqaChildData[1].questionLead}
+                            {sqa?.sqaChildData[currentIndex]?.questionLead}
                         </h3>
 
                         {/* Options Section */}
                         <div>
-                           
+
 
                         </div>
                         {
                             !testCheckAnswer ? <textarea
                                 className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal"
                                 placeholder="Type here to answer the question..."
-                              
+                                onChange={(e) => {
+                                    setUserAnswer(e.target.value)
+                                }}
+                                value={userAnswer}
+
                             /> :
-                            <div>
+                                <div>
                                     <textarea
                                         className="rounded-[6px] bg-[#E4E4E7] w-[100%] lg:w-[720px] h-[120px] mt-2  p-5 text-wrap"
                                         placeholder="This is the user’s answer"
+                                        value={userAnswer}
                                         readOnly
                                     />
                                     <textarea
@@ -453,20 +378,28 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                                         placeholder="This is the user’s answer"
                                         value={sqa.sqaChildData[1].idealAnswer}
                                     />
-                            </div>
+                                </div>
                         }
                         <div>
-                          
+
 
                         </div>
                         {
                             testCheckAnswer ?
                                 <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3  flex items-center  ">
-                                <button className="bg-[#FFCACA] w-[230px] text-[#EF4444] p-2 rounded-[8px] ">Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span></button>
-                                <button className="bg-[#FFE9D6] w-[230px] text-[#FF9741] p-2 rounded-[8px] ">Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">2</span></button>
-                                <button className="bg-[#C0F3E4] w-[230px] text-[#3CC8A1] p-2 rounded-[8px] ">Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A]  ml-2">3</span></button>
+                                    <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3 flex items-center">
+                                        <button className="bg-[#EF4444] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
+                                            Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">{incorrectCount}</span>
+                                        </button>
+                                        <button className="bg-[#FF9741] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handlePartialClick}>
+                                            Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">{partialCount}</span>
+                                        </button>
+                                        <button className="bg-[#3CC8A1] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleCorrectClick}>
+                                            Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">{correctCount}</span>
+                                        </button>
+                                    </div>
 
-                                </div> : 
+                                </div> :
                                 <div className="group">
                                     <button
                                         className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
@@ -493,9 +426,9 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                                 </div>
 
 
-                               
+
                         }
-                       
+
 
                         <div className="flex items-center gap-x-10 justify-center mt-5">
                             <div >
@@ -612,25 +545,25 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                             <div className="grid grid-cols-5 gap-2">
                                 {
                                     indicesToDisplay.map((num, i) => {
-                                        const bgColor =
-                                            result.result[num] === true
-                                                ? "bg-[#3CC8A1]" // Correct
-                                                : result.result[num] === false
-                                                    ? "bg-[#FF453A]" // Incorrect (Flagged)
-                                                    : "bg-gray-300"; // Unseen (null)
+                                        const bgColor = attempts[num] === true
+                                            ? "bg-[#3CC8A1]" // Correct
+                                            : attempts[num] === false
+                                                ? "bg-[#FF453A]" // Incorrect
+                                                : attempts[num] === 'partial'
+                                                    ? "bg-[#FF9741]" // Partial
+                                                    : "bg-gray-300"; // Unseen
 
                                         return (
                                             <div key={i}>
                                                 <div
                                                     className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                    onClick={() => markQuestion(num)} // Use `num` for marking
+                                                    onClick={() => markQuestion(num, true)} // Mark as correct
                                                 >
                                                     <p>{num + 1}</p>
                                                 </div>
                                             </div>
                                         );
                                     })
-
                                 }
                             </div>
                         </div>
@@ -652,7 +585,7 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                             <div
                                 className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
                                     } justify-center`}
-                                onClick={handleFinishAndReview}
+                            // onClick={handleFinishAndReview}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -804,7 +737,7 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                                         <div key={i}>
                                             <div
                                                 className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                onClick={() => markQuestion(num)} // Use `num` for marking
+                                            // onClick={() => markQuestion(num)} // Use `num` for marking
                                             >
                                                 <p>{num + 1}</p>
                                             </div>
@@ -816,8 +749,8 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                         </div>
                     </div>
                     <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg> */}
                     </div>
                     <div className="py-5 px-10 text-[#D4D4D8]">
                         <hr />
@@ -833,7 +766,7 @@ const [testCheckAnswer,setTestCheckAnswer]=useState(false)
                         <div
                             className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
                                 } justify-center`}
-                            onClick={handleFinishAndReview}
+                        // onClick={handleFinishAndReview}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
