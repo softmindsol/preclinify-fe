@@ -28,7 +28,7 @@ const Questioning = () => {
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchModules.typePrefix]
     );
-    
+    const [storedSession,setStoredSession]=useState([])
     const [selectedModules, setSelectedModules] = useState([]);
     const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
     const [moduleId, setModuleId] = useState(null)
@@ -156,13 +156,42 @@ const Questioning = () => {
 
     console.log("selectedModules:", selectedModules);
 
-    useEffect(()=>{
-        dispatch(updateRecentSessions(recentSessions));
-    },[recentSessions])
-    console.log('session:', session);
-    console.log("isSessionCompleted:", isCompleted);
-
     
+  useEffect(() => {
+    if (recentSessions.length > 0) {
+        // Dispatch to update the Redux store
+        dispatch(updateRecentSessions(recentSessions));
+
+        // Retrieve existing sessions from localStorage
+        const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
+
+        // Combine existing sessions with the new session entry
+        const updatedSessions = [...existingSessions, ...recentSessions];
+
+        // Keep only the last 3 sessions and remove the first one if needed
+        if (updatedSessions.length > 3) {
+            updatedSessions.shift(); // Remove the first session
+        }
+        console.log("updatedSessions:", updatedSessions);
+        
+        if (isCompleted){
+            localStorage.setItem('recentSessions', JSON.stringify(updatedSessions));
+        }
+        // Store the updated sessions in localStorage
+    }
+}, [recentSessions]);
+
+// Effect to retrieve recent sessions from localStorage
+useEffect(() => {
+    // Check if recentSessions are available in localStorage
+    const storedSessions = localStorage.getItem('recentSessions');
+    if (storedSessions) {
+        setRecentSessions(JSON.parse(storedSessions)); // Parse and set to state
+    }
+}, []);
+
+
+    console.log("isCompleted:", isCompleted);
 
     return (
         <div className=" lg:flex w-full">
@@ -264,8 +293,8 @@ const Questioning = () => {
 
 
                     <div className="w-[65%] space-y-3">
-                        {isCompleted && session.length > 0 ? (
-                            session.map((sessionId, index) => (
+                        { recentSessions.length > 0 ? (
+                            recentSessions.map((sessionId, index) => (
                                 <div key={index} className="flex items-center justify-between">
                                     <div>
                                         <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">{sessionId}</p>

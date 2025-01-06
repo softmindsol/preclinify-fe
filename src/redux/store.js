@@ -11,18 +11,18 @@ import modeReducer from './features/mode/mode.slice';
 import accuracyReducer from './features/accuracy/accuracy.slice'
 import questionReviewReducer from './features/question-review/question-review.slice';
 import sqaReducer from './features/SAQ/saq.slice'
-import recentSession from './features/recent-session/recent-session.slice'
+import recentSessionsReducer from './features/recent-session/recent-session.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['modules', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","recentSession"], // Persist these in localStorage
+    whitelist: ['modules', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
     key: 'result',
     storage: sessionStorage, // Use sessionStorage for result
-    whitelist: ['result'], // Only persist result in sessionStorage
+    whitelist: ['result','sessions'], // Only persist result in sessionStorage
 };
 
 // Combine all reducers
@@ -35,7 +35,7 @@ const rootReducer = combineReducers({
     accuracy: accuracyReducer,
     sqa: sqaReducer,
     questionReview: questionReviewReducer,
-    recentSession: recentSession,
+    recentSession: recentSessionsReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 

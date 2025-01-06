@@ -15,6 +15,7 @@ import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 import { DeepChat } from "deep-chat-react";
 import DeepChatAI from "./DeepChat";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
+import { sessionCompleted } from "../redux/features/recent-session/recent-session.slice";
 
 
 
@@ -321,6 +322,8 @@ const QuestionCard = () => {
         if (data.data.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
         }
+                dispatch(sessionCompleted(true))
+        
     }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
 
 

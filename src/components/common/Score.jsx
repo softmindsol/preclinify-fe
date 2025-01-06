@@ -55,7 +55,8 @@ const Score = () => {
 
         setFeedback(response);
         dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }));
-        dispatch(sessionCompleted())
+        dispatch(sessionCompleted(false))
+
     }, []);
 
     
