@@ -34,7 +34,7 @@ const Questioning = () => {
     const dispatch = useDispatch();
     const data = useSelector((state) => state.categoryModule);
     const { limit } = useSelector((state) => state.limit);
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('SBA');
 
     // Handler to update the selected option
     const handleSelectChange = (event) => {
@@ -133,7 +133,6 @@ const Questioning = () => {
 
     console.log("selectedModules:", selectedModules);
 
-    console.log("selectedOption:", selectedOption);
 
 
     return (

@@ -14,7 +14,7 @@ const Sidebar = () => {
             <nav className="space-y-8 w-full text-[#3F3F46]">
                 {[
                     { id:"/dashboard", name: "Dashboard", icon: "house" },
-                    { id: "/dashboard", name: "Practice", icon: "dumbbell" },
+                    { id: "/questioning", name: "Practice", icon: "dumbbell" },
                     { id: "/dashboard", name: "Performance", icon: "chart-line" },
                     { id: "/dashboard", name: "Friends", icon: "git-merge" },
                     { id: "/dashboard", name: "Textbook", icon: "book-open" },

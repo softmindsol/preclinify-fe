@@ -10,7 +10,6 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption
 );
 
-    console.log("type:", type);
     
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
@@ -69,7 +68,7 @@ const navigation=useNavigate()
 
         }
         else if (type === 'SBA'){
-            navigation("/question-card")
+            navigation("/question-card");            
         }
     }
 
