@@ -20,6 +20,7 @@ import { resetQuestionReviewValue } from "../redux/features/question-review/ques
 import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SAQ/saq.service";
 
 import { setPreclinicalType } from "../redux/features/mode/mode.slice";
+import { updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
 
 
 const Questioning = () => {
@@ -37,8 +38,8 @@ const Questioning = () => {
     const { limit } = useSelector((state) => state.limit);
     const [selectedOption, setSelectedOption] = useState('SBA');
     const [recentSessions, setRecentSessions] = useState([]);
-
-
+    const session = useSelector(state => state?.recentSession?.recentSessions || [])
+    const   isCompleted  = useSelector((state) => state.recentSession?.isSessionCompleted); // Access Redux state
 
     // Handler to update the selected option
     const handleSelectChange = (event) => {
@@ -49,21 +50,31 @@ const Questioning = () => {
     }
 
     const handleCheckboxChange = (categoryId) => {
-        const selectedModule = data.data.find(module => module.categoryId === categoryId); // Find the selected module
+        const selectedModule = data.data.find((module) => module.categoryId === categoryId); // Find the selected module
         const moduleName = selectedModule ? selectedModule.categoryName : ''; // Get the module name
 
+        // Toggle the selected module
         setSelectedModules((prev) =>
             prev.includes(categoryId)
                 ? prev.filter((id) => id !== categoryId) // Remove if already selected
                 : [...prev, categoryId] // Add if not selected
         );
 
-        // Update recent sessions
         setRecentSessions((prev) => {
-            const updatedSessions = [...prev, moduleName]; // Add the selected module name
-            return updatedSessions.slice(-3); // Keep only the last 3 sessions
+            // Find all currently selected modules
+            const selectedModuleNames = data.data
+                .filter((module) => selectedModules.includes(module.categoryId) || module.categoryId === categoryId)
+                .map((module) => module.categoryName);
+
+            // Combine module names into a single string
+            const combinedSession = selectedModuleNames.join(', ');
+
+            // Update recent sessions: keep only the last entry if a new combination is made
+            return combinedSession ? [combinedSession] : [];
         });
     };
+
+
 
     const handleSelectAll = (isChecked) => {
         if (isChecked) {
@@ -145,7 +156,13 @@ const Questioning = () => {
 
     console.log("selectedModules:", selectedModules);
 
+    useEffect(()=>{
+        dispatch(updateRecentSessions(recentSessions));
+    },[recentSessions])
+    console.log('session:', session);
+    console.log("isSessionCompleted:", isCompleted);
 
+    
 
     return (
         <div className=" lg:flex w-full">
@@ -247,17 +264,28 @@ const Questioning = () => {
 
 
                     <div className="w-[65%] space-y-3">
-                        {recentSessions.map((sessionId, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">{sessionId}</p>
-                                    <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                        {isCompleted && session.length > 0 ? (
+                            session.map((sessionId, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">{sessionId}</p>
+                                        <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                    </div>
+                                    <div>
+                                        <button
+                                            onClick={handleContinue} 
+                                         className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                            Continue &gt;
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                                </div>
+                            ))
+                        ) : (
+                            <div className="flex items-center justify-center">
+                                <p>No Session</p>
                             </div>
-                        ))}
+                        )}
+
                     </div>
                 </div>
                 <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">

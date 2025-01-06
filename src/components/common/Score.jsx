@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getFeedbackMessage } from '../../utils/GlobalApiHandler';
 import { addResultEntry } from '../../redux/features/accuracy/accuracy.service';
 import { setQuestionReview } from '../../redux/features/question-review/question-review.slice';
+import { sessionCompleted } from '../../redux/features/recent-session/recent-session.slice';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
@@ -28,8 +29,6 @@ const Score = () => {
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-
-    console.log("result:", result);
     
     const handleQuestionReview=()=>{
         
@@ -55,9 +54,11 @@ const Score = () => {
         const response = getFeedbackMessage(Math.floor(result.accuracy));
 
         setFeedback(response);
-        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }))
+        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }));
+        dispatch(sessionCompleted())
     }, []);
 
+    
 
 
     return (
