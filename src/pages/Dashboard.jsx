@@ -175,7 +175,7 @@ const dispatch=useDispatch()
                                                 key={index}
                                                 className={`h-12 w-12 rounded-md flex items-center justify-center text-white  ${day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'}`}
                                             >
-                                                {day.workCount}
+                                                {/* {day.workCount} */}
                                             </div>
                                         );
                                     })}
