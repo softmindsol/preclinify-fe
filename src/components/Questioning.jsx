@@ -27,6 +27,7 @@ const Questioning = () => {
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchModules.typePrefix]
     );
+    
     const [selectedModules, setSelectedModules] = useState([]);
     const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
     const [moduleId, setModuleId] = useState(null)
@@ -35,6 +36,9 @@ const Questioning = () => {
     const data = useSelector((state) => state.categoryModule);
     const { limit } = useSelector((state) => state.limit);
     const [selectedOption, setSelectedOption] = useState('SBA');
+    const [recentSessions, setRecentSessions] = useState([]);
+
+
 
     // Handler to update the selected option
     const handleSelectChange = (event) => {
@@ -45,12 +49,20 @@ const Questioning = () => {
     }
 
     const handleCheckboxChange = (categoryId) => {
+        const selectedModule = data.data.find(module => module.categoryId === categoryId); // Find the selected module
+        const moduleName = selectedModule ? selectedModule.categoryName : ''; // Get the module name
+
         setSelectedModules((prev) =>
             prev.includes(categoryId)
                 ? prev.filter((id) => id !== categoryId) // Remove if already selected
                 : [...prev, categoryId] // Add if not selected
         );
 
+        // Update recent sessions
+        setRecentSessions((prev) => {
+            const updatedSessions = [...prev, moduleName]; // Add the selected module name
+            return updatedSessions.slice(-3); // Keep only the last 3 sessions
+        });
     };
 
     const handleSelectAll = (isChecked) => {
@@ -235,28 +247,17 @@ const Questioning = () => {
 
 
                     <div className="w-[65%] space-y-3">
-
-
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">Geriatrics</p>
-                                <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">1 day ago</p>
+                        {recentSessions.map((sessionId, index) => (
+                            <div key={index} className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">{sessionId}</p>
+                                    <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                </div>
+                                <div>
+                                    <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
+                                </div>
                             </div>
-                            <div>
-                                <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                            </div>
-
-                        </div>
-                        <div className="flex items-center justify-between ">
-                            <div>
-                                <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">Geriatrics</p>
-                                <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">1 day ago</p>
-                            </div>
-                            <div>
-                                <button className='border-[1px] border-[#FF9741] text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                            </div>
-
-                        </div>
+                        ))}
                     </div>
                 </div>
                 <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
