@@ -42,10 +42,16 @@ const Questioning = () => {
     const isCompleted = useSelector((state) => state.recentSession?.isSessionCompleted); // Access Redux state
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isToggled, setIsToggled] = useState(false);
 
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+
+    const handleToggle = () => {
+        setIsToggled(!isToggled);
+    };
     // Handler to update the selected option
     const handleSelectChange = (event) => {
         setSelectedOption(event.target.value); // Update state with the selected value
@@ -403,15 +409,27 @@ const Questioning = () => {
                     <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
 
                         <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700  pb-2 w-full">
-                            <div className="text-left ">
-                                <input
-                                    type="checkbox"
-                                    className="mr-2 custom-checkbox"
-                                    checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
-                                    onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
-                                />
-                                Topics
-                            </div>
+                           <div className="flex items-center gap-x-10">
+                                <div className="text-left ">
+                                    <input
+                                        type="checkbox"
+                                        className="mr-2 custom-checkbox"
+                                        checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
+                                        onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
+                                    />
+                                    Select All
+                                </div>
+
+                                <div className="flex items-center space-x-2 p-4">
+                                    <span className="text-gray-700">Sort By Presentation</span>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" className="sr-only peer" />
+                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
+                                    </label>
+                                </div>
+                           </div>
+                           
+                            
                             <div className="text-right flex items-center gap-x-5">
                                 <div className="hidden sm:block text-center">Progress</div>
 
