@@ -44,7 +44,7 @@ export const fetchMcqsByModules = createAsyncThunk(
                     limit: baseLimit + (index < remainder ? 1 : 0),
                 };
             });
-
+ 
             // Run multiple requests in parallel
             const promises = moduleLimits.map(async ({ moduleId, limit }) => {
                 let query = supabase

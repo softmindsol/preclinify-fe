@@ -99,17 +99,20 @@ const Questioning = () => {
     };
 
    
+function handleContinue(){
+        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
-    function handleContinue(sessionId) {
+}
+    function handleSssionContinue(sessionId) {
         // Open the setup session modal
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
         // Find the selected modules based on the sessionId
-        const moduleIds = [sessionId]
+        const moduleIds = [sessionId]; // This is already an array
 
-        const flatModuleIds = Array.isArray(moduleIds) && moduleIds.length > 0
-            ? moduleIds[0].split(',').map(id => id.trim()) // Split and trim
-            : [];
+        // No need to split, just trim the sessionId if necessary
+        const flatModuleIds = moduleIds.map(id => id.trim()); // Trim each ID
+
         // This will ensure all IDs are in a single array
         console.log("moduleIds:", flatModuleIds);
 
@@ -134,7 +137,6 @@ const Questioning = () => {
             console.log("No modules selected for this session or already loading.");
         }
     }
-
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
         dispatch(fetchModules())
@@ -352,7 +354,7 @@ const Questioning = () => {
                                         </div>
                                         <div>
                                             <button
-                                                onClick={() => handleContinue(sessionId)}
+                                                onClick={() => handleSssionContinue(sessionId)}
                                                 className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                 Continue &gt;
                                             </button>

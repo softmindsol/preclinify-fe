@@ -155,7 +155,7 @@ const QuestionCard = () => {
         }
     };
 
-    
+
     // Function to navigate to the next question
     const nextQuestion = () => {
         if (currentIndex < data?.data.length - 1) {
@@ -283,7 +283,7 @@ const QuestionCard = () => {
 
 
     useEffect(() => {
-        if (isTimerMode === 'Exam') { // Check if the selected mode is Exam Mode
+        if (isTimerMode['mode'] === 'Exam') { // Check if the selected mode is Exam Mode
             // If time reaches 0, trigger finish and review handler
             if (timer === 0) {
                 handleFinishAndReview();
@@ -294,12 +294,13 @@ const QuestionCard = () => {
                     setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
                 }
             }, 1000);
-            console.log("timer:", timer);
+            console.log("timer inside:", timer);
 
             // Cleanup the interval when component unmounts or time reaches 0
             return () => clearInterval(interval);
         }
     }, [timer, isTimerMode, handleFinishAndReview]);
+    console.log("isTimerMode:", isTimerMode);
 
 
     // Attach the click event listener to the document when the menu is open
@@ -320,11 +321,14 @@ const QuestionCard = () => {
 
     // Check if it's time to enable the Finish button
     useEffect(() => {
+        setIsReviewEnabled(false);
         if (data.data.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
+            console.log("isReviewEnabled:", isReviewEnabled);
+
         }
-                dispatch(sessionCompleted(true))
-        
+        // dispatch(sessionCompleted(true))
+
     }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
 
 
@@ -613,19 +617,57 @@ const QuestionCard = () => {
                             {
                                 !isReviewEnabled && (
                                     isAccordionVisible ? (
-                                        <button
-                                            className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                            onClick={nextQuestion}
-                                        >
-                                            Next Question &darr;
-                                        </button>
+                                        <div className="group">
+                                            <button
+                                                className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                                onClick={nextQuestion}
+                                            >
+                                                Next Question
+                                                <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                    >
+                                                        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                    </svg>
+                                                </span>
+                                            </button>
+                                        </div>
+
                                     ) : (
-                                        <button
-                                            className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                            onClick={handleCheckAnswer}
-                                        >
-                                            Check Answer &darr;
-                                        </button>
+                                        <div className="group">
+                                            <button
+                                                className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                                onClick={handleCheckAnswer}
+                                            >
+                                                Check Answer
+                                                <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                    >
+                                                        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                    </svg>
+                                                </span>
+                                            </button>
+                                        </div>
+
                                     )
                                 )
                             }
@@ -637,14 +679,33 @@ const QuestionCard = () => {
 
                                 >
                                     {
-                                        review===false 
-                                            &&
+                                        review === false
+                                        &&
+                                        <div className="group w-full">
                                             <button
-                                                className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                                className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
 
                                             >
-                                                Finish and Review &darr;
+                                                Finish and Review
+                                                <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                    >
+                                                        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                    </svg>
+                                                </span>
                                             </button>
+                                        </div>
+
 
                                     }
 
@@ -656,18 +717,43 @@ const QuestionCard = () => {
                             {
                                 review === true
                                 &&
-
-                                <button
-                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
-                                    onClick={() => {
-                                        navigation('/dashboard')
-                                    }}
-                                >
-                                    Back to Dashboard &darr;
-                                </button>
+                                <div className="group w-full">
+                                    <button
+                                        className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                        onClick={() => {
+                                            navigation('/dashboard')
+                                        }}
+                                    >
+                                        Back to Dashboard
+                                        <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="20"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                            >
+                                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                                // <button
+                                //     className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                //     onClick={() => {
+                                //         navigation('/dashboard')
+                                //     }}
+                                // >
+                                //     Back to Dashboard &darr;
+                                // </button>
 
                             }
-                          
+
 
 
                         </div>
