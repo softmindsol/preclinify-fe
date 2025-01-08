@@ -25,10 +25,10 @@ import { updateRecentSessions } from "../redux/features/recent-session/recent-se
 
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
-    const isLoading = useSelector(
-        (state) => state?.loading?.[fetchModules.typePrefix]
-    );
-    const [storedSession,setStoredSession]=useState([])
+    // const isLoading = useSelector(
+    //     (state) => state?.loading?.[fetchModules.typePrefix]
+    // );
+    const [storedSession, setStoredSession] = useState([])
     const [selectedModules, setSelectedModules] = useState([]);
     const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
     const [moduleId, setModuleId] = useState(null)
@@ -39,8 +39,13 @@ const Questioning = () => {
     const [selectedOption, setSelectedOption] = useState('SBA');
     const [recentSessions, setRecentSessions] = useState([]);
     const session = useSelector(state => state?.recentSession?.recentSessions || [])
-    const   isCompleted  = useSelector((state) => state.recentSession?.isSessionCompleted); // Access Redux state
+    const isCompleted = useSelector((state) => state.recentSession?.isSessionCompleted); // Access Redux state
+    const [isLoading, setIsLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
 
+    const filteredModules = data.data.filter(module =>
+        module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     // Handler to update the selected option
     const handleSelectChange = (event) => {
         setSelectedOption(event.target.value); // Update state with the selected value
@@ -48,10 +53,12 @@ const Questioning = () => {
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
+    
 
     const handleCheckboxChange = (categoryId) => {
         const selectedModule = data.data.find((module) => module.categoryId === categoryId); // Find the selected module
         const moduleName = selectedModule ? selectedModule.categoryName : ''; // Get the module name
+
 
         // Toggle the selected module
         setSelectedModules((prev) =>
@@ -64,7 +71,11 @@ const Questioning = () => {
             // Find all currently selected modules
             const selectedModuleNames = data.data
                 .filter((module) => selectedModules.includes(module.categoryId) || module.categoryId === categoryId)
+                .map((module) => module.categoryId);
+            const selectedModuleName = data.data
+                .filter((module) => selectedModules.includes(module.categoryId) || module.categoryId === categoryId)
                 .map((module) => module.categoryName);
+            console.log("selectedModuleNames:", selectedModuleName);
 
             // Combine module names into a single string
             const combinedSession = selectedModuleNames.join(', ');
@@ -87,13 +98,42 @@ const Questioning = () => {
         }
     };
 
-    function handleContinue() {
-        setIsOpenSetUpSessionModal((prev) => ({
-            ...prev
+   
 
-        }));
+    function handleContinue(sessionId) {
+        // Open the setup session modal
+        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+
+        // Find the selected modules based on the sessionId
+        const moduleIds = [sessionId]
+
+        const flatModuleIds = Array.isArray(moduleIds) && moduleIds.length > 0
+            ? moduleIds[0].split(',').map(id => id.trim()) // Split and trim
+            : [];
+        // This will ensure all IDs are in a single array
+        console.log("moduleIds:", flatModuleIds);
+
+        // Make an API call based on the selected module IDs
+        if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
+            setIsLoading(true); // Set loading state to true
+            dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+            dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: 10 }))
+                .unwrap()
+                .then(() => {
+                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                    console.log("Fetched questions for modules:", flatModuleIds);
+                })
+                .catch((err) => {
+                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                    console.error("Error fetching questions:", err);
+                })
+                .finally(() => {
+                    setIsLoading(false); // Reset loading state after API call
+                });
+        } else {
+            console.log("No modules selected for this session or already loading.");
+        }
     }
-
 
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
@@ -113,10 +153,10 @@ const Questioning = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(setPreclinicalType({ selectedOption}));
-        
+        dispatch(setPreclinicalType({ selectedOption }));
+
         if (selectedModules.length > 0) {
-            if (selectedOption==='SBA'){
+            if (selectedOption === 'SBA') {
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
                 dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
@@ -127,24 +167,24 @@ const Questioning = () => {
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
                     });
             }
-            else if (selectedOption === 'SQA'){
+            else if (selectedOption === 'SQA') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: 2 }))
                     .unwrap()
                     .then((res) => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
-                        console.log("SQA Parent Response:",res);
+                        console.log("SQA Parent Response:", res);
                         // if (res.id !== null && res.id !== undefined){
-                            dispatch(fetchSqaChild({ parentIds: res[0].id, limit: 10}))
+                        dispatch(fetchSqaChild({ parentIds: res[0].id, limit: 10 }))
                             .unwrap()
-                            .then(res=>{
+                            .then(res => {
                                 console.log("SQA Child Response", res);
-                                
+
                             })
                             .catch()
 
                         // }
-                        
+
                     })
                     .catch((err) => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
@@ -154,44 +194,38 @@ const Questioning = () => {
         }
     }, [selectedModules, limit]);
 
-    console.log("selectedModules:", selectedModules);
+    // console.log("selectedModules:", selectedModules);
 
+
+    useEffect(() => {
+        if (recentSessions.length > 0) {
+            // Dispatch to update the Redux store
+            dispatch(updateRecentSessions(recentSessions));
+
+            // Retrieve existing sessions from localStorage
+            const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
+
+            // Combine existing sessions with the new session entry
+            const updatedSessions = [...existingSessions, ...recentSessions];
+
+            // Keep only the last 3 sessions
+            const trimmedSessions = updatedSessions.slice(-3); // This will keep only the last 3 sessions
+
+            // Store the updated sessions in localStorage
+            localStorage.setItem('recentSessions', JSON.stringify(trimmedSessions));
+        }
+    }, [recentSessions]);
+    // Effect to retrieve recent sessions from localStorage
+    useEffect(() => {
+        // Check if recentSessions are available in localStorage
+        const storedSessions = localStorage.getItem('recentSessions');
+        if (storedSessions) {
+            setRecentSessions(JSON.parse(storedSessions)); // Parse and set to state
+        }
+    }, []);
+
+    console.log("recentSessions:", recentSessions);
     
-  useEffect(() => {
-    if (recentSessions.length > 0) {
-        // Dispatch to update the Redux store
-        dispatch(updateRecentSessions(recentSessions));
-
-        // Retrieve existing sessions from localStorage
-        const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
-
-        // Combine existing sessions with the new session entry
-        const updatedSessions = [...existingSessions, ...recentSessions];
-
-        // Keep only the last 3 sessions and remove the first one if needed
-        if (updatedSessions.length > 3) {
-            updatedSessions.shift(); // Remove the first session
-        }
-        console.log("updatedSessions:", updatedSessions);
-        
-        if (isCompleted){
-            localStorage.setItem('recentSessions', JSON.stringify(updatedSessions));
-        }
-        // Store the updated sessions in localStorage
-    }
-}, [recentSessions]);
-
-// Effect to retrieve recent sessions from localStorage
-useEffect(() => {
-    // Check if recentSessions are available in localStorage
-    const storedSessions = localStorage.getItem('recentSessions');
-    if (storedSessions) {
-        setRecentSessions(JSON.parse(storedSessions)); // Parse and set to state
-    }
-}, []);
-
-
-    console.log("isCompleted:", isCompleted);
 
     return (
         <div className=" lg:flex w-full">
@@ -238,9 +272,11 @@ useEffect(() => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                                 <input
                                     type="text"
-                                    placeholder="Search for anything"
+                                    placeholder="Search for modules"
+                                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query
                                     className="ml-2 w-[280px] focus:outline-none "
                                 />
+                             
                             </div>                    </div>
                         <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
                             <div className="relative w-[105px]">
@@ -293,22 +329,37 @@ useEffect(() => {
 
 
                     <div className="w-[65%] space-y-3">
-                        { recentSessions.length > 0 ? (
-                            recentSessions.map((sessionId, index) => (
-                                <div key={index} className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">{sessionId}</p>
-                                        <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                        {recentSessions.length > 0 ? (
+                            recentSessions.map((sessionId, index) => {
+                                const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
+
+                                // Find category names corresponding to the category IDs
+                                const categoryNames = categoryIds.map(id => {
+                                    const category = data.data.find(item => item.categoryId === parseInt(id)); // Find the category by ID
+                                    return category ? category.categoryName : null; // Return the category name or null if not found
+                                }).filter(name => name !== null); // Filter out any null values
+
+                                console.log("categoryNames:", categoryNames);
+
+                                // Return the JSX for each session
+                                return (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">
+                                                {categoryNames.join(', ')} {/* Join category names into a single string */}
+                                            </p>
+                                            <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                        </div>
+                                        <div>
+                                            <button
+                                                onClick={() => handleContinue(sessionId)}
+                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                Continue &gt;
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <button
-                                            onClick={handleContinue} 
-                                         className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
-                                            Continue &gt;
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <div className="flex items-center justify-center">
                                 <p>No Session</p>
@@ -358,7 +409,7 @@ useEffect(() => {
                         {isLoading ? (
                             <Loader />
                         ) : (
-                            data?.data?.map((row) => (
+                                filteredModules?.map((row) => (
                                 <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
                                     <div
                                         className="text-left text-[14px] md:text-[16px] cursor-pointer"
@@ -370,7 +421,6 @@ useEffect(() => {
                                             checked={selectedModules.includes(row.categoryId)}
                                             onChange={() => handleCheckboxChange(row.categoryId)}
                                         />
-
                                         {row.categoryName}
                                     </div>
 

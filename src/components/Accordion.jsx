@@ -11,7 +11,7 @@ const AccordionItem = ({ title, content, isOpen, onToggle, isCorrect }) => {
                         ? "bg-red-300 border-red-400"
                         : "bg-white border-gray-300"
                 }`}
-        >
+        > 
             <div
                 className="flex items-center justify-between p-4 cursor-pointer"
                 onClick={onToggle}

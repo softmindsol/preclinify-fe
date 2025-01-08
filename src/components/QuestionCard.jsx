@@ -12,7 +12,6 @@ import { clearResult, setResult } from "../redux/features/result/result.slice";
 import { useNavigate } from "react-router-dom";
 import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
 import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
-import { DeepChat } from "deep-chat-react";
 import DeepChatAI from "./DeepChat";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { sessionCompleted } from "../redux/features/recent-session/recent-session.slice";
@@ -155,6 +154,8 @@ const QuestionCard = () => {
             });
         }
     };
+
+    
     // Function to navigate to the next question
     const nextQuestion = () => {
         if (currentIndex < data?.data.length - 1) {
