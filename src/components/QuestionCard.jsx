@@ -15,6 +15,7 @@ import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 import DeepChatAI from "./DeepChat";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { sessionCompleted } from "../redux/features/recent-session/recent-session.slice";
+import ChemistryBeaker from "./chemistry-beaker";
 
 
 
@@ -60,7 +61,7 @@ const QuestionCard = () => {
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
-
+    const [beakerToggle,setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
 
     const handleFilterChange = (filter) => {
@@ -119,6 +120,10 @@ const QuestionCard = () => {
             }
         });
     };
+
+    const beakerToggledHandler=()=>{
+        setBeakerToggle(!beakerToggle)
+    }
 
 
     const handleAnswerSelect = (answer) => {
@@ -300,7 +305,6 @@ const QuestionCard = () => {
             return () => clearInterval(interval);
         }
     }, [timer, isTimerMode, handleFinishAndReview]);
-    console.log("isTimerMode:", isTimerMode);
 
 
     // Attach the click event listener to the document when the menu is open
@@ -425,22 +429,33 @@ const QuestionCard = () => {
 
                         {/* Right Icons */}
                         <div className="absolute right-4 flex space-x-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-flask-conical"
-                            >
-                                <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
-                                <path d="M6.453 15h11.094" />
-                                <path d="M8.5 2h7" />
-                            </svg>
+                            <div className="relative">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-flask-conical cursor-pointer"
+                                    onClick={beakerToggledHandler}
+                                >
+                                    <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
+                                    <path d="M6.453 15h11.094" />
+                                    <path d="M8.5 2h7" />
+
+                                </svg>
+                                {
+                                    beakerToggle && <div className="absolute top-3 left-24">
+                                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+                                    </div>
+                                }
+                               
+                            </div>
+                           
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -504,8 +519,8 @@ const QuestionCard = () => {
                                                         checked={isSelected}
                                                         readOnly
                                                     />
-                                                    <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
-                                                    <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-md">
+                                                    <span className="text-[] flex-1">{explanation.split(" -")[0]}</span>
+                                                    <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
                                                         {["A", "B", "C", "D", "E"][index]}
                                                     </span>
                                                 </label>
@@ -557,7 +572,7 @@ const QuestionCard = () => {
                                                                 )
                                                             )}
                                                         </div>
-                                                        <span className="text-gray-700 flex-1">{explanation.split(" -")[0]}</span>
+                                                        <span className="text-[#27272A] flex-1">{explanation.split(" -")[0]}</span>
                                                         {isAccordionOpen[index] ? (
                                                             <svg
                                                                 xmlns="http://www.w3.org/2000/svg"
@@ -743,7 +758,7 @@ const QuestionCard = () => {
                                         </span>
                                     </button>
                                 </div>
-                               
+
 
                             }
 
@@ -753,6 +768,8 @@ const QuestionCard = () => {
                     )}
 
                 </div>
+
+                
 
                 {/* Sidebar Section */}
 
@@ -934,23 +951,7 @@ const QuestionCard = () => {
                             <Logo />
                         </div>
 
-                        {/* <div className="flex items-center mr-5">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-chevrons-right"
-                            >
-                                <path d="m6 17 5-5-5-5" />
-                                <path d="m13 17 5-5-5-5" />
-                            </svg>
-                        </div> */}
+
                     </div>
 
                     <div className="flex flex-col  items-center justify-center mt-10">
