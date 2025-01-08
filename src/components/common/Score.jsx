@@ -65,7 +65,7 @@ const Score = () => {
 
     return (
         <div className='lg:flex  min-h-screen w-full'>
-            <div className='hidden lg:block'>
+            <div className='hidden lg:block '>
                 <Sidebar />
             </div>
 

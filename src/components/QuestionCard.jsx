@@ -756,7 +756,7 @@ const QuestionCard = () => {
 
                 {/* Sidebar Section */}
 
-                <div className="hidden md:block">
+                <div className="hidden md:block fixed right-0 top-0">
 
 
                     <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ">
