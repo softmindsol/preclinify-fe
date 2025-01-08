@@ -743,14 +743,7 @@ const QuestionCard = () => {
                                         </span>
                                     </button>
                                 </div>
-                                // <button
-                                //     className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
-                                //     onClick={() => {
-                                //         navigation('/dashboard')
-                                //     }}
-                                // >
-                                //     Back to Dashboard &darr;
-                                // </button>
+                               
 
                             }
 
