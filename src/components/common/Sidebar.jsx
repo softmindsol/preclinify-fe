@@ -16,9 +16,7 @@ const Sidebar = () => {
                     { id:"/dashboard", name: "Dashboard", icon: "house" },
                     { id: "/questioning", name: "Practice", icon: "dumbbell" },
                     { id: "/performance", name: "Performance", icon: "chart-line" },
-                    { id: "/dashboard", name: "Friends", icon: "git-merge" },
-                    { id: "/dashboard", name: "Textbook", icon: "book-open" },
-                    { id: "/dashboard", name: "OSCE", icon: "bed" },
+                    { id: "/osce", name: "OSCE", icon: "bed" },
                 ].map((item, index) => (
                     
                     <div

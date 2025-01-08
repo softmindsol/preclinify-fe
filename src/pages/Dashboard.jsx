@@ -123,10 +123,10 @@ const Dashboard = () => {
 
     return (
         <div className='flex'>
-            <div className="">
+            <div className="fixed h-full">
                 <Sidebar />
             </div>
-            <div className='w-full py-10'>
+            <div className='flex-grow ml-[250px] py-10 overflow-y-auto'>
                 <div className='flex flex-row items-center h-[150px] justify-evenly w-full p-5'>
                     <p className='text-[32px] text-[#52525B] font-extrabold '>Hello Sainavi,</p>
                     <div className='flex items-center gap-x-5 '>
@@ -296,7 +296,7 @@ const Dashboard = () => {
 
                         <div className=" p-6 w-[800px] h-[443px]  bg-white rounded-lg shadow-md">
                             <StackedBar days={days} />
-
+                            
                             <div className='flex items-center justify-center gap-x-[75px]'>
                                 <p className='text-[#52525B] font-medium' >Correct Questions</p>
                                 <div className='w-[16px] h-[16px] rounded-[2px] bg-[#3CC8A1]' />

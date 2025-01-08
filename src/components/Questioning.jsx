@@ -53,7 +53,7 @@ const Questioning = () => {
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
-    
+
 
     const handleCheckboxChange = (categoryId) => {
         const selectedModule = data.data.find((module) => module.categoryId === categoryId); // Find the selected module
@@ -98,11 +98,11 @@ const Questioning = () => {
         }
     };
 
-   
-function handleContinue(){
+
+    function handleContinue() {
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
-}
+    }
     function handleSssionContinue(sessionId) {
         // Open the setup session modal
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
@@ -227,226 +227,258 @@ function handleContinue(){
     }, []);
 
     console.log("recentSessions:", recentSessions);
-    
+    console.log("selectedOption:", selectedOption);
+
 
     return (
         <div className=" lg:flex w-full">
-            <div className="h-full hidden lg:block">
+            <div className=" hidden lg:block fixed h-full">
                 <Sidebar />
             </div>
 
-            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
-                <div className=''>
-                    <img src="/assets/small-logo.png" alt="" />
-                </div>
+            <div className="flex-grow ml-[250px] py-10 overflow-y-auto overflow-x-hidden ">
 
-                <div className='' onClick={toggleDrawer}>
-                    <TbBaselineDensityMedium />
-                </div>
-            </div>
 
-            {/* Table Header */}
-            <div className="flex flex-col lg:w-full  sm:m-10 space-y-10">
-
-                <div className=" h-[137px] p-4 ">
-                    {/* Tab Section */}
-                    <div className="flex items-center justify-between space-x-2 text-[12px] md:text-[14px]">
-                        <button className="px-4 py-2 text-gray-800 bg-white w-[50%] sm:w-[33%] font-semibold  rounded-[8px]">
-                            Pre-clinical
-                        </button>
-                        <button className="px-4 py-2 text-gray-500 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
-                            Clinical
-                        </button>
-                        <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px]">
-                            Data <span className="md:block hidden ml-2 ">Interpretation</span>
-                        </button>
-
+                <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
+                    <div className=''>
+                        <img src="/assets/small-logo.png" alt="" />
                     </div>
 
-                    {/* Search and Button Section */}
-                    <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white">
-                        {/* Search Bar */}
-                        <div className="flex items-center p-8 gap-x-10  ">
-
-
-                            <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap">Pre clinical</p>
-                            <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                                <input
-                                    type="text"
-                                    placeholder="Search for modules"
-                                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                                    className="ml-2 w-[280px] focus:outline-none "
-                                />
-                             
-                            </div>                    </div>
-                        <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
-                            <div className="relative w-[105px]">
-                                <select
-                                    className="w-full h-[37px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
-                                    value={selectedOption} // Bind the selected value to state
-                                    onChange={handleSelectChange} // Trigger the handler on change
-                                >
-                                    <option>SBA</option>
-                                    <option>SQA</option>
-                                    <option>Mock</option>
-                                    <option>QuesGen</option>
-                                </select>
-                                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                                    <svg
-                                        className="w-4 h-4 text-gray-400"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                            {/* Dropdown */}
-
-
-                            {/* Continue Button */}
-                            <button
-
-                                onClick={handleContinue}
-                                className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
-                                Continue &gt;
-                            </button>
-                        </div>
-
+                    <div className='' onClick={toggleDrawer}>
+                        <TbBaselineDensityMedium />
                     </div>
                 </div>
-                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 ">
-                    <div className="w-[35%] flex items-center justify-between mr-10">
-                        <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center  w-full">
-                            Recent Sessions
-                        </p>
-                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] " />
-                    </div>
 
+                {/* Table Header */}
+                <div className="flex flex-col   sm:m-10 space-y-4">
 
-                    <div className="w-[65%] space-y-3">
-                        {recentSessions.length > 0 ? (
-                            recentSessions.map((sessionId, index) => {
-                                const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
-
-                                // Find category names corresponding to the category IDs
-                                const categoryNames = categoryIds.map(id => {
-                                    const category = data.data.find(item => item.categoryId === parseInt(id)); // Find the category by ID
-                                    return category ? category.categoryName : null; // Return the category name or null if not found
-                                }).filter(name => name !== null); // Filter out any null values
-
-                                console.log("categoryNames:", categoryNames);
-
-                                // Return the JSX for each session
-                                return (
-                                    <div key={index} className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">
-                                                {categoryNames.join(', ')} {/* Join category names into a single string */}
-                                            </p>
-                                            <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
-                                        </div>
-                                        <div>
-                                            <button
-                                                onClick={() => handleSssionContinue(sessionId)}
-                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
-                                                Continue &gt;
-                                            </button>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <div className="flex items-center justify-center">
-                                <p>No Session</p>
-                            </div>
-                        )}
-
-                    </div>
-                </div>
-                <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
-                    <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700  pb-2 w-full">
-                        <div className="text-left ">
-                            <input
-                                type="checkbox"
-                                className="mr-2 custom-checkbox"
-                                checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
-                                onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
-                            />
-                            Topics
-                        </div>
-                        <div className="text-right flex items-center gap-x-5">
-                            <div className="hidden sm:block text-center">Progress</div>
-
-                            <div className="flex items-center gap-x-3">
-                                <div className="h-4 w-4 bg-[#3CC8A1]"></div>
-                                <p>Correct</p>
-
-                            </div>
-                            <div className="flex items-center gap-x-3">
-                                <div className="h-4 w-4 bg-[#FF453A]"></div>
-                                <p>Incorrect</p>
-
-                            </div>
-                            <div className="flex items-center gap-x-3">
-                                <div className="h-4 w-4 bg-[#E4E4E7]"></div>
-                                <p>Unanswered</p>
+                    <div className="flex flex-col space-y-10">
+                        <div className=" h-[137px] p-4 ">
+                            {/* Tab Section */}
+                            <div className="flex items-center justify-between space-x-2 text-[12px] md:text-[14px]">
+                                <button className="px-4 py-2 text-gray-800 bg-white w-[50%] sm:w-[33%] font-semibold  rounded-[8px]">
+                                    Pre-clinical
+                                </button>
+                                <button className="px-4 py-2 text-gray-500 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
+                                    Clinical
+                                </button>
+                                <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px]">
+                                    Data <span className="md:block hidden ml-2 ">Interpretation</span>
+                                </button>
 
                             </div>
 
+                            {/* Search and Button Section */}
+                            <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white">
+                                {/* Search Bar */}
+                                <div className="flex items-center p-8 gap-x-10  ">
 
-                        </div>
 
-
-                    </div>
-                    <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
-
-                    <div>
-                        {isLoading ? (
-                            <Loader />
-                        ) : (
-                                filteredModules?.map((row) => (
-                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                    <div
-                                        className="text-left text-[14px] md:text-[16px] cursor-pointer"
-                                        onClick={() => handleCheckboxChange(row.categoryId)}
-                                    >
+                                    <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap">Pre clinical</p>
+                                    <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                                         <input
-                                            type="checkbox"
-                                            className="mr-2 custom-checkbox"
-                                            checked={selectedModules.includes(row.categoryId)}
-                                            onChange={() => handleCheckboxChange(row.categoryId)}
+                                            type="text"
+                                            placeholder="Search for modules"
+                                            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+                                            className="ml-2 w-[280px] focus:outline-none "
                                         />
-                                        {row.categoryName}
-                                    </div>
 
-                                    <div className="flex items-center justify-center space-x-1">
-                                        <div
-                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                            style={{ width: `50%` }}
-                                        ></div>
-                                        <div
-                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                            style={{ width: `30%` }}
-                                        ></div>
-                                        <div
-                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                            style={{ width: `20%` }}
-                                        ></div>
                                     </div>
                                 </div>
-                            ))
-                        )}
+                                <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
+                                    <div className="relative w-[105px]">
+                                        <select
+                                            className="w-full h-[37px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
+                                            value={selectedOption} // Bind the selected value to state
+                                            onChange={handleSelectChange} // Trigger the handler on change
+                                        >
+                                            <option>SBA</option>
+                                            <option>SQA</option>
+                                            <option>Mock</option>
+                                            <option>QuesGen</option>
+                                        </select>
+                                        <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                            <svg
+                                                className="w-4 h-4 text-gray-400"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    {/* Dropdown */}
+
+
+                                    {/* Continue Button */}
+                                    <button
+
+                                        onClick={handleContinue}
+                                        className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
+                                        Continue &gt;
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                        {
+                            selectedOption === 'QuesGen' ?
+                                <div>
+                                    <div className="bg-[#FFFFFF] m-4 rounded-[8px]">
+                                        <p className="text-[#3F3F46] text-[20px] font-semibold px-[50px] py-8                                                                                        ">How this works</p>
+
+                                        <div className="flex items-center justify-center pb-10">
+                                            <img src="/assets/quesGen.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <div className="bg-[#FFFFFF] m-4 rounded-[8px]  h-[210px] flex justify-center items-center flex-col">
+                                        <p className="text-[16px] text-[#3F3F46] font-medium">Drag and drop files here.</p>
+                                        <p className="text-[16px] text-[#71717A] font-medium">Upload anything from PDFs, to Powerpoints, to Word Docs!</p>
+                                        <button className="font-bold mt-3 text-[#FF9741] bg-[#FFE9D6] hover:bg-[#FF9741] px-3 py-3 rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+                                            File Upload
+                                            </button>
+                                    </div>
+                                </div>
+
+                                :
+                                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 ">
+                                    <div className="w-[35%] flex items-center justify-between mr-10">
+                                        <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center  w-full">
+                                            Recent Sessions
+                                        </p>
+                                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] " />
+                                    </div>
+
+
+                                    <div className="w-[65%] space-y-3">
+                                        {recentSessions.length > 0 ? (
+                                            recentSessions.map((sessionId, index) => {
+                                                const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
+
+                                                // Find category names corresponding to the category IDs
+                                                const categoryNames = categoryIds.map(id => {
+                                                    const category = data.data.find(item => item.categoryId === parseInt(id)); // Find the category by ID
+                                                    return category ? category.categoryName : null; // Return the category name or null if not found
+                                                }).filter(name => name !== null); // Filter out any null values
+
+                                                // Return the JSX for each session
+                                                return (
+                                                    <div key={index} className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">
+                                                                {categoryNames.join(', ')} {/* Join category names into a single string */}
+                                                            </p>
+                                                            <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                                        </div>
+                                                        <div>
+                                                            <button
+                                                                onClick={() => handleSssionContinue(sessionId)}
+                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                                Continue &gt;
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="flex items-center justify-center">
+                                                <p>No Session</p>
+                                            </div>
+                                        )}
+
+                                    </div>
+                                </div>
+                        }
+
+
+                    </div>
+
+                    <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
+
+                        <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700  pb-2 w-full">
+                            <div className="text-left ">
+                                <input
+                                    type="checkbox"
+                                    className="mr-2 custom-checkbox"
+                                    checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
+                                    onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
+                                />
+                                Topics
+                            </div>
+                            <div className="text-right flex items-center gap-x-5">
+                                <div className="hidden sm:block text-center">Progress</div>
+
+                                <div className="flex items-center gap-x-3">
+                                    <div className="h-4 w-4 bg-[#3CC8A1]"></div>
+                                    <p>Correct</p>
+
+                                </div>
+                                <div className="flex items-center gap-x-3">
+                                    <div className="h-4 w-4 bg-[#FF453A]"></div>
+                                    <p>Incorrect</p>
+
+                                </div>
+                                <div className="flex items-center gap-x-3">
+                                    <div className="h-4 w-4 bg-[#E4E4E7]"></div>
+                                    <p>Unanswered</p>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+                        <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
+
+                        <div>
+                            {isLoading ? (
+                                <Loader />
+                            ) : (
+                                filteredModules?.map((row) => (
+                                    <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                        <div
+                                            className="text-left text-[14px] md:text-[16px] cursor-pointer"
+                                            onClick={() => handleCheckboxChange(row.categoryId)}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="mr-2 custom-checkbox"
+                                                checked={selectedModules.includes(row.categoryId)}
+                                                onChange={() => handleCheckboxChange(row.categoryId)}
+                                            />
+                                            {row.categoryName}
+                                        </div>
+
+                                        <div className="flex items-center justify-center space-x-1">
+                                            <div
+                                                className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                                style={{ width: `50%` }}
+                                            ></div>
+                                            <div
+                                                className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                                style={{ width: `30%` }}
+                                            ></div>
+                                            <div
+                                                className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                                style={{ width: `20%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
                     </div>
                 </div>
             </div>
-
             <Drawer
                 open={isOpen}
                 onClose={toggleDrawer}
