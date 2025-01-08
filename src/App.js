@@ -20,6 +20,7 @@ import ShortQuestion from './components/ShortQuestion';
 import Scenarios from './components/Scenerio';
 import SceneriosDetail from './components/SceneriosDetail';
 import ProtectedRoute from './components/protectedRoute'; 
+import Performance from './pages/Performance';
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
+        <Route path="/performance" element={<><Performance /></>} />
+
         <Route path="/setting" element={<><Setting/></>} />
         <Route path="/home" element={<><AllModules /></>} />
         <Route path="/dashboard" element={<><Dashboard /></>} />

@@ -21,7 +21,6 @@ const StackedBar = ({ days, height = 300 }) => {
         incorrect: day.incorrect, // Incorrect answers
     }));
 
-    console.log("chartData:", chartData);
 
     return (
         <div className="mt-8">
