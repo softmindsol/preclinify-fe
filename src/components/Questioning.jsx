@@ -91,7 +91,47 @@ const Questioning = () => {
         });
     };
 
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const fileContent = e.target.result;
+                const extractedData = processFileContent(fileContent);
+            };
+            reader.readAsText(file); // Assuming the file is a text file
+        }
+    };
 
+    const processFileContent = (content) => {
+        // Split the content into lines
+        const lines = content.split('\n');
+
+        // Map through each line to extract data
+        const questions = lines.map(line => {
+            const [question_text, options, correct_answer] = line.split(','); // Adjust based on your file format
+
+            // Debugging: Log the extracted values
+            console.log("Extracted values:", { question_text, options, correct_answer });
+
+            // Check if options is defined and valid JSON
+            let parsedOptions;
+            try {
+                parsedOptions = options ? JSON.parse(options) : []; // Default to an empty array if options is undefined
+            } catch (error) {
+                console.error("Error parsing options:", options, error);
+                parsedOptions = []; // Default to an empty array on error
+            }
+
+            return {
+                question_text,
+                options: parsedOptions,
+                correct_answer,
+            };
+        });
+
+        return questions; // Return the extracted data
+    };
 
     const handleSelectAll = (isChecked) => {
         if (isChecked) {
@@ -346,10 +386,24 @@ const Questioning = () => {
                                     <div className="bg-[#FFFFFF] m-4 rounded-[8px]  h-[210px] flex justify-center items-center flex-col">
                                         <p className="text-[16px] text-[#3F3F46] font-medium">Drag and drop files here.</p>
                                         <p className="text-[16px] text-[#71717A] font-medium">Upload anything from PDFs, to Powerpoints, to Word Docs!</p>
-                                        <button className="font-bold mt-3 text-[#FF9741] bg-[#FFE9D6] hover:bg-[#FF9741] px-3 py-3 rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+                                        <button
+                                            className="font-bold mt-3 text-[#FF9741] bg-[#FFE9D6] hover:bg-[#FF9741] px-3 py-3 rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200"
+                                            onClick={() => document.getElementById('fileInput').click()} // Trigger file input click
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-upload">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                <polyline points="17 8 12 3 7 8" />
+                                                <line x1="12" x2="12" y1="3" y2="15" />
+                                            </svg>
                                             File Upload
-                                            </button>
+                                        </button>
+                                        <input
+                                            type="file"
+                                            id="fileInput"
+                                            accept=".txt,.csv, .pdf"
+                                            style={{ display: 'none' }} // Hide the file input
+                                            onChange={handleFileUpload} // Handle file upload
+                                        />
                                     </div>
                                 </div>
 
