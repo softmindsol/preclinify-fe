@@ -42,15 +42,15 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center w-full">
+        <div className="flex items-center w-full overflow-hidden">
             <div className="bg-[#FFFFFF] h-screen flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]">
                 <Logo />
                 <p className="text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46]">
                     Log into Preclinify
                 </p>
-                <form onSubmit={handleLogin} className="mt-2 space-y-3">
+                <form onSubmit={handleLogin} className="mt-2 space-y-3 h-[400px]">
                     <div>
-                        <label htmlFor="email" className="text-[#3CC8A1] text-[14px] sm:text-[16px]">
+                        <label htmlFor="email" className="text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium">
                             Email Address
                         </label>
                         <br />
@@ -65,7 +65,7 @@ const Login = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="text-[#3CC8A1] text-[14px] sm:text-[16px]">
+                        <label htmlFor="password" className="text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium">
                             Password
                         </label>
                         <br />
@@ -80,7 +80,7 @@ const Login = () => {
                         />
                     </div>
 
-                    <div className="flex items-center flex-col space-y-2 sm:flex-row sm:justify-between h-[50px]">
+                    <div className="flex items-center flex-col space-y-0 sm:flex-row sm:justify-between h-[80px] mt-10">
                         <div className="flex items-center">
                             <input
                                 id="rememberMe"
@@ -88,7 +88,7 @@ const Login = () => {
                                 type="checkbox"
                                 className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-[#282F5A] focus:ring-1 focus:ring-[#282F5A]"
                             />
-                            <label htmlFor="rememberMe" className="mx-3 text-[14px] sm:text-[16px] font-medium text-[#3F3F46]">
+                            <label htmlFor="rememberMe" className="mx-3 text-[14px] sm:text-[16px] font-medium text-[#3F3F46] ">
                                 Keep me logged in
                             </label>
                         </div>

@@ -50,13 +50,13 @@ const Register = () => {
 
 
     return (
-        <div className='flex items-center w-full'>
+        <div className='flex items-center w-full overflow-hidden'>
             <div className='bg-[#FFFFFF] min-h-screen py-5 flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]'>
                 <Logo />
-                <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46]'>Sign up into Preclinify</p>
-                <form onSubmit={handleSubmit} className='mt-2 space-y-3 w-[90%] sm:w-[430px]'>
+                <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46] mb-5'>Sign up into Preclinify</p>
+                <form onSubmit={handleSubmit} className='mt-2 space-y-4 w-[90%] sm:w-[430px]'>
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px]'>Email Address</label>
+                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Email Address</label>
                         <br />
                         <input
                             type='email'
@@ -68,7 +68,7 @@ const Register = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px]'>Password</label>
+                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Password</label>
                         <br />
                         <input
                             type='password'
@@ -80,7 +80,7 @@ const Register = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px]'>Confirm Password</label>
+                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Confirm Password</label>
                         <br />
                         <input
                             type='password'
@@ -92,7 +92,7 @@ const Register = () => {
                     </div>
 
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px]'>Phone</label>
+                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Phone</label>
                         <br />
                         <input
                             type='text'

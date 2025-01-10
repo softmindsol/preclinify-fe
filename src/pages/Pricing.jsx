@@ -7,7 +7,7 @@ const Pricing = () => {
         <div className=''>
             <Navbar />
 
-            <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-16  '>
+            <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-16  overflow-hidden'>
                 <div className='font-semibold text-[24px] lg:text-[36px]  text-[#52525B] text-center'>
                     <p>So confident </p>
                     <p>we can even guarantee you pass.</p>

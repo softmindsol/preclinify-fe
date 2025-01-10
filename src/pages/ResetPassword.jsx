@@ -63,7 +63,7 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className='flex items-center w-full'>
+        <div className='flex items-center w-full overflow-hidden'>
             <div className='bg-[#FFFFFF] h-screen flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]'>
                 <Logo />
                 <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46]'>Reset Password</p>
@@ -72,7 +72,7 @@ const ResetPassword = () => {
                     className='mt-2 space-y-3 w-[90%] sm:w-[430px]'
                 >
                     <div>
-                        <label htmlFor="password" className='text-[#3CC8A1] text-[14px] sm:text-[16px]'>
+                        <label htmlFor="password" className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>
                             Password
                         </label>
                         <br />
@@ -87,7 +87,7 @@ const ResetPassword = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="confirmPassword" className='text-[#3CC8A1] text-[14px] sm:text-[16px]'>
+                        <label htmlFor="confirmPassword" className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>
                             Confirm Password
                         </label>
                         <br />
