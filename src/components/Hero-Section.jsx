@@ -28,11 +28,11 @@ const Hero = () => {
                 ></div>
 
                 <div className="text-center w-[90%] md:w-[35%] xl:w-[40%] space-y-5 2xl:space-y-10 ">
-                    <p className="text-[30px] sm:text-[40px] leading-[36px]  sm:leading-[50px] 2xl:text-[64px] font-bold 2xl:leading-[77px]">
+                    <p className="text-[30px] sm:text-[40px] leading-[36px] font-extrabold sm:leading-[50px] 2xl:text-[64px]  2xl:leading-[77px]">
                         <span className="text-[#3CC8A1]">Supercharge</span> your medicine
                         journey!
                     </p>
-                    <p className="text-[14px] sm:text-[20px] 2xl:text-[24px]">
+                    <p className="text-[14px] sm:text-[20px] 2xl:text-[24px] font-bold">
                         <span className="font-bold">MLA. SAQ. AI patients</span> and much much
                         more...
                     </p>
@@ -53,26 +53,26 @@ const Hero = () => {
                 <img src="/assets/Newcastle-University-Logo.png" alt="" />
             </div>
 
-            <div className="w-[90%] lg:w-[58rem] xl:w-[75rem] 2xl:w-7xl mx-auto p-[2rem] lg:p-16 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-[2rem] md:gap-20 items-center">
+            <div className="w-[90%] lg:w-[58rem] xl:w-[75rem] 2xl:w-[105rem] mx-auto p-[2rem] lg:p-10 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-[2rem] md:gap-32 items-center">
                    
                     <div>
                         {answers.map((answer) => (
                             <div
                                 key={answer.id}
-                                className={`flex items-center justify-between p-[0.5rem] 2xl:p-4 border rounded-lg mb-4 ${selectedAnswer === answer.id
+                                className={`flex items-center justify-between p-[0.5rem] 2xl:px-4 border rounded-[20px] mb-4 ${selectedAnswer === answer.id
                                     ? "border-green-500"
                                     : "border-[#FF9741]"
                                     }`}
                                 onClick={() => setSelectedAnswer(answer.id)}
                             >
-                                <div className="flex items-center">
+                                <div className="flex items-center h-[70px]">
                                     <input
                                         type="radio"
                                         name="answer"
                                         id={answer.id}
                                         value={answer.id}
-                                        className="hidden"
+                                        className="hidden "
                                         onChange={() => setSelectedAnswer(answer.id)}
                                         checked={selectedAnswer === answer.id}
                                     />
@@ -95,7 +95,7 @@ const Hero = () => {
                         ))}
                     </div>
 
-                    <div>
+                    <div className="">
                         <h2 className="text-[20px] lg:text-[25px] 2xl:text-[32px] font-semibold text-[#3F3F46] mb-4">
                             Want to become a <span className="text-[#FF9741]">doctor</span> in the UK?
                         </h2>
@@ -116,15 +116,15 @@ const Hero = () => {
                 <div className="mt-5 md:mt-0">
                     <h1 className="text-[#3F3F46] text-[20px] sm:text-[24px] lg:text-[32px] xl:text-[40px] 2xl:text-[32px] font-extrabold">See yourself improve in <span className="text-[#FF9741]">real-time</span> </h1>
                     <ul className="text-[#3F3F46] space-y-2 text-[14px] sm:text-[18px] lg:text-[24px] 2xl:text-[20px]">
-                        <li>• <span className="text">Track</span> your progress</li>
-                        <li>• See how you <span>compare</span></li>
-                        <li>• Understand how to  <span>improve</span></li>
-                        <li>• Focus your learning,<span>save time</span></li>
+                        <li>• <span className="font-bold">Track</span> your progress</li>
+                        <li>• See how you <span className="font-bold">compare</span></li>
+                        <li>• Understand how to  <span className="font-bold">improve</span></li>
+                        <li>• Focus your learning,<span className="font-bold">save time</span></li>
                     </ul>
                 </div>
 
-                <div className="bg-[#FFFFFF] rounded-[24px] w-[90%] h-[350px]  sm:w-[400px] sm:h-[410px] xl:w-[489px] xl:h-[503px] relative">
-                    <img src="/assets/sling.png" alt="" className="" />
+                <div className="bg-[#FFFFFF] rounded-[24px] w-[90%] h-[350px] sm:w-[400px] sm:h-[410px] xl:w-[489px] xl:h-[503px] relative ">
+                    <img src="/assets/sling.png" alt="" className="absolute bottom-28 right-5 z-10 w-full h-[300px] " />
                 </div>
             </div>
 
@@ -132,7 +132,7 @@ const Hero = () => {
                 <div className="flex gap-x-3">
 
                     <div className="space-y-3">
-                    <div className="w-[180px]  lg:w-[263px] xl:w-[308px] h-[210px] lg:h-[274px] bg-[#FCE8D8] rounded-lg"></div>
+                        <div className="w-[180px]  lg:w-[263px] xl:w-[308px] h-[210px] lg:h-[274px] bg-[#FFE9D6] rounded-lg"></div>
                         <div className="w-[180px]  lg:w-[263px] xl:w-[308px] h-[138px] bg-white  rounded-lg"></div>
 
                      </div>
@@ -140,7 +140,7 @@ const Hero = () => {
                     <div className="space-y-3">
                         <div className="w-[130px] lg:w-[185px] h-[140px] lg:h-[172px] bg-white rounded-lg"></div>
 
-                        <div className="w-[130px] lg:w-[185px] h-[209px] lg:h-[248px] bg-[#FCE8D8] rounded-lg"></div>
+                        <div className="w-[130px] lg:w-[185px] h-[209px] lg:h-[248px] bg-[#FFE9D6] rounded-lg"></div>
 
                      </div>
                 </div>
@@ -188,12 +188,12 @@ const Hero = () => {
                     <div className="text-[24px] sm:text-[36px] lg:text-[48px] 2xl:text-[64px] text-center font-bold leading-[35px] sm:leading-[45px] lg:leading-[55px] 2xl:leading-[77px]">
                         <p className= "text-[20px] sm:text-[26px] lg:text-[36px] 2xl:text-[48px] font-extrabold text-[#3F3F46]">Ready to</p>
                         <p className="text-[#3CC8A1]">Supercharge your</p>  
-                        <p>medicine journey!</p>
+                        <p>medicine journey?</p>
                     </div>
                    
                 </div>
                 <Link to={'/signup'}>
-                    <button className="mt-4 rounded-[12px] text-[10px] sm:text-[14px] lg:text-[16px] bg-[#FF9741] px-3.5 py-2 sm:px-5 sm:py-3 text-white font-extrabold shadow-orangeBlur hover:shadow-lg transition">
+                    <button className="mt-4 rounded-[12px] text-[10px] sm:text-[14px] lg:text-[16px] bg-[#FF9741] px-3.5 py-2 sm:px-7 sm:py-3 text-white font-extrabold shadow-orangeBlur hover:shadow-lg transition">
                         Sign Up Now
                     </button>
                 </Link>

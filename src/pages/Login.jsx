@@ -80,7 +80,7 @@ const Login = () => {
                         />
                     </div>
 
-                    <div className="flex items-center flex-col space-y-0 sm:flex-row sm:justify-between h-[80px] mt-10">
+                    <div className="flex items-center flex-col space-y-2 sm:flex-row sm:justify-between h-[50px] mt-10">
                         <div className="flex items-center">
                             <input
                                 id="rememberMe"

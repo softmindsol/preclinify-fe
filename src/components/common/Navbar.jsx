@@ -33,25 +33,23 @@ const Navbar = () => {
 
                 {/* Navigation Links */}
 
-                <div className="hidden lg:flex items-center gap-x-8">
+                <div className="hidden lg:flex items-center gap-x-8  font-semibold">
                     <ul className="flex items-center gap-x-8 text-[#282F5A] text-[16px]">
                         <NavLink to='/'>
-                            <li className="hover:text-[#28A079] font-medium cursor-pointer">
+                            <li className="hover:text-[#28A079]  cursor-pointer">
                                 Home
                             </li>
                         </NavLink>
 
                         <NavLink to='/pricing'>
-                            <li className="hover:text-[#28A079] font-medium cursor-pointer">
+                            <li className="hover:text-[#28A079]  cursor-pointer">
                                 Pricing
                             </li>
                         </NavLink>
 
-                        <li className="hover:text-[#28A079] font-medium cursor-pointer">
-                            Textbook
-                        </li>
+                
                         <NavLink to={'/login'}>
-                            <li className="hover:text-[#28A079] font-medium cursor-pointer">
+                            <li className="hover:text-[#28A079] cursor-pointer">
                                 Log In
                             </li>
                         </NavLink>
@@ -60,7 +58,7 @@ const Navbar = () => {
 
                     {/* Sign-Up Button */}
                     <Link to="/signup">
-                        <button className="px-6 py-2 bg-[#FFE6D4] text-[#FF7A28] font-bold rounded-[12px] hover:bg-[#FFDAC4] transition-all">
+                        <button className="px-6 py-2 bg-[#FFE6D4] text-[#FF7A28] font-extrabold rounded-[12px] hover:bg-[#FFDAC4] transition-all">
                             Sign Up Now
                         </button>
                     </Link>
@@ -112,7 +110,6 @@ const Navbar = () => {
 
                     </ul>
 
-                    {/* Sign-Up Button */}
                    
 
                 </div>

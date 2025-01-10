@@ -31,7 +31,7 @@ const Slider = () => {
                         <p>
                               The questions are engaging and relevant, and the answers are clearly and thoughtfully explained. Highly recommended for fellow future doctors!”
                         </p>
-                          <p className='text-[12px] sm:text-[16px] xl:text-[20px] 2xl:text-[24px] text-[#FF9741] ' style={{marginTop:'10px'}}>
+                          <p className='text-[12px] font-bold sm:text-[16px] xl:text-[20px] 2xl:text-[24px] text-[#FF9741] ' style={{marginTop:'10px'}}>
                               Mohammad, University College London
                         </p>
                     </div>
@@ -47,7 +47,7 @@ const Slider = () => {
                           <p>
                               The questions are engaging and relevant, and the answers are clearly and thoughtfully explained. Highly recommended for fellow future doctors!”
                           </p>
-              <p className='text-[12px] sm:text-[16px] xl:text-[20px] 2xl:text-[24px] text-[#FF9741] ' style={{ marginTop: '10px' }}>
+              <p className='text-[12px] sm:text-[16px] font-bold xl:text-[20px] 2xl:text-[24px] text-[#FF9741] ' style={{ marginTop: '10px' }}>
                               Mohammad, University College London
                           </p>
                       </div>

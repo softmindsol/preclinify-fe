@@ -41,8 +41,7 @@ function App() {
         <Route path="/home" element={<><AllModules /></>} />
         <Route path="/dashboard" element={<><Dashboard /></>} />
         <Route path="/questioning" element={<><Questioning /></>} />
-        <Route path="/dashboard/:id" element={<><SubModule /></>} />
-        <Route path="/dashboard/detail/:id" element={<><SubModuleTwo /></>} />
+      
         <Route path="/reset-password" element={<><ResetPassword /></>} />
         <Route path="/question-card" element={<><QuestionCard /></>} />
         <Route path="/score" element={<><Score /></>} />

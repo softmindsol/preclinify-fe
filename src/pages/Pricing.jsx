@@ -4,7 +4,7 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 const Pricing = () => {
     return (
-        <div className=''>
+        <div className='overflow-hidden'>
             <Navbar />
 
             <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-16  overflow-hidden'>
@@ -12,17 +12,17 @@ const Pricing = () => {
                     <p>So confident </p>
                     <p>we can even guarantee you pass.</p>
                 </div>
-                <div className="flex w-[224px] font-extrabold h-[50px] items-center justify-center bg-[#3CC8A1] rounded-[8px] text-white gap-x-8">
+                <div className="flex w-[224px] p-8 font-bold h-[50px] items-center justify-center bg-[#3CC8A1] rounded-[8px] text-white gap-x-8">
                     <p className="hover:bg-white/20 px-4 py-2 cursor-pointer rounded">Termly</p>
                     <p className="hover:bg-white/20 px-4 py-2 cursor-pointer rounded">Annual</p>
                 </div>
-                <div className='text-[16px] text-[#71717A] mt-2'><p>past.. save at least <span className='text-[#FF9741]'>35%</span>  with an annual plan</p></div>
+                <div className='text-[16px] font-bold text-[#71717A] mt-2'><p>past.. save at least <span className='text-[#FF9741] font-bold'>35%</span>  with an annual plan</p></div>
                 <div>
                     <div className='flex flex-col lg:flex-row items-center justify-center gap-x-5'>
                         <div className='mt-5 relative  transition hover:shadow-greenBlur rounded-[16px]'>
                             <div className='h-[500px] lg:h-[556px]  w-[270px] lg:w-[310px] border-[1px] border-[#3CC8A1] rounded-[16px]'>
                                 <div className='h-[100px] lg:h-[140px] w-full bg-[#3CC8A1] text-center rounded-tr-[14px] rounded-tl-[14px] p-5'>
-                                    <p className='text-white font-bold text-[16px] lg:text-[20px]'>The OSCE plan</p>
+                                    <p className='text-white font-bold text-[16px] lg:text-[18px]'>The OSCE plan</p>
                                     <p className='text-white font-extrabold text-[26px] lg:text-[40px]'>£84</p>
                                 </div>
                                 <div className='p-8 space-y-2'>
