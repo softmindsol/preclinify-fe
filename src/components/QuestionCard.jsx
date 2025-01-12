@@ -19,7 +19,6 @@ import ChemistryBeaker from "./chemistry-beaker";
 
 
 
-// Function to format the time in MM:SS format
 const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -46,7 +45,7 @@ const QuestionCard = () => {
     const navigation = useNavigate();
     const [border, setBorder] = useState(true);
     const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
-
+    const [showPopup, setShowPopup] = useState(false);
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
@@ -57,11 +56,15 @@ const QuestionCard = () => {
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
     const isTimerMode = useSelector((state) => state.mode);
-    const [timer, setTimer] = useState(calculateTimeForQuestions(isTimerMode.time));
-    const review = useSelector(state => state.questionReview.value)
+    const [timer, setTimer] = useState(() => {
+        // Calculate the initial timer value based on the number of questions
+        const initialTime = calculateTimeForQuestions(isTimerMode.time);
+        const savedTime = localStorage.getItem('examTimer');
+        return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
+    }); const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
-    const [beakerToggle,setBeakerToggle] = useState(false);
+    const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
 
     const handleFilterChange = (filter) => {
@@ -121,7 +124,7 @@ const QuestionCard = () => {
         });
     };
 
-    const beakerToggledHandler=()=>{
+    const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
     }
 
@@ -254,7 +257,7 @@ const QuestionCard = () => {
 
 
     const handleFinishAndReview = () => {
-        if (isReviewEnabled) {
+        if (true) {
             handleCheckAnswer();
             dispatch(setMcqsAccuracy({ accuracy }))
 
@@ -267,9 +270,13 @@ const QuestionCard = () => {
 
     };
 
+    function handleShowPopup() {
+        setShowPopup(true); // Close the popup
+    }
 
-
-
+    const handleBackToDashboard = () => {
+        navigation('/dashboard');
+    };
 
     const indicesToDisplay =
         selectedFilter === 'All' ? allIndices
@@ -288,23 +295,24 @@ const QuestionCard = () => {
 
 
     useEffect(() => {
-        if (isTimerMode['mode'] === 'Exam') { // Check if the selected mode is Exam Mode
-            // If time reaches 0, trigger finish and review handler
+        if (isTimerMode['mode'] === 'Exam') {
+            // Save the timer value in localStorage on every update
+            localStorage.setItem('examTimer', timer);
+
             if (timer === 0) {
                 handleFinishAndReview();
+                localStorage.removeItem('examTimer'); // Clear storage when timer ends
+                return;
             }
 
             const interval = setInterval(() => {
-                if (timer > 0) {
-                    setTimer(prevTime => prevTime - 1); // Decrease time by 1 second every second
-                }
+                setTimer((prevTime) => prevTime - 1);
             }, 1000);
-            console.log("timer inside:", timer);
 
-            // Cleanup the interval when component unmounts or time reaches 0
             return () => clearInterval(interval);
         }
     }, [timer, isTimerMode, handleFinishAndReview]);
+
 
 
     // Attach the click event listener to the document when the menu is open
@@ -453,9 +461,9 @@ const QuestionCard = () => {
                                         <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
                                     </div>
                                 }
-                               
+
                             </div>
-                           
+
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -769,7 +777,7 @@ const QuestionCard = () => {
 
                 </div>
 
-                
+
 
                 {/* Sidebar Section */}
 
@@ -894,7 +902,8 @@ const QuestionCard = () => {
                             </div>
                             <hr className="w-[200px] my-2" />
                             {/* Back to Dashboard Button */}
-                            <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap">
+                            <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap"
+                                onClick={handleShowPopup}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -927,6 +936,30 @@ const QuestionCard = () => {
 
                 isAccordionVisible && <DiscussionBoard />
             }
+
+            {showPopup && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-sm text-center">
+                        <h2 className="text-lg font-bold text-gray-800 mb-4">
+                            Are you sure you want to go back to the dashboard?
+                        </h2>
+                        <div className="flex justify-center gap-4">
+                            <button
+                                className="px-4 py-2 bg-[#3CC8A1] hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-300"
+                                onClick={handleBackToDashboard}
+                            >
+                                Yes
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition-all duration-300"
+                                onClick={() => setShowPopup(false)}
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/*  */}
 

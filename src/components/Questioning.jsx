@@ -25,9 +25,6 @@ import { updateRecentSessions } from "../redux/features/recent-session/recent-se
 
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
-    // const isLoading = useSelector(
-    //     (state) => state?.loading?.[fetchModules.typePrefix]
-    // );
     const [storedSession, setStoredSession] = useState([])
     const [selectedModules, setSelectedModules] = useState([]);
     const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
@@ -43,15 +40,16 @@ const Questioning = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isToggled, setIsToggled] = useState(false);
-
+    const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
 
     const handleToggle = () => {
-        setIsToggled(!isToggled);
+        setIsSortedByPresentation(prev => !prev);
     };
+
     // Handler to update the selected option
     const handleSelectChange = (event) => {
         setSelectedOption(event.target.value); // Update state with the selected value
@@ -81,8 +79,6 @@ const Questioning = () => {
             const selectedModuleName = data.data
                 .filter((module) => selectedModules.includes(module.categoryId) || module.categoryId === categoryId)
                 .map((module) => module.categoryName);
-            console.log("selectedModuleNames:", selectedModuleName);
-
             // Combine module names into a single string
             const combinedSession = selectedModuleNames.join(', ');
 
@@ -158,9 +154,6 @@ const Questioning = () => {
 
         // No need to split, just trim the sessionId if necessary
         const flatModuleIds = moduleIds.map(id => id.trim()); // Trim each ID
-
-        // This will ensure all IDs are in a single array
-        console.log("moduleIds:", flatModuleIds);
 
         // Make an API call based on the selected module IDs
         if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
@@ -265,13 +258,21 @@ const Questioning = () => {
     }, [recentSessions]);
     // Effect to retrieve recent sessions from localStorage
     useEffect(() => {
+        localStorage.removeItem('examTimer'); // Clear storage when timer ends
+
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
         if (storedSessions) {
             setRecentSessions(JSON.parse(storedSessions)); // Parse and set to state
         }
     }, []);
-
+    const sortedModules = isSortedByPresentation
+        ? [...filteredModules].sort((a, b) => {
+            const isASelected = selectedModules.includes(a.categoryId);
+            const isBSelected = selectedModules.includes(b.categoryId);
+            return (isASelected === isBSelected) ? 0 : isASelected ? -1 : 1;
+        })
+        : filteredModules;
     console.log("recentSessions:", recentSessions);
     console.log("selectedOption:", selectedOption);
 
@@ -477,7 +478,7 @@ const Questioning = () => {
                                 <div className="flex items-center space-x-2 p-4">
                                     <span className="text-gray-700">Sort By Presentation</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" className="sr-only peer" />
+                                        <input type="checkbox" className="sr-only peer" onChange={handleToggle} />
                                         <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
                                     </label>
                                 </div>
@@ -514,7 +515,7 @@ const Questioning = () => {
                             {isLoading ? (
                                 <Loader />
                             ) : (
-                                filteredModules?.map((row) => (
+                                    sortedModules?.map((row) => (
                                     <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
                                         <div
                                             className="text-left text-[14px] md:text-[16px] cursor-pointer"
@@ -668,3 +669,5 @@ const Questioning = () => {
 };
 
 export default Questioning;
+
+

@@ -16,7 +16,7 @@ import recentSessionsReducer from './features/recent-session/recent-session.slic
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['modules', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions"], // Persist these in localStorage
+    whitelist: ['modules', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions","mode"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {

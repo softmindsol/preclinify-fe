@@ -116,6 +116,8 @@ const Dashboard = () => {
 
 
     useEffect(() => {
+        localStorage.removeItem('examTimer'); // Clear storage when timer ends
+
         dispatch(clearResult());
         dispatch(resetQuestionReviewValue());
     }, [])
