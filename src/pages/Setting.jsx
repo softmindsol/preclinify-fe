@@ -57,7 +57,7 @@ const Setting = () => {
                     <h2 className="text-[14px] sm:text-[16px] font-semibold mb-4 text-[#000000]">General</h2>
                     <div className="flex items-center gap-x-40 mb-4">
                         <div>
-                            <p className="font-medium text-[12px] sm:text-[14px] flex items-center gap-x-2 "> <FaClock /> Exam Date Countdown</p>
+                            <p className="font-medium text-[#3F3F46] text-[12px] sm:text-[14px] flex items-center gap-x-2 "> <FaClock /> Exam Date Countdown</p>
 
                         </div>
 
@@ -71,7 +71,7 @@ const Setting = () => {
                             ></span>
                         </div>
                     </div>
-                    <p className="text-[12px] sm:text-[14px] ">
+                    <p className="text-[12px] sm:text-[14px] text-[#71717A] ">
                         Tracks the time remaining until your exam day.
                     </p>
 
@@ -86,7 +86,7 @@ const Setting = () => {
                             <div className='flex items-center gap-x-2 '>
                                 <PiCircleHalfFill />
 
-                                <p className="text-[12px] sm:text-[14px] text-[#3F3F46] whitespace-nowrap ">Dark Mode</p>
+                                <p className="text-[12px] sm:text-[14px] text-[#3F3F46] whitespace-nowrap font-medium">Dark Mode</p>
                             </div>
 
 
@@ -118,11 +118,11 @@ const Setting = () => {
                                 <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap">
                                     Your current subscription package.
                                 </p>
-                                <div className="flex justify-between items-center mt-2">
-                                    <span className="font-semibold text-[12px] sm:text-[14px]">Platinum</span>
+                                <div className="flex justify-between items-center mt-2"> 
+                                    <span className=" text-[12px] sm:text-[14px] font-medium">Platinum</span>
                                 </div>
                             </div>
-                            <button className="border-[1px] border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1">Change Plan</button>
+                            <button className="border-[1px] border-[#3CC8A1] font-medium text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1">Change Plan</button>
                         </div>
 
                     </div>
@@ -158,17 +158,17 @@ const Setting = () => {
                                 <MdOutlinePayments />
                                 <p className="font-medium text-[14px] sm:text-[16px]">Platinum Tier Subscription</p>
                             </div>
-                            <p className="text-[14px] sm:text-[16px] text-[#71717A]">£3499 / Year</p>
+                            <p className="text-[14px] sm:text-[16px] text-[#71717A] font-bold">£3499 / Year</p>
                         </div>
 
                         <button className="border-[1px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Change plan</button>
 
                     </div>
                     <div className="flex space-x-4 mt-4">
-                        <button className="border-[1px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
+                        <button className="border-[1px] font-semibold border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
                             Purchase OSCE Credit
                         </button>
-                        <button className="border-[1px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
+                        <button className="border-[1px] font-semibold border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
                             Update Billing Information
                         </button>
                     </div>
@@ -177,7 +177,7 @@ const Setting = () => {
                 {/* Account Section */}
                 <div className="bg-white shadow-md lg:rounded-md p-4">
                     <h2 className="text-[16px] sm:text-[18px] font-semibold mb-4 text-[#3F3F46]">Account</h2>
-                    <div className="mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between  ">
+                    <div className="mb-4 flex flex-col   sm:flex-row sm:items-center sm:justify-between  ">
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">Display Name</label>
                         <input
                             type="text"
@@ -222,15 +222,15 @@ const Setting = () => {
                         </select>
                     </div>
                     <div className='flex justify-end'>
-                        <button className='bg-[#3CC8A1] px-2 py-1 text-white rounded-[8px] ' >Save</button>
+                        <button className='bg-[#3CC8A1] px-2 py-1 text-white rounded-[8px] font-semibold' >Save</button>
 
                     </div>
 
                     <div className='flex flex-col gap-y-5 mt-10'>
-                        <button className="border-[1px] w-[91px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1" onClick={handleLogout}>Log out</button>
-                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Reset Password</button>
+                        <button className="border-[1px] w-[91px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold" onClick={handleLogout}>Log out</button>
+                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold">Reset Password</button>
 
-                        <button className="border-[1px] w-[152px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Delete Account</button>
+                        <button className="border-[1px] w-[152px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold">Delete Account</button>
                     </div>
 
 
@@ -240,9 +240,9 @@ const Setting = () => {
                 <div className='bg-white shadow-md lg:rounded-md p-4 mt-6'>
                         <p className='text-[#3F3F46] text-[18px] font-semibold'>Advanced</p>
                     <div className='flex flex-col gap-y-5 mt-10'>
-                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Clear Cache</button>
+                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold">Clear Cache</button>
 
-                        <button className="border-[1px] w-[190px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1.5">Reset Progress Data</button>
+                        <button className="border-[1px] w-[190px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1.5 font-semibold">Reset Progress Data</button>
                     </div>
                 </div>
 

@@ -7,7 +7,7 @@ const Pricing = () => {
         <div className='overflow-hidden'>
             <Navbar />
 
-            <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-16  overflow-hidden'>
+            <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-24 2xl:mt-16  overflow-hidden'>
                 <div className='font-semibold text-[24px] lg:text-[36px]  text-[#52525B] text-center'>
                     <p>So confident </p>
                     <p>we can even guarantee you pass.</p>
@@ -16,7 +16,7 @@ const Pricing = () => {
                     <p className="hover:bg-white/20 px-4 py-2 cursor-pointer rounded">Termly</p>
                     <p className="hover:bg-white/20 px-4 py-2 cursor-pointer rounded">Annual</p>
                 </div>
-                <div className='text-[16px] font-bold text-[#71717A] mt-2'><p>past.. save at least <span className='text-[#FF9741] font-bold'>35%</span>  with an annual plan</p></div>
+                <div className='text-[16px] font-medium text-[#71717A] mt-2'><p>past.. save at least <span className='text-[#FF9741] font-bold'>35%</span>  with an annual plan</p></div>
                 <div>
                     <div className='flex flex-col lg:flex-row items-center justify-center gap-x-5'>
                         <div className='mt-5 relative  transition hover:shadow-greenBlur rounded-[16px]'>
