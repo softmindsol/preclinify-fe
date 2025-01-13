@@ -113,7 +113,7 @@ const navigation=useNavigate()
                                     value={numQuestions}
                                     onChange={handleNumQuestionsChange}
                                 
-                                    className="w-full px-3 py-2 border rounded placeholder-transparent text-end"
+                                    className="w-full  py-[10px] border rounded placeholder-transparent text-end px-[20px]"
                                 />
                                 <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#A1A1AA] text-[14px] font-medium pointer-events-none">
                                     Maximum: 200
@@ -175,7 +175,7 @@ const navigation=useNavigate()
 
                         {/* Question Type */}
                         <div className="mb-6 mt-8">
-                            <p className="block text-[#52525B] font-semibold text-[20px] mb-2">Question Type</p>
+                            <p className="block text-[#52525B] font-medium text-[20px] mb-2">Question Type</p>
                             {["notAnswered", "incorrect", "correct"].map((type) => (
                                 <div className="space-y-20" key={type}>
                                     <div className="flex items-center justify-between mb-10 mt-5">

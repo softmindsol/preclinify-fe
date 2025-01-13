@@ -297,16 +297,16 @@ const Questioning = () => {
                 </div>
 
                 {/* Table Header */}
-                <div className="flex flex-col   sm:m-10 space-y-4">
+                <div className="flex flex-col   sm:m-10 space-y-4 py-4 px-16">
 
                     <div className="flex flex-col space-y-10">
                         <div className=" h-[137px] p-4 ">
                             {/* Tab Section */}
-                            <div className="flex items-center justify-between space-x-2 text-[12px] md:text-[14px]">
-                                <button className="px-4 py-2 text-gray-800 bg-white w-[50%] sm:w-[33%] font-semibold  rounded-[8px]">
+                            <div className="flex items-center text-[#3F3F46] justify-between space-x-2 text-[12px] md:text-[16px] font-medium">
+                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[33%]   rounded-[8px]">
                                     Pre-clinical
                                 </button>
-                                <button className="px-4 py-2 text-gray-500 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
+                                <button className="px-4 py-2 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
                                     Clinical
                                 </button>
                                 <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px]">
@@ -336,7 +336,7 @@ const Questioning = () => {
                                 <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
                                     <div className="relative w-[105px]">
                                         <select
-                                            className="w-full h-[37px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none"
+                                            className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none"
                                             value={selectedOption} // Bind the selected value to state
                                             onChange={handleSelectChange} // Trigger the handler on change
                                         >
@@ -365,9 +365,9 @@ const Questioning = () => {
 
                                     {/* Continue Button */}
                                     <button
-
                                         onClick={handleContinue}
-                                        className="bg-[#3CC8A1] text-[12px] md:text-[14px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]">
+                                        disabled={selectedModules.length === 0} // Disable the button if no modules are selected
+                                        className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : ''} text-[12px] md:text-[16px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]`}>
                                         Continue &gt;
                                     </button>
                                 </div>
@@ -441,7 +441,7 @@ const Questioning = () => {
                                                         <div>
                                                             <button
                                                                 onClick={() => handleSssionContinue(sessionId)}
-                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                                 Continue &gt;
                                                             </button>
                                                         </div>
@@ -463,7 +463,7 @@ const Questioning = () => {
 
                     <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
 
-                        <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-gray-700  pb-2 w-full">
+                        <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-[#3F3F46]  pb-2 w-full">
                            <div className="flex items-center gap-x-10">
                                 <div className="text-left ">
                                     <input
@@ -476,7 +476,7 @@ const Questioning = () => {
                                 </div>
 
                                 <div className="flex items-center space-x-2 p-4">
-                                    <span className="text-gray-700">Sort By Presentation</span>
+                                    <span className="">Sort By Presentation</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" className="sr-only peer" onChange={handleToggle} />
                                         <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
@@ -518,7 +518,7 @@ const Questioning = () => {
                                     sortedModules?.map((row) => (
                                     <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
                                         <div
-                                            className="text-left text-[14px] md:text-[16px] cursor-pointer"
+                                                className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46]"
                                             onClick={() => handleCheckboxChange(row.categoryId)}
                                         >
                                             <input

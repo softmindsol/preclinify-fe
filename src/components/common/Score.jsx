@@ -65,11 +65,13 @@ const Score = () => {
 
     return (
         <div className='lg:flex  min-h-screen w-full'>
-            <div className='hidden lg:block '>
+
+            <div className='hidden h-full lg:block fixed '>
                 <Sidebar />
             </div>
 
-            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
+            <div className='flex-grow  overflow-y-auto overflow-x-hidden'>
+            <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -78,7 +80,7 @@ const Score = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className='w-full'>
+                <div className='w-full md:ml-[150px]'>
 
 
                 <div className='flex items-center justify-center flex-col mt-5'>
@@ -164,6 +166,9 @@ const Score = () => {
 
 
             </div>
+            </div>
+
+
             <Drawer
                 open={isOpen}
                 onClose={toggleDrawer}

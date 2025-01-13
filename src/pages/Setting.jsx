@@ -35,7 +35,7 @@ const Setting = () => {
     return (
         <div className=' lg:flex  min-h-screen w-full'>
 
-            <div className="h-full hidden lg:block ">
+            <div className="h-full hidden lg:block fixed">
                 <Siderbar />
             </div>
             <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
@@ -49,7 +49,7 @@ const Setting = () => {
             </div>
            
 
-            <div className="min-h-screen bg-gray-100 text-[#3F3F46] lg:p-6 mt-5 lg:mt-0 w-full">
+            <div className="min-h-screen bg-gray-100 text-[#3F3F46] lg:p-6 mt-5 lg:mt-0 w-full ml-[250px] overflow-y-auto">
                 <h1 className="text-[24px] font-bold mb-6 hidden lg:block">Settings</h1>
 
                 {/* General Section */}
