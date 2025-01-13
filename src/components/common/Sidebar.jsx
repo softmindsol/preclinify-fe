@@ -7,7 +7,10 @@ const Sidebar = () => {
         <div className="min-h-screen w-64 bg-white shadow-lg flex flex-col items-center py-6 ">
             {/* Logo */}
             <div className="mb-10">
+                <Link to={"/"}>
                 <Logo />
+                
+                </Link>
             </div>
 
             {/* Menu Items */}
@@ -82,7 +85,7 @@ const Sidebar = () => {
                                     </>
                                 )}
                             </svg>
-                        <span className="text-[16px] font-medium group-hover:text-[#3CC8A1]">
+                        <span className="text-[16px] font-semibold group-hover:text-[#3CC8A1]">
                             {item.name}
                         </span>
                     </NavLink>

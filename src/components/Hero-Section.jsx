@@ -29,12 +29,12 @@ const Hero = () => {
 
                 <div className="text-center w-[90%] md:w-[35%] xl:w-[40%] space-y-5 2xl:space-y-10 ">
                     <p className="text-[30px] sm:text-[40px] leading-[36px] font-extrabold sm:leading-[50px] 2xl:text-[64px]  2xl:leading-[77px]">
-                        <span className="text-[#3CC8A1]">Supercharge</span> your medicine
+                        <span className="text-[#3CC8A1] text-extrabold">Supercharge</span> your medicine
                         journey!
                     </p>
                     <p className="text-[14px] sm:text-[20px] 2xl:text-[24px] font-bold">
-                        <span className="font-bold">MLA. SAQ. AI patients</span> and much much
-                        more...
+                        <span className="font-bold">MLA. SAQ. AI patients</span> <span className="font-medium">and much much
+                            more...</span>
                     </p>
                     <Link to={'/signup'}>
                         <button className="mt-4 text-[14px] sm:text-[16px] rounded-[12px] bg-[#FF9741] px-5 py-3 text-white font-extrabold shadow-orangeBlur hover:shadow-lg transition">
@@ -185,10 +185,10 @@ const Hero = () => {
 
             <div className=" space-y-10 text-center w-full mt-20 md:mt-56 ">
                 <div className="flex items-center justify-center flex-col ">
-                    <div className="text-[24px] sm:text-[36px] lg:text-[48px] 2xl:text-[64px] text-center font-bold leading-[35px] sm:leading-[45px] lg:leading-[55px] 2xl:leading-[77px]">
-                        <p className= "text-[20px] sm:text-[26px] lg:text-[36px] 2xl:text-[48px] font-extrabold text-[#3F3F46]">Ready to</p>
-                        <p className="text-[#3CC8A1]">Supercharge your</p>  
-                        <p>medicine journey?</p>
+                    <div className="text-[24px] sm:text-[36px] lg:text-[48px] 2xl:text-[64px] text-center font-extrabold leading-[35px] sm:leading-[45px] lg:leading-[55px] 2xl:leading-[77px]">
+                        <p className= "text-[20px] sm:text-[26px] lg:text-[36px] 2xl:text-[48px]  text-[#3F3F46]">Ready to</p>
+                        <p className="text-[#3CC8A1]">Supercharge <span className="text-[#3F3F46]">your</span> </p>  
+                        <p>  medicine journey?</p>
                     </div>
                    
                 </div>

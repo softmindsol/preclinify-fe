@@ -21,14 +21,13 @@ const StackedBar = ({ days, height = 300 }) => {
         incorrect: day.incorrect, // Incorrect answers
     }));
 
-
     return (
-        <div className="mt-8">
+        <div className="mt-8 text-[#D4D4D8]">
             <ResponsiveContainer width="95%" height={height}>
                 <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                    <YAxis />
+                    <XAxis dataKey="name" tickLine={false} axisLine={false} stroke="#D4D4D8" />
+                    <YAxis className="font-semibold" style={{ color: "#D4D4D8" } } stroke="#D4D4D8" />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar dataKey="correct" stackId="a" fill="#3CC8A1" />
                     <Bar dataKey="incorrect" stackId="a" fill="#FF9741" />
