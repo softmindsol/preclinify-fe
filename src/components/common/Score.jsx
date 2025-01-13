@@ -89,12 +89,12 @@ const Score = () => {
                     </div>
 
                     <div className='text-center  '>
-                        <p className='text-[#3F3F46] font-bold text-[18px] md:text-[24px] lg:text-[30px] '>Final Score:</p>
+                        <p className='text-[#3F3F46] font-extrabold text-[18px] md:text-[24px] lg:text-[30px] '>Final Score:</p>
                         <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>{accuracy}%</p>
                         <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>{feedback}</p>
                     </div>
                     <div>
-                        <button onClick={handleQuestionReview} className='text-[#FF9741] text-[12px] md:text-[14px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'>REVIEW QUESTIONS</button>
+                        <button onClick={handleQuestionReview} className='text-[#FF9741] text-[12px] md:text-[16px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'>REVIEW QUESTIONS</button>
                     </div>
                 </div>
 

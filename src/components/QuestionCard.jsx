@@ -385,7 +385,7 @@ const QuestionCard = () => {
 
                         {/* Left Icon */}
                         <div className="absolute left-4">
-                            <div className="relative">
+                            <div className="relative  ">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
@@ -394,7 +394,7 @@ const QuestionCard = () => {
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer"
+                                    className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer "
                                     onClick={(e) => toggleMenu(e)} // Toggle submenu on click
                                 >
                                     <circle cx="12" cy="12" r="1" />
@@ -424,13 +424,13 @@ const QuestionCard = () => {
 
                         {/* Question Navigation */}
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button className="text-white" onClick={prevQuestion}>
+                            <button className={`text-white ${currentIndex+1 <=1 ? 'opacity-70 cursor-not-allowed' : ''}`}  onClick={prevQuestion}>
                                 &larr;
                             </button>
                             <h2 className="font-semibold text-center">
                                 Question {currentIndex + 1} of {data.data.length}
                             </h2>
-                            <button className="text-white" onClick={nextQuestion}>
+                            <button className={`text-white ${currentIndex + 1 === data.data.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
                                 &rarr;
                             </button>
                         </div>
@@ -448,7 +448,7 @@ const QuestionCard = () => {
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="lucide lucide-flask-conical cursor-pointer"
+                                    className="lucide lucide-flask-conical cursor-pointer hover:opacity-80"
                                     onClick={beakerToggledHandler}
                                 >
                                     <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
@@ -474,7 +474,7 @@ const QuestionCard = () => {
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                className="lucide lucide-flag cursor-pointer"
+                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
                                 onClick={() => handleFilterChange('Unseen')}
                             >
                                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
@@ -517,7 +517,7 @@ const QuestionCard = () => {
                                             {!isAccordionVisible ? (
                                                 <label
                                                     key={index}
-                                                    className={`flex bg-white items-center space-x-3 p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'}`}
+                                                    className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'}`}
                                                     onClick={() => handleAnswerSelect(explanation, index)}
                                                 >
                                                     <input
@@ -527,7 +527,7 @@ const QuestionCard = () => {
                                                         checked={isSelected}
                                                         readOnly
                                                     />
-                                                    <span className="text-[] flex-1">{explanation.split(" -")[0]}</span>
+                                                    <span className="font-medium text-[#3F3F46] flex-1">{explanation.split(" -")[0]}</span>
                                                     <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
                                                         {["A", "B", "C", "D", "E"][index]}
                                                     </span>

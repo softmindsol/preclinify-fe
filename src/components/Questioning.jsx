@@ -367,7 +367,7 @@ const Questioning = () => {
                                     <button
                                         onClick={handleContinue}
                                         disabled={selectedModules.length === 0} // Disable the button if no modules are selected
-                                        className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : ''} text-[12px] md:text-[16px] text-white font-semibold rounded-md px-6 py-2 hover:bg-transparent hover:text-[#3CC8A1] transition-all border-[1px] border-[#3CC8A1]`}>
+                                        className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-transparent hover:text-[#3CC8A1]'} text-[12px] md:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}>
                                         Continue &gt;
                                     </button>
                                 </div>
@@ -401,7 +401,7 @@ const Questioning = () => {
                                         <input
                                             type="file"
                                             id="fileInput"
-                                            accept=".txt,.csv, .pdf"
+                                            accept=".docx,.pptx, .pdf"
                                             style={{ display: 'none' }} // Hide the file input
                                             onChange={handleFileUpload} // Handle file upload
                                         />
