@@ -52,8 +52,6 @@ const Score = () => {
         setUnseen(unseenCount);
         setTotalAttemped(correctCount + incorrectCount);
         const response = getFeedbackMessage(Math.floor(accuracy));
-        console.log("response:", response);
-
         setFeedback(response);
         dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }));
         dispatch(sessionCompleted(false))

@@ -21,6 +21,7 @@ import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SA
 
 import { setPreclinicalType } from "../redux/features/mode/mode.slice";
 import { updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
+import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 
 
 const Questioning = () => {
@@ -189,6 +190,7 @@ const Questioning = () => {
         sessionStorage.removeItem('persist:result');
         // Dispatch Redux action to clear 'result' from Redux store
         dispatch(clearResult());
+        dispatch(clearMcqsAccuracy())
         dispatch(setRemoveQuestionLimit())
         dispatch(resetQuestionReviewValue());
     }, []);

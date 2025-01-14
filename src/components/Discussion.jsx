@@ -27,8 +27,8 @@ const DiscussionBoard = () => {
     const [showComments, setShowComments] = useState(true);
 
     return (
-        <div className="p-6 bg-gray-100  xl:w-[85%] 2xl:w-[90%] ">
-            <div className="w-[700px] mx-auto bg-white  shadow rounded-lg py-5">
+        <div className="p-6 bg-gray-100   ">
+            <div className=" mx-auto bg-white  shadow rounded-lg pt-3 pb-2">
                 <div
                     className="flex justify-between items-center gap-x-5 mb-2 p-4 cursor-pointer"
                     onClick={() => setShowComments(!showComments)}
@@ -118,7 +118,7 @@ const Comment = ({ comment }) => {
                         <h4 className="font-medium">{comment.author}</h4>
                         <span className="text-sm font-bold text-[#A1A1AA]">{comment.date}</span>
                     </div>
-                    <p className="text-[#000000] mt-1">{comment.text}</p>
+                    <p className="text-[#000000] mt-1 py-2">{comment.text}</p>
                     <div className="flex items-center mt-2 space-x-4">
                         <button className="flex items-center text-gray-500 rounded-[4px] bg-[#F4F4F5] py-2 px-8 hover:text-gray-700">
                             <svg
@@ -159,11 +159,15 @@ const Comment = ({ comment }) => {
                 </div>
             </div>
             {comment.replies && (
-                <div className="ml-12 mt-4">
-                    {comment.replies.map((reply) => (
-                        <Comment key={reply.id} comment={reply} />
-                    ))}
+                <div className="flex justify-start items-start mt-2">
+                    <div className="h-[350px] border-l-[1px] border-[#D4D4D8]" />
+                    <div className="py-0">
+                        {comment.replies.map((reply) => (
+                            <Comment key={reply.id} comment={reply} />
+                        ))}
+                    </div>
                 </div>
+              
             )}
         </div>
     );

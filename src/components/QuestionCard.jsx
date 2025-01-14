@@ -49,8 +49,11 @@ const QuestionCard = () => {
     const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
-    const [isReviewEnabled, setIsReviewEnabled] = useState(false)
+    const [isReviewEnabled, setIsReviewEnabled] = useState(false);
+    const [toggleSidebar, setToggleSidebar] = useState(false);
     const itemsPerPage = 20;
+  
+    
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
@@ -61,7 +64,9 @@ const QuestionCard = () => {
         const initialTime = calculateTimeForQuestions(isTimerMode.time);
         const savedTime = localStorage.getItem('examTimer');
         return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
-    }); const review = useSelector(state => state.questionReview.value)
+    }); 
+    
+    const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
     const [beakerToggle, setBeakerToggle] = useState(false);
@@ -71,6 +76,7 @@ const QuestionCard = () => {
         setSelectedFilter(filter);
     };
 
+ 
     // Arrays to store indices
     const unseenIndices = [];
     const flaggedIndices = [];
@@ -128,6 +134,10 @@ const QuestionCard = () => {
         setBeakerToggle(!beakerToggle)
     }
 
+
+    function handleToggleSidebar (){
+        setToggleSidebar(true)
+    }
 
     const handleAnswerSelect = (answer) => {
         setSelectedAnswer(answer);
@@ -241,7 +251,6 @@ const QuestionCard = () => {
             setIsAccordionOpen(Array(data.data.length).fill(false));
             setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
         }
-        // dispatch(clearResult());
     }, [data]);
 
     useEffect(() => {
@@ -253,13 +262,20 @@ const QuestionCard = () => {
         const hasAnswer = attempts.some(value => value === true || value === false);
 
         setIsFinishEnabled(hasAnswer);
+
     }, [attempts]);
 
+useEffect(()=>{
+    if (review===false){
 
+        dispatch(setMcqsAccuracy({ accuracy }))
+    }
+
+},[accuracy])
     const handleFinishAndReview = () => {
         if (true) {
             handleCheckAnswer();
-            dispatch(setMcqsAccuracy({ accuracy }))
+            // dispatch(setMcqsAccuracy({ accuracy }))
 
             // handleAnswerSelect()
             //    Add a delay (for example, 2 seconds)
@@ -356,10 +372,11 @@ const QuestionCard = () => {
         }
     }, [review])
 
+    console.log("toggleSidebar:", toggleSidebar);
 
     return (
         <div className=" min-h-screen  " >
-            <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>
+            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -371,10 +388,10 @@ const QuestionCard = () => {
             <div className=" mx-auto flex items-center justify-center p-6">
 
 
-                <div className="max-w-full w-[100%] md:w-[70%] xl:w-[55%] 2xl:w-[40%]  md:mr-[200px]">
+                <div className={`max-w-full w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
 
                     {/* Header Section */}
-                    <div className="bg-[#3CC8A1]  text-white p-6 rounded-md flex items-center justify-between relative">
+                    <div className="bg-[#3CC8A1]   text-white p-6 rounded-md flex items-center justify-between relative">
                         {/* Progress Bar */}
                         <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
                             <div
@@ -424,7 +441,7 @@ const QuestionCard = () => {
 
                         {/* Question Navigation */}
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button className={`text-white ${currentIndex+1 <=1 ? 'opacity-70 cursor-not-allowed' : ''}`}  onClick={prevQuestion}>
+                            <button className={`text-white ${currentIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
                                 &larr;
                             </button>
                             <h2 className="font-semibold text-center">
@@ -475,7 +492,10 @@ const QuestionCard = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                onClick={() => handleFilterChange('Unseen')}
+                                onClick={() =>{ 
+                                    handleFilterChange('Unseen');
+                                    setToggleSidebar(false)
+                                }}
                             >
                                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                 <line x1="4" x2="4" y1="22" y2="15" />
@@ -775,16 +795,27 @@ const QuestionCard = () => {
                         </div>
                     )}
 
+                    {
+                        isAccordionVisible && <div className="flex items-center mx-7  justify-between   ">
+                            <p className="font-medium text-[16px] text-[#3F3F46]">How did you find this question?</p>
+                            <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
+                        </div>
+                    }
+                    {
+
+                        isAccordionVisible && <DiscussionBoard />
+                    }
+
                 </div>
 
 
 
                 {/* Sidebar Section */}
 
-                <div className="hidden md:block fixed right-0 top-0">
+                <div className={`hidden lg:block fixed right-0 top-0  `}>
 
 
-                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ">
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
@@ -793,16 +824,18 @@ const QuestionCard = () => {
                                 <Logo />
                             </div>
 
-                            <div className="flex items-center mr-5">
+                            <div className="flex items-center mr-5 cursor-pointer" onClick={() => {
+                                setToggleSidebar(!toggleSidebar)
+                            }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
                             </div>
                         </div>
 
                         <div className="flex flex-col items-center justify-center mt-10">
-                            <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                            <div className={`w-[90%] h-[96px] rounded-[8px] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" :"bg-[#FF453A]"}  text-[#ffff] text-center`}>
                                 {
                                     isTimerMode["mode"] === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                        <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+                                        <p className="font-black text-[36px]">{mcqsAccuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
 
                                         <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
                                 }
@@ -924,19 +957,17 @@ const QuestionCard = () => {
 
 
                     </div>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300`}>
+                       
+                        <div className="flex items-center  cursor-pointer" onClick={()=>{
+                            setToggleSidebar(!toggleSidebar)
+                        }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
+
+                    </div>
                 </div>
             </div>
-            {
-                isAccordionVisible && <div className="flex items-center gap-x-96 justify-center  w-[100%] md:w-[70%] xl:w-[55%] 2xl:w-[90%] ">
-                    <p className="font-medium text-[16px] text-[#3F3F46]">How did you find this question?</p>
-                    <button className="text-[14px] text-[#71717A] p-3 bg-gray-200">Report</button>
-                </div>
-            }
-            {
-
-                isAccordionVisible && <DiscussionBoard />
-            }
-
+           
             {showPopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-sm text-center">

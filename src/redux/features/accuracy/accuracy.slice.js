@@ -7,8 +7,7 @@ const accuracySlice = createSlice({
     },
 
     reducers: {
-        setMcqsAccuracy(state, action) {
-
+        setMcqsAccuracy(state, action) {            
             state.accuracy = action.payload.accuracy;
         },
         clearMcqsAccuracy(state) {

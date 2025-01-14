@@ -24,7 +24,9 @@ const ChemistryBeaker = ({ beakerToggledHandler }) => {
             </div>
             <div className="font-light">
                 {
-                    tab === "HAEM" ? <div className="flex justify-center  text-xs w-[370px]">
+                    tab === "HAEM" ?
+                        <div className='w-[370px]'>
+                    <div className="flex justify-center  text-xs ">
                         <table className="table-auto border-collapse border border-gray-300">
                             <thead>
                                 <tr className="bg-gray-200">
@@ -143,7 +145,7 @@ const ChemistryBeaker = ({ beakerToggledHandler }) => {
 
                             </tbody>
                         </table>
-                    </div> :
+                            </div></div> :
                         tab === "CHEM" ? <div className=" w-[370px]">
                             <div className="flex justify-center  text-xs">
                                 <table className="table-auto border-collapse border border-gray-300">
