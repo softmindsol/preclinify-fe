@@ -797,7 +797,7 @@ const QuestionCard = () => {
 
                     {
                         isAccordionVisible && <div className="flex items-center mx-7  justify-between   ">
-                            <p className="font-medium text-[16px] text-[#3F3F46]">How did you find this question?</p>
+                            <p className="font-medium text-[16px] text-[#3F3F46]">Notice a problem with this question?</p>
                             <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
                         </div>
                     }
