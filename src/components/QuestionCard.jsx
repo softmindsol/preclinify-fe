@@ -52,8 +52,8 @@ const QuestionCard = () => {
     const [isReviewEnabled, setIsReviewEnabled] = useState(false);
     const [toggleSidebar, setToggleSidebar] = useState(false);
     const itemsPerPage = 20;
-  
-    
+
+
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
@@ -64,8 +64,8 @@ const QuestionCard = () => {
         const initialTime = calculateTimeForQuestions(isTimerMode.time);
         const savedTime = localStorage.getItem('examTimer');
         return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
-    }); 
-    
+    });
+
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
@@ -76,7 +76,7 @@ const QuestionCard = () => {
         setSelectedFilter(filter);
     };
 
- 
+
     // Arrays to store indices
     const unseenIndices = [];
     const flaggedIndices = [];
@@ -135,7 +135,7 @@ const QuestionCard = () => {
     }
 
 
-    function handleToggleSidebar (){
+    function handleToggleSidebar() {
         setToggleSidebar(true)
     }
 
@@ -265,13 +265,13 @@ const QuestionCard = () => {
 
     }, [attempts]);
 
-useEffect(()=>{
-    if (review===false){
+    useEffect(() => {
+        if (review === false) {
 
-        dispatch(setMcqsAccuracy({ accuracy }))
-    }
+            dispatch(setMcqsAccuracy({ accuracy }))
+        }
 
-},[accuracy])
+    }, [accuracy])
     const handleFinishAndReview = () => {
         if (true) {
             handleCheckAnswer();
@@ -492,7 +492,7 @@ useEffect(()=>{
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                onClick={() =>{ 
+                                onClick={() => {
                                     handleFilterChange('Unseen');
                                     setToggleSidebar(false)
                                 }}
@@ -832,16 +832,36 @@ useEffect(()=>{
                         </div>
 
                         <div className="flex flex-col items-center justify-center mt-10">
-                            <div className={`w-[90%] h-[96px] rounded-[8px] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" :"bg-[#FF453A]"}  text-[#ffff] text-center`}>
-                                {
-                                    isTimerMode["mode"] === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                        <p className="font-black text-[36px]">{mcqsAccuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+                            {
+                                isTimerMode["mode"] === "Endless" &&
+                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                    <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                        <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                    </div>
 
-                                        <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
-                                }
 
 
-                            </div>
+                                </div>}
+
+                            {
+                                isTimerMode["mode"] === "Exam" && (
+                                    <div
+                                        className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
+                                            } text-[#ffff] text-center`}
+                                    >
+                                        <div>
+                                            <p className="text-[12px] mt-3">Time:</p>
+                                           
+                                            {
+                                                review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+
+
                         </div>
 
                         <div className="">
@@ -958,16 +978,16 @@ useEffect(()=>{
 
                     </div>
                     <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300`}>
-                       
-                        <div className="flex items-center  cursor-pointer" onClick={()=>{
+
+                        <div className="flex items-center  cursor-pointer" onClick={() => {
                             setToggleSidebar(!toggleSidebar)
                         }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
 
                     </div>
                 </div>
             </div>
-           
+
             {showPopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-sm text-center">
@@ -1020,15 +1040,33 @@ useEffect(()=>{
 
                     <div className="flex flex-col  items-center justify-center mt-10">
 
-                        <div className="w-[90%] 2xl:w-[308px] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                        {
+                            isTimerMode["mode"] === "Endless" &&
+                            <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                    <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                </div>
 
-                            {
-                                isTimerMode === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                    <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
 
-                                    <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
-                            }
-                        </div>
+
+                            </div>}
+
+                        {
+                            isTimerMode["mode"] === "Exam" && (
+                                <div
+                                    className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
+                                        } text-[#ffff] text-center`}
+                                >
+                                    <div>
+                                        <p className="text-[12px] mt-3">Time:</p>
+                                       
+                                        {
+                                            review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                        }
+                                    </div>
+                                </div>
+                            )
+                        }
                     </div>
 
                     <div className="">

@@ -78,7 +78,7 @@ const Score = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-                <div className='w-full md:ml-[150px]'>
+                <div className='w-full lg:ml-[150px]'>
 
 
                 <div className='flex items-center justify-center flex-col mt-5'>
