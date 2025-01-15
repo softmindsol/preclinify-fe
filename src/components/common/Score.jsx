@@ -41,10 +41,12 @@ const Score = () => {
 
 
     useEffect(() => {
+       const moduleId= localStorage.getItem("module")
         // Calculate counts for correct, incorrect, and unseen
         const correctCount = result.result.filter(value => value === true).length;
         const incorrectCount = result.result.filter(value => value === false).length;
         const unseenCount = result.result.filter(value => value === null || value === undefined).length;
+        console.log("moduleId:", moduleId);
 
         // Update the states
         setCorrect(correctCount);
@@ -53,7 +55,7 @@ const Score = () => {
         setTotalAttemped(correctCount + incorrectCount);
         const response = getFeedbackMessage(Math.floor(accuracy));
         setFeedback(response);
-        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, moduleId:1 }));
+        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, moduleId: moduleId }));
         dispatch(sessionCompleted(false))
 
     }, []);

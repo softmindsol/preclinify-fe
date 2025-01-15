@@ -22,6 +22,7 @@ import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SA
 import { setPreclinicalType } from "../redux/features/mode/mode.slice";
 import { updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
 import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
+import supabase from "../helper";
 
 
 const Questioning = () => {
@@ -32,7 +33,7 @@ const Questioning = () => {
     const [moduleId, setModuleId] = useState(null)
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
-    const data = useSelector((state) => state.categoryModule);
+    const data = useSelector((state) => state.module);
     const { limit } = useSelector((state) => state.limit);
     const [selectedOption, setSelectedOption] = useState('SBA');
     const [recentSessions, setRecentSessions] = useState([]);
@@ -45,6 +46,8 @@ const Questioning = () => {
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
+    const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
+    const [moduleTotals, setModuleTotals] = useState({});
 
 
     const handleToggle = () => {
@@ -141,7 +144,7 @@ const Questioning = () => {
         }
     };
 
-
+    console.log("selectedModules:", selectedModules)
     function handleContinue() {
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
@@ -177,6 +180,10 @@ const Questioning = () => {
             console.log("No modules selected for this session or already loading.");
         }
     }
+
+
+
+   
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
         dispatch(fetchModules())
@@ -275,8 +282,52 @@ const Questioning = () => {
             return (isASelected === isBSelected) ? 0 : isASelected ? -1 : 1;
         })
         : filteredModules;
-    console.log("recentSessions:", recentSessions);
-    console.log("selectedOption:", selectedOption);
+
+    useEffect(() => {
+        const fetchDailyWork = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('resultsHistory')
+                    .select('*')
+                    .eq('userId', '123456543');
+
+                if (error) throw error;
+
+                console.log("data:", data);
+
+                // Process the data to calculate totals for each moduleId
+                const totalsByModule = data.reduce((acc, curr) => {
+                    const { moduleId, correct, incorrect, unanswered } = curr;
+
+                    // Initialize the accumulator for the moduleId if it doesn't exist
+                    if (!acc[moduleId]) {
+                        acc[moduleId] = { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                    }
+
+                    // Sum up the values
+                    acc[moduleId].totalCorrect += correct;
+                    acc[moduleId].totalIncorrect += incorrect;
+                    acc[moduleId].totalUnanswered += unanswered;
+
+                    return acc;
+                }, {});
+
+                // Update state with the new totals
+                setModuleTotals(totalsByModule);
+
+            } catch (err) {
+                console.error("Error fetching daily work:", err);
+            }
+        };
+        const module = selectedModules[0] || null
+        localStorage.setItem('module', JSON.stringify(module))
+        fetchDailyWork();
+    }, [selectedModules]);
+
+
+
+    // console.log("recentSessions:", recentSessions);
+    // console.log("selectedOption:", selectedOption);
 
 
     return (
@@ -513,7 +564,7 @@ const Questioning = () => {
                         </div>
                         <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
-                        <div>
+                        {/* <div>
                             {isLoading ? (
                                 <Loader />
                             ) : (
@@ -548,6 +599,57 @@ const Questioning = () => {
                                         </div>
                                     </div>
                                 ))
+                            )}
+                        </div> */}
+
+                        <div>
+                            {isLoading ? (
+                                <Loader />
+                            ) : (
+                                sortedModules?.map((row) => {
+                                    const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                    const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+
+                                    // Calculate widths based on total counts
+                                    const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                    const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                    const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+
+                                    return (
+                                        <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                            <div
+                                                className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46]"
+                                                onClick={() => handleCheckboxChange(row.categoryId)}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="mr-2 custom-checkbox"
+                                                    checked={selectedModules.includes(row.categoryId)}
+                                                    onChange={() => handleCheckboxChange(row.categoryId)}
+                                                />
+                                                {row.categoryName}
+                                            </div>
+
+                                            <div className="flex items-center justify-center space-x-1">
+                                                {/* Green */}
+                                                <div
+                                                    className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                                    style={{ width: `${correctWidth}%` }}
+                                                ></div>
+                                                {/* Red */}
+                                                <div
+                                                    className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                                    style={{ width: `${incorrectWidth}%` }}
+                                                ></div>
+                                                {/* Gray */}
+                                                <div
+                                                    className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                                    style={{ width: `${unansweredWidth}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
                             )}
                         </div>
 

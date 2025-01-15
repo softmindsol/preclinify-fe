@@ -3,13 +3,14 @@ import { fetchModules } from "./module.service";
 
 // Create the slice
 const modulesSlice = createSlice({
-    name: 'modules',
+    name: 'module',
     initialState: {
         categoryId: null,  // Add categoryId to store the selected category ID
+        
         data: [],   // To store the modules data
         loading: false,  // To track loading state
         error: null,    // To store error message, if any
-    },
+    }, 
     reducers: {
         // Reducer to set the categoryId
         setCategoryId: (state, action) => {
