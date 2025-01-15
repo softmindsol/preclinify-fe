@@ -4,7 +4,7 @@ import supabase from "../../../helper";
 // Define the async thunk
 export const addResultEntry = createAsyncThunk(
     'resultsHistory/addResultEntry',
-    async ({ userId, result, incorrect, correct }, thunkAPI) => {
+    async ({ userId, result, incorrect, correct, moduleId }, thunkAPI) => {
         try {
             const { data, error } = await supabase
                 .from('resultsHistory')
@@ -14,10 +14,15 @@ export const addResultEntry = createAsyncThunk(
                         result,
                         incorrect,
                         correct,
+                        moduleId
                     },
                 ]);
+            console.log("data:", data);
+                
 
             if (error) {
+                console.log("error:",error);
+                
                 return thunkAPI.rejectWithValue(error.message);
             }
 

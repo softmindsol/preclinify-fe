@@ -199,6 +199,7 @@ const Dashboard = () => {
                                         // Calculate total result and percentage
                                         const target = day.workCount * 100
                                         const workPercentage = Math.floor(Math.min((day.totalResult / target) * 100, 100));
+                                        console.log("days:", days);
 
                                         // Determine background color class based on percentage
                                         const bgColorClass = getColorClass(workPercentage);

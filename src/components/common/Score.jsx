@@ -53,7 +53,7 @@ const Score = () => {
         setTotalAttemped(correctCount + incorrectCount);
         const response = getFeedbackMessage(Math.floor(accuracy));
         setFeedback(response);
-        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, }));
+        dispatch(addResultEntry({ userId: '123456543', result: accuracy, incorrect: incorrectCount, correct: correctCount, moduleId:1 }));
         dispatch(sessionCompleted(false))
 
     }, []);
