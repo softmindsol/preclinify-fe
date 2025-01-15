@@ -21,6 +21,7 @@ import Scenarios from './components/Scenerio';
 import SceneriosDetail from './components/SceneriosDetail';
 import ProtectedRoute from './components/protectedRoute'; 
 import Performance from './pages/Performance';
+import ContactPage from './components/contact-us';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path="/short-question" element={<><ShortQuestion /></>} />
         <Route path="/scenarios" element={<><Scenarios /></>} />
         <Route path="/scenerios-detail" element={<><SceneriosDetail /></>} />
+        <Route path='/contact-us' element={<ContactPage/>}/>
       </Routes>
     </div>
   );
