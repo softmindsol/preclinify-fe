@@ -24,7 +24,6 @@ const Dashboard = () => {
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [formattedMonth, setFormattedMonth] = useState("")
     const dispatch = useDispatch()
-    console.log("workEntries:", workEntries);
 
     useEffect(() => {
         const fetchDailyWork = async () => {
@@ -97,7 +96,6 @@ const Dashboard = () => {
                 totalResult: workEntry.totalResult,
             };
         });
-        console.log("allDays:", allDays);
 
         setFormattedMonth(format(selectedDate, "MMMM"));
         setDays(allDays);
@@ -136,16 +134,16 @@ const Dashboard = () => {
                             <p className='text-[#FF9741] text-[32px] font-black'>20 Days</p>
                             <p className='text-[14px] text-[#52525B] font-medium'>Until your exam</p>
                         </div> 
-                        <div className='bg-[#FFFFFF] rounded-[6px] text-center w-[250px] h-[85px]'>
+                        <div className='bg-[#FFFFFF] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px]'>
                             <div className='flex items-center justify-center gap-x-5 h-full '>
                                 <img
                                     src="https://images.unsplash.com/photo-1719937051124-91c677bc58fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D"
                                     alt="aaaa"
-                                    className='rounded-full w-14 h-14'
+                                    className='rounded-full w-10 h-10 xl:w-14 xl:h-14'
                                 />
                                 <div className=''>
-                                    <p className='text-[18px] text-[#52525B] font-semibold'>Sainavi Mahajan</p>
-                                    <p className='text-[14px] text-[#A1A1AA]'>Specialist Registrar</p>
+                                    <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold'>Sainavi Mahajan</p>
+                                    <p className='text-[10px] xl:text-[14px] text-[#A1A1AA]'>Specialist Registrar</p>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +152,7 @@ const Dashboard = () => {
 
                 <div className='space-y-5'>
                     <div className='flex justify-center gap-x-5 items-center w-full'>
-                        <div className="p-6 w-[745px] h-[520px] bg-white rounded-lg shadow-md">
+                        <div className="p-6 w-[500px] xl:w-[610px] 2xl:w-[745px] h-[520px] bg-white rounded-lg shadow-md">
                             <div className='flex items-end justify-end'>
                                 <div className="mb-5 relative w-[180px]">
                                     <DatePicker
@@ -199,8 +197,6 @@ const Dashboard = () => {
                                         // Calculate total result and percentage
                                         const target = day.workCount * 100
                                         const workPercentage = Math.floor(Math.min((day.totalResult / target) * 100, 100));
-                                        console.log("days:", days);
-
                                         // Determine background color class based on percentage
                                         const bgColorClass = getColorClass(workPercentage);
 
@@ -245,46 +241,46 @@ const Dashboard = () => {
                                 <p className=' text-center text-[#71717A] text-[16px]'>{formattedMonth}</p>
                             </div>
                         </div>
-                        <div className=' w-[320px] h-[520px]   bg-white rounded-lg shadow-md'>
-                            <div className='font-bold text-[18px] text-center text-[#52525B] mt-2 p-5'>
+                        <div className='w-[280px] xl:w-[320px] h-[520px]   bg-white rounded-lg shadow-md'>
+                            <div className='font-bold text-[14px] xl:text-[18px] text-center text-[#52525B] mt-2 p-5'>
                                 <p>Quick Start</p>
                             </div>
                             <hr />
 
                             <div className='flex items-center justify-between p-5 mt-4'>
-                                <div>
-                                    <p className='font-medium text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
+                                <div className=''>
+                                    <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
+                                    <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
                                 </div>
                                 <div>
-                                    <button className='border-[1px] border-[#FF9741] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                                </div>
-                            </div>
-                            <div className='flex items-center justify-between px-5 py-2'>
-                                <div>
-                                    <p className='font-medium text-[16px] text-[#3F3F46]'>Cardiology + Rhu...</p>
-                                    <p className='text-[14px] font-semibold text-[#A1A1AA]'>3 day ago</p>
-                                </div>
-                                <div>
-                                    <button className='border-[1px] border-[#FF9741] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
+                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
                                 </div>
                             </div>
                             <div className='flex items-center justify-between px-5 py-2'>
-                                <div>
-                                    <p className='font-medium text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
+                                <div className=''>
+                                    <p className='font-medium text-[14px] 2xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
+                                    <p className='text-[12px] 2xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
                                 </div>
                                 <div>
-                                    <button className='border-[1px] border-[#FF9741] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
+                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
+                                </div>
+                            </div>
+                            <div className='flex items-center justify-between px-5 py-2'>
+                                <div className=''>
+                                    <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
+                                    <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
+                                </div>
+                                <div>
+                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] 2xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
                                 </div>
                             </div>
                             <div className='flex items-center justify-between p-5'>
-                                <div>
-                                    <p className='font-medium text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
+                                <div className=''>
+                                    <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
+                                    <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
                                 </div>
                                 <div>
-                                    <button className='border-[1px] border-[#FF9741] p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
+                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
                                 </div>
                             </div>
                         </div>
@@ -296,7 +292,7 @@ const Dashboard = () => {
 
 
                     <div className='flex flex-row-reverse justify-center gap-x-5 items-center w-full'>
-                        <div className=" p-6 w-[800px] h-[500px]  bg-white rounded-lg shadow-md">
+                        <div className=" p-6 w-[665px] 2xl:w-[800px] h-[500px]  bg-white rounded-lg shadow-md">
 <h2 className='font-bold text-[20px] text-center py-3'>Monthly Progress</h2>
                             <StackedBar days={days} />
                             

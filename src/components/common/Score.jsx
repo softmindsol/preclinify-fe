@@ -46,7 +46,6 @@ const Score = () => {
         const correctCount = result.result.filter(value => value === true).length;
         const incorrectCount = result.result.filter(value => value === false).length;
         const unseenCount = result.result.filter(value => value === null || value === undefined).length;
-        console.log("moduleId:", moduleId);
 
         // Update the states
         setCorrect(correctCount);
