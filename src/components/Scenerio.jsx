@@ -9,28 +9,28 @@ import 'react-modern-drawer/dist/index.css'
 import { TbBaselineDensityMedium } from "react-icons/tb";
 
 const Scenarios = () => {
-       const [isOpen, setIsOpen] = useState(false)
-        const toggleDrawer = () => {
-            setIsOpen((prevState) => !prevState)
-        }
+    const [isOpen, setIsOpen] = useState(false)
+    const toggleDrawer = () => {
+        setIsOpen((prevState) => !prevState)
+    }
     return (
         <div className="md:flex  min-h-screen">
 
             <div className="hidden md:block">
                 <Sidebar />
             </div>
- <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>
+            <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
 
                 <div className='' onClick={toggleDrawer}>
-                    <TbBaselineDensityMedium/>
+                    <TbBaselineDensityMedium />
                 </div>
             </div>
-           
 
-            <div className="px-10 mt-8 w-full">
+
+            <div className="px-10 mt-8  w-full">
 
 
                 {/* Tabs */}
@@ -197,7 +197,8 @@ const Scenarios = () => {
                             ))}
                         </div>
                     </div>
-                </div>  </div>
+                </div>
+            </div>
 
             <Drawer
                 open={isOpen}

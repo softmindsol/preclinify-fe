@@ -47,7 +47,7 @@ function App() {
         <Route path="/question-card" element={<><QuestionCard /></>} />
         <Route path="/score" element={<><Score /></>} />
         <Route path="/short-question" element={<><ShortQuestion /></>} />
-        <Route path="/scenarios" element={<><Scenarios /></>} />
+        <Route path="/osce" element={<><Scenarios /></>} />
         <Route path="/scenerios-detail" element={<><SceneriosDetail /></>} />
         <Route path='/contact-us' element={<ContactPage/>}/>
       </Routes>
