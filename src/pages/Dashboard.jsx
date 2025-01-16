@@ -32,8 +32,8 @@ const Dashboard = () => {
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [formattedMonth, setFormattedMonth] = useState("")
     const dispatch = useDispatch()
-        const [isOpen, setIsOpen] = useState(false);
-    
+    const [isOpen, setIsOpen] = useState(false);
+
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -139,24 +139,24 @@ const Dashboard = () => {
             <div className="fixed h-full hidden lg:block">
                 <Sidebar />
             </div>
-              <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
-                                <div className=''>
-                                    <img src="/assets/small-logo.png" alt="" />
-                                </div>
-            
-                                <div className='' onClick={toggleDrawer}>
-                                    <TbBaselineDensityMedium />
-                                </div>
-                            </div>
+            <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
+                <div className=''>
+                    <img src="/assets/small-logo.png" alt="" />
+                </div>
 
-            <div className='flex-grow lg:ml-[250px] py-10 overflow-y-auto'>
-                <div className='flex flex-row items-center  h-[150px] justify-evenly w-full gap-x-36 xl:gap-x-16 py-5'>
+                <div className='' onClick={toggleDrawer}>
+                    <TbBaselineDensityMedium />
+                </div>
+            </div>
+
+            <div className='flex-grow lg:ml-[250px] py-2 md:py-10 overflow-y-auto my-5'>
+                <div className='hidden sm:flex flex-row items-center  h-[150px] justify-evenly w-full gap-x-36 xl:gap-x-16 py-5'>
                     <p className='text-[24px] xl:text-[32px] text-[#52525B] font-extrabold '>Hello Sainavi,</p>
-                    <div className='flex items-center gap-x-5 '>
+                    <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
                         <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] '>
                             <p className='text-[#FF9741] text-[24px] xl:text-[32px] font-black'>20 Days</p>
                             <p className='text-[10px] xl:text-[14px] text-[#52525B] font-medium'>Until your exam</p>
-                        </div> 
+                        </div>
                         <div className='bg-[#FFFFFF] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px]'>
                             <div className='flex items-center justify-center gap-x-5 h-full '>
                                 <img
@@ -173,9 +173,9 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className='space-y-5'>
-                    <div className='flex justify-center gap-x-5 items-center w-full'>
-                        <div className="p-6 w-[420px] xl:w-[610px] 2xl:w-[745px] h-[520px] bg-white rounded-lg shadow-md">
+                <div className='space-y-5 mt-8 md:mt-0'>
+                    <div className='flex justify-center flex-col md:flex-row gap-x-5 items-center w-full'>
+                        <div className="p-6 w-[420px] xl:w-[610px] 2xl:w-[745px] h-[430px] md:h-[520px] bg-white rounded-lg shadow-md">
                             <div className='flex items-end justify-end'>
                                 <div className="mb-5 relative w-[180px]">
                                     <DatePicker
@@ -227,7 +227,7 @@ const Dashboard = () => {
                                         return (
                                             <div
                                                 key={index}
-                                                className={ `w-8 h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white  ${day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'}`}
+                                                className={`w-8 h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white  ${day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'}`}
                                             >
 
 
@@ -264,7 +264,7 @@ const Dashboard = () => {
                                 <p className=' text-center text-[#71717A] text-[16px]'>{formattedMonth}</p>
                             </div>
                         </div>
-                        <div className='w-[280px] xl:w-[320px] h-[520px]   bg-white rounded-lg shadow-md'>
+                        <div className='w-[420px] mt-2 md:mt-0 md:w-[280px] xl:w-[320px]  h-[430px] md:h-[520px]   bg-white rounded-lg shadow-md'>
                             <div className='font-bold text-[14px] xl:text-[18px] text-center text-[#52525B] mt-2 p-5'>
                                 <p>Quick Start</p>
                             </div>
@@ -314,23 +314,23 @@ const Dashboard = () => {
 
 
 
-                    <div className='flex flex-row-reverse justify-center gap-x-5 items-center w-full'>
-                        <div className=" p-6 w-[435px] xl:w-[665px] 2xl:w-[800px] h-[500px]  bg-white rounded-lg shadow-md">
-<h2 className='font-bold text-[20px] text-center py-3'>Monthly Progress</h2>
+                    <div className='flex flex-col md:flex-row-reverse justify-center gap-x-5 items-center w-full'>
+                        <div className=" p-6 w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px]  bg-white rounded-lg shadow-md">
+                            <h2 className='font-bold text-[20px] text-center py-3'>Monthly Progress</h2>
                             <StackedBar days={days} />
-                            
-                            <div className='flex items-center justify-center gap-x-[75px] mt-5'>
+
+                            <div className='flex items-center justify-center gap-x-[75px] mt-7  md:mt-5'>
                                 <p className='text-[#52525B] font-medium' >Correct Questions</p>
                                 <div className='w-[16px] h-[16px] rounded-[2px] bg-[#3CC8A1]' />
                             </div>
-                            <div className='flex items-center justify-center gap-x-16'>
+                            <div className='flex items-center justify-center gap-x-16 mb-3 md:mb-0'>
                                 <p className='text-[#52525B] font-medium'>Incorrect Questions</p>
                                 <div className='w-[16px] h-[16px] rounded-[2px] bg-[#FF9741]' />
 
                             </div>
                         </div>
 
-                        <div className=' w-[261px] h-[500px] bg-white rounded-lg shadow-md'>
+                        <div className=' w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md'>
                             <div className='text-[18px] text-center text-[#52525B] p-5 font-semibold'>
                                 <p className=' text-[#3F3F46] '>Questions</p>
                                 <p className='text-[16px] flex items-center  justify-center'>Preclinify <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-[#FF9741]"><path d="m6 9 6 6 6-6" /></svg> </p>
@@ -338,60 +338,60 @@ const Dashboard = () => {
                             <hr />
                             <div className='flex items-center flex-col justify-center'>
 
-                        
-                            <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
-                                <div className='w-[20%]'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
-                                </div>
-                                <div className='w-[80%]'>
-                                    <p className='font-semibold text-[14px] text-[#3F3F46]'>Short Answer</p>
+
+                                <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
+                                    <div className='w-[20%]'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
+                                    </div>
+                                    <div className='w-[80%]'>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Short Answer</p>
+
+                                    </div>
 
                                 </div>
 
-                            </div>
+                                <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
+                                    <div className='w-[20%]'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                                    </div>
+                                    <div className='w-[80%]'>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Single Best <br /> Answer</p>
 
-                            <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
-                                <div className='w-[20%]'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                                    </div>
                                 </div>
-                                <div className='w-[80%]'>
-                                    <p className='font-semibold text-[14px] text-[#3F3F46]'>Single Best <br /> Answer</p>
 
+
+                                <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
+                                    <div className='w-[20%]'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bone"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z" /></svg>
+                                    </div>
+                                    <div className='w-[80%]'>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Mock Paper</p>
+
+                                    </div>
                                 </div>
-                            </div>
 
+                                <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
+                                    <div className='w-[20%]'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
+                                    </div>
+                                    <div className='w-[80%]'>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Anatomy Quiz</p>
 
-                            <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
-                                <div className='w-[20%]'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bone"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z" /></svg>                               
+                                    </div>
                                 </div>
-                                <div className='w-[80%]'>
-                                    <p className='font-semibold text-[14px] text-[#3F3F46]'>Mock Paper</p>
 
+
+                                <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px]'>
+                                    <div className='w-[20%]'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-no-axes-combined"><path d="M12 16v5" /><path d="M16 14v7" /><path d="M20 10v11" /><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" /><path d="M4 18v3" /><path d="M8 14v7" /></svg>
+                                    </div>
+                                    <div className='w-[80%]'>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Question <br />
+                                            Generation</p>
+
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
-                                <div className='w-[20%]'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
-                                </div>
-                                <div className='w-[80%]'> 
-                                    <p className='font-semibold text-[14px] text-[#3F3F46]'>Anatomy Quiz</p>
-
-                                </div>
-                            </div>
-
-
-                            <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px]'>
-                                <div className='w-[20%]'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-no-axes-combined"><path d="M12 16v5" /><path d="M16 14v7" /><path d="M20 10v11" /><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" /><path d="M4 18v3" /><path d="M8 14v7" /></svg>
-                                </div>
-                                <div className='w-[80%]'>
-                                    <p className='font-semibold text-[14px] text-[#3F3F46]'>Question <br />
-                                        Generation</p>
-
-                                </div>
-                            </div>
                             </div>
                         </div>
                     </div>
