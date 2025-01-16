@@ -420,8 +420,6 @@ const Dashboard = () => {
                             { name: "Dashboard", icon: "house" },
                             { name: "Practice", icon: "dumbbell" },
                             { name: "Performance", icon: "chart-line" },
-                            { name: "Friends", icon: "git-merge" },
-                            { name: "Textbook", icon: "book-open" },
                             { name: "OSCE", icon: "bed" },
                         ].map((item, index) => (
                             <div
@@ -491,6 +489,25 @@ const Dashboard = () => {
                         ))}
                     </nav>
 
+                    {/* <div className='flex flex-col   h-[150px] justify-evenly  py-5'>
+                        <p className='text-[24px] xl:text-[32px] text-[#52525B] font-extrabold ml-6 mb-5 mt-16'>Hello Sainavi,</p>
+                        <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
+                          
+                            <div className='bg-[#dddd] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px]'>
+                                <div className='flex items-center justify-center gap-x-5 h-full '>
+                                    <img
+                                        src="https://images.unsplash.com/photo-1719937051124-91c677bc58fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D"
+                                        alt="aaaa"
+                                        className='rounded-full w-10 h-10 xl:w-14 xl:h-14'
+                                    />
+                                    <div className=''>
+                                        <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold'>Sainavi Mahajan</p>
+                                        <p className='text-[10px] xl:text-[14px] text-[#A1A1AA]'>Specialist Registrar</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> */}
                     {/* Bottom Settings */}
                     <div className="mt-auto w-full mb-40 px-6">
                         <NavLink to={'/setting'}>
