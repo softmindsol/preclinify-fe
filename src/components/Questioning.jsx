@@ -49,7 +49,6 @@ const Questioning = () => {
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
     const recentSession = useSelector(state => state.recentSession.recentSessions);
-    console.log("redux session value:", recentSession);
 
 
     const handleToggle = () => {
@@ -158,7 +157,8 @@ const Questioning = () => {
         const moduleIds = [sessionId]; // This is already an array
 
         // No need to split, just trim the sessionId if necessary
-        const flatModuleIds = moduleIds.map(id => id.trim()); // Trim each ID
+        const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
+        console.log("flatModuleIds:", flatModuleIds);
 
         // Make an API call based on the selected module IDs
         if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
@@ -184,7 +184,7 @@ const Questioning = () => {
 
 
 
-
+// fetch Modules
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
         dispatch(fetchModules())
@@ -203,8 +203,10 @@ const Questioning = () => {
         dispatch(resetQuestionReviewValue());
     }, []);
 
+
     useEffect(() => {
         dispatch(setPreclinicalType({ selectedOption }));
+        console.log("selectedModules:", selectedModules);
 
         if (selectedModules.length > 0) {
             if (selectedOption === 'SBA') {
@@ -319,7 +321,7 @@ const Questioning = () => {
     // console.log("recentSessions:", recentSessions);
     // console.log("selectedOption:", selectedOption);
 
-    console.log("localRecentSession:", localRecentSession);
+    // console.log("localRecentSession:", localRecentSession);
 
     return (
         <div className=" lg:flex w-full">

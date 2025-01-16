@@ -23,6 +23,8 @@ import { RxCross2 } from 'react-icons/rx';
 import Logo from "../components/common/Logo";
 import { TbBaselineDensityMedium } from 'react-icons/tb';
 import { clearRecentSessions } from '../redux/features/recent-session/recent-session.slice';
+import { fetchMcqsByModules } from '../redux/features/SBA/sba.service';
+import SetupSessionModal from '../components/SetupSessionModal';
 
 const Dashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);
@@ -36,6 +38,8 @@ const Dashboard = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [localRecentSession, setLocalRecentSession] = useState([]);
     const data = useSelector((state) => state.module);
+    const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -339,7 +343,7 @@ const Dashboard = () => {
                                                 </div>
                                                 <div>
                                                     <button
-                                                        // onClick={() => handleSssionContinue(sessionId)}
+                                                        onClick={() => handleSssionContinue(sessionId)}
                                                         className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                         Continue &gt;
                                                     </button>
@@ -354,42 +358,7 @@ const Dashboard = () => {
                                 )}
                             </div>
                           
-                            {/* <div className='flex items-center justify-between p-5 mt-4'>
-                                <div className=''>
-                                    <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
-                                </div>
-                                <div>
-                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                                </div>
-                            </div>
-                            <div className='flex items-center justify-between px-5 py-2'>
-                                <div className=''>
-                                    <p className='font-medium text-[14px] 2xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[12px] 2xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
-                                </div>
-                                <div>
-                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                                </div>
-                            </div>
-                            <div className='flex items-center justify-between px-5 py-2'>
-                                <div className=''>
-                                    <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
-                                </div>
-                                <div>
-                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] 2xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                                </div>
-                            </div>
-                            <div className='flex items-center justify-between p-5'>
-                                <div className=''>
-                                    <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
-                                    <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
-                                </div>
-                                <div>
-                                    <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
-                                </div>
-                            </div> */}
+                          
                         </div>
 
 
@@ -573,25 +542,7 @@ const Dashboard = () => {
                         ))}
                     </nav>
 
-                    {/* <div className='flex flex-col   h-[150px] justify-evenly  py-5'>
-                        <p className='text-[24px] xl:text-[32px] text-[#52525B] font-extrabold ml-6 mb-5 mt-16'>Hello Sainavi,</p>
-                        <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
-                          
-                            <div className='bg-[#dddd] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px]'>
-                                <div className='flex items-center justify-center gap-x-5 h-full '>
-                                    <img
-                                        src="https://images.unsplash.com/photo-1719937051124-91c677bc58fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D"
-                                        alt="aaaa"
-                                        className='rounded-full w-10 h-10 xl:w-14 xl:h-14'
-                                    />
-                                    <div className=''>
-                                        <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold'>Sainavi Mahajan</p>
-                                        <p className='text-[10px] xl:text-[14px] text-[#A1A1AA]'>Specialist Registrar</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
+                   
                     {/* Bottom Settings */}
                     <div className="mt-auto w-full mb-40 px-6">
                         <NavLink to={'/setting'}>
@@ -608,6 +559,9 @@ const Dashboard = () => {
                 </div>
 
             </Drawer>
+
+            {isOpenSetUpSessionModal && <SetupSessionModal isOpenSetUpSessionModal={isOpenSetUpSessionModal} setIsOpenSetUpSessionModal={setIsOpenSetUpSessionModal} />}
+
         </div>
     );
 };
