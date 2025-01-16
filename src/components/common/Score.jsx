@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getFeedbackMessage } from '../../utils/GlobalApiHandler';
 import { addResultEntry } from '../../redux/features/accuracy/accuracy.service';
 import { setQuestionReview } from '../../redux/features/question-review/question-review.slice';
-import { sessionCompleted } from '../../redux/features/recent-session/recent-session.slice';
+import { sessionCompleted, updateRecentSessions } from '../../redux/features/recent-session/recent-session.slice';
 const Score = () => {
     const [isOpen, setIsOpen] = useState(false);
     const result = useSelector(state => state.result);
@@ -25,7 +25,9 @@ const Score = () => {
     const [feedback, setFeedback] = useState(null);
     const [totalAttemped, setTotalAttemped] = useState(0)
     const navigate=useNavigate();
-
+    const recentSession = useSelector(state => state?.recentSession?.recentSessions);
+    console.log("recentSession:", recentSession);
+    
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -60,7 +62,24 @@ const Score = () => {
     }, []);
 
     
+   useEffect(() => {
+       if (recentSession.length > 0) {
+            // Dispatch to update the Redux store
+      
 
+            // Retrieve existing sessions from localStorage
+            const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
+
+            // Combine existing sessions with the new session entry
+           const updatedSessions = [...existingSessions, ...recentSession];
+
+            // Keep only the last 3 sessions
+            const trimmedSessions = updatedSessions.slice(-3); // This will keep only the last 3 sessions
+
+            // Store the updated sessions in localStorage
+            localStorage.setItem('recentSessions', JSON.stringify(trimmedSessions));
+        }
+   }, []);
 
     return (
         <div className='lg:flex  min-h-screen w-full'>

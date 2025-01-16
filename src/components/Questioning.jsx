@@ -20,7 +20,7 @@ import { resetQuestionReviewValue } from "../redux/features/question-review/ques
 import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SAQ/saq.service";
 
 import { setPreclinicalType } from "../redux/features/mode/mode.slice";
-import { updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
+import { clearRecentSessions, updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
 import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import supabase from "../helper";
 
@@ -37,17 +37,19 @@ const Questioning = () => {
     const { limit } = useSelector((state) => state.limit);
     const [selectedOption, setSelectedOption] = useState('SBA');
     const [recentSessions, setRecentSessions] = useState([]);
-    const session = useSelector(state => state?.recentSession?.recentSessions || [])
-    const isCompleted = useSelector((state) => state.recentSession?.isSessionCompleted); // Access Redux state
+
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isToggled, setIsToggled] = useState(false);
+    const [localRecentSession, setLocalRecentSession]=useState([]);
     const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
+    const recentSession = useSelector(state => state.recentSession.recentSessions);
+    console.log("redux session value:", recentSession);
 
 
     const handleToggle = () => {
@@ -144,7 +146,6 @@ const Questioning = () => {
         }
     };
 
-    console.log("selectedModules:", selectedModules)
     function handleContinue() {
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
@@ -183,7 +184,7 @@ const Questioning = () => {
 
 
 
-   
+
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
         dispatch(fetchModules())
@@ -246,35 +247,27 @@ const Questioning = () => {
 
     // console.log("selectedModules:", selectedModules);
 
+    useEffect(() => {
+        localStorage.removeItem('examTimer'); // Clear storage when timer ends
+        // Check if recentSessions are available in localStorage
+        const storedSessions = localStorage.getItem('recentSessions');
+        if (storedSessions) {
+            setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
+        }
+        dispatch(clearRecentSessions())
+    }, []);
 
     useEffect(() => {
         if (recentSessions.length > 0) {
             // Dispatch to update the Redux store
             dispatch(updateRecentSessions(recentSessions));
-
-            // Retrieve existing sessions from localStorage
-            const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
-
-            // Combine existing sessions with the new session entry
-            const updatedSessions = [...existingSessions, ...recentSessions];
-
-            // Keep only the last 3 sessions
-            const trimmedSessions = updatedSessions.slice(-3); // This will keep only the last 3 sessions
-
-            // Store the updated sessions in localStorage
-            localStorage.setItem('recentSessions', JSON.stringify(trimmedSessions));
         }
     }, [recentSessions]);
     // Effect to retrieve recent sessions from localStorage
-    useEffect(() => {
-        localStorage.removeItem('examTimer'); // Clear storage when timer ends
 
-        // Check if recentSessions are available in localStorage
-        const storedSessions = localStorage.getItem('recentSessions');
-        if (storedSessions) {
-            setRecentSessions(JSON.parse(storedSessions)); // Parse and set to state
-        }
-    }, []);
+   
+
+
     const sortedModules = isSortedByPresentation
         ? [...filteredModules].sort((a, b) => {
             const isASelected = selectedModules.includes(a.categoryId);
@@ -292,9 +285,6 @@ const Questioning = () => {
                     .eq('userId', '123456543');
 
                 if (error) throw error;
-
-                console.log("data:", data);
-
                 // Process the data to calculate totals for each moduleId
                 const totalsByModule = data.reduce((acc, curr) => {
                     const { moduleId, correct, incorrect, unanswered } = curr;
@@ -329,6 +319,7 @@ const Questioning = () => {
     // console.log("recentSessions:", recentSessions);
     // console.log("selectedOption:", selectedOption);
 
+    console.log("localRecentSession:", localRecentSession);
 
     return (
         <div className=" lg:flex w-full">
@@ -472,8 +463,8 @@ const Questioning = () => {
 
 
                                     <div className="w-[65%] space-y-3">
-                                        {recentSessions.length > 0 ? (
-                                            recentSessions.map((sessionId, index) => {
+                                        {localRecentSession.length > 0 ? (
+                                            localRecentSession.map((sessionId, index) => {
                                                 const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
 
                                                 // Find category names corresponding to the category IDs
@@ -517,7 +508,7 @@ const Questioning = () => {
                     <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
 
                         <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-[#3F3F46]  pb-2 w-full">
-                           <div className="flex items-center gap-x-10">
+                            <div className="flex items-center gap-x-10">
                                 <div className="text-left ">
                                     <input
                                         type="checkbox"
@@ -535,9 +526,9 @@ const Questioning = () => {
                                         <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
                                     </label>
                                 </div>
-                           </div>
-                           
-                            
+                            </div>
+
+
                             <div className="text-right flex items-center gap-x-5">
                                 <div className="hidden sm:block text-center">Progress</div>
 
