@@ -2,19 +2,19 @@ import  { createSlice } from '@reduxjs/toolkit';
 
 
 const questionLimit = createSlice({
-    name: 'questionLimit',
+    name: 'limit',
     initialState: {
         limit: 0,
         },
 reducers:{
-    setQuestionLimit:(state,action)=>{
+    setLimit:(state,action)=>{
         state.limit=action.payload
     },
-    setRemoveQuestionLimit(state, action){
+    setResetLimit(state, action){
         state.limit=0
     }
 }
 })
 
-export const { setQuestionLimit, setRemoveQuestionLimit } = questionLimit.actions;
+export const { setLimit, setResetLimit } = questionLimit.actions;
 export default questionLimit.reducer;

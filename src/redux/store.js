@@ -16,7 +16,7 @@ import modulesReducer from './features/categoryModules/module.slice';
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['module', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions","mode"], // Persist these in localStorage
+    whitelist: ['module', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions","mode","limit"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {

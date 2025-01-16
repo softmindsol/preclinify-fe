@@ -25,6 +25,7 @@ import { TbBaselineDensityMedium } from 'react-icons/tb';
 import { clearRecentSessions } from '../redux/features/recent-session/recent-session.slice';
 import { fetchMcqsByModules } from '../redux/features/SBA/sba.service';
 import SetupSessionModal from '../components/SetupSessionModal';
+import { setResetLimit } from '../redux/features/limit/limit.slice';
 
 const Dashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);
@@ -39,8 +40,10 @@ const Dashboard = () => {
     const [localRecentSession, setLocalRecentSession] = useState([]);
     const data = useSelector((state) => state.module);
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
+    const { limit } = useSelector((state) => state.limit);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [isSession,setIsSession]=useState(false)
+const [sessionId,setSessionId] =useState([])
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -72,40 +75,8 @@ const Dashboard = () => {
     }, []);
     // console.log("workEntries:", workEntries);
 
- function handleContinue() {
-        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+    // console.log("Limit from Redux:", limit);
 
-    }
-    function handleSessionContinue(sessionId) {
-        // Open the setup session modal
-        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
-
-        // Find the selected modules based on the sessionId
-
-        // No need to split, just trim the sessionId if necessary
-        const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
-
-        // Make an API call based on the selected module IDs
-        if (flatModuleIds.length > 0 ) { // Check if not already loading
-            console.log("run");
-
-            setIsLoading(true); // Set loading state to true
-            dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: 10 }))
-            .unwrap()
-            .then((res) => {
-                    console.log("flatModuleIds:", flatModuleIds);
-                    console.log("res", res);
-                })
-                .catch((err) => {
-                    console.error("Error fetching questions:", err);
-                })
-                .finally(() => {
-                    setIsLoading(false); // Reset loading state after API call
-                });
-        } else {
-            console.log("No modules selected for this session or already loading.");
-        }
-    }
 
     
 
@@ -168,17 +139,55 @@ const Dashboard = () => {
         return "bg-[#E4E4E7]"; // Default background for days with no workCount
     };
 
+    function handleContinue() {
+        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+
+    }
+
+
+useEffect(()=>{
+    const handleSessionContinue = async (sessionId)=> {
+        // Open the setup session modal
+        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+        console.log("Limit from Redux:", limit);
+        // Find the selected modules based on the sessionId
+
+        // No need to split, just trim the sessionId if necessary
+        const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
+
+        // Make an API call based on the selected module IDs
+
+        dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
+            .unwrap()
+            .then((res) => {
+                console.log("flatModuleIds:", flatModuleIds);
+                console.log("res", res);
+            })
+            .catch((err) => {
+                console.error("Error fetching questions:", err);
+            })
+            .finally(() => {
+                setIsLoading(false); // Reset loading state after API call
+            });
+
+    }
+    if (isSession === true){
+        handleSessionContinue(sessionId)
+    }
+
+}, [limit, isSession])
     useEffect(() => {
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }
+                dispatch(setResetLimit())
+        
         dispatch(clearRecentSessions())
     }, []);
     useEffect(() => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
-
         dispatch(clearResult());
         dispatch(resetQuestionReviewValue());
     }, [])
@@ -344,7 +353,12 @@ const Dashboard = () => {
                                                 </div>
                                                 <div>
                                                     <button
-                                                        onClick={() => handleSessionContinue(sessionId)}
+                                                        onClick={() =>{ 
+                                                            setSessionId(sessionId);
+                                                        setIsSession(true);
+                                                            handleContinue()
+                                                        }
+                                                        }
                                                         className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                         Continue &gt;
                                                     </button>

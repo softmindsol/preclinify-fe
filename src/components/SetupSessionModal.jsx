@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { setQuestionLimit } from "../redux/features/limit/limit.slice";
+import { setLimit } from "../redux/features/limit/limit.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "../utils/GlobalApiHandler";
 import { Link, useNavigate } from "react-router-dom";
@@ -34,7 +34,7 @@ const navigation=useNavigate()
     // Debounced dispatch handler
     const debouncedDispatch = useCallback(
         debounce((value) => {
-            dispatch(setQuestionLimit(value));
+            dispatch(setLimit(value));
         },0), // 1000ms delay
         [dispatch]
     );
@@ -45,6 +45,7 @@ const navigation=useNavigate()
         if (value <= 200) {
             setNumQuestions(value);
             debouncedDispatch(value); // Call debounced function
+            dispatch(setLimit(value))
         }
     };
     // Update state and call debounced handler

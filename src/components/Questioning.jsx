@@ -14,7 +14,7 @@ import { fetchModules } from "../redux/features/categoryModules/module.service";
 import { setLoading } from "../redux/features/loader/loader.slice";
 import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
 import { clearResult } from "../redux/features/result/result.slice";
-import { setRemoveQuestionLimit } from "../redux/features/limit/limit.slice";
+import { setResetLimit } from "../redux/features/limit/limit.slice";
 import Loader from "./common/Loader";
 import { resetQuestionReviewValue } from "../redux/features/question-review/question-review.slice";
 import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SAQ/saq.service";
@@ -162,9 +162,11 @@ const Questioning = () => {
         if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
             setIsLoading(true); // Set loading state to true
             dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
-            dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: 10 }))
+            dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
                 .unwrap()
                 .then(() => {
+                    console.log("Limit:", limit);
+
                     dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
                     console.log("Fetched questions for modules:", flatModuleIds);
                 })
@@ -197,14 +199,13 @@ const Questioning = () => {
         // Dispatch Redux action to clear 'result' from Redux store
         dispatch(clearResult());
         dispatch(clearMcqsAccuracy())
-        dispatch(setRemoveQuestionLimit())
+        dispatch(setResetLimit())
         dispatch(resetQuestionReviewValue());
     }, []);
 
 
     useEffect(() => {
         dispatch(setPreclinicalType({ selectedOption }));
-        console.log("selectedModules:", selectedModules);
 
         if (selectedModules.length > 0) {
             if (selectedOption === 'SBA') {
