@@ -28,6 +28,7 @@ export const fetchMcqsByModules = createAsyncThunk(
     async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
         try {
 
+            console.log("moduleIds:", moduleIds);
             
             if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
                 return rejectWithValue('Invalid moduleIds');

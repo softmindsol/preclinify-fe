@@ -76,28 +76,27 @@ const Dashboard = () => {
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
     }
-    function handleSssionContinue(sessionId) {
+    function handleSessionContinue(sessionId) {
         // Open the setup session modal
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
         // Find the selected modules based on the sessionId
-        const moduleIds = [sessionId]; // This is already an array
 
         // No need to split, just trim the sessionId if necessary
-        const flatModuleIds = moduleIds.map(id => id.trim()); // Trim each ID
+        const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
 
         // Make an API call based on the selected module IDs
-        if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
+        if (flatModuleIds.length > 0 ) { // Check if not already loading
+            console.log("run");
+
             setIsLoading(true); // Set loading state to true
-            dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
             dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: 10 }))
-                .unwrap()
-                .then(() => {
-                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-                    console.log("Fetched questions for modules:", flatModuleIds);
+            .unwrap()
+            .then((res) => {
+                    console.log("flatModuleIds:", flatModuleIds);
+                    console.log("res", res);
                 })
                 .catch((err) => {
-                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
                     console.error("Error fetching questions:", err);
                 })
                 .finally(() => {
@@ -107,6 +106,8 @@ const Dashboard = () => {
             console.log("No modules selected for this session or already loading.");
         }
     }
+
+    
 
     useEffect(() => {
         const start = startOfMonth(selectedDate);
@@ -343,7 +344,7 @@ const Dashboard = () => {
                                                 </div>
                                                 <div>
                                                     <button
-                                                        onClick={() => handleSssionContinue(sessionId)}
+                                                        onClick={() => handleSessionContinue(sessionId)}
                                                         className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                         Continue &gt;
                                                     </button>
