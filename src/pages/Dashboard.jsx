@@ -150,11 +150,11 @@ const Dashboard = () => {
             </div>
 
             <div className='flex-grow lg:ml-[250px] py-2 md:py-10 overflow-y-auto my-5'>
-                <div className='hidden sm:flex flex-row items-center  h-[150px] justify-evenly w-full gap-x-36 xl:gap-x-16 py-5'>
-                    <p className='text-[24px] xl:text-[32px] text-[#52525B] font-extrabold '>Hello Sainavi,</p>
+                <div className='flex flex-row  items-center  h-[150px] justify-center sm:justify-evenly w-full gap-x-3 xs:gap-x-16 sm:gap-x-36 xl:gap-x-16 py-5'>
+                    <p className='text-[18px] sm:text-[24px] xl:text-[32px] text-[#52525B] font-extrabold '>Hello Sainavi,</p>
                     <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
                         <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] '>
-                            <p className='text-[#FF9741] text-[24px] xl:text-[32px] font-black'>20 Days</p>
+                            <p className='text-[#FF9741] text-[18px] sm:text-[24px] xl:text-[32px] font-black'>20 Days</p>
                             <p className='text-[10px] xl:text-[14px] text-[#52525B] font-medium'>Until your exam</p>
                         </div>
                         <div className='bg-[#FFFFFF] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px]'>
@@ -175,7 +175,7 @@ const Dashboard = () => {
 
                 <div className='space-y-5 mt-8 md:mt-0'>
                     <div className='flex justify-center flex-col md:flex-row gap-x-5 items-center w-full'>
-                        <div className="p-6 w-[420px] xl:w-[610px] 2xl:w-[745px] h-[430px] md:h-[520px] bg-white rounded-lg shadow-md">
+                        <div className="p-6 w-[95%] xs:w-[420px] xl:w-[610px] 2xl:w-[745px] h-[430px] md:h-[520px] bg-white rounded-lg shadow-md">
                             <div className='flex items-end justify-end'>
                                 <div className="mb-5 relative w-[180px]">
                                     <DatePicker
@@ -185,10 +185,10 @@ const Dashboard = () => {
                                         onCalendarClose={() => setIsCalendarOpen(false)}
                                         dateFormat="MMMM yyyy"
                                         showMonthYearPicker
-                                        className="relative border rounded w-[180px] p-2 text-[14px] cursor-pointer" // Added cursor-pointer class
+                                        className="relative border rounded w-[150px] sm:w-[180px] p-2 text-[12px] sm:text-[14px] cursor-pointer" // Added cursor-pointer class
                                     />
                                     <span
-                                        className={`absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200 ${isCalendarOpen ? "rotate-180" : ""}`}
+                                        className={`absolute right-10 sm:right-3 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200 ${isCalendarOpen ? "rotate-180" : ""}`}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -209,8 +209,8 @@ const Dashboard = () => {
                             </div>
 
                             <div className='text-center'>
-                                <p className='text-[14px] font-semibold text-[#52525B]'>Current Streak</p>
-                                <p className='font-black text-[32px] text-[#FF9741]'>4 Days</p>
+                                <p className='text-[12px] sm:text-[14px] font-semibold text-[#52525B]'>Current Streak</p>
+                                <p className='font-black text-[18px]  sm:text-[24px] xl:text-[32px] text-[#FF9741]'>4 Days</p>
                             </div>
 
                             <div className='flex justify-between gap-x-10'>
@@ -227,7 +227,7 @@ const Dashboard = () => {
                                         return (
                                             <div
                                                 key={index}
-                                                className={`w-8 h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white  ${day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'}`}
+                                                className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white  ${day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'}`}
                                             >
 
 
@@ -238,33 +238,33 @@ const Dashboard = () => {
 
                                 <div className="flex flex-col mt-4 space-y-2">
                                     <div className="flex items-center">
-                                        <div className="w-8 h-8 xl:h-12 xl:w-12 bg-[#047857] rounded-md"></div>
-                                        <span className="ml-2"> &gt; 99</span>
+                                        <div className="w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 bg-[#047857] rounded-md"></div>
+                                        <span className="text-[12px] sm:text-[16px] ml-2"> &gt; 99</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="w-8 h-8 xl:h-12 xl:w-12 bg-[#059669] rounded-md"></div>
-                                        <span className="ml-2"> &gt; 75</span>
+                                        <div className="w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 bg-[#059669] rounded-md"></div>
+                                        <span className="ml-2 text-[12px] sm:text-[16px]"> &gt; 75</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="w-8 h-8 xl:h-12 xl:w-12 bg-[#34D399] rounded-md"></div>
-                                        <span className="ml-2"> &gt; 50</span>
+                                        <div className="w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 bg-[#34D399] rounded-md"></div>
+                                        <span className="ml-2 text-[12px] sm:text-[16px]"> &gt; 50</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="w-8 h-8 xl:h-12 xl:w-12 bg-[#6EE7B7] rounded-md"></div>
-                                        <span className="ml-2"> &gt; 25</span>
+                                        <div className="w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 bg-[#6EE7B7] rounded-md"></div>
+                                        <span className="ml-2 text-[12px] sm:text-[16px]"> &gt; 25</span>
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="w-8 h-8 xl:h-12 xl:w-12 bg-[#A7F3D0] rounded-md"></div>
-                                        <span className="ml-2"> &lt; 25</span>
+                                        <div className="w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 bg-[#A7F3D0] rounded-md"></div>
+                                        <span className="ml-2 text-[12px] sm:text-[16px]"> &lt; 25</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className=' w-[400px]  mt-6'>
-                                <p className=' text-center text-[#71717A] text-[16px]'>{formattedMonth}</p>
+                            <div className=' w-[200px] sm:w-[400px]  mt-6'>
+                                <p className=' text-center text-[#71717A] text-[14px] sm:text-[16px]'>{formattedMonth}</p>
                             </div>
                         </div>
-                        <div className='w-[420px] mt-2 md:mt-0 md:w-[280px] xl:w-[320px]  h-[430px] md:h-[520px]   bg-white rounded-lg shadow-md'>
+                        <div className='w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[280px] xl:w-[320px]  h-[430px] md:h-[520px]   bg-white rounded-lg shadow-md'>
                             <div className='font-bold text-[14px] xl:text-[18px] text-center text-[#52525B] mt-2 p-5'>
                                 <p>Quick Start</p>
                             </div>
@@ -315,7 +315,7 @@ const Dashboard = () => {
 
 
                     <div className='flex flex-col md:flex-row-reverse justify-center gap-x-5 items-center w-full'>
-                        <div className=" p-6 w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px]  bg-white rounded-lg shadow-md">
+                        <div className=" p-6 w-[95%] xs:w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px]  bg-white rounded-lg shadow-md">
                             <h2 className='font-bold text-[20px] text-center py-3'>Monthly Progress</h2>
                             <StackedBar days={days} />
 
@@ -330,7 +330,7 @@ const Dashboard = () => {
                             </div>
                         </div>
 
-                        <div className=' w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md'>
+                        <div className=' w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md'>
                             <div className='text-[18px] text-center text-[#52525B] p-5 font-semibold'>
                                 <p className=' text-[#3F3F46] '>Questions</p>
                                 <p className='text-[16px] flex items-center  justify-center'>Preclinify <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-[#FF9741]"><path d="m6 9 6 6 6-6" /></svg> </p>
