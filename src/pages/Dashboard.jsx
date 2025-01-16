@@ -22,6 +22,7 @@ import { NavLink } from 'react-router-dom';
 import { RxCross2 } from 'react-icons/rx';
 import Logo from "../components/common/Logo";
 import { TbBaselineDensityMedium } from 'react-icons/tb';
+import { clearRecentSessions } from '../redux/features/recent-session/recent-session.slice';
 
 const Dashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);
@@ -33,6 +34,8 @@ const Dashboard = () => {
     const [formattedMonth, setFormattedMonth] = useState("")
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false);
+    const [localRecentSession, setLocalRecentSession] = useState([]);
+    const data = useSelector((state) => state.module);
 
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -65,6 +68,41 @@ const Dashboard = () => {
     }, []);
     // console.log("workEntries:", workEntries);
 
+ function handleContinue() {
+        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+
+    }
+    function handleSssionContinue(sessionId) {
+        // Open the setup session modal
+        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+
+        // Find the selected modules based on the sessionId
+        const moduleIds = [sessionId]; // This is already an array
+
+        // No need to split, just trim the sessionId if necessary
+        const flatModuleIds = moduleIds.map(id => id.trim()); // Trim each ID
+
+        // Make an API call based on the selected module IDs
+        if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
+            setIsLoading(true); // Set loading state to true
+            dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+            dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: 10 }))
+                .unwrap()
+                .then(() => {
+                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                    console.log("Fetched questions for modules:", flatModuleIds);
+                })
+                .catch((err) => {
+                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                    console.error("Error fetching questions:", err);
+                })
+                .finally(() => {
+                    setIsLoading(false); // Reset loading state after API call
+                });
+        } else {
+            console.log("No modules selected for this session or already loading.");
+        }
+    }
 
     useEffect(() => {
         const start = startOfMonth(selectedDate);
@@ -125,7 +163,14 @@ const Dashboard = () => {
         return "bg-[#E4E4E7]"; // Default background for days with no workCount
     };
 
-
+    useEffect(() => {
+        // Check if recentSessions are available in localStorage
+        const storedSessions = localStorage.getItem('recentSessions');
+        if (storedSessions) {
+            setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
+        }
+        dispatch(clearRecentSessions())
+    }, []);
     useEffect(() => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
 
@@ -269,8 +314,47 @@ const Dashboard = () => {
                                 <p>Quick Start</p>
                             </div>
                             <hr />
+                            <div className='flex flex-col items-center gap-y-8 justify-between p-5 mt-4'>
+                                {localRecentSession.length > 0 ? (
+                                    localRecentSession.map((sessionId, index) => {
+                                        const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
 
-                            <div className='flex items-center justify-between p-5 mt-4'>
+                                        // Find category names corresponding to the category IDs
+                                        const categoryNames = categoryIds.map(id => {
+                                            const category = data.data.find(item => item.categoryId === parseInt(id)); // Find the category by ID
+                                            return category ? category.categoryName : null; // Return the category name or null if not found
+                                        }).filter(name => name !== null); // Filter out any null values
+                                        const truncateCategoryNames = (names) => {
+                                            const joinedNames = names.join(', ');
+                                            return joinedNames.length > 15 ? `${joinedNames.slice(0, 15)}+...` : joinedNames;
+                                        };
+                                        // Return the JSX for each session
+                                        return (
+                                            <div key={index} className="flex items-center justify-between w-full">
+                                                <div>
+                                                    <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">
+                                                        {truncateCategoryNames(categoryNames)}
+                                                    </p>
+                                                    <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                                </div>
+                                                <div>
+                                                    <button
+                                                        // onClick={() => handleSssionContinue(sessionId)}
+                                                        className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                        Continue &gt;
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="flex items-center justify-center">
+                                        <p>No Session</p>
+                                    </div>
+                                )}
+                            </div>
+                          
+                            {/* <div className='flex items-center justify-between p-5 mt-4'>
                                 <div className=''>
                                     <p className='font-medium text-[14px] xl:text-[16px] text-[#3F3F46]'>Renal Medicine +...</p>
                                     <p className='text-[12px] xl:text-[14px] font-semibold text-[#A1A1AA]'>1 day ago</p>
@@ -305,7 +389,7 @@ const Dashboard = () => {
                                 <div>
                                     <button className='border-[1px] border-[#FF9741] p-1 text-[12px] xl:text-[16px] 2xl:p-2 text-[#FF9741] font-semibold rounded-[4px]'>Continue &gt;</button>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
 
 
