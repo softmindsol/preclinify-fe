@@ -37,11 +37,12 @@ const Questioning = () => {
     const { limit } = useSelector((state) => state.limit);
     const [selectedOption, setSelectedOption] = useState('SBA');
     const [recentSessions, setRecentSessions] = useState([]);
-
+    const [isSession, setIsSession] = useState(false)
+    const [sessionId, setSessionId] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isToggled, setIsToggled] = useState(false);
-    const [localRecentSession, setLocalRecentSession]=useState([]);
+    const [localRecentSession, setLocalRecentSession] = useState([]);
     const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -149,42 +150,73 @@ const Questioning = () => {
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
     }
-    function handleSessionContinue(sessionId) {
-        // Open the setup session modal
-        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+    // function handleSessionContinue(sessionId) {
+    //     // Open the setup session modal
+    //     setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
-        // Find the selected modules based on the sessionId
+    //     // Find the selected modules based on the sessionId
 
-        // No need to split, just trim the sessionId if necessary
-        const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
+    //     // No need to split, just trim the sessionId if necessary
+    //     const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
 
-        // Make an API call based on the selected module IDs
-        if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
-            setIsLoading(true); // Set loading state to true
-            dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+    //     // Make an API call based on the selected module IDs
+    //     if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
+    //         setIsLoading(true); // Set loading state to true
+    //         dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+    //         dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
+    //             .unwrap()
+    //             .then(() => {
+    //                 console.log("Limit:", limit);
+
+    //                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+    //                 console.log("Fetched questions for modules:", flatModuleIds);
+    //             })
+    //             .catch((err) => {
+    //                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+    //                 console.error("Error fetching questions:", err);
+    //             })
+    //             .finally(() => {
+    //                 setIsLoading(false); // Reset loading state after API call
+    //             });
+    //     } else {
+    //         console.log("No modules selected for this session or already loading.");
+    //     }
+    // }
+
+
+
+    // fetch Modules
+
+    useEffect(() => {
+        const handleSessionContinue = async (sessionId) => {
+            // Open the setup session modal
+            setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+            // Find the selected modules based on the sessionId
+
+            // No need to split, just trim the sessionId if necessary
+            const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
+
+            // Make an API call based on the selected module IDs
+
             dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
                 .unwrap()
-                .then(() => {
-                    console.log("Limit:", limit);
-
-                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-                    console.log("Fetched questions for modules:", flatModuleIds);
+                .then((res) => {
+                    console.log("flatModuleIds:", flatModuleIds);
+                    console.log("res", res);
                 })
                 .catch((err) => {
-                    dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
                     console.error("Error fetching questions:", err);
                 })
                 .finally(() => {
                     setIsLoading(false); // Reset loading state after API call
                 });
-        } else {
-            console.log("No modules selected for this session or already loading.");
+
         }
-    }
+        if (isSession === true) {
+            handleSessionContinue(sessionId)
+        }
 
-
-
-// fetch Modules
+    }, [limit, isSession])
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
         dispatch(fetchModules())
@@ -266,7 +298,7 @@ const Questioning = () => {
     }, [recentSessions]);
     // Effect to retrieve recent sessions from localStorage
 
-   
+
 
 
     const sortedModules = isSortedByPresentation
@@ -485,7 +517,12 @@ const Questioning = () => {
                                                         </div>
                                                         <div>
                                                             <button
-                                                                onClick={() => handleSessionContinue(sessionId)}
+                                                                onClick={() => {
+                                                                    setSessionId(sessionId);
+                                                                    setIsSession(true);
+                                                                    handleContinue()
+                                                                }
+                                                                }
                                                                 className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                                 Continue &gt;
                                                             </button>

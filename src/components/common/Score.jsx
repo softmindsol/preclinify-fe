@@ -64,9 +64,7 @@ const Score = () => {
     
    useEffect(() => {
        if (recentSession.length > 0) {
-            // Dispatch to update the Redux store
-      
-
+    
             // Retrieve existing sessions from localStorage
             const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
 
