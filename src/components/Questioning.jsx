@@ -49,6 +49,7 @@ const Questioning = () => {
     );
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
+
     const recentSession = useSelector(state => state.recentSession.recentSessions);
 
 
@@ -217,14 +218,19 @@ const Questioning = () => {
         }
 
     }, [limit, isSession])
+
+
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
+        setIsLoading(true)
         dispatch(fetchModules())
             .unwrap()
             .then(() => {
+                setIsLoading(false)
                 dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
             }).catch(err => {
                 dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+                setIsLoading(false)
             })
 
         sessionStorage.removeItem('persist:result');
@@ -648,16 +654,18 @@ const Questioning = () => {
                                         <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
                                             <div
                                                 className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46]"
-                                                onClick={() => handleCheckboxChange(row.categoryId)}
                                             >
-                                                <input
-                                                    type="checkbox"
-                                                    className="mr-2 custom-checkbox"
-                                                    checked={selectedModules.includes(row.categoryId)}
-                                                    onChange={() => handleCheckboxChange(row.categoryId)}
-                                                />
-                                                {row.categoryName}
+                                                <label className="flex items-center cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="mr-2 custom-checkbox"
+                                                        checked={selectedModules.includes(row.categoryId)}
+                                                        onChange={() => handleCheckboxChange(row.categoryId)}
+                                                    />
+                                                    {row.categoryName}
+                                                </label>
                                             </div>
+
 
                                             <div className="flex items-center justify-center space-x-1">
                                                 {/* Green */}
@@ -707,8 +715,7 @@ const Questioning = () => {
                             { name: "Dashboard", icon: "house" },
                             { name: "Practice", icon: "dumbbell" },
                             { name: "Performance", icon: "chart-line" },
-                            { name: "Friends", icon: "git-merge" },
-                            { name: "Textbook", icon: "book-open" },
+                           
                             { name: "OSCE", icon: "bed" },
                         ].map((item, index) => (
                             <div
