@@ -242,6 +242,7 @@ const Questioning = () => {
     }, []);
 
 
+
     useEffect(() => {
         dispatch(setPreclinicalType({ selectedOption }));
 
@@ -259,7 +260,7 @@ const Questioning = () => {
             }
             else if (selectedOption === 'SQA') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
-                dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: 2 }))
+                dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
@@ -359,6 +360,7 @@ const Questioning = () => {
     // console.log("selectedOption:", selectedOption);
 
     // console.log("localRecentSession:", localRecentSession);
+console.log("limit:",limit);
 
     return (
         <div className=" lg:flex w-full">
@@ -598,44 +600,6 @@ const Questioning = () => {
 
                         </div>
                         <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
-
-                        {/* <div>
-                            {isLoading ? (
-                                <Loader />
-                            ) : (
-                                    sortedModules?.map((row) => (
-                                    <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                        <div
-                                                className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46]"
-                                            onClick={() => handleCheckboxChange(row.categoryId)}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="mr-2 custom-checkbox"
-                                                checked={selectedModules.includes(row.categoryId)}
-                                                onChange={() => handleCheckboxChange(row.categoryId)}
-                                            />
-                                            {row.categoryName}
-                                        </div>
-
-                                        <div className="flex items-center justify-center space-x-1">
-                                            <div
-                                                className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                                style={{ width: `50%` }}
-                                            ></div>
-                                            <div
-                                                className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                                style={{ width: `30%` }}
-                                            ></div>
-                                            <div
-                                                className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                                style={{ width: `20%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div> */}
 
                         <div>
                             {isLoading ? (

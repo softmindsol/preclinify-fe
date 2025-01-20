@@ -27,38 +27,51 @@ export const fetchMcqsByModules = createAsyncThunk(
     'modules/fetchMcqsByModules',
     async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
         try {
-
             console.log("moduleIds:", moduleIds);
-            
+
             if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
                 return rejectWithValue('Invalid moduleIds');
             }
 
-            // Calculate the limit for each module
-            const baseLimit = Math.floor(totalLimit / moduleIds.length);
-            const remainder = totalLimit % moduleIds.length;
+            let moduleLimits;
 
-            // Prepare limits for each module
-            const moduleLimits = moduleIds.map((moduleId, index) => {
-                return {
+            // Check if totalLimit is 0
+            if (totalLimit === 0) {
+                // If totalLimit is 0, fetch all questions for each module
+                moduleLimits = moduleIds.map(moduleId => ({
                     moduleId,
-                    limit: baseLimit + (index < remainder ? 1 : 0),
-                };
-            });
- 
+                    limit: null // Indicate that we want to fetch all
+                }));
+            } else {
+                // Calculate the limit for each module
+                const baseLimit = Math.floor(totalLimit / moduleIds.length);
+                const remainder = totalLimit % moduleIds.length;
+
+                // Prepare limits for each module
+                moduleLimits = moduleIds.map((moduleId, index) => {
+                    return {
+                        moduleId,
+                        limit: baseLimit + (index < remainder ? 1 : 0),
+                    };
+                });
+            }
+
             // Run multiple requests in parallel
             const promises = moduleLimits.map(async ({ moduleId, limit }) => {
                 let query = supabase
                     .from('mcqQuestions')
                     .select('*')
-                    .eq('moduleId', moduleId)
-                    .limit(limit);
+                    .eq('moduleId', moduleId);
+
+                // Apply limit only if it's defined
+                if (limit !== null) {
+                    query = query.limit(limit);
+                }
 
                 const { data, error } = await query;
                 if (error) {
                     throw new Error(`Error fetching data for moduleId ${moduleId}: ${error.message}`);
                 }
-              
 
                 return data; // Return the fetched data
             });
@@ -79,7 +92,6 @@ export const fetchMcqsByModules = createAsyncThunk(
         }
     }
 );
-
 
 // Fetch MCQs by moduleId with limit
 export const fetchConditionNameById= createAsyncThunk(
