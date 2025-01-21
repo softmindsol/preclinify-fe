@@ -10,6 +10,22 @@ body{
      overflow-y: auto;
 }
 
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+}
+.dark {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+}
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    
+}
+
+
+
 .swiper {
   width: 100%;
   height: 100%;

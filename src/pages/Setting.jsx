@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Siderbar from '../components/common/Sidebar'
 import { FaClock, FaRobot } from "react-icons/fa";
 import { PiCircleHalfFill } from "react-icons/pi";
@@ -7,15 +7,18 @@ import Logo from '../components/common/Logo';
 import { TbBaselineDensityMedium } from "react-icons/tb";
 // import component 👇
 import { RxCross2 } from "react-icons/rx";
-
 import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
 import { Link } from 'react-router-dom';
-import  supabase  from '../helper'; // Import the Supabase client
+import supabase from '../helper'; // Import the Supabase client
+import { setDarkMode } from '../redux/features/dark-mode/dark-mode.slice';
+import { useDispatch } from 'react-redux';
 
 const Setting = () => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
+    const [darkMode, setMode] = useState(false);
+    const dispatch = useDispatch()
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -31,9 +34,18 @@ const Setting = () => {
         }
     };
 
+    const toggleDarkMode = () => {
+        setMode((prevMode) => !prevMode);
+        dispatch(setDarkMode(!darkMode));
+
+    };
+
+
+
+    console.log("darkMode:", darkMode);
 
     return (
-        <div className=' lg:flex  min-h-screen w-full'>
+        <div className={`lg:flex min-h-screen w-full ${darkMode ? 'dark' : ''}`}>
 
             <div className="h-full hidden lg:block fixed">
                 <Siderbar />
@@ -44,20 +56,20 @@ const Setting = () => {
                 </div>
 
                 <div className='' onClick={toggleDrawer}>
-                    <TbBaselineDensityMedium/>
+                    <TbBaselineDensityMedium />
                 </div>
             </div>
-           
 
-            <div className="min-h-screen bg-gray-100 text-[#3F3F46] lg:p-6 mt-5 lg:mt-0 w-full ml-[250px] overflow-y-auto">
+
+            <div className="min-h-screen bg-gray-100 text-[#3F3F46] lg:p-6 mt-5 lg:mt-0 w-full ml-[250px] overflow-y-auto dark:bg-black  dark:text-white">
                 <h1 className="text-[24px] font-bold mb-6 hidden lg:block">Settings</h1>
 
                 {/* General Section */}
-                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4">
-                    <h2 className="text-[14px] sm:text-[16px] font-semibold mb-4 text-[#000000]">General</h2>
+                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 dark:border-[1px]  dark:bg-black text-black dark:text-white">
+                    <h2 className="text-[14px] sm:text-[16px] font-semibold mb-4 text-[#000000] dark:text-white">General</h2>
                     <div className="flex items-center gap-x-40 mb-4">
                         <div>
-                            <p className="font-medium text-[#3F3F46] text-[12px] sm:text-[14px] flex items-center gap-x-2 "> <FaClock /> Exam Date Countdown</p>
+                            <p className="font-medium text-[#3F3F46] text-[12px] sm:text-[14px] flex items-center gap-x-2 dark:text-white"> <FaClock /> Exam Date Countdown</p>
 
                         </div>
 
@@ -71,14 +83,14 @@ const Setting = () => {
                             ></span>
                         </div>
                     </div>
-                    <p className="text-[12px] sm:text-[14px] text-[#71717A] ">
+                    <p className="text-[12px] sm:text-[14px] text-[#71717A] dark:text-white">
                         Tracks the time remaining until your exam day.
                     </p>
 
                 </div>
 
-                <div className='bg-white shadow-md lg:rounded-md mb-6 p-4 space-y-3'>
-                    <p className="font-semibold text-[#000000] text-[14px] sm:text-[16px]">Appearance</p>
+                <div className='bg-white shadow-md lg:rounded-md mb-6 p-4 space-y-3 dark:border-[1px]  dark:bg-black text-black dark:text-white'>
+                    <p className="font-semibold text-[#000000] dark:text-white text-[14px] sm:text-[16px]">Appearance</p>
                     <div className="flex items-center gap-x-56 sm:gap-x-60">
 
                         <div>
@@ -86,43 +98,40 @@ const Setting = () => {
                             <div className='flex items-center gap-x-2 '>
                                 <PiCircleHalfFill />
 
-                                <p className="text-[12px] sm:text-[14px] text-[#3F3F46] whitespace-nowrap font-medium">Dark Mode</p>
+                                <p className="text-[12px] sm:text-[14px] text-[#3F3F46] dark:text-white whitespace-nowrap font-medium">Dark Mode</p>
                             </div>
 
 
                         </div>
                         <div
-                            className={`relative inline-flex items-center h-4 w-8  cursor-pointer sm:ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
-                                }`}
+                            onClick={toggleDarkMode}
+                            className={`relative inline-flex items-center h-4 w-8 cursor-pointer rounded-full transition-colors ${darkMode ? 'bg-green-500' : 'bg-gray-300'}`}
                         >
-                            <span
-                                className={`absolute left-0.5 top-0.5 h-3 w-3 transform rounded-full bg-white shadow-md transition-transform ${false ? "translate-x-5" : "translate-x-0"
-                                    }`}
-                            ></span>
+                            <span className={`absolute left-0.5 top-0.5 h-3 w-3 transform rounded-full bg-white shadow-md transition-transform ${darkMode ? 'translate-x-4' : 'translate-x-0'}`} />
                         </div>
                     </div>
 
                 </div>
 
                 {/* Billing Section */}
-                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 text-[#000000]">
+                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 text-[#000000]  dark:border-[1px]  dark:bg-black  dark:text-white">
                     <div>
-                        <h2 className= "text-[14px] sm:text-[16px]  font-semibold mb-4">Billing</h2>
+                        <h2 className="text-[14px] sm:text-[16px]  font-semibold mb-4 dark:text-white">Billing</h2>
                         <div className='flex items-center gap-x-20 sm:gap-x-40'>
                             <div className="sm:mb-4">
                                 <div className='flex items-center gap-x-2'>
                                     <MdOutlinePayments />
-                                    <p className="font-medium text-[14px] sm:text-[16px] text-[#000000]">Subscription</p>
+                                    <p className="font-medium text-[14px] sm:text-[16px] text-[#000000] dark:text-white">Subscription</p>
                                 </div>
 
-                                <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap">
+                                <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap dark:text-white">
                                     Your current subscription package.
                                 </p>
-                                <div className="flex justify-between items-center mt-2"> 
-                                    <span className=" text-[12px] sm:text-[14px] font-medium">Platinum</span>
+                                <div className="flex justify-between items-center mt-2">
+                                    <span className=" text-[12px] sm:text-[14px] font-medium dark:text-white">Platinum</span>
                                 </div>
                             </div>
-                            <button className="border-[1px] border-[#3CC8A1] font-medium text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1">Change Plan</button>
+                            <button className="border-[1px] border-[#3CC8A1] font-medium text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1 dark:text-white">Change Plan</button>
                         </div>
 
                     </div>
@@ -135,11 +144,11 @@ const Setting = () => {
                                     <p className="font-medium text-[#000000] text-[14px] sm:text-[16px]">OSCE Credits</p>
                                 </div>
 
-                                <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap">
+                                <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap dark:text-white">
                                     Your remaining credit for OSCE
                                 </p>
                                 <div className="flex justify-between items-center mt-2">
-                                    <span className="font-semibold text-[12px] sm:text-[14px]">6969</span>
+                                    <span className="font-semibold text-[12px] sm:text-[14px] dark:text-white">6969</span>
                                 </div>
                             </div>
                             <button className="border-[1px] border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1">Purchase Credit</button>
@@ -150,7 +159,7 @@ const Setting = () => {
                 </div>
 
                 {/* Subscriptions Section */}
-                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4">
+                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 dark:border-[1px]  dark:bg-black  dark:text-white">
                     <h2 className="text-[16px] sm:text-[18px] font-semibold mb-4">Subscriptions</h2>
                     <div className="flex items-center justify-between mb-4 ">
                         <div>
@@ -158,7 +167,7 @@ const Setting = () => {
                                 <MdOutlinePayments />
                                 <p className="font-medium text-[14px] sm:text-[16px]">Platinum Tier Subscription</p>
                             </div>
-                            <p className="text-[14px] sm:text-[16px] text-[#71717A] font-bold">£3499 / Year</p>
+                            <p className="text-[14px] sm:text-[16px] text-[#71717A] font-bold dark:text-white">£3499 / Year</p>
                         </div>
 
                         <button className="border-[1px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Change plan</button>
@@ -175,13 +184,13 @@ const Setting = () => {
                 </div>
 
                 {/* Account Section */}
-                <div className="bg-white shadow-md lg:rounded-md p-4">
-                    <h2 className="text-[16px] sm:text-[18px] font-semibold mb-4 text-[#3F3F46]">Account</h2>
+                <div className="bg-white shadow-md lg:rounded-md p-4 dark:border-[1px]  dark:bg-black  dark:text-white">
+                    <h2 className="text-[16px] sm:text-[18px] font-semibold mb-4 text-[#3F3F46] dark:text-white">Account</h2>
                     <div className="mb-4 flex flex-col   sm:flex-row sm:items-center sm:justify-between  ">
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">Display Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
                             placeholder="Sainavi Mahajan"
                         />
                     </div>
@@ -189,7 +198,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">First Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
                             placeholder="Sainavi"
                         />
                     </div>
@@ -197,7 +206,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1">Last Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
                             placeholder="Mahajan"
                         />
                     </div>
@@ -205,14 +214,14 @@ const Setting = () => {
                         <label className="block font-medium mb-1">University</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
                             placeholder="University of Leicester"
                         />
                     </div>
 
                     <div className="mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between">
                         <label className="block font-medium mb-1">Year of Study</label>
-                        <select name="" id="" className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px]'>
+                        <select name="" id="" className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black'>
                             <option value="" disabled>Select Year of Study</option>
                             <option value="">Year 1</option>
                             <option value="">Year 2</option>
@@ -237,12 +246,12 @@ const Setting = () => {
 
                 </div>
 
-                <div className='bg-white shadow-md lg:rounded-md p-4 mt-6'>
-                        <p className='text-[#3F3F46] text-[18px] font-semibold'>Advanced</p>
+                <div className='bg-white shadow-md lg:rounded-md p-4 mt-6 dark:border-[1px]  dark:bg-black  dark:text-white'>
+                    <p className='text-[#3F3F46] text-[18px] font-semibold dark:text-white'>Advanced</p>
                     <div className='flex flex-col gap-y-5 mt-10'>
-                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold">Clear Cache</button>
+                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold dark:text-white">Clear Cache</button>
 
-                        <button className="border-[1px] w-[190px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1.5 font-semibold">Reset Progress Data</button>
+                        <button className="border-[1px] w-[190px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1.5 font-semibold ">Reset Progress Data</button>
                     </div>
                 </div>
 
@@ -361,7 +370,7 @@ const Setting = () => {
             </Drawer>
 
         </div>
-      
+
 
     )
 }

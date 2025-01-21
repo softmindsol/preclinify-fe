@@ -22,10 +22,15 @@ import SceneriosDetail from './components/SceneriosDetail';
 import ProtectedRoute from './components/protectedRoute'; 
 import Performance from './pages/Performance';
 import ContactPage from './components/contact-us';
+import { useContext } from 'react';
+import ThemeContext from './lib/ThemeContext';
 
 function App() {
+  const {theme} = useContext(ThemeContext);
+  console.log("theme:",theme);
+  
   return (
-    <div className="App">
+    <div className={`App`}>
       <Routes>
         {/* Public Routes */}
         <Route index element={<Home />} />

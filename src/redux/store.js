@@ -12,11 +12,12 @@ import questionReviewReducer from './features/question-review/question-review.sl
 import sqaReducer from './features/SAQ/saq.slice'
 import recentSessionsReducer from './features/recent-session/recent-session.slice'
 import modulesReducer from './features/categoryModules/module.slice';
+import darkModeReducer from './features/dark-mode/dark-mode.slice';
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['module', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions","mode","limit"], // Persist these in localStorage
+    whitelist: ['darkMode','module', 'mcqsQuestion', 'accuracy', 'questionReview', "shortQuestion","sessions","mode","limit"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
     mode: modeReducer,
     accuracy: accuracyReducer,
     sqa: sqaReducer,
+    darkMode: darkModeReducer,
     questionReview: questionReviewReducer,
     recentSession: recentSessionsReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
