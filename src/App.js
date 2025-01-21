@@ -27,7 +27,6 @@ import ThemeContext from './lib/ThemeContext';
 
 function App() {
   const {theme} = useContext(ThemeContext);
-  console.log("theme:",theme);
   
   return (
     <div className={`App`}>

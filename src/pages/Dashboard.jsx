@@ -42,8 +42,10 @@ const Dashboard = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const { limit } = useSelector((state) => state.limit);
     const [isLoading, setIsLoading] = useState(false);
-    const [isSession,setIsSession]=useState(false)
-const [sessionId,setSessionId] =useState([])
+    const [isSession,setIsSession]=useState(false);
+const [sessionId,setSessionId] =useState([]);
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode);
+
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
     }
@@ -77,6 +79,7 @@ const [sessionId,setSessionId] =useState([])
 
     // console.log("Limit from Redux:", limit);
 
+    console.log("darkModeRedux:", darkModeRedux);
 
     
 
@@ -194,8 +197,8 @@ useEffect(()=>{
 
 
     return (
-        <div className='lg:flex w-full'>
-            <div className="fixed h-full hidden lg:block">
+        <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
+            <div className="fixed h-full hidden lg:block dark:bg-black text-black dark:text-white">
                 <Sidebar />
             </div>
             <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
@@ -208,15 +211,15 @@ useEffect(()=>{
                 </div>
             </div>
 
-            <div className='flex-grow lg:ml-[250px] py-2 md:py-10 overflow-y-auto my-5'>
+            <div className='flex-grow lg:ml-[250px] py-2 md:py-10 overflow-y-auto   dark:bg-black text-black '>
                 <div className='flex flex-row  items-center  h-[150px] justify-center sm:justify-evenly w-full gap-x-3 xs:gap-x-16 sm:gap-x-36 xl:gap-x-16 py-5'>
-                    <p className='text-[18px] sm:text-[24px] xl:text-[32px] text-[#52525B] font-extrabold '>Hello Sainavi,</p>
+                    <p className='text-[18px] sm:text-[24px] xl:text-[32px] text-[#52525B] font-extrabold dark:text-white'>Hello Sainavi,</p>
                     <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
-                        <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] '>
-                            <p className='text-[#FF9741] text-[18px] sm:text-[24px] xl:text-[32px] font-black'>20 Days</p>
-                            <p className='text-[10px] xl:text-[14px] text-[#52525B] font-medium'>Until your exam</p>
+                        <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] dark:bg-black dark:border'>
+                            <p className='text-[#FF9741] text-[18px] sm:text-[24px] xl:text-[32px] font-black dark:text-white '>20 Days</p>
+                            <p className='text-[10px] xl:text-[14px] text-[#52525B] font-medium dark:text-white'>Until your exam</p>
                         </div>
-                        <div className='bg-[#FFFFFF] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px]'>
+                        <div className='bg-[#FFFFFF] rounded-[6px] text-center w-[200px] xl:w-[250px] h-[85px] dark:bg-black text-black   dark:border'>
                             <div className='flex items-center justify-center gap-x-5 h-full '>
                                 <img
                                     src="https://images.unsplash.com/photo-1719937051124-91c677bc58fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D"
@@ -224,17 +227,17 @@ useEffect(()=>{
                                     className='rounded-full w-10 h-10 xl:w-14 xl:h-14'
                                 />
                                 <div className=''>
-                                    <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold'>Sainavi Mahajan</p>
-                                    <p className='text-[10px] xl:text-[14px] text-[#A1A1AA]'>Specialist Registrar</p>
+                                    <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold dark:text-white'>Sainavi Mahajan</p>
+                                    <p className='text-[10px] xl:text-[14px] text-[#A1A1AA] dark:text-white'>Specialist Registrar</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className='space-y-5 mt-8 md:mt-0'>
+                <div className='space-y-5 mt-8 md:mt-0 '>
                     <div className='flex justify-center flex-col md:flex-row gap-x-5 items-center w-full'>
-                        <div className="p-6 w-[95%] xs:w-[420px] xl:w-[610px] 2xl:w-[745px] h-[430px] md:h-[520px] bg-white rounded-lg shadow-md">
+                        <div className="p-6 w-[95%] xs:w-[420px] xl:w-[610px] 2xl:w-[745px] h-[430px] md:h-[520px] bg-white rounded-lg shadow-md dark:bg-black text-black   dark:border">
                             <div className='flex items-end justify-end'>
                                 <div className="mb-5 relative w-[180px]">
                                     <DatePicker
@@ -244,10 +247,10 @@ useEffect(()=>{
                                         onCalendarClose={() => setIsCalendarOpen(false)}
                                         dateFormat="MMMM yyyy"
                                         showMonthYearPicker
-                                        className="relative border rounded w-[150px] sm:w-[180px] p-2 text-[12px] sm:text-[14px] cursor-pointer" // Added cursor-pointer class
+                                        className="relative border rounded w-[150px] sm:w-[180px] p-2 text-[12px] sm:text-[14px] cursor-pointer dark:bg-black dark:text-white" // Added cursor-pointer class
                                     />
                                     <span
-                                        className={`absolute right-10 sm:right-3 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200 ${isCalendarOpen ? "rotate-180" : ""}`}
+                                        className={`absolute right-10 sm:right-3 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200  dark:text-white ${isCalendarOpen ? "rotate-180" : ""}`}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -268,8 +271,8 @@ useEffect(()=>{
                             </div>
 
                             <div className='text-center'>
-                                <p className='text-[12px] sm:text-[14px] font-semibold text-[#52525B]'>Current Streak</p>
-                                <p className='font-black text-[18px]  sm:text-[24px] xl:text-[32px] text-[#FF9741]'>4 Days</p>
+                                <p className='text-[12px] sm:text-[14px] font-semibold text-[#52525B] dark:text-white'>Current Streak</p>
+                                <p className='font-black text-[18px]  sm:text-[24px] xl:text-[32px] text-[#FF9741] dark:text-white'>4 Days</p>
                             </div>
 
                             <div className='flex justify-between gap-x-10'>
@@ -295,7 +298,7 @@ useEffect(()=>{
                                     })}
                                 </div>
 
-                                <div className="flex flex-col mt-4 space-y-2">
+                                <div className="flex flex-col mt-4 space-y-2 dark:text-white">
                                     <div className="flex items-center">
                                         <div className="w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 bg-[#047857] rounded-md"></div>
                                         <span className="text-[12px] sm:text-[16px] ml-2"> &gt; 99</span>
@@ -320,12 +323,12 @@ useEffect(()=>{
                             </div>
 
                             <div className=' w-[200px] sm:w-[400px]  mt-6'>
-                                <p className=' text-center text-[#71717A] text-[14px] sm:text-[16px]'>{formattedMonth}</p>
+                                <p className=' text-center text-[#71717A] text-[14px] sm:text-[16px] dark:text-white'>{formattedMonth}</p>
                             </div>
                         </div>
-                        <div className='w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[280px] xl:w-[320px]  h-[430px] md:h-[520px]   bg-white rounded-lg shadow-md'>
+                        <div className='w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[280px] xl:w-[320px]  h-[430px] md:h-[520px]   bg-white rounded-lg shadow-md dark:bg-black text-black dark:border '>
                             <div className='font-bold text-[14px] xl:text-[18px] text-center text-[#52525B] mt-2 p-5'>
-                                <p>Quick Start</p>
+                                <p className='dark:text-white'>Quick Start</p>
                             </div>
                             <hr />
                             <div className='flex flex-col items-center gap-y-8 justify-between p-5 mt-4'>
@@ -346,10 +349,10 @@ useEffect(()=>{
                                         return (
                                             <div key={index} className="flex items-center justify-between w-full">
                                                 <div>
-                                                    <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">
+                                                    <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46] dark:text-white">
                                                         {truncateCategoryNames(categoryNames)}
                                                     </p>
-                                                    <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                                    <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8] dark:text-white">Recent Session</p>
                                                 </div>
                                                 <div>
                                                     <button
@@ -359,7 +362,7 @@ useEffect(()=>{
                                                             handleContinue()
                                                         }
                                                         }
-                                                        className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                        className=" border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                         Continue &gt;
                                                     </button>
                                                 </div>
@@ -382,26 +385,26 @@ useEffect(()=>{
 
 
 
-                    <div className='flex flex-col md:flex-row-reverse justify-center gap-x-5 items-center w-full'>
-                        <div className=" p-6 w-[95%] xs:w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px]  bg-white rounded-lg shadow-md">
-                            <h2 className='font-bold text-[20px] text-center py-3'>Monthly Progress</h2>
+                    <div className='flex flex-col md:flex-row-reverse justify-center gap-x-5 items-center w-full '>
+                        <div className=" p-6 w-[95%] xs:w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px]  bg-white rounded-lg shadow-md dark:bg-black text-black dark:border">
+                            <h2 className='font-bold text-[20px] text-center py-3 dark:text-white'>Monthly Progress</h2>
                             <StackedBar days={days} />
 
                             <div className='flex items-center justify-center gap-x-[75px] mt-7  md:mt-5'>
-                                <p className='text-[#52525B] font-medium' >Correct Questions</p>
+                                <p className='text-[#52525B] font-medium dark:text-white' >Correct Questions</p>
                                 <div className='w-[16px] h-[16px] rounded-[2px] bg-[#3CC8A1]' />
                             </div>
                             <div className='flex items-center justify-center gap-x-16 mb-3 md:mb-0'>
-                                <p className='text-[#52525B] font-medium'>Incorrect Questions</p>
+                                <p className='text-[#52525B] font-medium dark:text-white'>Incorrect Questions</p>
                                 <div className='w-[16px] h-[16px] rounded-[2px] bg-[#FF9741]' />
 
                             </div>
                         </div>
 
-                        <div className=' w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md'>
+                        <div className=' w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md dark:bg-black text-black dark:border'>
                             <div className='text-[18px] text-center text-[#52525B] p-5 font-semibold'>
-                                <p className=' text-[#3F3F46] '>Questions</p>
-                                <p className='text-[16px] flex items-center  justify-center'>Preclinify <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-[#FF9741]"><path d="m6 9 6 6 6-6" /></svg> </p>
+                                <p className=' text-[#3F3F46] dark:text-white'>Questions</p>
+                                <p className='text-[16px] flex items-center  justify-center dark:text-white' >Preclinify <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-[#FF9741]"><path d="m6 9 6 6 6-6" /></svg> </p>
                             </div>
                             <hr />
                             <div className='flex items-center flex-col justify-center'>
@@ -412,7 +415,7 @@ useEffect(()=>{
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
                                     </div>
                                     <div className='w-[80%]'>
-                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Short Answer</p>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46] dark:text-white'>Short Answer</p>
 
                                     </div>
 
@@ -420,10 +423,10 @@ useEffect(()=>{
 
                                 <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
                                     <div className='w-[20%]'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check dark:text-white"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
                                     </div>
                                     <div className='w-[80%]'>
-                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Single Best <br /> Answer</p>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46] dark:text-white'>Single Best <br /> Answer</p>
 
                                     </div>
                                 </div>
@@ -431,20 +434,20 @@ useEffect(()=>{
 
                                 <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
                                     <div className='w-[20%]'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bone"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bone dark:text-white"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z" /></svg>
                                     </div>
                                     <div className='w-[80%]'>
-                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Mock Paper</p>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46] dark:text-white'>Mock Paper</p>
 
                                     </div>
                                 </div>
 
                                 <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px] '>
                                     <div className='w-[20%]'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil dark:text-white"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
                                     </div>
                                     <div className='w-[80%]'>
-                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Anatomy Quiz</p>
+                                        <p className='font-semibold text-[14px] text-[#3F3F46] dark:text-white'>Anatomy Quiz</p>
 
                                     </div>
                                 </div>
@@ -452,10 +455,10 @@ useEffect(()=>{
 
                                 <div className='flex items-center justify-center gap-x-5 px-5 py-3 w-[200px]'>
                                     <div className='w-[20%]'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-no-axes-combined"><path d="M12 16v5" /><path d="M16 14v7" /><path d="M20 10v11" /><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" /><path d="M4 18v3" /><path d="M8 14v7" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-no-axes-combined dark:text-white"><path d="M12 16v5" /><path d="M16 14v7" /><path d="M20 10v11" /><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" /><path d="M4 18v3" /><path d="M8 14v7" /></svg>
                                     </div>
                                     <div className='w-[80%]'>
-                                        <p className='font-semibold text-[14px] text-[#3F3F46]'>Question <br />
+                                        <p className='font-semibold text-[14px] text-[#3F3F46] dark:text-white'>Question <br />
                                             Generation</p>
 
                                     </div>

@@ -1,10 +1,13 @@
 import React from 'react';
 import Logo from './Logo';
 import { Link, NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
+
     return (
-        <div className="min-h-screen w-64 bg-white shadow-lg flex flex-col items-center py-6 ">
+        <div className={`min-h-screen w-64 bg-white shadow-lg  dark:border-r-[1px] flex flex-col items-center py-6 dark:bg-black text-black `}>
             {/* Logo */}
             <div className="mb-10">
                 <Link to={"/"}>
@@ -14,7 +17,7 @@ const Sidebar = () => {
             </div>
 
             {/* Menu Items */}
-            <nav className="space-y-8 w-full text-[#3F3F46]">
+            <nav className="space-y-8 w-full text-[#3F3F46] ">
                 {[
                     { id:"/dashboard", name: "Dashboard", icon: "house" },
                     { id: "/questioning", name: "Practice", icon: "dumbbell" },
@@ -27,7 +30,7 @@ const Sidebar = () => {
                     >
                        
                      
-                        <NavLink to={item.id} className="flex items-center space-x-3 px-6 group cursor-pointer"
+                        <NavLink to={item.id} className="flex items-center space-x-3 px-6 group cursor-pointer dark:text-white"
 >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +88,7 @@ const Sidebar = () => {
                                     </>
                                 )}
                             </svg>
-                        <span className="text-[16px] font-semibold group-hover:text-[#3CC8A1]">
+                            <span className="text-[16px] font-semibold group-hover:text-[#3CC8A1] dark:text-white">
                             {item.name}
                         </span>
                     </NavLink>
@@ -97,7 +100,7 @@ const Sidebar = () => {
             {/* Bottom Settings */}
             <div className="mt-auto w-full px-6">
                 <NavLink to='/setting'>
-                <div className="flex items-center space-x-3 text-[#3F3F46] group cursor-pointer">
+                    <div className="flex items-center space-x-3 text-[#3F3F46] group cursor-pointer dark:text-white">
 
                     <i className="fa fa-cog text-xl group-hover:text-[#3CC8A1]"></i>
                     
