@@ -1,9 +1,10 @@
 import { DeepChat } from 'deep-chat-react';
 import React, { useMemo, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 const DeepChatAI = (props) => {
     const [width, setWidth] = useState(window.innerWidth);
-
+    const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
 
     // Function to update width on screen resize
     const handleResize = () => {
@@ -12,32 +13,33 @@ const DeepChatAI = (props) => {
 
     useEffect(() => {
         window.addEventListener('resize', handleResize);
-
-        // Cleanup event listener on unmount
         return () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
 
-    // Determine style based on screen width
+    // Dynamic style for the DeepChat component
     const dynamicStyle = useMemo(() => ({
         border: 'none',
-
-        width: width <= 1024 ? props.W : '240px', // Adjust width based on screen size
-    }), [width]);
-
+        width: Math.min(width <= 1024 ? props.W : 240, width - 20),
+    }), [width, props.W]);
 
     const deepChatComponent = useMemo(() => (
         <DeepChat
-            style={dynamicStyle}
+            style={{
+                ...dynamicStyle,
+                backgroundColor: darkModeRedux ? 'black' : 'white',
+                // color: darkModeRedux ? 'white' : 'black',
+            }}
             directConnection={{ openAI: { key: process.env.REACT_APP_OPENAI_API } }}
         />
-    ), [dynamicStyle]);
-
+    ), [dynamicStyle, darkModeRedux]);
 
     return (
-        <div className=''>
-            {deepChatComponent}
+        <div className={`${darkModeRedux ? 'dark' : ''}`}>
+            <div className="dark:bg-black text-black">
+                {deepChatComponent}
+            </div>
         </div>
     );
 };

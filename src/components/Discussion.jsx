@@ -64,7 +64,7 @@ const DiscussionBoard = () => {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`lucide lucide-chevron-${showComments ? "up" : "down"} dark:text-white`}
+                        className={`lucide lucide-chevron-${showComments ? "up" : "down"} `}
                     >
                         <path d="m18 15-6-6-6 6" />
                     </svg>

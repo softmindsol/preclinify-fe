@@ -26,7 +26,8 @@ const Score = () => {
     const [totalAttemped, setTotalAttemped] = useState(0)
     const navigate=useNavigate();
     const recentSession = useSelector(state => state?.recentSession?.recentSessions);
-    console.log("recentSession:", recentSession);
+       const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
+   
     
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -80,14 +81,14 @@ const Score = () => {
    }, []);
 
     return (
-        <div className='lg:flex  min-h-screen w-full'>
+        <div className={`lg:flex  min-h-screen w-full ${darkModeRedux ? 'dark' : ''}`}>
 
             <div className='hidden h-full lg:block fixed '>
                 <Sidebar />
             </div>
 
             <div className='flex-grow  overflow-y-auto overflow-x-hidden'>
-            <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
+            <div className='flex items-center  justify-between p-5 bg-white  lg:hidden w-full '>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -96,18 +97,18 @@ const Score = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-                <div className='w-full lg:ml-[150px]'>
+                <div className='w-full lg:ml-[150px]  min-h-screen  dark:bg-black'>
 
 
-                <div className='flex items-center justify-center flex-col mt-5'>
+                <div className='flex items-center justify-center flex-col '>
                     <div>
                         <img src="/assets/score.png" alt="" className='w-[350px]' />
                     </div>
 
                     <div className='text-center  '>
-                        <p className='text-[#3F3F46] font-extrabold text-[18px] md:text-[24px] lg:text-[30px] '>Final Score:</p>
+                        <p className='text-[#3F3F46] font-extrabold text-[18px] md:text-[24px] lg:text-[30px] dark:text-white'>Final Score:</p>
                         <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px]'>{accuracy}%</p>
-                        <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5'>{feedback}</p>
+                            <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5 dark:text-white'>{feedback}</p>
                     </div>
                     <div>
                         <button onClick={handleQuestionReview} className='text-[#FF9741] text-[12px] md:text-[16px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'>REVIEW QUESTIONS</button>
@@ -118,39 +119,15 @@ const Score = () => {
 
                     <div className='space-y-3 flex flex-col-reverse md:flex-col'>
                         <div className='text-center md:mr-[380px] mt-2 md:mt-5'>
-                            <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46]'>Total Attempted: {totalAttemped}</p>
+                                <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>Total Attempted: {totalAttemped}</p>
                         </div>
-                        <div className='text-[#3F3F46] font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
+                            <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
                             <p>Correct:{correct || 0}</p>
                             <p>Incorrect: {incorrect || 0}</p>
                             <p>Not Attempted: {unseen || 0}</p>
                         </div>
                     </div>
-                    {/* <div className='flex justify-center mt-5 items-center'>
-                        <div className="flex justify-center mt-5 items-center space-x-1 w-[80%] ">
-                            <div
-                                className="p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]"
-                                style={{
-                                    width: `${(correct / (correct + incorrect)) * 100 || 0}%`,
-                                }}
-                            >
-                                <span className="text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden">
-                                    {correct}
-                                </span>
-                            </div>
-
-                            <div
-                                className="rounded-[6px] text-right p-1.5 mr-5 md:mr-0 bg-[#FF453A]"
-                                style={{
-                                    width: `${(incorrect / (correct + incorrect)) * 100 || 0}%`,
-                                }}
-                            >
-                                <span className="text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden">
-                                    {incorrect}
-                                </span>
-                            </div>
-                        </div>
-                    </div> */}
+                   
                     <div className='flex justify-center mt-5 items-center'>
                         <div className="flex justify-center mt-5 items-center space-x-1 w-[80%]">
                             <div

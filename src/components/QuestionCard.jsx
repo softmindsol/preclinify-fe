@@ -373,11 +373,10 @@ const QuestionCard = () => {
         }
     }, [review])
 
-    console.log("toggleSidebar:", toggleSidebar);
 
     return (
-        <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''} dark:bg-black text-black`} >
-            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full '>
+        <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `} >
+            <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -386,10 +385,10 @@ const QuestionCard = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className=" mx-auto flex items-center justify-center p-6 dark:bg-black text-black   ">
+            <div className=" mx-auto  flex items-center justify-center p-6 dark:bg-black text-black   ">
 
 
-                <div className={`max-w-full w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
+                <div className={`max-w-full min-h-screen  w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
 
                     {/* Header Section */}
                     <div className="bg-[#3CC8A1]   text-white p-6 rounded-md flex items-center justify-between relative">
@@ -813,10 +812,10 @@ const QuestionCard = () => {
 
                 {/* Sidebar Section */}
 
-                <div className={`hidden lg:block fixed right-0 top-0  `}>
+                <div className={`hidden lg:block fixed right-0 top-0 dark:border  `}>
 
 
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black  dark:border ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
@@ -932,7 +931,7 @@ const QuestionCard = () => {
                         </div>
 
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
-                            {/* Finish and Review Button */}
+                            
                             <div
                                 className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
                                     } justify-center`}
@@ -955,7 +954,7 @@ const QuestionCard = () => {
                                 <p>Finish and Review</p>
                             </div>
                             <hr className="w-[200px] my-2" />
-                            {/* Back to Dashboard Button */}
+                
                             <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap"
                                 onClick={handleShowPopup}>
                                 <svg
@@ -1013,7 +1012,7 @@ const QuestionCard = () => {
                 </div>
             )}
 
-            {/*  */}
+      
 
 
             <Drawer

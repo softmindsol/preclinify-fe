@@ -152,6 +152,9 @@ const Questioning = () => {
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
 
     }
+
+    // it can be use later
+
     // function handleSessionContinue(sessionId) {
     //     // Open the setup session modal
     //     setIsOpenSetUpSessionModal(true); // Set to true to open the modal
@@ -354,14 +357,6 @@ const Questioning = () => {
         localStorage.setItem('module', JSON.stringify(module))
         fetchDailyWork();
     }, [selectedModules]);
-
-
-
-    // console.log("recentSessions:", recentSessions);
-    // console.log("selectedOption:", selectedOption);
-
-    // console.log("localRecentSession:", localRecentSession);
-console.log("limit:",limit);
 
     return (
         <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
