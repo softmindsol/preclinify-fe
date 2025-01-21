@@ -53,6 +53,7 @@ const QuestionCard = () => {
     const [toggleSidebar, setToggleSidebar] = useState(false);
     const itemsPerPage = 20;
 
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
 
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
@@ -375,8 +376,8 @@ const QuestionCard = () => {
     console.log("toggleSidebar:", toggleSidebar);
 
     return (
-        <div className=" min-h-screen  " >
-            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
+        <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''} dark:bg-black text-black`} >
+            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full '>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -385,7 +386,7 @@ const QuestionCard = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className=" mx-auto flex items-center justify-center p-6">
+            <div className=" mx-auto flex items-center justify-center p-6 dark:bg-black text-black   ">
 
 
                 <div className={`max-w-full w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
@@ -506,11 +507,11 @@ const QuestionCard = () => {
                     {/* Question start */}
                     {data?.data.length > 0 && (
                         <div className="mt-6 p-6" key={currentIndex}>
-                            <p className="text-[#000000] text-[14px] text-justify lg:text-[16px]">
+                            <p className="text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white">
                                 {data.data[currentIndex].questionStem}
                             </p>
 
-                            <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold">
+                            <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
                                 {data.data[currentIndex].leadQuestion}
                             </h3>
 
@@ -537,17 +538,17 @@ const QuestionCard = () => {
                                             {!isAccordionVisible ? (
                                                 <label
                                                     key={index}
-                                                    className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'}`}
+                                                    className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-black dark:border`}
                                                     onClick={() => handleAnswerSelect(explanation, index)}
                                                 >
                                                     <input
                                                         type="radio"
                                                         name="answer"
-                                                        className="form-radio h-5 w-5 text-green-500"
+                                                        className="form-radio h-5 w-5 text-green-500 "
                                                         checked={isSelected}
                                                         readOnly
                                                     />
-                                                    <span className="font-medium text-[#3F3F46] flex-1">{explanation.split(" -")[0]}</span>
+                                                    <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{explanation.split(" -")[0]}</span>
                                                     <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
                                                         {["A", "B", "C", "D", "E"][index]}
                                                     </span>
@@ -796,8 +797,8 @@ const QuestionCard = () => {
                     )}
 
                     {
-                        isAccordionVisible && <div className="flex items-center mx-7  justify-between   ">
-                            <p className="font-medium text-[16px] text-[#3F3F46]">Notice a problem with this question?</p>
+                        isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
+                            <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
                             <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
                         </div>
                     }
@@ -815,7 +816,7 @@ const QuestionCard = () => {
                 <div className={`hidden lg:block fixed right-0 top-0  `}>
 
 
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black  dark:border ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
@@ -827,7 +828,7 @@ const QuestionCard = () => {
                             <div className="flex items-center mr-5 cursor-pointer" onClick={() => {
                                 setToggleSidebar(!toggleSidebar)
                             }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left dark:text-white"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
                             </div>
                         </div>
 
@@ -865,7 +866,7 @@ const QuestionCard = () => {
                         </div>
 
                         <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px]">
+                            <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white ">
                                 <span
                                     className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
                                         }`}
@@ -905,7 +906,7 @@ const QuestionCard = () => {
                                         return (
                                             <div key={i}>
                                                 <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] dark:bg-black   dark:border`}
                                                     onClick={() => markQuestion(num)} // Use `num` for marking
                                                 >
                                                     <p>{num + 1}</p>
@@ -977,12 +978,12 @@ const QuestionCard = () => {
 
 
                     </div>
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300`}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-black text-black  `}>
 
-                        <div className="flex items-center  cursor-pointer" onClick={() => {
+                        <div className="flex items-center  cursor-pointer dark:bg-black" onClick={() => {
                             setToggleSidebar(!toggleSidebar)
                         }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
 
                     </div>
                 </div>
@@ -990,8 +991,8 @@ const QuestionCard = () => {
 
             {showPopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-sm text-center">
-                        <h2 className="text-lg font-bold text-gray-800 mb-4">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-sm text-center dark:bg-black text-black  dark:border">
+                        <h2 className="text-lg font-bold text-gray-800 mb-4 dark:text-white">
                             Are you sure you want to go back to the dashboard?
                         </h2>
                         <div className="flex justify-center gap-4">

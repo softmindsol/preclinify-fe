@@ -31,6 +31,7 @@ const calculateTimeForQuestions = (numQuestions) => {
 const ShortQuestion = () => {
     const sqa = useSelector(state => state?.sqa || [])
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
 
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
@@ -266,7 +267,7 @@ const ShortQuestion = () => {
 
 
     return (
-        <div className=" min-h-screen lg:p-6 " >
+        <div className={`min-h-screen lg:p-6 ${darkModeRedux ? 'dark' : ''}`}>
 
             <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
                 <div className=''>
@@ -510,11 +511,11 @@ const ShortQuestion = () => {
                 {/* Sidebar Section */}
 
 
-                <div className="hidden md:block">
+                <div className="hidden md:block ">
 
 
                     <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ">
-                        <div className="flex items-center justify-between mt-5">
+                        <div className="flex items-center justify-between mt-5 ">
                             <div className="flex items-center">
                             </div>
 
