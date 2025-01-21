@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const DiscussionBoard = () => {
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
+
     const [comments, setComments] = useState([
         {
             id: 1,
@@ -27,13 +30,13 @@ const DiscussionBoard = () => {
     const [showComments, setShowComments] = useState(true);
 
     return (
-        <div className="p-6 bg-gray-100   ">
-            <div className=" mx-auto bg-white  shadow rounded-lg pt-3 pb-2">
+        <div className="p-6   ">
+            <div className=" mx-auto bg-white  shadow rounded-lg pt-3 pb-2 dark:bg-black text-black  dark:border">
                 <div
                     className="flex justify-between items-center gap-x-5 mb-2 p-4 cursor-pointer"
                     onClick={() => setShowComments(!showComments)}
                 >
-                    <div className="flex justify-between items-center gap-x-5">
+                    <div className="flex justify-between items-center gap-x-5 ">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -44,11 +47,11 @@ const DiscussionBoard = () => {
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className="lucide lucide-message-square"
+                            className="lucide lucide-message-square dark:text-white"
                         >
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
-                        <h2 className="text-[16px] font-medium">Discussion Board</h2>
+                        <h2 className="text-[16px] font-medium dark:text-white">Discussion Board</h2>
                     </div>
 
                     <svg
@@ -61,7 +64,7 @@ const DiscussionBoard = () => {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`lucide lucide-chevron-${showComments ? "up" : "down"}`}
+                        className={`lucide lucide-chevron-${showComments ? "up" : "down"} dark:text-white`}
                     >
                         <path d="m18 15-6-6-6 6" />
                     </svg>
@@ -73,7 +76,7 @@ const DiscussionBoard = () => {
                             <Comment key={comment.id} comment={comment} />
                         ))}
 
-                        <div className="flex items-center justify-center gap-x-3 text-[#3F3F46]">
+                        <div className="flex items-center justify-center gap-x-3 text-[#3F3F46] dark:text-white">
                             <p>Show More Replies (1)</p>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +100,7 @@ const DiscussionBoard = () => {
                     <div className="flex items-center justify-center my-5 ">
                         <input
                             type="text"
-                            className="w-[90%] bg-[#F4F4F5] rounded-[4px] p-3 placeholder:text-[12px]"
+                            className="w-[90%] bg-[#F4F4F5] rounded-[4px] p-3 placeholder:text-[12px] dark:bg-black dark:text-white dark:border"
                             placeholder="Write your comment here..."
                         />
                     </div>
@@ -115,10 +118,10 @@ const Comment = ({ comment }) => {
             <div className="flex items-start text-[16px]">
                 <div className="flex-1">
                     <div className="flex gap-x-5 items-center">
-                        <h4 className="font-medium">{comment.author}</h4>
-                        <span className="text-sm font-bold text-[#A1A1AA]">{comment.date}</span>
+                        <h4 className="font-medium dark:text-white">{comment.author}</h4>
+                        <span className="text-sm font-bold text-[#A1A1AA] dark:text-white">{comment.date}</span>
                     </div>
-                    <p className="text-[#000000] mt-1 py-2">{comment.text}</p>
+                    <p className="text-[#000000] mt-1 py-2 dark:text-white">{comment.text}</p>
                     <div className="flex items-center mt-2 space-x-4">
                         <button className="flex items-center text-gray-500 rounded-[4px] bg-[#F4F4F5] py-2 px-8 hover:text-gray-700">
                             <svg
