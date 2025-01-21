@@ -49,6 +49,7 @@ const Questioning = () => {
     );
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
 
     const recentSession = useSelector(state => state.recentSession.recentSessions);
 
@@ -363,12 +364,12 @@ const Questioning = () => {
 console.log("limit:",limit);
 
     return (
-        <div className=" lg:flex w-full">
+        <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
             <div className=" hidden lg:block fixed h-full">
                 <Sidebar />
             </div>
 
-            <div className="flex-grow ml-[250px] py-10 overflow-y-auto overflow-x-hidden ">
+            <div className="flex-grow ml-[250px] py-10 overflow-y-auto overflow-x-hidden dark:bg-black">
 
 
                 <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
@@ -382,38 +383,38 @@ console.log("limit:",limit);
                 </div>
 
                 {/* Table Header */}
-                <div className="flex flex-col   sm:m-10 space-y-4 py-4 px-16">
+                <div className="flex flex-col   sm:m-10 space-y-4 py-4 px-16 ">
 
                     <div className="flex flex-col space-y-10">
                         <div className=" h-[137px] p-4 ">
                             {/* Tab Section */}
                             <div className="flex items-center text-[#3F3F46] justify-between space-x-2 text-[12px] md:text-[16px] font-medium">
-                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[33%]   rounded-[8px]">
+                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[33%] dark:bg-black text-black dark:text-white dark:border  rounded-[8px]">
                                     Pre-clinical
                                 </button>
-                                <button className="px-4 py-2 bg-[#E4E4E7] hover:text-gray-800 w-[50%] sm:w-[33%]  rounded-[8px]">
+                                <button className="px-4 py-2 bg-[#E4E4E7]  text-gray-500 w-[50%] sm:w-[33%] dark:bg-black  dark:border rounded-[8px]">
                                     Clinical
                                 </button>
-                                <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px]">
+                                <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px] dark:bg-black  dark:border">
                                     Data <span className="md:block hidden ml-2 ">Interpretation</span>
                                 </button>
 
                             </div>
 
                             {/* Search and Button Section */}
-                            <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white">
+                            <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white dark:bg-black text-black dark:text-white dark:border">
                                 {/* Search Bar */}
                                 <div className="flex items-center p-8 gap-x-10  ">
 
 
-                                    <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap">Pre clinical</p>
-                                    <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden">
+                                    <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre clinical</p>
+                                    <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden dark:bg-black">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                                         <input
                                             type="text"
                                             placeholder="Search for modules"
                                             onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                                            className="ml-2 w-[280px] focus:outline-none "
+                                            className="ml-2 w-[280px] focus:outline-none dark:bg-black "
                                         />
 
                                     </div>
@@ -421,7 +422,7 @@ console.log("limit:",limit);
                                 <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
                                     <div className="relative w-[105px]">
                                         <select
-                                            className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none"
+                                            className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-black"
                                             value={selectedOption} // Bind the selected value to state
                                             onChange={handleSelectChange} // Trigger the handler on change
                                         >
@@ -462,7 +463,7 @@ console.log("limit:",limit);
                         {
                             selectedOption === 'QuesGen' ?
                                 <div>
-                                    <div className="bg-[#FFFFFF] m-4 rounded-[8px]">
+                                    <div className="bg-[#FFFFFF] m-4 rounded-[8px] ">
                                         <p className="text-[#3F3F46] text-[20px] font-semibold px-[50px] py-8                                                                                        ">How this works</p>
 
                                         <div className="flex items-center justify-center pb-10">
@@ -494,9 +495,9 @@ console.log("limit:",limit);
                                 </div>
 
                                 :
-                                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 ">
+                                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-black text-black dark:text-white dark:border">
                                     <div className="w-[35%] flex items-center justify-between mr-10">
-                                        <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center  w-full">
+                                        <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
                                             Recent Sessions
                                         </p>
                                         <div className="h-[212px] w-[1px] bg-[#A1A1AA] " />
@@ -518,7 +519,7 @@ console.log("limit:",limit);
                                                 return (
                                                     <div key={index} className="flex items-center justify-between">
                                                         <div>
-                                                            <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46]">
+                                                            <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46] dark:text-white">
                                                                 {categoryNames.join(', ')} {/* Join category names into a single string */}
                                                             </p>
                                                             <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
@@ -551,10 +552,10 @@ console.log("limit:",limit);
 
                     </div>
 
-                    <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] ">
+                    <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] dark:bg-black text-black dark:text-white dark:border">
 
                         <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-[#3F3F46]  pb-2 w-full">
-                            <div className="flex items-center gap-x-10">
+                            <div className="flex items-center gap-x-10 dark:text-white">
                                 <div className="text-left ">
                                     <input
                                         type="checkbox"
@@ -566,7 +567,7 @@ console.log("limit:",limit);
                                 </div>
 
                                 <div className="flex items-center space-x-2 p-4">
-                                    <span className="text-[#3F3F46] font-medium">Sort By Presentation</span>
+                                    <span className="text-[#3F3F46] font-medium dark:text-white">Sort By Presentation</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" className="sr-only peer" onChange={handleToggle} />
                                         <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
@@ -575,7 +576,7 @@ console.log("limit:",limit);
                             </div>
 
 
-                            <div className="text-right flex items-center gap-x-5">
+                            <div className="text-right flex items-center gap-x-5 dark:text-white">
                                 <div className="hidden sm:block text-center">Progress</div>
 
                                 <div className="flex items-center gap-x-3">
@@ -617,7 +618,7 @@ console.log("limit:",limit);
                                     return (
                                         <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
                                             <div
-                                                className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46]"
+                                                className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
                                             >
                                                 <label className="flex items-center cursor-pointer">
                                                     <input

@@ -99,16 +99,16 @@ const Sidebar = () => {
 
             {/* Bottom Settings */}
             <div className="mt-auto w-full px-6">
-                <NavLink to='/setting'>
                     <div className="flex items-center space-x-3 text-[#3F3F46] group cursor-pointer dark:text-white">
 
-                    <i className="fa fa-cog text-xl group-hover:text-[#3CC8A1]"></i>
+                <NavLink to='/setting'>
+
                     
                     <span className="text-lg font-medium group-hover:text-[#3CC8A1]">
                         Settings
                     </span>
-                </div>
                 </NavLink>
+                </div>
             </div>
         </div>
     );
