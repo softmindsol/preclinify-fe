@@ -364,7 +364,7 @@ const Questioning = () => {
                 <Sidebar />
             </div>
 
-            <div className="flex-grow ml-[250px] py-10 overflow-y-auto overflow-x-hidden dark:bg-black">
+            <div className="flex-grow ml-[180px] 3xl:ml-[250px] py-10 overflow-y-auto overflow-x-hidden dark:bg-black">
 
 
                 <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
@@ -402,14 +402,14 @@ const Questioning = () => {
                                 <div className="flex items-center p-8 gap-x-10  ">
 
 
-                                    <p className="text-[11px] sm:text-[16px] md:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre clinical</p>
+                                    <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre clinical</p>
                                     <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden dark:bg-black">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                                         <input
                                             type="text"
                                             placeholder="Search for modules"
                                             onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                                            className="ml-2 w-[280px] focus:outline-none dark:bg-black "
+                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-black placeholder:text-[14px]"
                                         />
 
                                     </div>
@@ -448,7 +448,7 @@ const Questioning = () => {
                                     <button
                                         onClick={handleContinue}
                                         disabled={selectedModules.length === 0} // Disable the button if no modules are selected
-                                        className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-transparent hover:text-[#3CC8A1]'} text-[12px] md:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}>
+                                        className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-transparent hover:text-[#3CC8A1]'} text-[12px] md:text-[14px] 2xl:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}>
                                         Continue &gt;
                                     </button>
                                 </div>
@@ -492,7 +492,7 @@ const Questioning = () => {
                                 :
                                 <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-black text-black dark:text-white dark:border">
                                     <div className="w-[35%] flex items-center justify-between mr-10">
-                                        <p className="font-bold text-[12px] sm:text-[16px] md:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
+                                        <p className="font-bold text-[12px] sm:text-[16px] 2xl:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
                                             Recent Sessions
                                         </p>
                                         <div className="h-[212px] w-[1px] bg-[#A1A1AA] " />
@@ -514,10 +514,10 @@ const Questioning = () => {
                                                 return (
                                                     <div key={index} className="flex items-center justify-between">
                                                         <div>
-                                                            <p className="text-[14px] md:text-[16px] font-medium text-[#3F3F46] dark:text-white">
+                                                            <p className="text-[14px] 2xl:text-[16px] font-medium text-[#3F3F46] dark:text-white">
                                                                 {categoryNames.join(', ')} {/* Join category names into a single string */}
                                                             </p>
-                                                            <p className="text-[12px] md:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                                            <p className="text-[12px] 2xl:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
                                                         </div>
                                                         <div>
                                                             <button
@@ -527,7 +527,7 @@ const Questioning = () => {
                                                                     handleContinue()
                                                                 }
                                                                 }
-                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] 2xl:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
                                                                 Continue &gt;
                                                             </button>
                                                         </div>
@@ -551,7 +551,7 @@ const Questioning = () => {
 
                         <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-[#3F3F46]  pb-2 w-full">
                             <div className="flex items-center gap-x-10 dark:text-white">
-                                <div className="text-left ">
+                                <div className="text-left flex items-center text-[14px] 3xl:text-[16px]">
                                     <input
                                         type="checkbox"
                                         className="mr-2 custom-checkbox"
@@ -562,16 +562,16 @@ const Questioning = () => {
                                 </div>
 
                                 <div className="flex items-center space-x-2 p-4">
-                                    <span className="text-[#3F3F46] font-medium dark:text-white">Sort By Presentation</span>
+                                    <span className="text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]">Sort By Presentation</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" className="sr-only peer" onChange={handleToggle} />
-                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
+                                        <input type="checkbox" className="sr-only peer " onChange={handleToggle} />
+                                        <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
                                     </label>
                                 </div>
                             </div>
 
 
-                            <div className="text-right flex items-center gap-x-5 dark:text-white">
+                            <div className="text-right flex items-center gap-x-5 dark:text-white text-[14px] 3xl:text-[16px]">
                                 <div className="hidden sm:block text-center">Progress</div>
 
                                 <div className="flex items-center gap-x-3">
@@ -613,7 +613,7 @@ const Questioning = () => {
                                     return (
                                         <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
                                             <div
-                                                className="text-left text-[14px] md:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                                                className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
                                             >
                                                 <label className="flex items-center cursor-pointer">
                                                     <input

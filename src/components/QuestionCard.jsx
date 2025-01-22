@@ -374,6 +374,9 @@ const QuestionCard = () => {
         }
     }, [review])
 
+    console.log("text article:", data.data);
+    
+
 
     return (
         <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `} >
