@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setResult } from "../redux/features/result/result.slice";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
+import DashboardModal from "./common/DashboardModal";
 
 
 
@@ -64,13 +65,23 @@ const ShortQuestion = () => {
     const [incorrectCount, setIncorrectCount] = useState(0);
     const [partialCount, setPartialCount] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
+    const [toggleSidebar, setToggleSidebar] = useState(false);
 
+    const [showPopup, setShowPopup] = useState(false);
 
 
     function handleCheckAnswer() {
         setTestCheckAnswer(true)
     }
 
+    function handleShowPopup() {
+        setShowPopup(true); // Close the popup
+    }
+
+
+    const handleBackToDashboard = () => {
+        navigation('/dashboard');
+    };
 
     const handleIncorrectClick = () => {
         markQuestion(currentIndex, false); // Mark as incorrect
@@ -267,9 +278,9 @@ const ShortQuestion = () => {
 
 
     return (
-        <div className={`min-h-screen lg:p-6 ${darkModeRedux ? 'dark' : ''}`}>
+        <div className={`min-h-screen  ${darkModeRedux ? 'dark' : ''} `}>
 
-            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full'>
+            <div className='flex items-center justify-between p-5 bg-white lg:hidden w-full '>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -278,13 +289,13 @@ const ShortQuestion = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className="  flex items-center justify-center mt-3 lg:mt-0    ">
+            <div className="  h-screen flex items-center justify-center   dark:bg-black  ">
 
 
-                <div className="w-[100%] lg:w-[92%] xl:w-[65%] 2xl:w-[41.5%]  ">
+                <div className="w-[100%] h-screen lg:w-[92%] xl:w-[65%] 2xl:w-[41.5%]  ">
 
                     {/* Header Section */}
-                    <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6  lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
+                    <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
                         <div className="absolute left-4">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -353,11 +364,11 @@ const ShortQuestion = () => {
 
                     {/* Question Section */}
                     <div className="mt-6  p-6 ">
-                        <p className="text-[#000000] text-justify w-[100%] lg:w-[720px]">
+                        <p className="text-[#000000] text-justify w-[100%] lg:w-[720px] dark:text-white">
                             {sqa?.shortQuestions[0].parentQuestion}
                         </p>
 
-                        <h3 className="mt-4 text-[14px] text-[#27272A] font-bold text-wrap">
+                        <h3 className="mt-4 text-[14px] text-[#27272A] font-bold text-wrap dark:text-white">
                             {sqa?.sqaChildData[currentIndex]?.questionLead}
                         </h3>
 
@@ -368,7 +379,7 @@ const ShortQuestion = () => {
                         </div>
                         {
                             !testCheckAnswer ? <textarea
-                                className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal"
+                                className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal "
                                 placeholder="Type here to answer the question..."
                                 onChange={(e) => {
                                     setUserAnswer(e.target.value)
@@ -412,7 +423,7 @@ const ShortQuestion = () => {
                                 </div> :
                                 <div className="group">
                                     <button
-                                        className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                        className="mt-2 text-[14px] w-[100%] flex items-center justify-center gap-x-3 lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
                                         onClick={handleCheckAnswer}
                                     >
                                         Check Answer
@@ -459,7 +470,7 @@ const ShortQuestion = () => {
 
                         <div className="flex items-center gap-x-10 justify-center mt-5">
                             <div >
-                                <p className="text-[16px] text-[#000000] font-medium">How did you find this question?</p>
+                                <p className="text-[16px] text-[#000000] font-medium  dark:text-white">How did you find this question?</p>
                             </div>
                             <div className="flex items-center gap-x-3" >
                                 <button className="flex items-center text-gray-500  rounded-[4px] bg-[#E4E4E7]  py-3 px-8 hover:text-gray-700">
@@ -510,12 +521,11 @@ const ShortQuestion = () => {
 
                 {/* Sidebar Section */}
 
+                <div className={`hidden lg:block fixed right-0 top-0 dark:border  `}>
 
-                <div className="hidden md:block ">
 
-
-                    <div className="absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen ">
-                        <div className="flex items-center justify-between mt-5 ">
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                        <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
 
@@ -523,26 +533,48 @@ const ShortQuestion = () => {
                                 <Logo />
                             </div>
 
-                            <div className="flex items-center mr-5">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
+                            <div className="flex items-center mr-5 cursor-pointer" onClick={() => {
+                                setToggleSidebar(!toggleSidebar)
+                            }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left dark:text-white"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
                             </div>
                         </div>
 
                         <div className="flex flex-col items-center justify-center mt-10">
-                            <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
-                                {
-                                    isTimerMode["mode"] === "Endless" ? <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                        <p className="font-black text-[36px]">{accuracy}%</p></div> : <div><p className="text-[12px] mt-3">Time:</p>
+                            {
+                                isTimerMode["mode"] === "Endless" &&
+                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                    <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                                        <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                    </div>
 
-                                        <p className="font-black text-[36px]">{<p>{formatTime(timer)}</p>}</p></div>
-                                }
 
 
-                            </div>
+                                </div>}
+
+                            {
+                                isTimerMode["mode"] === "Exam" && (
+                                    <div
+                                        className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
+                                            } text-[#ffff] text-center`}
+                                    >
+                                        <div>
+                                            <p className="text-[12px] mt-3">Time:</p>
+
+                                            {
+                                                review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+
+
                         </div>
 
                         <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px]">
+                            <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white ">
                                 <span
                                     className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
                                         }`}
@@ -572,25 +604,25 @@ const ShortQuestion = () => {
                             <div className="grid grid-cols-5 gap-2">
                                 {
                                     indicesToDisplay.map((num, i) => {
-                                        const bgColor = attempts[num] === true
-                                            ? "bg-[#3CC8A1]" // Correct
-                                            : attempts[num] === false
-                                                ? "bg-[#FF453A]" // Incorrect
-                                                : attempts[num] === 'partial'
-                                                    ? "bg-[#FF9741]" // Partial
-                                                    : "bg-gray-300"; // Unseen
+                                        const bgColor =
+                                            result.result[num] === true
+                                                ? "bg-[#3CC8A1]" // Correct
+                                                : result.result[num] === false
+                                                    ? "bg-[#FF453A]" // Incorrect (Flagged)
+                                                    : "bg-gray-300"; // Unseen (null)
 
                                         return (
                                             <div key={i}>
                                                 <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                    onClick={() => markQuestion(num, true)} // Mark as correct
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] dark:bg-black   dark:border`}
+                                                    onClick={() => markQuestion(num)} // Use `num` for marking
                                                 >
                                                     <p>{num + 1}</p>
                                                 </div>
                                             </div>
                                         );
                                     })
+
                                 }
                             </div>
                         </div>
@@ -608,11 +640,11 @@ const ShortQuestion = () => {
                         </div>
 
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
-                            {/* Finish and Review Button */}
+
                             <div
                                 className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
                                     } justify-center`}
-                            // onClick={handleFinishAndReview}
+                                onClick={handleFinishAndReview}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -631,8 +663,9 @@ const ShortQuestion = () => {
                                 <p>Finish and Review</p>
                             </div>
                             <hr className="w-[200px] my-2" />
-                            {/* Back to Dashboard Button */}
-                            <div className="flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap">
+
+                            <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap"
+                                onClick={handleShowPopup}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -653,6 +686,14 @@ const ShortQuestion = () => {
 
 
                     </div>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-black text-black  `}>
+
+                        <div className="flex items-center  cursor-pointer dark:bg-black" onClick={() => {
+                            setToggleSidebar(!toggleSidebar)
+                        }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
+
+                    </div>
                 </div>
 
             </div>
@@ -668,6 +709,11 @@ const ShortQuestion = () => {
 
                 isAccordionVisible && <DiscussionBoard />
             }
+
+            {showPopup && (
+                <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
+            )}
+
 
 
             <Drawer
@@ -690,23 +736,7 @@ const ShortQuestion = () => {
                             <Logo />
                         </div>
 
-                        {/* <div className="flex items-center mr-5">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-chevrons-right"
-                            >
-                                <path d="m6 17 5-5-5-5" />
-                                <path d="m13 17 5-5-5-5" />
-                            </svg>
-                        </div> */}
+                       
                     </div>
 
                     <div className="flex flex-col  items-center justify-center mt-10">

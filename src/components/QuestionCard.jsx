@@ -16,6 +16,7 @@ import DeepChatAI from "./DeepChat";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { sessionCompleted } from "../redux/features/recent-session/recent-session.slice";
 import ChemistryBeaker from "./chemistry-beaker";
+import DashboardModal from "./common/DashboardModal";
 
 
 
@@ -32,6 +33,7 @@ const calculateTimeForQuestions = (numQuestions) => {
     return totalTimeInSeconds; // Return total time in seconds
 };
 const QuestionCard = () => {
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
@@ -53,8 +55,7 @@ const QuestionCard = () => {
     const [toggleSidebar, setToggleSidebar] = useState(false);
     const itemsPerPage = 20;
 
-    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
-
+    
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
@@ -989,27 +990,7 @@ const QuestionCard = () => {
             </div>
 
             {showPopup && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-sm text-center dark:bg-black text-black  dark:border">
-                        <h2 className="text-lg font-bold text-gray-800 mb-4 dark:text-white">
-                            Are you sure you want to go back to the dashboard?
-                        </h2>
-                        <div className="flex justify-center gap-4">
-                            <button
-                                className="px-4 py-2 bg-[#3CC8A1] hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-300"
-                                onClick={handleBackToDashboard}
-                            >
-                                Yes
-                            </button>
-                            <button
-                                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition-all duration-300"
-                                onClick={() => setShowPopup(false)}
-                            >
-                                No
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
 
       
