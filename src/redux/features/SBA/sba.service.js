@@ -97,7 +97,7 @@ export const fetchMcqsByModules = createAsyncThunk(
 export const fetchConditionNameById= createAsyncThunk(
     'mcqs/fetchConditionNameById',
     async ({ Id }, { rejectWithValue }) => {
-        console.log(Id);
+        console.log("Id:",Id);
         
         try {
             if (!Id) return rejectWithValue('Invalid conditionNames ID.');

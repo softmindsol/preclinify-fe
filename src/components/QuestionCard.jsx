@@ -17,6 +17,7 @@ import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { sessionCompleted } from "../redux/features/recent-session/recent-session.slice";
 import ChemistryBeaker from "./chemistry-beaker";
 import DashboardModal from "./common/DashboardModal";
+import Article from "./Article";
 
 
 
@@ -53,8 +54,8 @@ const QuestionCard = () => {
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
     const [isReviewEnabled, setIsReviewEnabled] = useState(false);
     const [toggleSidebar, setToggleSidebar] = useState(false);
-    const itemsPerPage = 20;
-
+    const itemsPerPage = 10;
+const [article,setArticle]=useState({})
     
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
@@ -157,11 +158,19 @@ const QuestionCard = () => {
                 selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
 
             // Update attempts
-            dispatch(fetchConditionNameById({ Id: data.data.conditionName }))
+            dispatch(fetchConditionNameById({ Id: data.data[currentIndex].conditionName }))
+                .unwrap()
+                .then((result) => {
+                    setArticle(result)
+
+                })
+          
+          
             setAttempts((prev) => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct/incorrect
                 dispatch(setResult({ updatedAttempts }))
+
 
                 return updatedAttempts;
             });
@@ -374,8 +383,8 @@ const QuestionCard = () => {
         }
     }, [review])
 
-    console.log("text article:", data.data);
     
+console.log("Article:",article);
 
 
     return (
@@ -809,7 +818,11 @@ const QuestionCard = () => {
 
                         isAccordionVisible && <DiscussionBoard />
                     }
+                    {
 
+                        isAccordionVisible && <Article article={article} />
+                    }
+                  
                 </div>
 
 
@@ -997,7 +1010,7 @@ const QuestionCard = () => {
             )}
 
       
-
+          
 
             <Drawer
                 open={isOpen}

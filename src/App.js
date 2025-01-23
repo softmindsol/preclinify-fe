@@ -24,6 +24,7 @@ import Performance from './pages/Performance';
 import ContactPage from './components/contact-us';
 import { useContext } from 'react';
 import ThemeContext from './lib/ThemeContext';
+import ChatHistory from './components/common/ChatHistory';
 
 function App() {
   const {theme} = useContext(ThemeContext);
@@ -43,7 +44,7 @@ function App() {
         <Route path="/performance" element={<><Performance /></>} />
 
         <Route path="/setting" element={<><Setting/></>} />
-        <Route path="/home" element={<><AllModules /></>} />
+        <Route path="/chat" element={<><ChatHistory /></>} />
         <Route path="/dashboard" element={<><Dashboard /></>} />
         <Route path="/questioning" element={<><Questioning /></>} />
       
