@@ -95,23 +95,49 @@ const OSCEAIBOT = () => {
                         Hello! Welcome to the OSCE history station! I will be the patient and you will be the doctor...
                     </p>
                 </div>
+                <div className="transcript mb-4">
+                    {transcript.map((entry, index) => (
+                        <div key={index} className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}>
+                            <strong>{entry.fromAI ? "AI: " : "You: "}</strong>
+                            <span className="w-[]">{entry.text}</span>
+                        </div>
+                    ))}
+                </div>
                 <div className="flex items-center justify-center">
                     <button
-                        className="bg-[#3CC8A1] w-[100%] text-white py-2 px-6 rounded-[8px] text-[16px] font-bold hover:bg-transparent hover:border hover:border-[#3CC8A1] hover:text-[#3CC8A1] transition-all duration-200"
+                        className="bg-[#3CC8A1] w-[100%] text-white py-2 px-6 rounded-[8px] text-[16px] font-bold hover:bg-transparent hover:border hover:border -[#3CC8A1] hover:text-[#3CC8A1] transition-all duration-200"
                         onClick={handleStartRecording}
                     >
                         {isRecording ? "Stop Recording" : "Start Recording"}
                     </button>
                 </div>
-
-                <div className="transcript">
-                    {transcript.map((entry, index) => (
-                        <div key={index} className={entry.fromAI ? "ai-message" : "user-message"}>
-                            <strong>{entry.fromAI ? "AI: " : "You: "}</strong>{entry.text}
-                        </div>
-                    ))}
-                </div>
             </main>
+
+            <style jsx>{`
+                .transcript {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .message {
+                    display: flex;
+                    align-items: center;
+                }
+                .ai-message {
+                    justify-content: flex-start;
+                    background-color: #f0f0f0;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .user-message {
+                    justify-content: flex-end;
+                    background-color: #3CC8A1;
+                    color: white;
+                    padding: 10px;
+                    width:300px
+                    border-radius: 5px;
+                }
+            `}</style>
         </div>
     );
 };
