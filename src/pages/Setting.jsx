@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Siderbar from '../components/common/Sidebar'
 import { FaClock, FaRobot } from "react-icons/fa";
 import { PiCircleHalfFill } from "react-icons/pi";
@@ -10,7 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
-import { Link, NavLink } from 'react-router-dom';
+import {  NavLink } from 'react-router-dom';
 import supabase from '../helper'; // Import the Supabase client
 import { setDarkMode } from '../redux/features/dark-mode/dark-mode.slice';
 import { useDispatch, useSelector } from 'react-redux';

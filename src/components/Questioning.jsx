@@ -262,7 +262,7 @@ const Questioning = () => {
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
                     });
             }
-            else if (selectedOption === 'SQA') {
+            else if (selectedOption === 'SAQ') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
@@ -422,7 +422,7 @@ const Questioning = () => {
                                             onChange={handleSelectChange} // Trigger the handler on change
                                         >
                                             <option>SBA</option>
-                                            <option>SQA</option>
+                                            <option>SAQ</option>
                                             <option>Mock</option>
                                             <option>QuesGen</option>
                                         </select>

@@ -34,7 +34,6 @@ const Register = () => {
             if (error) {
                 // Show error toast
                 toast.error("Error occur while register");
-                console.log("Error occur while register",error)
             } else {
                 // Show success toast
                 navigate('/login')

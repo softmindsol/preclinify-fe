@@ -10,9 +10,7 @@ import Setting from './pages/Setting';
 import Dashboard from './pages/Dashboard';
 import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
-import AllModules from './components/AllModules';
-import SubModule from './pages/SubModule';
-import SubModuleTwo from './pages/SubModuleTwo';
+
 import Questioning from './components/Questioning';
 import QuestionCard from './components/QuestionCard';
 import Score from './components/common/Score';
@@ -25,6 +23,7 @@ import ContactPage from './components/contact-us';
 import { useContext } from 'react';
 import ThemeContext from './lib/ThemeContext';
 import ChatHistory from './components/common/ChatHistory';
+import OSCEAIBOT from './components/OSCE-AI-BOT';
 
 function App() {
   const {theme} = useContext(ThemeContext);
@@ -55,6 +54,7 @@ function App() {
         <Route path="/osce" element={<><Scenarios /></>} />
         <Route path="/scenerios-detail" element={<><SceneriosDetail /></>} />
         <Route path='/contact-us' element={<ContactPage/>}/>
+        <Route path='/osce-ai-bot' element={<OSCEAIBOT />} />
       </Routes>
     </div>
   );

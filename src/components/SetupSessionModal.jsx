@@ -65,7 +65,7 @@ const navigation=useNavigate()
     };
 
     const handleQuestion=()=>{
-        if (type==='SQA'){
+        if (type==='SAQ'){
             navigation('/short-question');
 
         }

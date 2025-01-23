@@ -14,7 +14,6 @@ import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
 import StackedBar from '../components/charts/stacked-bar';
-import StackedBarWithSign from '../components/charts/stacked-barwith-sign';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearResult } from '../redux/features/result/result.slice';
 import { resetQuestionReviewValue } from '../redux/features/question-review/question-review.slice';
@@ -75,13 +74,6 @@ const [sessionId,setSessionId] =useState([]);
 
         fetchDailyWork();
     }, []);
-    // console.log("workEntries:", workEntries);
-
-    // console.log("Limit from Redux:", limit);
-
-    console.log("darkModeRedux:", darkModeRedux);
-
-    
 
     useEffect(() => {
         const start = startOfMonth(selectedDate);
@@ -152,7 +144,6 @@ useEffect(()=>{
     const handleSessionContinue = async (sessionId)=> {
         // Open the setup session modal
         setIsOpenSetUpSessionModal(true); // Set to true to open the modal
-        console.log("Limit from Redux:", limit);
         // Find the selected modules based on the sessionId
 
         // No need to split, just trim the sessionId if necessary
@@ -163,8 +154,7 @@ useEffect(()=>{
         dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
             .unwrap()
             .then((res) => {
-                console.log("flatModuleIds:", flatModuleIds);
-                console.log("res", res);
+              
             })
             .catch((err) => {
                 console.error("Error fetching questions:", err);

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Logo from '../components/common/Logo';
-import { Link } from 'react-router-dom';
 import supabase from '../helper';
 import Loader from '../components/common/Loader';
 import { toast } from 'sonner';
