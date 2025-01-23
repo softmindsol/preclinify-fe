@@ -19,6 +19,9 @@ body{
     --text-color: #ffffff;
 }
 
+html {
+    scroll-behavior: smooth;
+}
 
 
 .swiper {

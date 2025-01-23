@@ -1,65 +1,68 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 
-const Article = ({ article = [] }) => {
-    if (!article.length) {
+const Article = ({ article }) => {
+    if (!article || article.length === 0) {
         return <div>No article data available.</div>;
     }
 
-    const { conditionName } = article[0];
+    const { conditionName, textbookContent } = article[0]; // Assuming the first article is displayed
 
-    const renderContent = () => {
-        return conditionName.split("\n").map((line, index) => {
-            if (line.startsWith("# ")) {
-                return (
-                    <h1 key={index} className="text-[30px] font-bold">
-                        {line.replace("# ", "")}
-                    </h1>
-                );
-            } else if (line.startsWith("## ")) {
-                return (
-                    <h2 key={index} className="text-[26px] font-semibold">
-                        {line.replace("## ", "")}
-                    </h2>
-                );
-            } else if (line.startsWith("### ")) {
-                return (
-                    <h3 key={index} className="text-[22px] font-medium">
-                        {line.replace("### ", "")}
-                    </h3>
-                );
-            } else if (line.startsWith("- ")) {
-                return (
-                    <p key={index} className="text-[16px] text-[#71717A]">
-                        {line.replace("- ", "")}
-                    </p>
-                );
-            } else {
-                return <p key={index}>{line}</p>;
-            }
-        });
+    // Function to extract headings dynamically for the Table of Contents
+    const extractHeadings = (markdown) => {
+        const headingRegex = /^#{1,6} (.+)$/gm;
+        const matches = [...markdown.matchAll(headingRegex)];
+        return matches.map((match) => ({
+            level: match[0].split(" ")[0].length, // Determines the heading level
+            text: match[1],
+        }));
     };
 
-    return (
-        <div>
-            <div className="md:flex h-screen w-full">
-                <div className="flex-1 py-2 md:p-5">
-                    {/* Module Details */}
-                    <div className="flex justify-center gap-5">
-                        <div className="bg-white md:mx-5 2xl:w-[640px] md:rounded-lg p-6 space-y-10 shadow-md">
-                            {/* Breadcrumb and Title */}
-                            <div>
-                                <h1 className="text-[#3F3F46] mt-2 text-[30px] font-bold">
-                                    {conditionName}
-                                </h1>
-                            </div>
+    const headings = extractHeadings(textbookContent);
 
-                            {/* Render Content */}
-                            <div className="space-y-4">
-                                {renderContent()}
-                            </div>
-                        </div>
-                    </div>
+    return (
+        <div className="flex flex-col md:flex-row w-[900px] mx-auto">
+            {/* Main Content */}
+            <div className="mx-7 bg-white p-5 rounded-[8px] flex-1">
+                <h1 className="text-3xl text-[30px] text-[#3F3F46]  font-bold mb-4">{conditionName}</h1>
+
+                {/* Render Markdown Content with Custom Styling */}
+                <div className="prose prose-green leading-relaxed">
+                    <ReactMarkdown
+                        components={{
+                            h1: ({ node, ...props }) => (
+                                <h1 className=" font-bold mb-4" {...props} />
+                            ),
+                            h2: ({ node, ...props }) => (
+                                <h2 className="text-[#3CC8A1] text-[16px]   mt-3 font-extrabold mb-4" {...props} />
+                            ),
+                            p: ({ node, ...props }) => (
+                                <p className="mb-4 leading-relaxed font-light " {...props} />
+                            ),
+                            li: ({ node, ...props }) => (
+                                <li className="leading-relaxed " {...props} />
+                            ),
+                            hr: () => null
+                        }}
+                    >
+                        {textbookContent}
+                    </ReactMarkdown>
                 </div>
+            </div>
+
+            {/* Sidebar for Table of Contents */}
+            <div className="text-[#27272A] p-6 md:w-1/4 bg-gray-100 rounded-lg">
+                <h2 className="text-[14px] font-semibold mb-4">- Contents</h2>
+                <hr />
+                <ul className="space-y-2 mt-3">
+                    {headings.map((heading, index) => (
+                        <li key={index} className="text-[#71717A] hover:text-green-600 text-[14px]">
+                            <a href={`#${heading.text.toLowerCase().replace(/ /g, "-")}`}>
+                                {heading.text}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );
