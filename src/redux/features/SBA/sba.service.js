@@ -100,7 +100,7 @@ export const fetchConditionNameById= createAsyncThunk(
         console.log("Id:",Id);
         
         try {
-            if (!Id) return rejectWithValue('Invalid conditionNames ID.');
+            if (!Id) return rejectWithValue(' conditionNames ID is not defined for this question.');
 
             const query = supabase
                 .from('conditionNames')

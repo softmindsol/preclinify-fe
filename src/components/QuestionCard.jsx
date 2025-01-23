@@ -384,7 +384,6 @@ const [article,setArticle]=useState({})
     }, [review])
 
     
-console.log("Article:",article);
 
 
     return (

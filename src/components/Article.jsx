@@ -1,13 +1,17 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
-const Article = ({ article }) => {
+const Article = ({ article=[] }) => {
     if (!article || article.length === 0) {
-        return <div>No article data available.</div>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-lg font-medium text-gray-500">No article data available.</p>
+            </div>
+        );
     }
 
-    const { conditionName, textbookContent } = article[0]; // Assuming the first article is displayed
 
+    const { conditionName = "Untitled", textbookContent = "" } = article[0] || {};
     // Function to extract headings dynamically for the Table of Contents
     const extractHeadings = (markdown) => {
         const headingRegex = /^#{1,6} (.+)$/gm;
