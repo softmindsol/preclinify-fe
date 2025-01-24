@@ -313,11 +313,10 @@ const Questioning = () => {
 
 
     const sortedModules = isSortedByPresentation
-        ? [...filteredModules].sort((a, b) => {
-            const isASelected = selectedModules.includes(a.categoryId);
-            const isBSelected = selectedModules.includes(b.categoryId);
-            return (isASelected === isBSelected) ? 0 : isASelected ? -1 : 1;
-        })
+        ? [
+            ...filteredModules.filter(module => selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)), // Sort selected modules alphabetically
+            ...filteredModules.filter(module => !selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)) // Sort unselected modules alphabetically
+        ]
         : filteredModules;
 
     useEffect(() => {
