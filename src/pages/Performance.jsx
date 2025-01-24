@@ -6,10 +6,10 @@ const Performance = () => {
    
   return (
     <div className='flex '>
-          <div className="">
+      <div className="hidden lg:block fixed h-full">
               <Sidebar />
           </div>
-          <div className="flex-1 p-4 mt-20">
+      <div className="flex-1 p-4 mt-20 md:ml-[250px]">
             <div className='flex items-center justify-center gap-32'>
                   <div>
                     <h1 className='text-center text-[16px]'>Me vs other user</h1>

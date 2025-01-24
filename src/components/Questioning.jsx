@@ -404,12 +404,27 @@ const Questioning = () => {
 
                                     <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre clinical</p>
                                     <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden dark:bg-black">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                                        <input
+                                        <div className="group">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="12"
+                                                height="12"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="lucide lucide-search text-gray-500 group-hover:text-teal-500 transition-colors duration-200"
+                                            >
+                                                <circle cx="11" cy="11" r="8" />
+                                                <path d="m21 21-4.3-4.3" />
+                                            </svg>
+                                        </div>                                        <input
                                             type="text"
                                             placeholder="Search for modules"
                                             onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-black placeholder:text-[14px]"
+                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-black placeholder:text-[#D4D4D8] placeholder:text-[12px]"
                                         />
 
                                     </div>

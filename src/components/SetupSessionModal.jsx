@@ -192,11 +192,18 @@ const navigation=useNavigate()
                                             type="checkbox"
                                             checked={questionTypes[type]}
                                             onChange={() => toggleQuestionType(type)}
-                                            className="mr-2 w-6 h-6 appearance-none border-2 border-gray-400 rounded-md checked:bg-teal-500 checked:border-teal-500 "
+                                            className={`mr-2 w-6 h-6 appearance-none border-2 rounded-md 
+                    ${type === "notAnswered"
+                                                    ? "border-gray-400 checked:bg-gray-300 checked:border-gray-300"
+                                                    : type === "incorrect"
+                                                    ? "border-red-400 checked:bg-[#EF4444] checked:border-red-500"
+                                                    : "border-[#3CC8A1] checked:bg-[#3CC8A1] checked:border-[#3CC8A1]"
+                                                }`}
                                         />
                                     </div>
                                 </div>
                             ))}
+
                         </div>
 
                         {/* Action Buttons */}

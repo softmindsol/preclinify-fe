@@ -4,10 +4,10 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 const Pricing = () => {
     return (
-        <div className='overflow-hidden'>
+        <div className=''>
             <Navbar />
 
-            <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-24 2xl:mt-16  overflow-hidden'>
+            <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-24 2xl:mt-32'>
                 <div className='font-semibold text-[24px] lg:text-[36px]  text-[#52525B] text-center'>
                     <p>So confident </p>
                     <p>we can even guarantee you pass.</p>
@@ -22,7 +22,7 @@ const Pricing = () => {
                         <div className='mt-5 relative  transition hover:shadow-greenBlur rounded-[16px]'>
                             <div className='h-[500px] lg:h-[556px]  w-[270px] lg:w-[310px] border-[1px] border-[#3CC8A1] rounded-[16px]'>
                                 <div className='h-[100px] lg:h-[140px] w-full bg-[#3CC8A1] text-center rounded-tr-[14px] rounded-tl-[14px] p-5'>
-                                    <p className='text-white font-bold text-[16px] lg:text-[18px]'>The OSCE plan</p>
+                                    <p className='text-white font-bold text-[16px] lg:text-[20px]'>The OSCE plan</p>
                                     <p className='text-white font-extrabold text-[26px] lg:text-[40px]'>£84</p>
                                 </div>
                                 <div className='p-8 space-y-2'>

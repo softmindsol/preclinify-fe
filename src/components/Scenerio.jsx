@@ -16,7 +16,7 @@ const Scenarios = () => {
     return (
         <div className="md:flex  min-h-screen">
 
-            <div className="hidden md:block">
+            <div className="hidden md:block fixed h-full">
                 <Sidebar />
             </div>
             <div className='flex items-center justify-between p-5 bg-white md:hidden w-full'>
@@ -30,11 +30,11 @@ const Scenarios = () => {
             </div>
 
 
-            <div className="px-10 mt-8  w-full">
+            <div className="px-10 mt-8  w-full md:ml-[250px]">
 
 
                 {/* Tabs */}
-                <div className="flex justify-center w-full items-center gap-x-2 text-[14px] lg:text-[16px] xl:text-[20px]  ">
+                <div className="flex justify-center w-full items-center gap-x-2  text-[14px] lg:text-[16px] xl:text-[20px]  ">
                     <div className="flex justify-center  w-full items-center space-x-4 bg-[#ffff]  rounded-tl-[4px] rounded-tr-[4px]">
                         <button className="px-4  flex items-center space-x-4   py-2 text-[#3F3F46] font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notepad-text"><path d="M8 2v4" /><path d="M12 2v4" /><path d="M16 2v4" /><rect width="16" height="18" x="4" y="4" rx="2" /><path d="M8 10h6" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
