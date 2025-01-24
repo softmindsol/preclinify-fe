@@ -19,20 +19,7 @@ const OSCEAIBOT = () => {
             recognition.lang = "en-US";
 
             recognition.onresult = async (event) => {
-                const transcriptText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-
-                // Stop recording if the user says "stop"
-                if (transcriptText === "stop") {
-                    recognitionRef.current.stop();
-                    setIsRecording(false);
-                    setTranscript((prevTranscript) => [
-                        ...prevTranscript,
-                        { fromAI: false, text: "Recording stopped as per your request." },
-                    ]);
-                    return; // Exit the function
-                }
-
-                // Add user message to the transcript
+                const transcriptText = event.results[event.results.length - 1][0].transcript;
                 setTranscript((prevTranscript) => [
                     ...prevTranscript,
                     { fromAI: false, text: transcriptText },
@@ -50,32 +37,53 @@ const OSCEAIBOT = () => {
             console.error("SpeechRecognition API is not supported in this browser.");
         }
 
-        // Cleanup function to stop recognition and speech synthesis
         return () => {
+            // Cleanup: Stop Speech Recognition and Cancel Speech
             if (recognitionRef.current) recognitionRef.current.stop();
-            window.speechSynthesis.cancel(); // Stop AI from speaking on reload or unmount
+            window.speechSynthesis.cancel(); // Stop all AI speech
         };
     }, []);
 
     const fetchAIResponse = async (userText) => {
         const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_OSCE_KEY;
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: "gpt-4",
-                messages: [{ role: "user", content: userText }],
-            }),
-        });
-        const data = await response.json();
-        return data.choices[0].message.content;
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${OPENAI_API_KEY}`,
+                },
+                body: JSON.stringify({
+                    model: "gpt-4",
+                    messages: [{ role: "user", content: userText }],
+                }),
+            });
+            const data = await response.json();
+            return data.choices[0].message.content;
+        } catch (error) {
+            console.error("Error fetching AI response:", error);
+            return "Sorry, I couldn't process your request.";
+        }
     };
 
     const playAIResponse = (text) => {
+        // Stop any ongoing speech
+        window.speechSynthesis.cancel();
+
         const utterance = new SpeechSynthesisUtterance(text);
+
+        // Set speech properties
+        utterance.pitch = 1.2; // Adjust for brighter tone
+        utterance.rate = 1;    // Normal rate
+        utterance.volume = 1;  // Max volume
+
+        // Select a specific voice
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find((voice) => voice.name.includes("Google US English"));
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+
         window.speechSynthesis.speak(utterance);
     };
 
@@ -113,9 +121,9 @@ const OSCEAIBOT = () => {
                 <div className="transcript">
                     {transcript.map((entry, index) => (
                         <div key={index} className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}>
-                            <div className={`${entry.fromAI ? "bg-[#3CC8A1]" : "bg-[#EDF2F7] py-5 px-14 border-[1px] rounded-full"}`}>
+                            <div className={`${entry.fromAI ? "bg-[#3CC8A1]" : "bg-[#EDF2F7]"} py-5 px-14 border-[1px] rounded-full`}>
                                 <strong>{entry.fromAI ? "AI: " : "You: "}</strong>
-                                <span className="">{entry.text}</span>
+                                <span>{entry.text}</span>
                             </div>
                         </div>
                     ))}
@@ -133,28 +141,26 @@ const OSCEAIBOT = () => {
             <style jsx>{`
                 .transcript {
                     display: flex;
-                    justify-content: center;
                     flex-direction: column;
-                    gap: 10px;
+                    gap: 16px;
+                    margin-top: 16px;
                 }
                 .message {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
                 }
                 .ai-message {
                     justify-content: flex-start;
                     padding: 20px;
                     border-radius: 5px;
-                    color: black;
+                    color: white;
                     width: 80%;
                 }
                 .user-message {
-                    text-align: right;
+                    justify-content: flex-end;
                     color: black;
                     padding: 10px;
                     display: flex;
-                    justify-content: end;
                     border-radius: 5px;
                 }
             `}</style>
