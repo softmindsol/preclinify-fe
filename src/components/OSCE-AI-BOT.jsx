@@ -19,7 +19,20 @@ const OSCEAIBOT = () => {
             recognition.lang = "en-US";
 
             recognition.onresult = async (event) => {
-                const transcriptText = event.results[event.results.length - 1][0].transcript;
+                const transcriptText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+
+                // Stop recording if the user says "stop"
+                if (transcriptText === "stop") {
+                    recognitionRef.current.stop();
+                    setIsRecording(false);
+                    setTranscript((prevTranscript) => [
+                        ...prevTranscript,
+                        { fromAI: false, text: "Recording stopped as per your request." },
+                    ]);
+                    return; // Exit the function
+                }
+
+                // Add user message to the transcript
                 setTranscript((prevTranscript) => [
                     ...prevTranscript,
                     { fromAI: false, text: transcriptText },
@@ -37,8 +50,10 @@ const OSCEAIBOT = () => {
             console.error("SpeechRecognition API is not supported in this browser.");
         }
 
+        // Cleanup function to stop recognition and speech synthesis
         return () => {
             if (recognitionRef.current) recognitionRef.current.stop();
+            window.speechSynthesis.cancel(); // Stop AI from speaking on reload or unmount
         };
     }, []);
 
@@ -76,7 +91,7 @@ const OSCEAIBOT = () => {
     return (
         <div>
             {/* Header */}
-            <div className="w-full fixed  top-0 flex items-center justify-center">
+            <div className="w-full fixed top-0 flex items-center justify-center">
                 <header className="w-[70%] bg-white shadow-md py-4 px-8 flex justify-between items-center">
                     <Logo />
                     <nav className="flex items-center space-x-4 text-[#3CC8A1] font-medium">
@@ -95,15 +110,13 @@ const OSCEAIBOT = () => {
                         Hello! Welcome to the OSCE history station! I will be the patient and you will be the doctor...
                     </p>
                 </div>
-                <div className="transcript ">
+                <div className="transcript">
                     {transcript.map((entry, index) => (
-                        <div key={index} className={`  message ${entry.fromAI ? "ai-message" : "user-message"}`}>
-                           
-                            <div className={`${entry.fromAI === 'AI' ? 'bg-[#3CC8A1]' : 'bg-[#EDF2F7] py-5 px-14 border-[1px]  rounded-full'}`}>
+                        <div key={index} className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}>
+                            <div className={`${entry.fromAI ? "bg-[#3CC8A1]" : "bg-[#EDF2F7] py-5 px-14 border-[1px] rounded-full"}`}>
                                 <strong>{entry.fromAI ? "AI: " : "You: "}</strong>
                                 <span className="">{entry.text}</span>
                             </div>
-
                         </div>
                     ))}
                 </div>
@@ -122,7 +135,7 @@ const OSCEAIBOT = () => {
                     display: flex;
                     justify-content: center;
                     flex-direction: column;
-                    gap: px;
+                    gap: 10px;
                 }
                 .message {
                     display: flex;
@@ -135,14 +148,13 @@ const OSCEAIBOT = () => {
                     border-radius: 5px;
                     color: black;
                     width: 80%;
-                    
                 }
                 .user-message {
-                   text-align: right;
+                    text-align: right;
                     color: black;
                     padding: 10px;
-                    display:flex;
-                    justify-content:end;
+                    display: flex;
+                    justify-content: end;
                     border-radius: 5px;
                 }
             `}</style>
