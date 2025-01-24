@@ -5,6 +5,7 @@ const OSCEAIBOT = () => {
     const recognitionRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState([]);
+    const timeoutRef = useRef(null); // To store the timeout reference
 
     useEffect(() => {
         const SpeechRecognition =
@@ -38,10 +39,21 @@ const OSCEAIBOT = () => {
         }
 
         return () => {
-            // Cleanup: Stop Speech Recognition and Cancel Speech
             if (recognitionRef.current) recognitionRef.current.stop();
-            window.speechSynthesis.cancel(); // Stop all AI speech
+            window.speechSynthesis.cancel();
         };
+    }, []);
+
+    useEffect(() => {
+        // Initialize AI greeting and follow-up
+        const initializeAI = async () => {
+            const initialPrompt =
+                "Hello! Welcome to the OSCE history station! I will be the patient and you will be the doctor. How can I assist you?";
+            playAIResponse(initialPrompt); // Text-to-Speech
+            setTranscript([{ fromAI: true, text: initialPrompt }]);
+        };
+
+        initializeAI();
     }, []);
 
     const fetchAIResponse = async (userText) => {
@@ -67,38 +79,68 @@ const OSCEAIBOT = () => {
     };
 
     const playAIResponse = (text) => {
-        // Stop any ongoing speech
-        window.speechSynthesis.cancel();
+        // Check if the speech synthesis is speaking
+        if (window.speechSynthesis.speaking) {
+            console.warn("Speech synthesis is already speaking. Skipping new utterance.");
+            return;
+        }
 
         const utterance = new SpeechSynthesisUtterance(text);
+        utterance.pitch = 1.2;
+        utterance.rate = 1;
+        utterance.volume = 1;
 
-        // Set speech properties
-        utterance.pitch = 1.2; // Adjust for brighter tone
-        utterance.rate = 1;    // Normal rate
-        utterance.volume = 1;  // Max volume
-
-        // Select a specific voice
         const voices = window.speechSynthesis.getVoices();
         const preferredVoice = voices.find((voice) => voice.name.includes("Google US English"));
         if (preferredVoice) {
             utterance.voice = preferredVoice;
         }
 
+        // When speech ends, reset the button text
+        utterance.onend = () => {
+            resetToStartRecording();
+        };
+
+        // Speak the text
         window.speechSynthesis.speak(utterance);
+
+        // Set timeout to reset button in case of inactivity
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+            resetToStartRecording();
+        }, 20000); // 20 seconds
+    };
+
+    const resetToStartRecording = () => {
+        setIsRecording(false);
+        if (recognitionRef.current) recognitionRef.current.stop();
     };
 
     const handleStartRecording = () => {
         setIsRecording((prev) => !prev);
+
         if (!isRecording && recognitionRef.current) {
             recognitionRef.current.start();
         } else if (isRecording && recognitionRef.current) {
             recognitionRef.current.stop();
         }
+
+        // Clear timeout if user interacts with the button
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
+    useEffect(() => {
+        // Ensure voices are loaded
+        if (window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    }, []);
+    console.log(window.speechSynthesis.getVoices());
+
 
     return (
         <div>
-            {/* Header */}
             <div className="w-full fixed top-0 flex items-center justify-center">
                 <header className="w-[70%] bg-white shadow-md py-4 px-8 flex justify-between items-center">
                     <Logo />
@@ -111,17 +153,11 @@ const OSCEAIBOT = () => {
                 </header>
             </div>
 
-            {/* Main */}
             <main className="w-[100%] mt-20 px-4">
-                <div className="bg-[#EDF2F7] w-[30%] p-6 rounded-lg shadow-md mb-4">
-                    <p className="text-[#26303d] text-[16px]">
-                        Hello! Welcome to the OSCE history station! I will be the patient and you will be the doctor...
-                    </p>
-                </div>
                 <div className="transcript">
                     {transcript.map((entry, index) => (
                         <div key={index} className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}>
-                            <div className={`${entry.fromAI ? "bg-[#3CC8A1]" : "bg-[#EDF2F7]"} py-5 px-14 border-[1px] rounded-full`}>
+                            <div className={`${entry.fromAI ? "bg-[#3CC8A1]" : "bg-[#EDF2F7]"} py-3 px-14 border-[1px] rounded-full`}>
                                 <strong>{entry.fromAI ? "AI: " : "You: "}</strong>
                                 <span>{entry.text}</span>
                             </div>
