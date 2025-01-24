@@ -119,6 +119,15 @@ const [article,setArticle]=useState({})
 
 
 
+    const getQuestionRange = (currentIndex) => {
+        const itemsPerPage = 10; // Number of items to show in the sidebar
+        const start = Math.floor(currentIndex / itemsPerPage) * itemsPerPage; // Calculate the start index
+        const end = Math.min(start + itemsPerPage, data.data.length); // Calculate the end index
+        return { start, end };
+    };
+
+    // Get the range of questions to display
+    const { start, end } = getQuestionRange(currentIndex);
 
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
@@ -909,33 +918,72 @@ const [article,setArticle]=useState({})
 
                         <div className="flex justify-center items-center">
                             <div className="grid grid-cols-5 gap-2">
-                                {
-                                    indicesToDisplay.map((num, i) => {
-                                        const bgColor =
-                                            result.result[num] === true
-                                                ? "bg-[#3CC8A1]" // Correct
-                                                : result.result[num] === false
-                                                    ? "bg-[#FF453A]" // Incorrect (Flagged)
-                                                    : "bg-gray-300"; // Unseen (null)
-
-                                        return (
-                                            <div key={i}>
-                                                <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] dark:bg-black   dark:border`}
-                                                    onClick={() => markQuestion(num)} // Use `num` for marking
-                                                >
-                                                    <p>{num + 1}</p>
-                                                </div>
+                                {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                    const bgColor = result.result[num] === true ? "bg-[#3CC8A1]" : result.result[num] === false ? "bg-[#FF453A]" : "bg-gray-300";
+                                    return (
+                                        <div key={i}>
+                                            <div
+                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
+                                                onClick={() => markQuestion(num)} // Use `num` for marking
+                                            >
+                                                <p>{num + 1}</p>
                                             </div>
-                                        );
-                                    })
-
-                                }
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                            <button
+                                className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                    }`}
+                                onClick={currentPage > 0 ? prevPage : null}
+                                disabled={currentPage === 0} // Disable button when on the first page
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-move-left"
+                                >
+                                    <path d="M6 8L2 12L6 16" />
+                                    <path d="M2 12H22" />
+                                </svg>
+                            </button>
+
+                            <button
+                                className={`${((currentPage + 1) * itemsPerPage) >= data.data.length
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'cursor-pointer'
+                                    }`}
+                                onClick={
+                                    ((currentPage + 1) * itemsPerPage) < data.data.length ? nextPage : null
+                                }
+                                disabled={((currentPage + 1) * itemsPerPage) >= data.data.length}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-move-right"
+                                >
+                                    <path d="M18 8L22 12L18 16" />
+                                    <path d="M2 12H22" />
+                                </svg>
+                            </button>
+
                         </div>
                         <div className="py-5 px-10 text-[#D4D4D8]">
                             <hr />
