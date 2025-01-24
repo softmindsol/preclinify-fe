@@ -76,7 +76,7 @@ const OSCEAIBOT = () => {
     return (
         <div>
             {/* Header */}
-            <div className="w-full flex items-center justify-center">
+            <div className="w-full fixed  top-0 flex items-center justify-center">
                 <header className="w-[70%] bg-white shadow-md py-4 px-8 flex justify-between items-center">
                     <Logo />
                     <nav className="flex items-center space-x-4 text-[#3CC8A1] font-medium">
@@ -89,23 +89,27 @@ const OSCEAIBOT = () => {
             </div>
 
             {/* Main */}
-            <main className="w-[100%] mt-8 px-4">
+            <main className="w-[100%] mt-20 px-4">
                 <div className="bg-[#EDF2F7] w-[30%] p-6 rounded-lg shadow-md mb-4">
                     <p className="text-[#26303d] text-[16px]">
                         Hello! Welcome to the OSCE history station! I will be the patient and you will be the doctor...
                     </p>
                 </div>
-                <div className="transcript mb-4">
+                <div className="transcript ">
                     {transcript.map((entry, index) => (
-                        <div key={index} className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}>
-                            <strong>{entry.fromAI ? "AI: " : "You: "}</strong>
-                            <span className="w-[]">{entry.text}</span>
+                        <div key={index} className={`  message ${entry.fromAI ? "ai-message" : "user-message"}`}>
+                           
+                            <div className={`${entry.fromAI === 'AI' ? 'bg-[#3CC8A1]' : 'bg-[#EDF2F7] py-5 px-14 border-[1px]  rounded-full'}`}>
+                                <strong>{entry.fromAI ? "AI: " : "You: "}</strong>
+                                <span className="">{entry.text}</span>
+                            </div>
+
                         </div>
                     ))}
                 </div>
                 <div className="flex items-center justify-center">
                     <button
-                        className="bg-[#3CC8A1] w-[100%] text-white py-2 px-6 rounded-[8px] text-[16px] font-bold hover:bg-transparent hover:border hover:border -[#3CC8A1] hover:text-[#3CC8A1] transition-all duration-200"
+                        className="bg-[#3CC8A1] w-[100%] text-white py-2 px-6 rounded-[8px] text-[16px] font-bold hover:bg-transparent hover:border hover:border-[#3CC8A1] hover:text-[#3CC8A1] transition-all duration-200"
                         onClick={handleStartRecording}
                     >
                         {isRecording ? "Stop Recording" : "Start Recording"}
@@ -116,25 +120,29 @@ const OSCEAIBOT = () => {
             <style jsx>{`
                 .transcript {
                     display: flex;
+                    justify-content: center;
                     flex-direction: column;
-                    gap: 10px;
+                    gap: px;
                 }
                 .message {
                     display: flex;
                     align-items: center;
+                    gap: 10px;
                 }
                 .ai-message {
                     justify-content: flex-start;
-                    background-color: #f0f0f0;
-                    padding: 10px;
+                    padding: 20px;
                     border-radius: 5px;
+                    color: black;
+                    width: 80%;
+                    
                 }
                 .user-message {
-                    justify-content: flex-end;
-                    background-color: #3CC8A1;
-                    color: white;
+                   text-align: right;
+                    color: black;
                     padding: 10px;
-                    width:300px
+                    display:flex;
+                    justify-content:end;
                     border-radius: 5px;
                 }
             `}</style>
