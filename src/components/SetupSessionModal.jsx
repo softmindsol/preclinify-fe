@@ -98,7 +98,7 @@ const navigation=useNavigate()
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
                     <div
                         ref={modalRef} // Attach ref to modal container
-                        className="relative bg-white rounded-[4px] p-6 shadow-lg h-[646px] w-[451px] dark:bg-black text-black  dark:border"
+                        className="relative bg-white rounded-[4px] p-6 shadow-lg h-[646px] w-[451px] dark:bg-[#1E1E2A] text-black  dark:border-[1px] dark:border-[#3A3A48]"
                     >
                         <h2 className="text-[20px] text-[#3F3F46] font-bold mb-4 dark:text-white">
                             Set up session
@@ -115,7 +115,7 @@ const navigation=useNavigate()
                                     value={numQuestions}
                                     onChange={handleNumQuestionsChange}
                                 
-                                    className="w-full  py-[10px] border rounded placeholder-transparent text-end px-[20px] dark:bg-black dark:text-white"
+                                    className="w-full  py-[10px] border dark:border-[1px] dark:border-[#3A3A48] rounded placeholder-transparent text-end px-[20px] dark:bg-[#1E1E2A] dark:text-white"
                                 />
                                 <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#A1A1AA] text-[14px] font-medium pointer-events-none dark:text-white">
                                     Maximum: 200
@@ -132,7 +132,7 @@ const navigation=useNavigate()
                                 <select
                                     value={modeType}
                                     onChange={(e) => setModeType(e.target.value)}
-                                    className="w-full h-[42px] px-3 py-2 pr-8 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-black dark:text-white"
+                                    className="w-full h-[42px] px-3 py-2 pr-8 border border-[#A1A1AA] dark:border-[1px] dark:border-[#3A3A48] rounded text-[14px] appearance-none dark:bg-[#1E1E2A] dark:text-white"
                                 >
                                     <option value="Endless">Endless</option>
                                     <option value="Exam">Exam</option>
@@ -166,7 +166,7 @@ const navigation=useNavigate()
                                         value={timer}
                                         onChange={handleTimerChange}
 
-                                        className="w-full px-3 py-2 border rounded placeholder-transparent text-end dark:bg-black dark:text-white"
+                                        className="w-full px-3 py-2 border dark:border-[1px] dark:border-[#3A3A48] rounded placeholder-transparent text-end dark:bg-[#1E1E2A] dark:text-white"
                                     />
                                     <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#A1A1AA] text-[14px] font-medium pointer-events-none dark:text-white">
                                        In  Minutes
