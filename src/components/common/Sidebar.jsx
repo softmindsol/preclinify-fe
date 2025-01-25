@@ -88,7 +88,7 @@ const Sidebar = () => {
                                     </>
                                 )}
                             </svg>
-                            <span className="text-[16px] font-semibold group-hover:text-[#3CC8A1] dark:text-white">
+                            <span className="text-[16px] font-semibold group-hover:text-[#3CC8A1] ">
                             {item.name}
                         </span>
                     </NavLink>

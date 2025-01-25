@@ -169,14 +169,14 @@ const Setting = () => {
                             <p className="text-[14px] sm:text-[16px] text-[#71717A] font-bold dark:text-white">£3499 / Year</p>
                         </div>
 
-                        <button className="border-[1px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Change plan</button>
+                        <button className="border-[1px] border-[#FF9741] dark:text-white dark:border-[1px] dark:border-white dark:hover:border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1">Change plan</button>
 
                     </div>
                     <div className="flex space-x-4 mt-4">
-                        <button className="border-[1px] font-semibold border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
+                        <button className="border-[1px] font-semibold border-[#FF9741] dark:border-[1px] dark:border-white dark:hover:border-[#FF9741] text-[#FF9741] dark:text-white hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
                             Purchase OSCE Credit
                         </button>
-                        <button className="border-[1px] font-semibold border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
+                        <button className="border-[1px] font-semibold border-[#FF9741] dark:border-[1px] dark:border-white dark:hover:border-[#FF9741] dark:text-white text-[#FF9741]  hover:bg-[#FF9741] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-3 py-2">
                             Update Billing Information
                         </button>
                     </div>
@@ -235,8 +235,8 @@ const Setting = () => {
                     </div>
 
                     <div className='flex flex-col gap-y-5 mt-10'>
-                        <button className="border-[1px] w-[91px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold" onClick={handleLogout}>Log out</button>
-                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold">Reset Password</button>
+                        <button className="border-[1px] w-[91px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold ark:border-[1px] dark:border-white dark:hover:border-[#FF9741] dark:text-white" onClick={handleLogout}>Log out</button>
+                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold ark:border-[1px] dark:border-white dark:hover:border-[#FF9741] dark:text-white">Reset Password</button>
 
                         <button className="border-[1px] w-[152px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold">Delete Account</button>
                     </div>
@@ -248,7 +248,7 @@ const Setting = () => {
                 <div className='bg-white shadow-md lg:rounded-md p-4 mt-6 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]  dark:text-white'>
                     <p className='text-[#3F3F46] text-[18px] font-semibold dark:text-white'>Advanced</p>
                     <div className='flex flex-col gap-y-5 mt-10'>
-                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold dark:text-white">Clear Cache</button>
+                        <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold  dark:border-[1px] dark:border-white dark:hover:border-[#FF9741] dark:text-white">Clear Cache</button>
 
                         <button className="border-[1px] w-[190px] border-[#FF453A] text-[#ffff] bg-[#FF453A] hover:text-[#FF453A] hover:bg-transparent text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1.5 font-semibold ">Reset Progress Data</button>
                     </div>

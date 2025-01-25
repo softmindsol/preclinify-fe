@@ -1,5 +1,5 @@
 .active{
-    color: #28A079;
+    color: #28A079 !important;
 }
 .loader {
     display: flex;

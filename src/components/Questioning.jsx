@@ -542,7 +542,7 @@ const Questioning = () => {
                                                                     handleContinue()
                                                                 }
                                                                 }
-                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] 2xl:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                                className="border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[14px] 2xl:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px] dark:border-[1px] dark:border-white dark:hover:border-[#FF9741] dark:text-white">
                                                                 Continue &gt;
                                                             </button>
                                                         </div>
