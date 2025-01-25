@@ -31,7 +31,6 @@ const Setting = () => {
             // Optionally, redirect the user to the login page
             window.location.href = '/login'; // You can replace this with a routing library like react-router if you prefer
         } catch (error) {
-            console.error("Error logging out:", error.message);
         }
     };
 
@@ -50,7 +49,7 @@ const Setting = () => {
             <div className="h-full hidden lg:block fixed">
                 <Siderbar />
             </div>
-            <div className='flex items-center justify-between p-5 bg-white shadow-sm lg:hidden w-full dark:bg-black text-black dark:text-white'>
+            <div className='flex items-center justify-between p-5 bg-white shadow-sm lg:hidden w-full dark:bg-[#1E1E2A] text-black dark:text-white'>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -61,11 +60,11 @@ const Setting = () => {
             </div>
 
 
-            <div className="min-h-screen bg-gray-100 text-[#3F3F46] lg:p-6 mt-5 lg:mt-0 w-full lg:ml-[250px] overflow-y-auto dark:bg-black  dark:text-white">
-                <h1 className="text-[24px] font-bold mb-6 hidden lg:block text-[#27272A] dark:bg-black  dark:text-white">Settings</h1>
+            <div className="min-h-screen bg-gray-100 text-[#3F3F46] lg:p-6 mt-5 lg:mt-0 w-full lg:ml-[250px] overflow-y-auto dark:bg-[#1E1E2A]  dark:text-white">
+                <h1 className="text-[24px] font-bold mb-6 hidden lg:block text-[#27272A]   dark:text-white">Settings</h1>
 
                 {/* General Section */}
-                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 dark:border-[1px]  dark:bg-black text-black dark:text-white">
+                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] text-black dark:text-white">
                     <h2 className="text-[14px] sm:text-[16px] font-semibold mb-4 text-[#000000] dark:text-white">General</h2>
                     <div className="flex items-center gap-x-40 mb-4">
                         <div>
@@ -89,7 +88,7 @@ const Setting = () => {
 
                 </div>
 
-                <div className='bg-white shadow-md lg:rounded-md mb-6 p-4 space-y-3 dark:border-[1px]  dark:bg-black text-black dark:text-white'>
+                <div className='bg-white shadow-md lg:rounded-md mb-6 p-4 space-y-3 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] text-black dark:text-white'>
                     <p className="font-semibold text-[#000000] dark:text-white text-[14px] sm:text-[16px]">Appearance</p>
                     <div className="flex items-center gap-x-56 sm:gap-x-60">
 
@@ -114,7 +113,7 @@ const Setting = () => {
                 </div>
 
                 {/* Billing Section */}
-                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 text-[#000000]  dark:border-[1px]  dark:bg-black  dark:text-white">
+                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 text-[#000000]  dark:border-[1px] dark:border-[#3A3A48]  dark:bg-[#1E1E2A]  dark:text-white">
                     <div>
                         <h2 className="text-[14px] sm:text-[16px]  font-semibold mb-4 dark:text-white">Billing</h2>
                         <div className='flex items-center gap-x-20 sm:gap-x-40'>
@@ -131,7 +130,7 @@ const Setting = () => {
                                     <span className=" text-[12px] sm:text-[14px] font-medium dark:text-white">Platinum</span>
                                 </div>
                             </div>
-                            <button className="border-[1px] border-[#3CC8A1] font-medium text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1 dark:text-white">Change Plan</button>
+                            <button className="border-[1px] border-[#3CC8A1] font-medium text-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white text-[12px] sm:text-[14px] rounded-[6px] transition-all duration-200 px-2 py-1 ">Change Plan</button>
                         </div>
 
                     </div>
@@ -141,7 +140,7 @@ const Setting = () => {
                             <div className="mb-4">
                                 <div className='flex items-center gap-x-2'>
                                     <FaRobot />
-                                    <p className="font-medium text-[#000000] text-[14px] sm:text-[16px]">OSCE Credits</p>
+                                    <p className="font-medium text-[#000000] text-[14px] sm:text-[16px] dark:text-white">OSCE Credits</p>
                                 </div>
 
                                 <p className="text-[12px] sm:text-[14px] text-[#71717A] whitespace-nowrap dark:text-white">
@@ -159,7 +158,7 @@ const Setting = () => {
                 </div>
 
                 {/* Subscriptions Section */}
-                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 dark:border-[1px]  dark:bg-black  dark:text-white">
+                <div className="bg-white shadow-md lg:rounded-md mb-6 p-4 dark:border-[1px] dark:border-[#3A3A48]  dark:bg-[#1E1E2A]  dark:text-white">
                     <h2 className="text-[16px] sm:text-[18px] font-semibold mb-4">Subscriptions</h2>
                     <div className="flex items-center justify-between mb-4 ">
                         <div>
@@ -184,13 +183,13 @@ const Setting = () => {
                 </div>
 
                 {/* Account Section */}
-                <div className="bg-white shadow-md lg:rounded-md p-4 dark:border-[1px]  dark:bg-black  dark:text-white">
+                <div className="bg-white shadow-md lg:rounded-md p-4 dark:border-[1px] dark:border-[#3A3A48]  dark:bg-[#1E1E2A]  dark:text-white">
                     <h2 className="text-[16px] sm:text-[18px] font-semibold mb-4 text-[#3F3F46] dark:text-white">Account</h2>
                     <div className="mb-4 flex flex-col   sm:flex-row sm:items-center sm:justify-between  ">
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">Display Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]"
                             placeholder="Sainavi Mahajan"
                         />
                     </div>
@@ -198,7 +197,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1 text-[14px] sm:text-[16px]">First Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]"
                             placeholder="Sainavi"
                         />
                     </div>
@@ -206,7 +205,7 @@ const Setting = () => {
                         <label className="block font-medium mb-1">Last Name</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]"
                             placeholder="Mahajan"
                         />
                     </div>
@@ -214,14 +213,14 @@ const Setting = () => {
                         <label className="block font-medium mb-1">University</label>
                         <input
                             type="text"
-                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black"
+                            className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]"
                             placeholder="University of Leicester"
                         />
                     </div>
 
                     <div className="mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between">
                         <label className="block font-medium mb-1">Year of Study</label>
-                        <select name="" id="" className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-black'>
+                        <select name="" id="" className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'>
                             <option value="" disabled>Select Year of Study</option>
                             <option value="">Year 1</option>
                             <option value="">Year 2</option>
@@ -246,7 +245,7 @@ const Setting = () => {
 
                 </div>
 
-                <div className='bg-white shadow-md lg:rounded-md p-4 mt-6 dark:border-[1px]  dark:bg-black  dark:text-white'>
+                <div className='bg-white shadow-md lg:rounded-md p-4 mt-6 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]  dark:text-white'>
                     <p className='text-[#3F3F46] text-[18px] font-semibold dark:text-white'>Advanced</p>
                     <div className='flex flex-col gap-y-5 mt-10'>
                         <button className="border-[1px] w-[156px] border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741] hover:text-white text-[14px] rounded-[6px] transition-all duration-200 px-2.5 py-1 font-semibold dark:text-white">Clear Cache</button>
@@ -258,7 +257,7 @@ const Setting = () => {
 
 
             </div>
-            <div className='dark:bg-black text-black dark:text-white'>
+            <div className='dark:bg-[#1E1E2A] text-black dark:text-white'>
 
 
                 <Drawer

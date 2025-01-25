@@ -7,7 +7,7 @@ const Sidebar = () => {
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
 
     return (
-        <div className={`min-h-screen w-64 bg-white shadow-lg  dark:border-r-[1px] flex flex-col items-center py-6 dark:bg-black text-black `}>
+        <div className={`min-h-screen w-64 bg-white shadow-lg  dark:border-[#3A3A48] dark:border-r-[1px] flex flex-col items-center py-6 dark:bg-[#1E1E2A] text-black `}>
             {/* Logo */}
             <div className="mb-10">
                 <Link to={"/"}>

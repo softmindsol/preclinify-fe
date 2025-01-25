@@ -363,7 +363,7 @@ const Questioning = () => {
                 <Sidebar />
             </div>
 
-            <div className="flex-grow lg:ml-[260px] xl:ml-[250px] mb-10 overflow-y-auto overflow-x-hidden dark:bg-black">
+            <div className="flex-grow lg:ml-[260px] xl:ml-[250px]  overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
 
 
                 <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
@@ -377,32 +377,32 @@ const Questioning = () => {
                 </div>
 
                 {/* Table Header */}
-                <div className="flex flex-col   sm:m-10 space-y-4 py-4 px-16 ">
+                <div className="flex flex-col min-h-screen   sm:m-10 space-y-4 py-4 px-16 ">
 
                     <div className="flex flex-col space-y-10">
                         <div className=" h-[137px] p-4 ">
                             {/* Tab Section */}
                             <div className="flex items-center text-[#3F3F46] justify-between space-x-2 text-[12px] md:text-[16px] font-medium">
-                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[33%] dark:bg-black text-black dark:text-white dark:border  rounded-[8px]">
+                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[33%] dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[2px] dark:border-[#3A3A48]   rounded-[8px]">
                                     Pre-clinical
                                 </button>
-                                <button className="px-4 py-2 bg-[#E4E4E7]  text-gray-500 w-[50%] sm:w-[33%] dark:bg-black  dark:border rounded-[8px]">
+                                <button className="px-4 py-2 bg-[#E4E4E7]  text-gray-500 w-[50%] sm:w-[33%] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48]  rounded-[8px]">
                                     Clinical
                                 </button>
-                                <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px] dark:bg-black  dark:border">
+                                <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 dark:hover:text-white w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48] ">
                                     Data <span className="md:block hidden ml-2 ">Interpretation</span>
                                 </button>
 
                             </div>
 
                             {/* Search and Button Section */}
-                            <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white dark:bg-black text-black dark:text-white dark:border">
+                            <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48] ">
                                 {/* Search Bar */}
                                 <div className="flex items-center p-8 gap-x-10  ">
 
 
                                     <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre clinical</p>
-                                    <div className="xl:flex items-center bg-white border border-gray-300 rounded-md px-3 py-2  hidden dark:bg-black">
+                                    <div className="xl:flex items-center bg-white border border-gray-300 dark:border-[2px] dark:border-[#3A3A48] rounded-md px-3 py-2  hidden dark:bg-[#1E1E2A]">
                                         <div className="group">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -419,11 +419,12 @@ const Questioning = () => {
                                                 <circle cx="11" cy="11" r="8" />
                                                 <path d="m21 21-4.3-4.3" />
                                             </svg>
-                                        </div>                                        <input
+                                        </div>                                        
+                                        <input
                                             type="text"
                                             placeholder="Search for modules"
                                             onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-black placeholder:text-[#D4D4D8] placeholder:text-[12px]"
+                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-[#1E1E2A] placeholder:text-[#D4D4D8] placeholder:text-[12px] "
                                         />
 
                                     </div>
@@ -431,7 +432,7 @@ const Questioning = () => {
                                 <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
                                     <div className="relative w-[105px]">
                                         <select
-                                            className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-black"
+                                            className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-[#1E1E2A]"
                                             value={selectedOption} // Bind the selected value to state
                                             onChange={handleSelectChange} // Trigger the handler on change
                                         >
@@ -504,12 +505,12 @@ const Questioning = () => {
                                 </div>
 
                                 :
-                                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-black text-black dark:text-white dark:border">
+                                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
                                     <div className="w-[35%] flex items-center justify-between mr-10">
                                         <p className="font-bold text-[12px] sm:text-[16px] 2xl:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
                                             Recent Sessions
                                         </p>
-                                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] " />
+                                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48] " />
                                     </div>
 
 
@@ -563,7 +564,7 @@ const Questioning = () => {
 {
                         isLoading? <Loader/>:
 
-                    <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] dark:bg-black text-black dark:text-white dark:border">
+                            <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
 
                         <div className="flex flex-col lg:flex-row justify-between lg:items-center font-medium text-[#3F3F46]  pb-2 w-full">
                             <div className="flex items-center gap-x-10 dark:text-white">
