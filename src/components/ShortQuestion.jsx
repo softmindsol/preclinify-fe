@@ -303,7 +303,7 @@ const ShortQuestion = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className="  h-screen  flex items-center justify-center   dark:bg-black  ">
+            <div className="  h-screen  flex items-center justify-center   dark:bg-[#1E1E2A]  ">
 
 
                 <div className="w-[100%] h-screen max-w-full  md:w-[80%] lg:w-[70%] xl:w-[55%]  ">
@@ -658,7 +658,7 @@ const ShortQuestion = () => {
                 <div className={`hidden lg:block fixed right-0 top-0 dark:border  `}>
 
 
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-[#1E1E2A] text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 dark:border-[1px] dark:border-[#3A3A48]`}>
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
@@ -748,7 +748,7 @@ const ShortQuestion = () => {
                                         return (
                                             <div key={i}>
                                                 <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] dark:bg-black   dark:border`}
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] dark:bg-[#1E1E2A]   dark:border`}
                                                     onClick={() => markQuestion(num)} // Use `num` for marking
                                                 >
                                                     <p>{num + 1}</p>
@@ -820,9 +820,9 @@ const ShortQuestion = () => {
 
 
                     </div>
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-black text-black  `}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-[#1E1E2A] text-black  dark:border-[1px] dark:border-[#3A3A48]`}>
 
-                        <div className="flex items-center  cursor-pointer dark:bg-black" onClick={() => {
+                        <div className="flex items-center  cursor-pointer dark:bg-[#1E1E2A]" onClick={() => {
                             setToggleSidebar(!toggleSidebar)
                         }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
