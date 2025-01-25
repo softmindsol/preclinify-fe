@@ -406,7 +406,7 @@ const [article,setArticle]=useState({})
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className=" mx-auto  flex items-center justify-center p-6 dark:bg-black text-black   ">
+            <div className=" mx-auto h-screen  flex items-center justify-center p-6 dark:bg-[#1E1E2A] text-black   ">
 
 
                 <div className={`max-w-full    w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
@@ -558,7 +558,7 @@ const [article,setArticle]=useState({})
                                             {!isAccordionVisible ? (
                                                 <label
                                                     key={index}
-                                                    className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-black dark:border`}
+                                                    className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
                                                     onClick={() => handleAnswerSelect(explanation, index)}
                                                 >
                                                     <input
@@ -840,7 +840,7 @@ const [article,setArticle]=useState({})
                 <div className={`hidden  lg:block fixed right-0 top-0 dark:border  `}>
 
 
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-[#1E1E2A] text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                         <div className="flex items-center justify-between mt-5">
                             <div className="flex items-center">
                             </div>
@@ -1041,9 +1041,9 @@ const [article,setArticle]=useState({})
 
 
                     </div>
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-black text-black  `}>
+                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px]   h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-[#1E1E2A] text-black  `}>
 
-                        <div className="flex items-center  cursor-pointer dark:bg-black" onClick={() => {
+                        <div className="flex items-center  cursor-pointer dark:bg-[#1E1E2A]" onClick={() => {
                             setToggleSidebar(!toggleSidebar)
                         }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>

@@ -28,7 +28,7 @@ const DeepChatAI = (props) => {
         <DeepChat
             style={{
                 ...dynamicStyle,
-                backgroundColor: darkModeRedux ? 'black' : 'white',
+                backgroundColor: darkModeRedux ? '#1E1E2A' : 'white',
                 // color: darkModeRedux ? 'white' : 'black',
             }}
             directConnection={{ openAI: { key: process.env.REACT_APP_OPENAI_API } }}
@@ -37,7 +37,7 @@ const DeepChatAI = (props) => {
 
     return (
         <div className={`${darkModeRedux ? 'dark' : ''}`}>
-            <div className="dark:bg-black text-black">
+            <div className="dark:dark:bg-[#1E1E2A] text-black">
                 {deepChatComponent}
             </div>
         </div>
