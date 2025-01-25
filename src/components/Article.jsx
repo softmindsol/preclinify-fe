@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 const Article = ({ article=[] }) => {
     if (!article || article.length === 0) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center ">
                 <p className="text-lg font-medium text-gray-500">No article data available.</p>
             </div>
         );
@@ -25,7 +25,7 @@ const Article = ({ article=[] }) => {
     const headings = extractHeadings(textbookContent);
 
     return (
-        <div className="flex flex-col md:flex-row w-[900px] mx-auto">
+        <div className="flex flex-col md:flex-row w-[900px] mx-auto ">
             {/* Main Content */}
             <div className="mx-7 bg-white p-5 rounded-[8px] flex-1">
                 <h1 className="text-3xl text-[30px] text-[#3F3F46]  font-bold mb-4">{conditionName}</h1>

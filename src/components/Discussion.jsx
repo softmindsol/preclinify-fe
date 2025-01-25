@@ -31,7 +31,7 @@ const DiscussionBoard = () => {
 
     return (
         <div className="p-6   ">
-            <div className=" mx-auto bg-white  shadow rounded-lg pt-3 pb-2 dark:bg-black text-black  dark:border">
+            <div className=" mx-auto bg-white  shadow rounded-lg pt-3 pb-2 dark:bg-[#1E1E2A] text-black  dark:border-[1px] dark:border-[#3A3A48]">
                 <div
                     className="flex justify-between items-center gap-x-5 mb-2 p-4 cursor-pointer"
                     onClick={() => setShowComments(!showComments)}
@@ -64,7 +64,7 @@ const DiscussionBoard = () => {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`lucide lucide-chevron-${showComments ? "up" : "down"} `}
+                        className={`lucide lucide-chevron-${showComments ? "up" : "down"} dark:text-white `}
                     >
                         <path d="m18 15-6-6-6 6" />
                     </svg>
@@ -100,7 +100,7 @@ const DiscussionBoard = () => {
                     <div className="flex items-center justify-center my-5 ">
                         <input
                             type="text"
-                            className="w-[90%] bg-[#F4F4F5] rounded-[4px] p-3 placeholder:text-[12px] dark:bg-black dark:text-white dark:border"
+                            className="w-[90%] bg-[#F4F4F5] rounded-[4px] p-3 placeholder:text-[12px] dark:bg-[#1E1E2A] dark:text-white dark:border"
                             placeholder="Write your comment here..."
                         />
                     </div>
