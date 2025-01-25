@@ -13,6 +13,7 @@ import { setResult } from "../redux/features/result/result.slice";
 import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 import DashboardModal from "./common/DashboardModal";
+import ChemistryBeaker from "./chemistry-beaker";
 
 
 
@@ -32,7 +33,7 @@ const calculateTimeForQuestions = (numQuestions) => {
 const ShortQuestion = () => {
     const sqa = useSelector(state => state?.sqa || [])
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
-    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
 
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
@@ -66,13 +67,26 @@ const ShortQuestion = () => {
     const [partialCount, setPartialCount] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
     const [toggleSidebar, setToggleSidebar] = useState(false);
-
+    const [beakerToggle, setBeakerToggle] = useState(false);
+    const [error, setError] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
 
 
-    function handleCheckAnswer() {
-        setTestCheckAnswer(true)
+    const beakerToggledHandler = () => {
+        setBeakerToggle(!beakerToggle)
     }
+    function handleCheckAnswer() {
+        if (!userAnswer.trim()) { // Check if userAnswer is empty or only spaces
+            setError(true); // Set an error if empty
+        } else {
+            setError(false); // Clear the error
+            setTestCheckAnswer(true); // Perform the action when input is valid
+        }
+    }
+
+
+
+    console.log("Error", error);
 
     function handleShowPopup() {
         setShowPopup(true); // Close the popup
@@ -295,7 +309,7 @@ const ShortQuestion = () => {
                 <div className="w-[100%] h-screen max-w-full  md:w-[80%] lg:w-[70%] xl:w-[55%]  ">
 
                     {/* Header Section */}
-                    <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
+                    {/* <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
                         <div className="absolute left-4">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -360,6 +374,118 @@ const ShortQuestion = () => {
                                 <line x1="4" x2="4" y1="22" y2="15" />
                             </svg>
                         </div>
+                    </div> */}
+
+                    <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
+                        {/* Progress Bar */}
+                        <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
+                            <div
+                                className="bg-[#60B0FA] h-full transition-all duration-300 ease-in-out"
+                                style={{ width: `${((currentIndex + 1) / sqa?.length) * 100}%` }}
+                            ></div>
+                        </div>
+
+                        {/* Left Icon */}
+                        <div className="absolute left-4">
+                            <div className="relative  ">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer "
+                                    onClick={(e) => toggleMenu(e)} // Toggle submenu on click
+                                >
+                                    <circle cx="12" cy="12" r="1" />
+                                    <circle cx="19" cy="12" r="1" />
+                                    <circle cx="5" cy="12" r="1" />
+                                </svg>
+
+                                {/* Submenu */}
+                                {isSubMenuOpen && (
+                                    <div
+                                        ref={menuRef} // Attach ref to the submenu container
+                                        className="absolute right-0 mt-2 w-[150px] bg-white shadow-lg rounded-md border border-gray-300"
+                                    >
+                                        <ul>
+                                            <li
+                                                className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2"
+                                                onClick={() => alert('Report clicked')}
+                                            >
+                                                Report
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+
+                        </div>
+
+                        {/* Question Navigation */}
+                        <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
+                            <button className={`text-white ${currentIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
+                                &larr;
+                            </button>
+                            <h2 className="font-semibold text-center">
+                                Question {currentIndex + 1} of {sqa.length}
+                            </h2>
+                            <button className={`text-white ${currentIndex + 1 === sqa?.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
+                                &rarr;
+                            </button>
+                        </div>
+
+                        {/* Right Icons */}
+                        <div className="absolute right-4 flex space-x-4">
+                            <div className="relative">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-flask-conical cursor-pointer hover:opacity-80"
+                                    onClick={beakerToggledHandler}
+                                >
+                                    <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
+                                    <path d="M6.453 15h11.094" />
+                                    <path d="M8.5 2h7" />
+
+                                </svg>
+                                {
+                                    beakerToggle && <div className="absolute top-3 left-24">
+                                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+                                    </div>
+                                }
+
+                            </div>
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
+                                onClick={() => {
+                                    handleFilterChange('Unseen');
+                                    setToggleSidebar(false)
+                                }}
+                            >
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                <line x1="4" x2="4" y1="22" y2="15" />
+                            </svg>
+                        </div>
                     </div>
 
                     {/* Question Section */}
@@ -378,15 +504,22 @@ const ShortQuestion = () => {
 
                         </div>
                         {
-                            !testCheckAnswer ? <textarea
-                                className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal "
-                                placeholder="Type here to answer the question..."
-                                onChange={(e) => {
-                                    setUserAnswer(e.target.value)
-                                }}
-                                value={userAnswer}
+                            !testCheckAnswer ? <div>
+                                <textarea
+                                    className={`rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal ${error ? 'border border-red-500' : "border"}`}
+                                    placeholder="Type here to answer the question..."
+                                    onChange={(e) => {
+                                        setError(false); // Set an error if empty
+                                        setUserAnswer(e.target.value)
+                                    }}
+                                    value={userAnswer}
 
-                            /> :
+                                />
+                                {error ?
+
+                                    <p className="text-red-500 text-[12px]">Please enter your answer</p> : <p></p>}
+                            </div>
+                                :
                                 <div>
                                     <textarea
                                         className="rounded-[6px] bg-[#E4E4E7] w-[100%] lg:w-[720px] h-[120px] mt-2  p-5 text-wrap"
@@ -394,6 +527,7 @@ const ShortQuestion = () => {
                                         value={userAnswer}
                                         readOnly
                                     />
+
                                     <textarea
                                         className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                         placeholder="This is the user’s answer"
@@ -736,7 +870,7 @@ const ShortQuestion = () => {
                             <Logo />
                         </div>
 
-                       
+
                     </div>
 
                     <div className="flex flex-col  items-center justify-center mt-10">
