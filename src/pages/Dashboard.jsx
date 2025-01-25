@@ -41,9 +41,9 @@ const Dashboard = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const { limit } = useSelector((state) => state.limit);
     const [isLoading, setIsLoading] = useState(false);
-    const [isSession,setIsSession]=useState(false);
-const [sessionId,setSessionId] =useState([]);
-    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode);
+    const [isSession, setIsSession] = useState(false);
+    const [sessionId, setSessionId] = useState([]);
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
 
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -140,43 +140,43 @@ const [sessionId,setSessionId] =useState([]);
     }
 
 
-useEffect(()=>{
-    const handleSessionContinue = async (sessionId)=> {
-        // Open the setup session modal
-        setIsOpenSetUpSessionModal(true); // Set to true to open the modal
-        // Find the selected modules based on the sessionId
+    useEffect(() => {
+        const handleSessionContinue = async (sessionId) => {
+            // Open the setup session modal
+            setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+            // Find the selected modules based on the sessionId
 
-        // No need to split, just trim the sessionId if necessary
-        const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
+            // No need to split, just trim the sessionId if necessary
+            const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
 
-        // Make an API call based on the selected module IDs
+            // Make an API call based on the selected module IDs
 
-        dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
-            .unwrap()
-            .then((res) => {
-              
-            })
-            .catch((err) => {
-                console.error("Error fetching questions:", err);
-            })
-            .finally(() => {
-                setIsLoading(false); // Reset loading state after API call
-            });
+            dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
+                .unwrap()
+                .then((res) => {
 
-    }
-    if (isSession === true){
-        handleSessionContinue(sessionId)
-    }
+                })
+                .catch((err) => {
+                    console.error("Error fetching questions:", err);
+                })
+                .finally(() => {
+                    setIsLoading(false); // Reset loading state after API call
+                });
 
-}, [limit, isSession])
+        }
+        if (isSession === true) {
+            handleSessionContinue(sessionId)
+        }
+
+    }, [limit, isSession])
     useEffect(() => {
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }
-                dispatch(setResetLimit())
-        
+        dispatch(setResetLimit())
+
         dispatch(clearRecentSessions())
     }, []);
     useEffect(() => {
@@ -346,15 +346,27 @@ useEffect(()=>{
                                                 </div>
                                                 <div>
                                                     <button
-                                                        onClick={() =>{ 
+                                                        onClick={() => {
                                                             setSessionId(sessionId);
-                                                        setIsSession(true);
-                                                            handleContinue()
-                                                        }
-                                                        }
-                                                        className=" border-[1px] border-[#FF9741] hover:bg-[#FF9741] transition-all duration-150 hover:text-white text-[12px] md:text-[16px] p-2 text-[#FF9741] font-semibold rounded-[4px]">
+                                                            setIsSession(true);
+                                                            handleContinue();
+                                                        }}
+                                                        className="border-[1px] border-[#FF9741] 
+             text-[12px] md:text-[16px] 
+             p-2 font-semibold rounded-[4px] 
+             text-[#FF9741] 
+             hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white 
+             transition-all duration-200 ease-in-out 
+             dark:text-white 
+             dark:border-white 
+             dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] 
+             dark:hover:text-[#FF9741] 
+             dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60"
+                                                    >
                                                         Continue &gt;
                                                     </button>
+
+
                                                 </div>
                                             </div>
                                         );
@@ -365,8 +377,8 @@ useEffect(()=>{
                                     </div>
                                 )}
                             </div>
-                          
-                          
+
+
                         </div>
 
 
@@ -394,7 +406,7 @@ useEffect(()=>{
                         <div className=' w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md dark:bg-[#1E1E2A] text-black dark:border-[1px] dark:border-[#3A3A48]'>
                             <div className='text-[18px] text-center text-[#52525B] p-5 font-semibold'>
                                 <p className=' text-[#3F3F46] dark:text-white'>Questions</p>
-                                <p className='text-[16px] flex items-center  justify-center dark:text-white' >Preclinify <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-[#FF9741]"><path d="m6 9 6 6 6-6" /></svg> </p>
+                                <p className='text-[16px] flex items-center  justify-center dark:text-white' >Preclinify <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-[#FF9741] dark:text-white"><path d="m6 9 6 6 6-6" /></svg> </p>
                             </div>
                             <hr />
                             <div className='flex items-center flex-col justify-center'>
@@ -550,7 +562,7 @@ useEffect(()=>{
                         ))}
                     </nav>
 
-                   
+
                     {/* Bottom Settings */}
                     <div className="mt-auto w-full mb-40 px-6">
                         <NavLink to={'/setting'}>
