@@ -51,7 +51,7 @@ const Scenarios = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-5">
+                <div className="bg-white p-5 rounded-[8px]">
 
 
                     {/* Categories */}
@@ -68,7 +68,7 @@ const Scenarios = () => {
                                     className="h-[45px] lg:h-[56px] w-[200px] lg:w-[242px]  text-white bg-[#3CC8A1] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center gap-x-5 hover:bg-transparent transition-all duration-200 hover:text-[#3CC8A1] border border-[#3CC8A1] text-[14px] lg:text-[18px]"
                                 >
                                     <span>{category.icon}</span>
-                                    <span>{category.cat}</span>
+                                    <span className="text-[20px]">{category.cat}</span>
                                 </button>
                             ))}
                         </div>
@@ -89,7 +89,7 @@ const Scenarios = () => {
                                     key={category}
                                     className=" h-[45px] lg:h-[56px] w-[200px] lg:w-[242px] text-[14px] lg:text-[18px] text-white bg-[#3CC8A1] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center gap-x-5 hover:bg-transparent transition-all duration-200 hover:text-[#3CC8A1] border border-[#3CC8A1]"               >
                                     <span>   {category.icon}</span>
-                                    <span>{category.cat}</span>
+                                    <span className="text-[20px]">{category.cat}</span>
 
 
                                 </button>
@@ -100,15 +100,15 @@ const Scenarios = () => {
 
                     <div className="flex flex-col xl:flex-row items-center gap-5 justify-around mt-10">
                         <div className="flex items-center space-x-2">
-                            <label htmlFor="sort" className="text-[#71717A] text-[14px] 2xl:text-[16px]">
+                            <label htmlFor="sort" className="text-[#71717A] text-[14px] 2xl:text-[16px] font-semibold">
                                 Sort By Presentation
                             </label>
                             <div
-                                className={`relative inline-flex items-center h-4 w-8  cursor-pointer sm:ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
+                                className={`relative inline-flex items-center h-5 w-10  cursor-pointer sm:ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
                                     }`}
                             >
                                 <span
-                                    className={`absolute left-0.5 top-0.5 h-3 w-3 transform rounded-full bg-white shadow-md transition-transform ${false ? "translate-x-5" : "translate-x-0"
+                                    className={`absolute left-0.5 top-0.5 h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${false ? "translate-x-5" : "translate-x-0"
                                         }`}
                                 ></span>
                             </div>
@@ -153,7 +153,7 @@ const Scenarios = () => {
                                     key={filter}
                                     className="group text-[#FF9741] border border-[#FF9741] hover:bg-[#FF9741] hover:text-white transition-all duration-200 py-1 px-3 rounded-full  text-[14px] 2xl:text-[16px] font-semibold flex items-center space-x-2"
                                 >
-                                    <span className="group-hover:text-white transition-colors duration-200">{filter}</span>
+                                    <span className="group-hover:text-white transition-colors duration-200 text-[16px] font-semibold">{filter}</span>
                                     <button className="text-[#FF9741] font-bold group-hover:text-white transition-colors duration-200">
                                         &times;
                                     </button>

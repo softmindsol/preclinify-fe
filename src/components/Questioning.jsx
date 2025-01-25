@@ -560,6 +560,8 @@ const Questioning = () => {
 
 
                     </div>
+{
+                        isLoading? <Loader/>:
 
                     <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] dark:bg-black text-black dark:text-white dark:border">
 
@@ -612,10 +614,8 @@ const Questioning = () => {
                         <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
                         <div>
-                            {isLoading ? (
-                                <Loader />
-                            ) : (
-                                sortedModules?.map((row) => {
+                        
+                               { sortedModules?.map((row) => {
                                     const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                     const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
@@ -660,11 +660,11 @@ const Questioning = () => {
                                             </div>
                                         </div>
                                     );
-                                })
-                            )}
+                                })}
                         </div>
 
                     </div>
+                    }
                 </div>
             </div>
             <Drawer
