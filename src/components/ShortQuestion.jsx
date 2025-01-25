@@ -289,10 +289,10 @@ const ShortQuestion = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
-            <div className="  h-screen flex items-center justify-center   dark:bg-black  ">
+            <div className="  h-screen  flex items-center justify-center   dark:bg-black  ">
 
 
-                <div className="w-[100%] h-screen lg:w-[92%] xl:w-[65%] 2xl:w-[41.5%]  ">
+                <div className="w-[100%] h-screen max-w-full  md:w-[80%] lg:w-[70%] xl:w-[55%]  ">
 
                     {/* Header Section */}
                     <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
@@ -368,7 +368,7 @@ const ShortQuestion = () => {
                             {sqa?.shortQuestions[0].parentQuestion}
                         </p>
 
-                        <h3 className="mt-4 text-[14px] text-[#27272A] font-bold text-wrap dark:text-white">
+                        <h3 className="mt-4 text-[14px] text-[#27272A]  w-[100%] lg:w-[720px] font-bold text-wrap dark:text-white">
                             {sqa?.sqaChildData[currentIndex]?.questionLead}
                         </h3>
 
@@ -421,9 +421,9 @@ const ShortQuestion = () => {
                                     </div>
 
                                 </div> :
-                                <div className="group">
+                                <div className="group ">
                                     <button
-                                        className="mt-2 text-[14px] w-[100%] flex items-center justify-center gap-x-3 lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                        className="mt-2 text-[14px]  w-[100%] lg:w-[720px] flex items-center justify-center gap-x-3 lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
                                         onClick={handleCheckAnswer}
                                     >
                                         Check Answer
@@ -459,7 +459,7 @@ const ShortQuestion = () => {
                             >
 
                                 <button
-                                    className="mt-6 text-[14px] lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                    className="mt-6 text-[14px]  w-[100%] lg:w-[720px] lg:text-[16px]  bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
 
                                 >
                                     Finish and Review &darr;
@@ -468,7 +468,7 @@ const ShortQuestion = () => {
                         )}
 
 
-                        <div className="flex items-center gap-x-10 justify-center mt-5">
+                        <div className="flex items-center  w-[100%] lg:w-[720px] gap-x-10 justify-between mt-5">
                             <div >
                                 <p className="text-[16px] text-[#000000] font-medium  dark:text-white">How did you find this question?</p>
                             </div>

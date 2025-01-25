@@ -363,7 +363,7 @@ const Questioning = () => {
                 <Sidebar />
             </div>
 
-            <div className="flex-grow ml-[180px] 3xl:ml-[250px] py-10 overflow-y-auto overflow-x-hidden dark:bg-black">
+            <div className="flex-grow lg:ml-[260px] xl:ml-[250px] mb-10 overflow-y-auto overflow-x-hidden dark:bg-black">
 
 
                 <div className='flex items-center justify-between p-5 bg-white lg:hidden '>
@@ -563,7 +563,7 @@ const Questioning = () => {
 
                     <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] dark:bg-black text-black dark:text-white dark:border">
 
-                        <div className="flex flex-col md:flex-row justify-between md:items-center font-medium text-[#3F3F46]  pb-2 w-full">
+                        <div className="flex flex-col lg:flex-row justify-between lg:items-center font-medium text-[#3F3F46]  pb-2 w-full">
                             <div className="flex items-center gap-x-10 dark:text-white">
                                 <div className="text-left flex items-center text-[14px] 3xl:text-[16px]">
                                     <input

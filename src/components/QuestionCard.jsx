@@ -409,7 +409,7 @@ const [article,setArticle]=useState({})
             <div className=" mx-auto  flex items-center justify-center p-6 dark:bg-black text-black   ">
 
 
-                <div className={`max-w-full min-h-screen  w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
+                <div className={`max-w-full    w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
 
                     {/* Header Section */}
                     <div className="bg-[#3CC8A1]   text-white p-6 rounded-md flex items-center justify-between relative">
@@ -837,7 +837,7 @@ const [article,setArticle]=useState({})
 
                 {/* Sidebar Section */}
 
-                <div className={`hidden lg:block fixed right-0 top-0 dark:border  `}>
+                <div className={`hidden  lg:block fixed right-0 top-0 dark:border  `}>
 
 
                     <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-black text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
