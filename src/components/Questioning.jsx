@@ -640,10 +640,10 @@ const Questioning = () => {
                                             <div
                                                 className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
                                             >
-                                                <label className="flex items-center cursor-pointer">
+                                                <label className="flex items-center cursor-pointer hover:opacity-85">
                                                     <input
                                                         type="checkbox"
-                                                        className="mr-2 custom-checkbox"
+                                                        className="mr-2 custom-checkbox hover:opacity-70"
                                                         checked={selectedModules.includes(row.categoryId)}
                                                         onChange={() => handleCheckboxChange(row.categoryId)}
                                                     />
