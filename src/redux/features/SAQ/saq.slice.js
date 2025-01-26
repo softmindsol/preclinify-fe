@@ -9,7 +9,7 @@ const initialState = {
 };
 
 const modulesSlice = createSlice({
-    name: 'shortQuestion',
+    name: 'sqa',
     initialState,
     reducers: {
         // You can add additional reducers here if necessary

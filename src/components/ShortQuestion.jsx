@@ -86,7 +86,6 @@ const ShortQuestion = () => {
 
 
 
-    console.log("Error", error);
 
     function handleShowPopup() {
         setShowPopup(true); // Close the popup
@@ -289,6 +288,7 @@ const ShortQuestion = () => {
         }
     }, [currentIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
 
+    console.log("sqa:", sqa);
 
 
     return (
@@ -381,7 +381,7 @@ const ShortQuestion = () => {
                         <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
                             <div
                                 className="bg-[#60B0FA] h-full transition-all duration-300 ease-in-out"
-                                style={{ width: `${((currentIndex + 1) / sqa?.length) * 100}%` }}
+                                style={{ width: `${((currentIndex + 1) / sqa?.sqaChildData.length) * 100}%` }}
                             ></div>
                         </div>
 
@@ -430,7 +430,7 @@ const ShortQuestion = () => {
                                 &larr;
                             </button>
                             <h2 className="font-semibold text-center">
-                                Question {currentIndex + 1} of {sqa.length}
+                                Question {currentIndex + 1} of {sqa?.sqaChildData.length}
                             </h2>
                             <button className={`text-white ${currentIndex + 1 === sqa?.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
                                 &rarr;

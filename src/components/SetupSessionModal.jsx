@@ -91,6 +91,8 @@ const navigation=useNavigate()
         dispatch(changeMode({ mode: modeType, timer }));
     }, [modeType, timer, dispatch]);
 
+    console.log("type:",type);
+    
     return (
         <div className={`flex items-center justify-center bg-white rounded-[4px]  ${darkModeRedux ? 'dark' : ''} `}>
             {/* Modal */}

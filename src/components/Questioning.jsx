@@ -270,7 +270,7 @@ const Questioning = () => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
                         console.log("SQA Parent Response:", res);
                         // if (res.id !== null && res.id !== undefined){
-                        dispatch(fetchSqaChild({ parentIds: res[0].id, limit: 10 }))
+                        dispatch(fetchSqaChild({ parentIds: res[0].id, limit: limit }))
                             .unwrap()
                             .then(res => {
                                 console.log("SQA Child Response", res);
@@ -287,7 +287,7 @@ const Questioning = () => {
             }
 
         }
-    }, [selectedModules, limit]);
+    }, [selectedModules, limit, selectedOption]);
 
     // console.log("selectedModules:", selectedModules);
 
@@ -356,6 +356,10 @@ const Questioning = () => {
         localStorage.setItem('module', JSON.stringify(module))
         fetchDailyWork();
     }, [selectedModules]);
+
+    console.log("selectedOption:", selectedOption);
+
+    
 
     return (
         <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
