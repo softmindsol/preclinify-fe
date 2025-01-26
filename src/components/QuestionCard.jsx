@@ -372,7 +372,6 @@ const [article,setArticle]=useState({})
         setIsReviewEnabled(false);
         if (data.data.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
-            console.log("isReviewEnabled:", isReviewEnabled);
 
         }
         // dispatch(sessionCompleted(true))

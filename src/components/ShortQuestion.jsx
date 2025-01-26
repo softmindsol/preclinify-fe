@@ -34,7 +34,7 @@ const ShortQuestion = () => {
     const sqa = useSelector(state => state?.sqa || [])
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
-
+    const [childIndex, setChildIndex] = useState(0)
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
@@ -78,12 +78,14 @@ const ShortQuestion = () => {
     function handleCheckAnswer() {
         if (!userAnswer.trim()) { // Check if userAnswer is empty or only spaces
             setError(true); // Set an error if empty
+
         } else {
             setError(false); // Clear the error
             setTestCheckAnswer(true); // Perform the action when input is valid
         }
     }
 
+    console.log("accuracy:", accuracy);
 
 
 
@@ -97,22 +99,35 @@ const ShortQuestion = () => {
     };
 
     const handleIncorrectClick = () => {
-        markQuestion(currentIndex, false); // Mark as incorrect
-        setCurrentIndex((prev) => prev + 1); // Move to the next question
+        markQuestion(childIndex, false); // Mark as incorrect
         setTestCheckAnswer(false); // Reset testCheckAnswer
+        setChildIndex((prev) => prev + 1);
+        setUserAnswer('')
+        dispatch(setMcqsAccuracy({ accuracy }))
+
     };
 
     const handlePartialClick = () => {
-        markQuestion(currentIndex, 'partial'); // Mark as partial
+        markQuestion(childIndex, 'partial'); // Mark as partial
         setCurrentIndex((prev) => prev + 1); // Move to the next question
         setTestCheckAnswer(false); // Reset testCheckAnswer
+        setChildIndex((prev) => prev + 1)
+        setUserAnswer('')
+        dispatch(setMcqsAccuracy({ accuracy }))
+
+
+
     };
 
     const handleCorrectClick = () => {
-        markQuestion(currentIndex, true); // Mark as correct
+        markQuestion(childIndex, true); // Mark as correct
         setCurrentIndex((prev) => prev + 1); // Move to the next question
         setTestCheckAnswer(false);
         setUserAnswer('')
+        setChildIndex((prev) => prev + 1)
+        dispatch(setMcqsAccuracy({ accuracy }))
+
+
     };
 
     const handleFilterChange = (filter) => {
@@ -163,9 +178,8 @@ const ShortQuestion = () => {
 
     // Function to navigate to the next question
     const nextQuestion = () => {
-        if (currentIndex < sqa?.sqaChildData.length - 1) {
-            setCurrentIndex((prev) => prev + 1);
-
+        if (childIndex < sqa?.sqaChildData.length - 1) {
+            setChildIndex((prev) => prev + 1);
         }
 
     };
@@ -173,8 +187,8 @@ const ShortQuestion = () => {
 
     // Function to navigate to the previous question
     const prevQuestion = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex((prev) => prev - 1);
+        if (childIndex > 0) {
+            setChildIndex((prev) => prev - 1);
         }
 
     };
@@ -284,10 +298,11 @@ const ShortQuestion = () => {
 
     // Check if it's time to enable the Finish button
     useEffect(() => {
-        if (sqa?.sqaChildData.length === currentIndex + 1) {
+        setIsReviewEnabled(false);
+        if (sqa?.sqaChildData.length === childIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
         }
-    }, [currentIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
+    }, [childIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
 
     console.log("sqa:", sqa);
 
@@ -310,79 +325,14 @@ const ShortQuestion = () => {
                 <div className="w-[100%] h-screen max-w-full  md:w-[80%] lg:w-[70%] xl:w-[55%]  ">
 
                     {/* Header Section */}
-                    {/* <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
-                        <div className="absolute left-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-ellipsis"
-                            >
-                                <circle cx="12" cy="12" r="1" />
-                                <circle cx="19" cy="12" r="1" />
-                                <circle cx="5" cy="12" r="1" />
-                            </svg>
-                        </div>
 
-                        <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2">
-                            <button className="text-white" onClick={prevQuestion}>
-                                &larr;
-                            </button>
-                            <h2 className="font-semibold text-center">
-                                Question {currentIndex + 1} of {sqa?.sqaChildData.length}
-                            </h2>
-                            <button className="text-white" onClick={nextQuestion}>
-                                &rarr;
-                            </button>
-                        </div>
-
-                        <div className="absolute right-4 flex space-x-4">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-flask-conical"
-                            >
-                                <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
-                                <path d="M6.453 15h11.094" />
-                                <path d="M8.5 2h7" />
-                            </svg>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-flag"
-                            >
-                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                <line x1="4" x2="4" y1="22" y2="15" />
-                            </svg>
-                        </div>
-                    </div> */}
 
                     <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
                         {/* Progress Bar */}
                         <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
                             <div
                                 className="bg-[#60B0FA] h-full transition-all duration-300 ease-in-out"
-                                style={{ width: `${((currentIndex + 1) / sqa?.sqaChildData.length) * 100}%` }}
+                                style={{ width: `${((childIndex + 1) / sqa?.sqaChildData.length) * 100}%` }}
                             ></div>
                         </div>
 
@@ -427,13 +377,13 @@ const ShortQuestion = () => {
 
                         {/* Question Navigation */}
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button className={`text-white ${currentIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
+                            <button className={`text-white ${childIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
                                 &larr;
                             </button>
                             <h2 className="font-semibold text-center">
-                                Question {currentIndex + 1} of {sqa?.sqaChildData.length}
+                                Question {childIndex + 1} of {sqa?.sqaChildData.length}
                             </h2>
-                            <button className={`text-white ${currentIndex + 1 === sqa?.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
+                            <button className={`text-white ${childIndex + 1 === sqa?.sqaChildData?.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
                                 &rarr;
                             </button>
                         </div>
@@ -496,7 +446,7 @@ const ShortQuestion = () => {
                         </p>
 
                         <h3 className="mt-4 text-[14px] text-[#27272A]  w-[100%] lg:w-[720px] font-bold text-wrap dark:text-white">
-                            {sqa?.sqaChildData[currentIndex]?.questionLead}
+                            {sqa?.sqaChildData[childIndex]?.questionLead}
                         </h3>
 
                         {/* Options Section */}
@@ -532,7 +482,7 @@ const ShortQuestion = () => {
                                     <textarea
                                         className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                         placeholder="This is the user’s answer"
-                                        value={sqa.sqaChildData[1].idealAnswer}
+                                        value={sqa.sqaChildData[childIndex].idealAnswer}
                                     />
                                 </div>
                         }
@@ -587,14 +537,14 @@ const ShortQuestion = () => {
 
                         {isReviewEnabled && (
                             <div
-                                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                className={`flex items-center w-[100%] lg:w-[720px] font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
                                     } justify-center`}
                                 onClick={handleFinishAndReview}
 
                             >
 
                                 <button
-                                    className="mt-6 text-[14px]  w-[100%] lg:w-[720px] lg:text-[16px]  bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                    className="mt-6 text-[14px]  lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
 
                                 >
                                     Finish and Review &darr;
@@ -678,9 +628,9 @@ const ShortQuestion = () => {
                         <div className="flex flex-col items-center justify-center mt-10">
                             {
                                 isTimerMode["mode"] === "Endless" &&
-                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${accuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
                                     <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                        <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                        <p className="font-black text-[36px]">{accuracy}%</p>
                                     </div>
 
 
@@ -929,7 +879,7 @@ const ShortQuestion = () => {
                                         <div key={i}>
                                             <div
                                                 className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                            // onClick={() => markQuestion(num)} // Use `num` for marking
+                                                onClick={() => markQuestion(num)} // Use `num` for marking
                                             >
                                                 <p>{num + 1}</p>
                                             </div>
