@@ -112,6 +112,7 @@ const ShortQuestion = () => {
         markQuestion(currentIndex, true); // Mark as correct
         setCurrentIndex((prev) => prev + 1); // Move to the next question
         setTestCheckAnswer(false);
+        setUserAnswer('')
     };
 
     const handleFilterChange = (filter) => {
