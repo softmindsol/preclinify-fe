@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Sidebar from './Sidebar';
 
 const HistoryList = () => {
     const [openItemId, setOpenItemId] = useState(null);
@@ -24,7 +25,12 @@ const HistoryList = () => {
     };
 
     return (
-        <div className=" w-[1113px] mx-auto bg-white shadow-md rounded-lg ">
+
+        <div className='lg:flex w-full'>
+            <div className=" hidden lg:block fixed h-full">
+                <Sidebar />
+            </div>
+        <div className=" mt-24 w-[1113px] mx-auto bg-white shadow-md rounded-lg ">
             <h2 className="text-[18px] font-medium mb-2 flex gap-x-2 items-center p-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M12 7v5l4 2" /></svg> <span>History</span>
             </h2>
@@ -60,7 +66,7 @@ const HistoryList = () => {
                     </div>
                 ))}
             </div>
-        </div>
+            </div></div>
     );
 };
 

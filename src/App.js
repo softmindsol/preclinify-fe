@@ -43,7 +43,7 @@ function App() {
         <Route path="/performance" element={<><Performance /></>} />
 
         <Route path="/setting" element={<><Setting/></>} />
-        <Route path="/chat" element={<><ChatHistory /></>} />
+        <Route path="/chat-history" element={<><ChatHistory /></>} />
         <Route path="/dashboard" element={<><Dashboard /></>} />
         <Route path="/questioning" element={<><Questioning /></>} />
       

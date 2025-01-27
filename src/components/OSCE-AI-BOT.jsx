@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "./common/Logo";
+import { useNavigate } from "react-router-dom";
+import supabase from "../helper";
 
 const OSCEAIBOT = () => {
     const recognitionRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState([]);
     const timeoutRef = useRef(null); // To store the timeout reference
-
+    const navigate = useNavigate(); // Initialize navigate
     useEffect(() => {
         const SpeechRecognition =
             window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -111,6 +113,31 @@ const OSCEAIBOT = () => {
         }, 20000); // 20 seconds
     };
 
+    const insertTranscriptToSupabase = async (transcriptArray) => {
+        // Combine the transcript into one string
+        const formattedTranscript = transcriptArray
+            .map(entry => `${entry.fromAI ? 'AI' : 'You'}: ${entry.text}`)
+            .join(' '); // Join all messages together with space (you can adjust the separator as needed)
+
+        const { data, error } = await supabase
+            .from("AI_OSCE") // Table name
+            .insert([
+                {
+                    transcript: formattedTranscript, // Insert the entire transcript as a single string
+                    created_at: new Date(), // Add timestamp for the entry
+                  
+                }
+            ]);
+
+        if (error) {
+            console.error("Error inserting transcript:", error.message);
+        } else {
+            console.log("Transcript inserted successfully:", data);
+            // Redirect to chat-history table after successful insert
+            navigate("/chat-history");
+        }
+    };
+
     const resetToStartRecording = () => {
         setIsRecording(false);
         if (recognitionRef.current) recognitionRef.current.stop();
@@ -123,6 +150,9 @@ const OSCEAIBOT = () => {
             recognitionRef.current.start();
         } else if (isRecording && recognitionRef.current) {
             recognitionRef.current.stop();
+            insertTranscriptToSupabase(transcript); // Passing the entire transcript
+           
+
         }
 
         // Clear timeout if user interacts with the button

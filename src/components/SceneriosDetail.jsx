@@ -23,22 +23,74 @@ const SceneriosDetail = () => {
         setOpenPanel(openPanel === panel ? null : panel);
     };
     const markschemeContent = selectedData["markscheme"]; // Assuming selectedData is the data object
-
-    // Function to extract headings dynamically for the Table of Contents
-    // Function to extract headings dynamically for the Table of Contents
+   
     const extractHeadings = (markdown) => {
-        const headingRegex = /^#{1,8} (.+)$/gm;  // Match all headings (# to ######)
+        const headingRegex = /^(#{1,6})\s(.+)$/gm;  // Match all headings (# to ######)
+        const listItemRegex = /^\s*[-*+]\s(.+)$/gm;  // Match list items under headings (bullets: -, *, +)
 
-        
-        const matches = [...markdown.matchAll(headingRegex)];
-        console.log("matches", matches);
-        return matches.map((match) => ({
-            level: match[0].split(" ")[0].length, // Determines the heading level
-            text: match['input'], // Extracts the heading text
-        }));
+        const headings = [];
+        let matches;
+        let currentHeading = null;
+        let currentList = [];
+        let listMatches;
+
+        // Process each heading in the markdown
+        while ((matches = headingRegex.exec(markdown)) !== null) {
+            // If there was a previous heading, store it along with its list items if any
+            if (currentHeading) {
+                // Only add heading with list items if list has content
+                if (currentList.length > 0) {
+                    headings.push({ heading: currentHeading, listItems: currentList });
+                }
+                currentList = []; // Reset list items for the new heading
+            }
+            currentHeading = matches[2]; // Extract heading text
+
+            // Find list items under this heading
+            listMatches = [];
+            let listMatch;
+            while ((listMatch = listItemRegex.exec(markdown.slice(matches.index))) !== null) {
+                listMatches.push(listMatch[1]);
+            }
+
+            currentList = listMatches;
+        }
+
+        // Push the last heading and its list items (if any)
+        if (currentHeading && currentList.length > 0) {
+            headings.push({ heading: currentHeading, listItems: currentList });
+        }
+
+        return headings;
     };
+
+    // Example markdown content
+    const markschemeContents = `
+# Consultation Structure
+- Greets patient and introduces self
+- Confirms patient’s name and purpose of visit
+- Asks about medical history
+- Checks current medications
+- Advises on possible side effects
+- Schedules follow-up appointment
+
+## Explaining COCP Efficacy & Usage
+- Effectiveness >99% if used correctly
+- Timing and regimen for pill usage
+- How to deal with missed pills
+- Special considerations for starting the pill
+
+### Lifestyle & Medical History Considerations
+- Checks smoking habits
+- Advises on how social smoking might increase cardiovascular risk
+
+### Heading with no list item
+`;
+
     const headings = extractHeadings(markschemeContent);
-console.log(headings);
+    console.log(headings);
+
+
 
     function handleShowPopup() {
         setShowPopup(true); // Close the popup
@@ -208,7 +260,7 @@ console.log(headings);
                                     title: "Mark Scheme",
                                     content: (
                                         <div className="space-y-4">
-                                            {/* <ReactMarkdown
+                                            <ReactMarkdown
                                                 components={{
                                                     h1: ({ node, ...props }) => <h1 className="text-[24px] font-bold text-[#2F2F2F]" {...props} />,
                                                     h2: ({ node, ...props }) => <h2 className="text-[#3CC8A1] text-[20px] font-semibold" {...props} />,
@@ -219,7 +271,7 @@ console.log(headings);
                                                 }}
                                             >
                                                 {markschemeContent}
-                                            </ReactMarkdown> */}
+                                            </ReactMarkdown>
                                             <div className="border border-[#71717A] rounded-[1px]">
                                                
                                                 <table className="w-full text-left border-collapse">
