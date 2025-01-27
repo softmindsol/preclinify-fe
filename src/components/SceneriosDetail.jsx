@@ -27,11 +27,14 @@ const SceneriosDetail = () => {
     // Function to extract headings dynamically for the Table of Contents
     // Function to extract headings dynamically for the Table of Contents
     const extractHeadings = (markdown) => {
-        const headingRegex = /^#{1,6} (.+)$/gm;  // Match all headings (# to ######)
+        const headingRegex = /^#{1,8} (.+)$/gm;  // Match all headings (# to ######)
+
+        
         const matches = [...markdown.matchAll(headingRegex)];
+        console.log("matches", matches);
         return matches.map((match) => ({
             level: match[0].split(" ")[0].length, // Determines the heading level
-            text: match[1],
+            text: match['input'], // Extracts the heading text
         }));
     };
     const headings = extractHeadings(markschemeContent);
@@ -205,6 +208,18 @@ console.log(headings);
                                     title: "Mark Scheme",
                                     content: (
                                         <div className="space-y-4">
+                                            {/* <ReactMarkdown
+                                                components={{
+                                                    h1: ({ node, ...props }) => <h1 className="text-[24px] font-bold text-[#2F2F2F]" {...props} />,
+                                                    h2: ({ node, ...props }) => <h2 className="text-[#3CC8A1] text-[20px] font-semibold" {...props} />,
+                                                    h3: ({ node, ...props }) => <h3 className="text-[#52525B] text-[18px] font-medium" {...props} />,
+                                                    p: ({ node, ...props }) => <p className="text-[#52525B] text-[16px] mb-4" {...props} />,
+                                                    li: ({ node, ...props }) => <li className=" list-none pl-5 text-[#52525B] text-[16px]" {...props} />,
+                                                    hr: () => <hr className="border-[#E4E4E7] my-4" />
+                                                }}
+                                            >
+                                                {markschemeContent}
+                                            </ReactMarkdown> */}
                                             <div className="border border-[#71717A] rounded-[1px]">
                                                
                                                 <table className="w-full text-left border-collapse">
