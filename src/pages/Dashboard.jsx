@@ -175,6 +175,8 @@ const Dashboard = () => {
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }
+        localStorage.removeItem('minutes');
+        localStorage.removeItem('seconds');
         dispatch(setResetLimit())
 
         dispatch(clearRecentSessions())

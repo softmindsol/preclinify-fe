@@ -15,6 +15,8 @@ const Scenarios = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        localStorage.removeItem('minutes');
+        localStorage.removeItem('seconds');
         dispatch(fetchOSCEData());
     }, [dispatch]);
     const [isOpen, setIsOpen] = useState(false)
@@ -318,6 +320,9 @@ const Scenarios = () => {
                 </div>
 
             </Drawer>
+
+
+         
         </div>
     );
 };
