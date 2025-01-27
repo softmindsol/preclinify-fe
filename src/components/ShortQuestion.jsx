@@ -85,7 +85,6 @@ const ShortQuestion = () => {
         }
     }
 
-    console.log("accuracy:", accuracy);
 
 
 
@@ -99,33 +98,34 @@ const ShortQuestion = () => {
     };
 
     const handleIncorrectClick = () => {
+        dispatch(setMcqsAccuracy({ accuracy }))
         markQuestion(childIndex, false); // Mark as incorrect
         setTestCheckAnswer(false); // Reset testCheckAnswer
         setChildIndex((prev) => prev + 1);
         setUserAnswer('')
-        dispatch(setMcqsAccuracy({ accuracy }))
 
     };
 
     const handlePartialClick = () => {
+        dispatch(setMcqsAccuracy({ accuracy }))
         markQuestion(childIndex, 'partial'); // Mark as partial
-        setCurrentIndex((prev) => prev + 1); // Move to the next question
         setTestCheckAnswer(false); // Reset testCheckAnswer
         setChildIndex((prev) => prev + 1)
         setUserAnswer('')
-        dispatch(setMcqsAccuracy({ accuracy }))
 
 
 
     };
 
+    console.log("mcqsAccuracy:", mcqsAccuracy);
+    
+
     const handleCorrectClick = () => {
+        dispatch(setMcqsAccuracy({ accuracy }))
         markQuestion(childIndex, true); // Mark as correct
-        setCurrentIndex((prev) => prev + 1); // Move to the next question
         setTestCheckAnswer(false);
         setUserAnswer('')
         setChildIndex((prev) => prev + 1)
-        dispatch(setMcqsAccuracy({ accuracy }))
 
 
     };
@@ -290,7 +290,7 @@ const ShortQuestion = () => {
     useEffect(() => {
         const maxScore = totalAttempts * 2; // Maximum score if all answers are correct
         if (maxScore === 0) {
-            setAccuracy(0); // Avoid division by zero
+            // setAccuracy(0); // Avoid division by zero
         } else {
             setAccuracy(((totalScore / maxScore) * 100).toFixed(2)); // Calculate accuracy
         }
@@ -304,7 +304,6 @@ const ShortQuestion = () => {
         }
     }, [childIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
 
-    console.log("sqa:", sqa);
 
 
     return (
@@ -628,9 +627,9 @@ const ShortQuestion = () => {
                         <div className="flex flex-col items-center justify-center mt-10">
                             {
                                 isTimerMode["mode"] === "Endless" &&
-                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${accuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
                                     <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                        <p className="font-black text-[36px]">{accuracy}%</p>
+                                            <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
                                     </div>
 
 

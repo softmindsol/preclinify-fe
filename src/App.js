@@ -52,7 +52,7 @@ function App() {
         <Route path="/score" element={<><Score /></>} />
         <Route path="/short-question" element={<><ShortQuestion /></>} />
         <Route path="/osce" element={<><Scenarios /></>} />
-        <Route path="/scenerios-detail" element={<><SceneriosDetail /></>} />
+        <Route path="/static-scenerios-detail/:id" element={<><SceneriosDetail /></>} />
         <Route path='/contact-us' element={<ContactPage/>}/>
         <Route path='/osce-ai-bot' element={<OSCEAIBOT />} />
       </Routes>

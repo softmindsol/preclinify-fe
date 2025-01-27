@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./common/Sidebar";
 import { Link, NavLink } from "react-router-dom";
 import Logo from "./common/Logo";
@@ -7,8 +7,16 @@ import Drawer from 'react-modern-drawer'
 //import styles 👇
 import 'react-modern-drawer/dist/index.css'
 import { TbBaselineDensityMedium } from "react-icons/tb";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOSCEData } from "../redux/features/osce-static/osce-static.service";
 
 const Scenarios = () => {
+    const { data, loading, error } = useSelector((state) => state.osce);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchOSCEData());
+    }, [dispatch]);
     const [isOpen, setIsOpen] = useState(false)
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -43,10 +51,13 @@ const Scenarios = () => {
                         </button>
 
                     </div>
-                    <div className="flex justify-center w-full items-center space-x-4 bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px]">
+                    <div className="flex justify-center w-full items-center  bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px]">
                         <button className=" flex items-center space-x-4  text-[#3F3F46] px-4 py-2 font-medium">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" /></svg>
-                            <span>AI Patient Scenarios</span>
+                            <NavLink to={'/osce-ai-bot'} className={'flex items-center space-x-4'}>
+
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" /></svg>
+                                <span>AI Patient Scenarios</span>
+                            </NavLink>
                         </button>
                     </div>
                 </div>
@@ -168,31 +179,29 @@ const Scenarios = () => {
                     <div className="flex items-center justify-center mt-10 pb-">
 
 
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10">
-                            {[
-                                { specialty: "Cardiology", title: "Chest Pain", id: 1 },
-                                { specialty: "Respiratory", title: "Cough", id: 2 },
-                                { specialty: "Nephrology", title: "Loin Pain", id: 3 },
-                                { specialty: "Oncology", title: "Weight Loss", id: 4 },
-                                { specialty: "Psychiatry", title: "Hallucinations", id: 5 },
-                                { specialty: "Cardiology", title: "Chest Pain", id: 1 },
-                                { specialty: "Respiratory", title: "Cough", id: 2 },
-                                { specialty: "Nephrology", title: "Loin Pain", id: 3 },
-                                { specialty: "Oncology", title: "Weight Loss", id: 4 },
-                                { specialty: "Psychiatry", title: "Hallucinations", id: 5 },
-                            ].map((scenario) => (
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10 ">
+                            {data.map((osce) => (
                                 <div
-                                    key={scenario.id}
-                                    className="p-4 bg-[#F4F4F5] relative rounded-[8px] w-[172px] shadow-md text-center"
+                                    key={osce.id}
+                                    className="p-4 bg-[#F4F4F5]  hover:opacity-75 cursor-pointer relative rounded-[8px] w-[172px] shadow-md text-center"
                                 >
-                                    <p className="absolute top-1 right-2      text-[12px] font-semibold text-[#A1A1AA]  lg:text-[14px]">History</p>
-                                    <div className="text-[20px] text-[#3F3F46] mt-3 font-bold">
-                                        {scenario.specialty}
-                                    </div>
-                                    <div className="text-[16px] text-[#A1A1AA] font-semibold ">
-                                        {scenario.title}
-                                    </div>
-                                    <div className="text-[48px] text-[#52525B] font-bold">#{scenario.id}</div>
+                                    <Link to={`/static-scenerios-detail/${osce.id}`} >
+                                        <div className="flex flex-col h-full justify-between" >
+
+
+
+                                            <div>
+                                                <p className="absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA]  lg:text-[14px]">History</p>
+                                                <div className="text-[20px] text-[#3F3F46] mt-3  font-bold">
+                                                    {osce.category}
+                                                </div>
+                                                <div className="text-[16px] text-[#A1A1AA] font-semibold ">
+                                                    {osce.stationName}
+                                                </div>
+                                            </div>
+                                            <div className="text-[48px] text-[#52525B] font-bold">#{osce.id}</div>
+                                        </div>
+                                    </Link>
                                 </div>
                             ))}
                         </div>
