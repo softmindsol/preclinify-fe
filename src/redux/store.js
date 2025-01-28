@@ -14,11 +14,12 @@ import recentSessionsReducer from './features/recent-session/recent-session.slic
 import modulesReducer from './features/categoryModules/module.slice';
 import darkModeReducer from './features/dark-mode/dark-mode.slice';
 import { osceReducer } from './features/osce-static/osce-static.slice';
+import  osceBotReducer  from './features/osce-bot/osce-bot.slice';
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['darkMode', 'module', 'mcqsQuestion', 'osce','accuracy', 'questionReview', "sqa","sessions","mode","limit"], // Persist these in localStorage
+    whitelist: ['darkMode', 'module','osceBot', 'mcqsQuestion', 'osce','accuracy', 'questionReview', "sqa","sessions","mode","limit"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
     questionReview: questionReviewReducer,
     recentSession: recentSessionsReducer,
     osce: osceReducer,
+    osceBot: osceBotReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 
