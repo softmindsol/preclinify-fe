@@ -7,28 +7,22 @@ const HistoryList = () => {
     const [openItemId, setOpenItemId] = useState(null);
     const oscebot=useSelector(state=>state.osceBot.data)
     const dispatch = useDispatch();
-    const historyItems = [
-        { id: 1, title: 'Headache 2', time: '15:35', percentage: 80, details: 'Details about Headache 2' },
-        { id: 2, title: 'Abdominal Pain', time: '09:12', percentage: 60, details: 'Details about Abdominal Pain' },
-        { id: 3, title: 'Headache', time: '20/01', percentage: 70, details: 'Details about Headache' },
-        { id: 4, title: 'Chest Pain', time: '19/01', percentage: 50, details: 'Details about Chest Pain' },
-        { id: 5, title: 'Cough 2', time: '04/01', percentage: 75, details: 'Details about Cough 2' },
-        { id: 6, title: 'Tiredness', time: '03/01', percentage: 40, details: 'Details about Tiredness' },
-        { id: 7, title: 'Fever', time: '31/12/24', percentage: 90, details: 'Details about Fever' },
-        { id: 8, title: 'Diarrhoea', time: '24/12/24', percentage: 65, details: 'Details about Diarrhoea' },
-        { id: 9, title: 'Cough', time: '24/12/24', percentage: 60, details: 'Details about Cough' },
-        { id: 10, title: 'Shoulder stiffness', time: '21/12/24', percentage: 55, details: 'Details about Shoulder stiffness' },
-        { id: 11, title: 'Haemoptysis', time: '20/12/24', percentage: 80, details: 'Details about Haemoptysis' },
-        { id: 12, title: 'Haematuria', time: '20/12/24', percentage: 45, details: 'Details about Haematuria' },
-        { id: 13, title: 'Confusion', time: '16/12/24', percentage: 30, details: 'Details about Confusion' },
-    ];
 
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp);
+        const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if needed
+        const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+        return `${year}/${month}/${day}`;
+    };
     const toggleItem = (id) => {
         setOpenItemId(openItemId === id ? null : id);
     };
 
     useEffect(() => {
-        dispatch(fetchOSCEBotData())
+        dispatch(fetchOSCEBotData()).unwrap() .then((res) => {
+
+        }) .catch((err) => {});
     }, [])
     console.log("oscebot:", oscebot);
 
@@ -49,13 +43,13 @@ const HistoryList = () => {
                             <div className="flex items-center justify-between py-2 px-5">
                                 <div className='flex items-center justify-between w-[30%]'>
                                     <h3 className="text-[16px] text-[#3F3F46] font-medium">{item.category}</h3>
-                                    <p className="text-[16px] text-[#A1A1AA] font-bold">{item.created_at}</p>
+                                    <p className="text-[16px] text-[#A1A1AA] font-bold">{formatDate(item.created_at) }</p>
                                 </div>
                                 <div className="flex items-center justify-between w-[30%] gap-x-2 space-x-2">
                                     <div className="relative w-40 h-[27px]  bg-[#E4E4E7] rounded-[3px]">
                                         <div
                                             className="absolute top-0 left-0 bg-[#3CC8A1] h-[27px] rounded-[3px]"
-                                            style={{ width: `${item.percentage}%` }}
+                                            style={{ width: `${item.score*10}% ` }}
                                         ></div>
                                     </div>
                                     <button
@@ -68,7 +62,8 @@ const HistoryList = () => {
                             </div>
                             {openItemId === item.id && (
                                 <div className="bg-gray-50 p-4 rounded">
-                                    <p className="text-sm text-gray-700">{item.transcript   }</p>
+                                    <p className="text-sm text-gray-700">{item.transcript}</p>
+                                    <p className='text-black text-[18px] font-semibold mt-10'>Feedback: <br /> <span className='font-normal text-[14px]'>{item.summary}</span></p>
                                 </div>
                             )}
                         </div>

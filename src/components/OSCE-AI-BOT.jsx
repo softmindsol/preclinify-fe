@@ -13,6 +13,7 @@ const OSCEAIBOT = () => {
     const [selectedVoice, setSelectedVoice] = useState(null);
     const [voices, setVoices] = useState([]);
     const [summary, setSummary] = useState(""); // State for summary
+    const [score, setScore] = useState(0); // State for score
 
     // Define categories and their associated keywords
     const categories = {
@@ -169,16 +170,23 @@ const OSCEAIBOT = () => {
         return "General"; // Default category if none matched
     };
 
-    const generateFeedback = (transcriptArray) => {
-        // Simple feedback generation based on the length of the transcript
+    const generateFeedbackAndScore = (transcriptArray) => {
         const totalEntries = transcriptArray.length;
+        let feedback = "";
+        let score = 0;
+
         if (totalEntries < 5) {
-            return "The conversation was quite brief. Consider asking more detailed questions.";
+            feedback = "The conversation was quite brief. Consider asking more detailed questions.";
+            score = 3; // Low score for brief conversation
         } else if (totalEntries < 10) {
-            return "Good job! You covered several important points.";
+            feedback = "Good job! You covered several important points.";
+            score = 7; // Moderate score for decent conversation
         } else {
-            return "Excellent! You had a comprehensive discussion.";
+            feedback = "Excellent! You had a comprehensive discussion.";
+            score = 10; // High score for comprehensive conversation
         }
+
+        return { feedback, score };
     };
 
     const insertTranscriptToSupabase = async (transcriptArray) => {
@@ -187,7 +195,7 @@ const OSCEAIBOT = () => {
             .join(' ');
 
         const inferredCategory = inferCategory(transcriptArray); // Infer category based on transcript
-        const feedback = generateFeedback(transcriptArray); // Generate feedback
+        const { feedback, score } = generateFeedbackAndScore(transcriptArray); // Generate feedback and score
 
         const { data, error } = await supabase
             .from("AI_OSCE")
@@ -196,6 +204,7 @@ const OSCEAIBOT = () => {
                     transcript: formattedTranscript,
                     category: inferredCategory, // Use inferred category
                     summary: feedback, // Set feedback as summary
+                    score: score, // Set score
                     created_at: new Date(),
                 }
             ]);
