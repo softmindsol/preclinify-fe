@@ -1,10 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import {  insertQuesGenData } from '../redux/features/question-gen/question-gen.service';
+import { useDispatch } from 'react-redux';
 
 const FileUpload = () => {
+    const [data,setData]=useState(null)
     const [loading, setLoading] = useState(false);
     const fileInputRef = useRef(null); // Reference for file input
+const dispatch=useDispatch();
 
     const handleFileChange = async (e) => {
         console.log('File input triggered'); // For debugging
@@ -12,8 +16,10 @@ const FileUpload = () => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
             await handleSubmit(selectedFile); // Automatically submit after file selection
+            e.target.value = null; // Clear the input value to allow re-uploading the same file
         }
     };
+
 
     const handleSubmit = async (fileToUpload) => {
         if (!fileToUpload) {
@@ -31,7 +37,8 @@ const FileUpload = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log("response:", response.data.generatedQuestions);
+            setData(response.data.generatedQuestions)
+            console.log("response:", response.data);
 
             toast.success("Question generated successfully!");
         } catch (error) {
@@ -47,6 +54,10 @@ const FileUpload = () => {
             fileInputRef.current.click(); // Trigger file input
         }
     };
+
+    useEffect(()=>{
+        dispatch(insertQuesGenData(data))
+    }, [data])
 
     return (
         <div>
@@ -67,31 +78,34 @@ const FileUpload = () => {
                         Upload anything from PDFs, to Powerpoints, to Word Docs!
                     </p>
                     <button
-                        className="font-bold mt-3 text-[#FF9741] bg-[#FFE9D6] hover:bg-[#FF9741] px-1.5 text-center w-[143px] h-[44px] rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200"
+                        className={`font-bold mt-3 text-[#FF9741]  hover:bg-[#FF9741] ${loading ? 'bg-[#FF9741]' :'bg-[#FFE9D6]'} px-1.5 text-center w-[143px] h-[44px] rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200`}
                         type="button"
                         onClick={triggerFileInput} // Trigger file input on button click
                     >
                         {loading ? (
-                            <svg
-                                className="animate-spin h-5 w-5 text-white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                ></circle>
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8v8z"
-                                ></path>
-                            </svg>
+                            <div className='flex items-center justify-center w-full'>
+                                <svg
+                                    className="animate-spin h-5 w-5 text-white "
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v8z"
+                                    ></path>
+                                </svg>
+                            </div>
+                            
                         ) : (
                             <>
                                 <svg

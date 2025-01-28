@@ -24,7 +24,7 @@ import { clearRecentSessions, updateRecentSessions } from "../redux/features/rec
 import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import supabase from "../helper";
 import FileUpload from "./Upload";
-import { setModeType } from "../redux/features/module-type/module-type.slice";
+import { setModeType } from "../redux/features/question-gen/question-gen.slice";
 
 
 const Questioning = () => {
