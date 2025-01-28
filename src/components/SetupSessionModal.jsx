@@ -10,8 +10,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption
 );
     const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
-
-    
+     
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
     const [numQuestions, setNumQuestions] = useState();
@@ -97,10 +96,10 @@ const navigation=useNavigate()
         <div className={`flex items-center justify-center bg-white rounded-[4px]  ${darkModeRedux ? 'dark' : ''} `}>
             {/* Modal */}
             {isOpenSetUpSessionModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto ">
                     <div
                         ref={modalRef} // Attach ref to modal container
-                        className="relative bg-white rounded-[4px] p-6 shadow-lg h-[646px] w-[451px] dark:bg-[#1E1E2A] text-black  dark:border-[1px] dark:border-[#3A3A48]"
+                        className="relative bg-white rounded-[4px] p-6 shadow-lg min-h-[670px] w-[451px] dark:bg-[#1E1E2A] text-black  dark:border-[1px] dark:border-[#3A3A48]"
                     >
                         <h2 className="text-[20px] text-[#3F3F46] font-bold mb-4 dark:text-white">
                             Set up session
@@ -125,6 +124,27 @@ const navigation=useNavigate()
                             </div>
                         </div>
 
+                        {/* Pick The Module To Save In */}
+                        {
+                            type ==='QuesGen' && <div className="mb-4 mt-8">
+                                <label className="block text-[20px] text-[#52525B] font-semibold mb-1 dark:text-white">
+                                    Pick The Module To Save In
+                                </label>
+                                <div className="relative w-full ">
+                                    <input
+                                        type="text"
+                                        value={numQuestions}
+                                        onChange={handleNumQuestionsChange}
+
+                                        className="w-full  py-[10px] border dark:border-[1px] dark:border-[#3A3A48] rounded placeholder-transparent text-end px-[20px] dark:bg-[#1E1E2A] dark:text-white"
+                                    />
+                                    <span className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#A1A1AA] text-[14px] font-medium pointer-events-none dark:text-white">
+                                        Start Typing
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                       
                         {/* Mode Type */}
                         <div className="flex items-center justify-between mt-8 mb-4">
                             <label className="block text-[#52525B] text-[20px] font-semibold mb-1 dark:text-white">
@@ -209,7 +229,7 @@ const navigation=useNavigate()
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="absolute left-5 right-5 bottom-5">
+                        <div className="absolute left-5 right-5 bottom-3 ">
                             <button
                             onClick={handleQuestion}
                                 className="py-2 bg-[#3CC8A1] w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white"

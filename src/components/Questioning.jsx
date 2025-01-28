@@ -23,6 +23,8 @@ import { setPreclinicalType } from "../redux/features/mode/mode.slice";
 import { clearRecentSessions, updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
 import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import supabase from "../helper";
+import FileUpload from "./Upload";
+import { setModeType } from "../redux/features/module-type/module-type.slice";
 
 
 const Questioning = () => {
@@ -357,6 +359,7 @@ const Questioning = () => {
         fetchDailyWork();
     }, [selectedModules]);
 
+
     console.log("selectedOption:", selectedOption);
 
     
@@ -476,37 +479,7 @@ const Questioning = () => {
                         </div>
                         {
                             selectedOption === 'QuesGen' ?
-                                <div>
-                                    <div className="bg-[#FFFFFF] m-4 rounded-[8px] ">
-                                        <p className="text-[#3F3F46] text-[20px] font-semibold px-[50px] py-8                                                                                        ">How this works</p>
-
-                                        <div className="flex items-center justify-center pb-10">
-                                            <img src="/assets/quesGen.png" alt="" />
-                                        </div>
-                                    </div>
-                                    <div className="bg-[#FFFFFF] m-4 rounded-[8px]  h-[210px] flex justify-center items-center flex-col">
-                                        <p className="text-[16px] text-[#3F3F46] font-medium">Drag and drop files here.</p>
-                                        <p className="text-[16px] text-[#71717A] font-medium">Upload anything from PDFs, to Powerpoints, to Word Docs!</p>
-                                        <button
-                                            className="font-bold mt-3 text-[#FF9741] bg-[#FFE9D6] hover:bg-[#FF9741] px-3 py-3 rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200"
-                                            onClick={() => document.getElementById('fileInput').click()} // Trigger file input click
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-upload">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                                <polyline points="17 8 12 3 7 8" />
-                                                <line x1="12" x2="12" y1="3" y2="15" />
-                                            </svg>
-                                            File Upload
-                                        </button>
-                                        <input
-                                            type="file"
-                                            id="fileInput"
-                                            accept=".docx,.pptx, .pdf"
-                                            style={{ display: 'none' }} // Hide the file input
-                                            onChange={handleFileUpload} // Handle file upload
-                                        />
-                                    </div>
-                                </div>
+                               <FileUpload />
 
                                 :
                                 <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
@@ -547,16 +520,16 @@ const Questioning = () => {
                                                                 }
                                                                 }
                                                                 className="border-[1px] border-[#FF9741] 
-             text-[12px] md:text-[16px] 
-             p-2 font-semibold rounded-[4px] 
-             text-[#FF9741] 
-             hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white 
-             transition-all duration-200 ease-in-out 
-             dark:text-white 
-             dark:border-white 
-             dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] 
-             dark:hover:text-[#FF9741] 
-             dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60">
+                                                                text-[12px] md:text-[16px] 
+                                                                p-2 font-semibold rounded-[4px] 
+                                                                text-[#FF9741] 
+                                                                hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white 
+                                                                transition-all duration-200 ease-in-out 
+                                                                dark:text-white 
+                                                                dark:border-white 
+                                                                dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] 
+                                                                dark:hover:text-[#FF9741] 
+                                                                dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60">
                                                                 Continue &gt;
                                                             </button>
                                                         </div>
