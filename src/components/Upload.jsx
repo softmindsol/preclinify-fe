@@ -1,18 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import {  insertQuesGenData } from '../redux/features/question-gen/question-gen.service';
+import { insertQuesGenData } from '../redux/features/question-gen/question-gen.service';
 import { useDispatch } from 'react-redux';
 
 const FileUpload = () => {
-    const [data,setData]=useState(null)
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const fileInputRef = useRef(null); // Reference for file input
-const dispatch=useDispatch();
+    const dispatch = useDispatch();
 
+    // Handle file selection
     const handleFileChange = async (e) => {
-        console.log('File input triggered'); // For debugging
-
         const selectedFile = e.target.files[0];
         if (selectedFile) {
             await handleSubmit(selectedFile); // Automatically submit after file selection
@@ -20,7 +19,7 @@ const dispatch=useDispatch();
         }
     };
 
-
+    // Handle file upload and API call
     const handleSubmit = async (fileToUpload) => {
         if (!fileToUpload) {
             toast.error("Please upload a file!");
@@ -37,9 +36,7 @@ const dispatch=useDispatch();
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            setData(response.data.generatedQuestions)
-            console.log("response:", response.data);
-
+            setData(response.data.generatedQuestions); // Set the generated questions
             toast.success("Question generated successfully!");
         } catch (error) {
             console.error("Error uploading file:", error);
@@ -49,15 +46,24 @@ const dispatch=useDispatch();
         }
     };
 
+    // Trigger file input programmatically
     const triggerFileInput = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click(); // Trigger file input
-        }
+        fileInputRef.current?.click(); // Safely trigger file input
     };
 
-    useEffect(()=>{
-        dispatch(insertQuesGenData(data))
-    }, [data])
+    // Save data to Redux store when `data` changes
+    useEffect(() => {
+        if (data) {
+            dispatch(insertQuesGenData(data))
+                .then(() => {
+                    toast.success("Question successfully stored in the database!");
+                })
+                .catch((error) => {
+                    console.error("Error storing question in database:", error);
+                    toast.error("Error storing question in database");
+                });
+        }
+    }, [data, dispatch]);
 
     return (
         <div>
@@ -67,7 +73,7 @@ const dispatch=useDispatch();
                         How this works
                     </p>
                     <div className="flex items-center justify-center pb-10">
-                        <img src="/assets/quesGen.png" alt="" />
+                        <img src="/assets/quesGen.png" alt="Question Generation Illustration" />
                     </div>
                 </div>
                 <div className="bg-[#FFFFFF] m-4 rounded-[8px] h-[210px] flex justify-center items-center flex-col">
@@ -78,14 +84,16 @@ const dispatch=useDispatch();
                         Upload anything from PDFs, to Powerpoints, to Word Docs!
                     </p>
                     <button
-                        className={`font-bold mt-3 text-[#FF9741]  hover:bg-[#FF9741] ${loading ? 'bg-[#FF9741]' :'bg-[#FFE9D6]'} px-1.5 text-center w-[143px] h-[44px] rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200`}
+                        className={`font-bold mt-3 text-[#FF9741] hover:bg-[#FF9741] ${loading ? 'bg-[#FF9741] cursor-not-allowed' : 'bg-[#FFE9D6]'
+                            } px-1.5 text-center w-[143px] h-[44px] rounded-[10px] flex items-center gap-x-3 hover:text-white transition-all duration-200`}
                         type="button"
                         onClick={triggerFileInput} // Trigger file input on button click
+                        disabled={loading} // Disable button during loading
                     >
                         {loading ? (
-                            <div className='flex items-center justify-center w-full'>
+                            <div className="flex items-center justify-center w-full">
                                 <svg
-                                    className="animate-spin h-5 w-5 text-white "
+                                    className="animate-spin h-5 w-5 text-white"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -105,7 +113,6 @@ const dispatch=useDispatch();
                                     ></path>
                                 </svg>
                             </div>
-                            
                         ) : (
                             <>
                                 <svg

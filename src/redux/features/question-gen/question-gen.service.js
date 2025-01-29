@@ -13,12 +13,13 @@ export const insertQuesGenData = createAsyncThunk(
                 .from('questionGens')
                 .insert([
                     {
-                        stem: quesGenData.stem,
-                        answers: quesGenData.answers,
+                        stem: quesGenData.question_stem,
+                        answers: quesGenData.options,
                         lead_in_question: quesGenData.lead_in_question,
                         correct_Answer: quesGenData.correct_Answer,
                         explanation: quesGenData.explanation,
-                        category: quesGenData.category,
+                        module: quesGenData.module,
+                        presentation: quesGenData.presentation
                     }
                 ]);
 
