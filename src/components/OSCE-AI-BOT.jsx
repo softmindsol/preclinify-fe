@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "./common/Logo";
 import { useNavigate } from "react-router-dom";
-import supabase from "../helper";
+
 import ConfirmationModal from "./common/Confirmation-OSCE";
+import supabase from "../config/helper";
 
 const OSCEAIBOT = () => {
     const recognitionRef = useRef(null);

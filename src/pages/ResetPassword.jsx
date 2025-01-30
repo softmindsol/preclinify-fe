@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../components/common/Logo';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../helper';
+import supabase from '../config/helper';
 import { toast } from 'sonner';
 
 const ResetPassword = () => {

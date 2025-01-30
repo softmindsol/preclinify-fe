@@ -22,9 +22,9 @@ import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SA
 import { setPreclinicalType } from "../redux/features/mode/mode.slice";
 import { clearRecentSessions, updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
 import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
-import supabase from "../helper";
 import FileUpload from "./Upload";
 import { setModeType } from "../redux/features/question-gen/question-gen.slice";
+import supabase from "../config/helper";
 
 
 const Questioning = () => {

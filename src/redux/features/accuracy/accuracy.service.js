@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import supabase from "../../../helper";
+import supabase from "../../../config/helper";
+
 
 // Define the async thunk
 export const addResultEntry = createAsyncThunk(

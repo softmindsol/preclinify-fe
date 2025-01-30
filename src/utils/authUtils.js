@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import supabase from "../helper";
+import supabase from "../config/helper";
 
 export const resendVerificationEmail = async (email) => {
     try {

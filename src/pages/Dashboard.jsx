@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/common/Sidebar';
-import supabase from '../helper';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
@@ -25,6 +24,7 @@ import { clearRecentSessions } from '../redux/features/recent-session/recent-ses
 import { fetchMcqsByModules } from '../redux/features/SBA/sba.service';
 import SetupSessionModal from '../components/SetupSessionModal';
 import { setResetLimit } from '../redux/features/limit/limit.slice';
+import supabase from '../config/helper';
 
 const Dashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);

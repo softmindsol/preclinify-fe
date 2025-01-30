@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import supabase from "../../../helper";
+import supabase from "../../../config/helper";
 // Define an async thunk to fetch modules
 export const fetchMcqsQuestion = createAsyncThunk(
     'modules/fetchMcqsQuestion',

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import supabase from "../../../helper";
+import supabase from "../../../config/helper";
 
 // Fetch MCQs by moduleId with limit
 export const fetchShortQuestionByModules = createAsyncThunk(

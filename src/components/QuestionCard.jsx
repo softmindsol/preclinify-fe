@@ -826,7 +826,7 @@ const [article,setArticle]=useState({})
                     }
                     {
 
-                        isAccordionVisible && <DiscussionBoard />
+                        isAccordionVisible && <DiscussionBoard  />
                     }
                     {
 

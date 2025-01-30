@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import supabase from "../../../helper";
+import supabase from "../../../config/helper";
 
 // Thunk to insert data into questionGens table
 export const insertQuesGenData = createAsyncThunk(

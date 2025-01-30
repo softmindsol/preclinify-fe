@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import supabase from "../../../helper";
+import supabase from "../../../config/helper";
 
 // Thunk to fetch data from staticOSCE table
 export const fetchOSCEBotData = createAsyncThunk(
