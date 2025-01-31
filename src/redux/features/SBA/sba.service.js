@@ -18,7 +18,7 @@ export const fetchMcqsQuestion = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error.message);
         }
-    }
+    } 
 );
 
 
@@ -27,7 +27,6 @@ export const fetchMcqsByModules = createAsyncThunk(
     'modules/fetchMcqsByModules',
     async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
         try {
-            console.log("moduleIds:", moduleIds);
 
             if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
                 return rejectWithValue('Invalid moduleIds');

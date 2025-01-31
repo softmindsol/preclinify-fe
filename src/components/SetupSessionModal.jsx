@@ -15,7 +15,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
         (state) => state?.loading?.[fetchMcqsByModules.typePrefix]
     );
     console.log("loader:", isLoading);
-    
+     
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
     const [numQuestions, setNumQuestions] = useState();
@@ -69,13 +69,16 @@ const navigation=useNavigate()
     };
 
     const handleQuestion=()=>{
-        if (type==='SAQ'){
-            navigation('/short-question');
+        if (isLoading===false){
+            if (type === 'SAQ') {
+                navigation('/short-question');
 
+            }
+            else if (type === 'SBA') {
+                navigation("/question-card");
+            }
         }
-        else if (type === 'SBA'){
-            navigation("/question-card");            
-        }
+       
     }
 
 
@@ -235,11 +238,16 @@ const navigation=useNavigate()
 
                         {/* Action Buttons */}
                         <div className="absolute left-5 right-5 bottom-3 ">
+
                             <button
                             onClick={handleQuestion}
-                                className="py-2 bg-[#3CC8A1] w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white"
-                            >
-                                Start Questions
+                                className={`py-2 ${isLoading ? "bg-[#82c7b4]" :"bg-[#3CC8A1]"}  w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white  `}
+                                disabled={isLoading}
+                          >
+                                {
+                                    !isLoading ? 'Start Questions' : 'Loading...'
+                                }
+                                
                             </button>
                         </div>
                     </div>

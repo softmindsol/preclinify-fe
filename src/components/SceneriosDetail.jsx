@@ -143,7 +143,6 @@ const SceneriosDetail = () => {
         dispatch(fetchOSCEDataById(id));
     }, [dispatch]);
 
-    console.log("selectedData:", selectedData);
 
     return (
         <div className='w-full'>

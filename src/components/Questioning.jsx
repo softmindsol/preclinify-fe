@@ -25,7 +25,7 @@ import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import FileUpload from "./Upload";
 import { setModeType } from "../redux/features/question-gen/question-gen.slice";
 import supabase from "../config/helper";
-
+ 
 
 const Questioning = () => {
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
@@ -254,14 +254,14 @@ const Questioning = () => {
 
         if (selectedModules.length > 0) {
             if (selectedOption === 'SBA') {
-                dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
+                dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
                 dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then(() => {
-                        dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                        dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     })
                     .catch((err) => {
-                        dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
+                        dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     });
             } 
             else if (selectedOption === 'SAQ') {
