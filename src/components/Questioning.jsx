@@ -263,7 +263,7 @@ const Questioning = () => {
                     .catch((err) => {
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
                     });
-            }
+            } 
             else if (selectedOption === 'SAQ') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))

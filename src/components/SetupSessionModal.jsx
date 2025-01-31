@@ -4,13 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "../utils/GlobalApiHandler";
 import { Link, useNavigate } from "react-router-dom";
 import { changeMode } from "../redux/features/mode/mode.slice";
+import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption
 );
     const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
-     
+    const isLoading = useSelector(
+        (state) => state?.loading?.[fetchMcqsByModules.typePrefix]
+    );
+    console.log("loader:", isLoading);
+    
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
     const [numQuestions, setNumQuestions] = useState();

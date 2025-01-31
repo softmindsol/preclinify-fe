@@ -378,7 +378,7 @@ const [article,setArticle]=useState({})
 
     }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
 
-
+ 
     useEffect(() => {
         if (review) {
             setAccuracy(100)
