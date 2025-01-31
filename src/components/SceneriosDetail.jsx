@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchOSCEDataById } from '../redux/features/osce-static/osce-static.service';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loader from './common/Loader';
-import ReactMarkdown from "react-markdown";
 import DashboardModal from './common/DashboardModal';
 import { FaStar } from "react-icons/fa";
 
@@ -26,7 +25,7 @@ const SceneriosDetail = () => {
         setOpenPanel(openPanel === panel ? null : panel);
     };
 
-    console.log("selectedData:", selectedData);
+    console.log("id:",id);
     
 
     const extractHeadings = (markdown) => {
@@ -66,6 +65,8 @@ const SceneriosDetail = () => {
 
     const headings = selectedData && selectedData.markscheme ? extractHeadings(selectedData.markscheme) : [];
 
+    console.log("selectedData:", selectedData);
+    
     // Function to update the checkbox state
     const handleCheckboxChange = (index, itemIndex) => {
         const updatedState = [...checkboxState];
