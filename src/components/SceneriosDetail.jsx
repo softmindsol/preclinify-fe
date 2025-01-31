@@ -65,7 +65,6 @@ const SceneriosDetail = () => {
 
     const headings = selectedData && selectedData.markscheme ? extractHeadings(selectedData.markscheme) : [];
 
-    console.log("selectedData:", selectedData);
     
     // Function to update the checkbox state
     const handleCheckboxChange = (index, itemIndex) => {
@@ -144,6 +143,7 @@ const SceneriosDetail = () => {
         dispatch(fetchOSCEDataById(id));
     }, [dispatch]);
 
+    console.log("selectedData:", selectedData);
 
     return (
         <div className='w-full'>
