@@ -26,6 +26,8 @@ const SceneriosDetail = () => {
         setOpenPanel(openPanel === panel ? null : panel);
     };
 
+    console.log("selectedData:", selectedData);
+    
 
     const extractHeadings = (markdown) => {
         const headingRegex = /^(#{1,6})\s(.+)$/gm;  // Match all headings (# to ######)
