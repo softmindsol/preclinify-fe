@@ -139,7 +139,7 @@ const SceneriosDetail = () => {
 
     useEffect(() => {
         dispatch(fetchOSCEDataById(id));
-    }, [dispatch, id]);
+    }, [dispatch]);
 
 
     return (
