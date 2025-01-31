@@ -241,7 +241,7 @@ const navigation=useNavigate()
 
                             <button
                             onClick={handleQuestion}
-                                className={`py-2 ${isLoading ? "bg-[#82c7b4]" :"bg-[#3CC8A1]"}  w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white  `}
+                                className={`py-2 ${isLoading ? "bg-[#82c7b4]" : "bg-[#3CC8A1]"} ${isLoading && 'disabled:cursor-not-allowed'}  w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white  `}
                                 disabled={isLoading}
                           >
                                 {
