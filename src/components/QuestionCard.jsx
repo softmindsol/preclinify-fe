@@ -18,6 +18,8 @@ import { sessionCompleted } from "../redux/features/recent-session/recent-sessio
 import ChemistryBeaker from "./chemistry-beaker";
 import DashboardModal from "./common/DashboardModal";
 import Article from "./Article";
+import { setAttemptedData } from "../redux/features/SBA/sba.slice";
+import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
 
 
 
@@ -57,13 +59,6 @@ const QuestionCard = () => {
     const itemsPerPage = 10;
 const [article,setArticle]=useState({})
     const isQuestionReview=useSelector(state=>state.questionReview.value)
-console.log("isQuestionReview:",isQuestionReview);
-
-
-
-
-
-
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
@@ -81,6 +76,12 @@ console.log("isQuestionReview:",isQuestionReview);
     // const data = useSelector((state) => state.mcqsQuestion || []);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
+    const attempted = useSelector((state) => state.attempts?.attempts);
+    const active = useSelector((state) => state.attempts?.active);
+
+        
+
+
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
@@ -163,31 +164,41 @@ console.log("isQuestionReview:",isQuestionReview);
         setIsAnswered(true);
     };
 
-    const handleCheckAnswer = () => {
-        if (selectedAnswer) {
-            setIsButtonClicked(true);
-            setIsAccordionVisible(true);
-            setBorder(false);
+   const handleCheckAnswer = () => {
+    if (selectedAnswer) {
+        setIsButtonClicked(true);
+        setIsAccordionVisible(true);
+        setBorder(false);
 
-            const isCorrect =
-                selectedAnswer === data.data[currentIndex].explanationList[data.data[currentIndex].correctAnswerId];
+        // Get the correct answer from answersArray using correctAnswerId
+        const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
 
-            // Update attempts
-            setAttempts((prev) => {
-                const updatedAttempts = [...prev];
-                updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
-                dispatch(setResult({ updatedAttempts }));
-                return updatedAttempts;
-            });
+        // Check if the selected answer matches the correct answer
+        const isCorrect = selectedAnswer === correctAnswer;
+    
+        dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
 
-            // Expand accordion for the correct answer
-            setIsAccordionOpen((prev) => {
-                const newAccordionState = [...prev];
-                newAccordionState[data?.data[currentIndex]?.correctAnswerId] = true;
-                return newAccordionState;
-            });
-        }
-    };
+        // Update attempts
+        setAttempts((prev) => {
+            const updatedAttempts = [...prev];
+            updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
+            dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+
+            dispatch(setResult({ updatedAttempts }));
+            return updatedAttempts;
+        });
+       
+
+        // Expand accordion for the correct answer
+        setIsAccordionOpen((prev) => {
+            const newAccordionState = [...prev];
+            newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
+            return newAccordionState;
+        });
+    }
+};
+
+
 
     const nextQuestion = () => {
         if (currentIndex < data?.data.length - 1) {
@@ -251,6 +262,7 @@ console.log("isQuestionReview:",isQuestionReview);
 
     // Update attempts based on user actions
     const markQuestion = (index, status) => {
+    
         
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
@@ -269,32 +281,6 @@ console.log("isQuestionReview:",isQuestionReview);
 
 
 
-    useEffect(() => {
-        if (data?.data?.length) {
-            setIsAccordionOpen(Array(data.data.length).fill(false));
-            setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
-        }
-    }, [data]);
-
-    useEffect(() => {
-        const correct = attempts.filter((attempt) => attempt === true).length;
-        const incorrect = attempts.filter((attempt) => attempt === false).length;
-        const totalAttempted = attempts.filter((attempt) => attempt !== null).length;
-        setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
-
-        const hasAnswer = attempts.some(value => value === true || value === false);
-
-        setIsFinishEnabled(hasAnswer);
-
-    }, [attempts]);
-
-    useEffect(() => {
-        if (review === false) {
-
-            dispatch(setMcqsAccuracy({ accuracy }))
-        }
-
-    }, [accuracy])
     const handleFinishAndReview = () => {
         if (true) {
             handleCheckAnswer();
@@ -331,6 +317,47 @@ console.log("isQuestionReview:",isQuestionReview);
         }
     };
  
+
+
+
+    
+    useEffect(() => {
+        if (data?.data?.length) {
+            setIsAccordionOpen(Array(data.data.length).fill(false));
+            setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
+
+
+
+        }
+    }, [data]);
+
+    
+    useEffect(()=>{
+        if (active){
+            dispatch(setAttempted(Array(data.data.length).fill(null))); // Dispatch the updated attempts array to Redux
+        }
+
+    },[])
+
+    useEffect(() => {
+        const correct = attempts.filter((attempt) => attempt === true).length;
+        const incorrect = attempts.filter((attempt) => attempt === false).length;
+        const totalAttempted = attempts.filter((attempt) => attempt !== null).length;
+        setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
+
+        const hasAnswer = attempts.some(value => value === true || value === false);
+       
+        setIsFinishEnabled(hasAnswer);
+
+    }, [attempts]);
+
+    useEffect(() => {
+        if (review === false) {
+
+            dispatch(setMcqsAccuracy({ accuracy }))
+        }
+
+    }, [accuracy])
 
 
     useEffect(() => {
@@ -375,14 +402,33 @@ console.log("isQuestionReview:",isQuestionReview);
         setIsReviewEnabled(false);
         if (data.data.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
-
         }
-        // dispatch(sessionCompleted(true))
 
     }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
 
+    // Add this useEffect hook to handle keyboard events
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (attempted[currentIndex] !== null) return;
+
+            const key = e.key.toUpperCase();
+            const validKeys = ["Q", "W", "E", "R", "T"];
+            const keyIndex = validKeys.indexOf(key);
+
+            if (keyIndex !== -1 && keyIndex < data.data[currentIndex]?.answersArray.length) {
+                const answer = data.data[currentIndex].answersArray[keyIndex];
+                handleAnswerSelect(answer);
+                dispatch(setResult({ attempted }));
+
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [currentIndex, attempted, data.data]);
  
     useEffect(() => {
+
         if (review) {
             setAccuracy(100)
             setIsButtonClicked(true);
@@ -394,6 +440,7 @@ console.log("isQuestionReview:",isQuestionReview);
         }
     }, [review])
 
+    
     
 
 
@@ -530,42 +577,43 @@ console.log("isQuestionReview:",isQuestionReview);
                     </div>
 
                     {/* Question start */}
-                    {data?.data.length > 0 && (
-                        <div className="mt-6 p-6" key={currentIndex}>
-                            <p className="text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white">
-                                {data.data[currentIndex].questionStem}
-                            </p>
+                  {data?.data.length > 0 && (
+    <div className="mt-6 p-6" key={currentIndex}>
+        <p className="text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white">
+            {data.data[currentIndex].questionStem}
+        </p>
 
-                            <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
-                                {data.data[currentIndex].leadQuestion}
-                            </h3>
+        <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
+            {data.data[currentIndex].leadQuestion}
+        </h3>
 
-                            {/* Options Section */}
-                            <div className="mt-4 space-y-4 " >
-                                {data.data[currentIndex].explanationList.map((explanation, index) => {
-                                    const isSelected = selectedAnswer === explanation;
-                                    const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+        {/* Options Section */}
+        <div className="mt-4 space-y-4">
+            {
+            data.data[currentIndex].answersArray.map((answer, index) => {
+                const isSelected = selectedAnswer === answer;
+                const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+               
 
-                                    // Determine the border color based on whether the button has been clicked
-                                    const borderColor = isButtonClicked || attempts[currentIndex] !== null
-                                        ? isCorrectAnswer
-                                            ? "border-[#22C55E]"
-                                            : "border-[#EF4444]"
-                                        : "";
-                                    const bgColor = isButtonClicked || attempts[currentIndex] !== null
-                                        ? isCorrectAnswer
-                                            ? "bg-[#DCFCE7]"
-                                            : "bg-[#FEE2E2]"
-                                        : "";
+                // Determine the border color based on whether the button has been clicked
+                const borderColor = isButtonClicked || attempted[currentIndex] !== null
+                    ? isCorrectAnswer
+                        ? "border-[#22C55E]"
+                        : "border-[#EF4444]"
+                    : "";
+                const bgColor = isButtonClicked || attempted[currentIndex] !== null
+                    ? isCorrectAnswer
+                        ? "bg-[#DCFCE7]"
+                        : "bg-[#FEE2E2]"
+                    : "";
 
-
-                                    return (
-                                        <div>
-                                            {!isAccordionVisible && attempts[currentIndex] === null ? (
+                return (
+                    <div>
+                        {!isAccordionVisible && attempted[currentIndex] === null ? (
                             <label
                                 key={index}
                                 className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
-                                onClick={() => handleAnswerSelect(explanation, index)}
+                                onClick={() => handleAnswerSelect(answer, index)}
                             >
                                 <input
                                     type="radio"
@@ -574,9 +622,9 @@ console.log("isQuestionReview:",isQuestionReview);
                                     checked={isSelected}
                                     readOnly
                                 />
-                                <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{explanation.split(" -")[0]}</span>
+                                <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
                                 <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
-                                    {["A", "B", "C", "D", "E"][index]}
+                                    {["Q", "W", "E", "R", "T"][index]}
                                 </span>
                             </label>
                         ) : (
@@ -590,17 +638,17 @@ console.log("isQuestionReview:",isQuestionReview);
                                 <label
                                     key={index}
                                     className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
-                                    onClick={() => handleAnswerSelect(explanation, index)}
+                                    onClick={() => handleAnswerSelect(answer, index)}
                                 >
                                     <div
-                                        className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempts[currentIndex] !== null
+                                            className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
                                             ? isCorrectAnswer
                                                 ? "bg-green-100 border border-green-500"
                                                 : "bg-red-100 border border-red-500"
                                             : "bg-gray-100 border border-gray-300"
                                             }`}
                                     >
-                                        {(isButtonClicked || attempts[currentIndex] !== null) && (
+                                            {(isButtonClicked || attempted[currentIndex] !== null) && (
                                             isCorrectAnswer ? (
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -626,7 +674,7 @@ console.log("isQuestionReview:",isQuestionReview);
                                             )
                                         )}
                                     </div>
-                                    <span className="text-[#27272A] flex-1">{explanation.split(" -")[0]}</span>
+                                    <span className="text-[#27272A] flex-1">{answer}</span>
                                     {isAccordionOpen[index] ? (
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -665,161 +713,142 @@ console.log("isQuestionReview:",isQuestionReview);
                                     <>
                                         <hr className={`mx-5 ${borderColor}`} />
                                         <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
-                                            {explanation}
+                                            {data.data[currentIndex].explanationList[index]}
                                         </p>
                                     </>
                                 )}
                             </div>
                         )}
+                    </div>
+                );
+            })}
+        </div>
 
-
-
-
-
-                                        </div>
-
-                                    );
-                                })}
-                            </div>
-
-                            {/* Submit Button */}
-                            {
-                                !isReviewEnabled && (
-                                    isAccordionVisible ? (
-                                        <div className="group">
-                                            <button
-                                                className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                                onClick={nextQuestion}
-                                            >
-                                                Next Question
-                                                <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                                    >
-                                                        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                                    </svg>
-                                                </span>
-                                            </button>
-                                        </div>
-
-                                    ) : (
-                                        <div className="group">
-                                            <button
-                                                className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                                onClick={handleCheckAnswer}
-                                            >
-                                                Check Answer
-                                                <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                                    >
-                                                        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                                    </svg>
-                                                </span>
-                                            </button>
-                                        </div>
-
-                                    )
-                                )
-                            }
-                            {isReviewEnabled && (
-                                <div
-                                    className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
-                                        } justify-center`}
-                                    onClick={handleFinishAndReview}
-
+        {/* Submit Button */}
+        {
+            !isReviewEnabled && (
+                isAccordionVisible ? (
+                    <div className="group">
+                        <button
+                            className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                            onClick={nextQuestion}
+                        >
+                            Next Question
+                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
                                 >
-                                    {
-                                        review === false
-                                        &&
-                                        <div className="group w-full">
-                                            <button
-                                                className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="group">
+                        <button
+                            className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                            onClick={handleCheckAnswer}
+                        >
+                            Check Answer
+                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                >
+                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                )
+            )
+        }
+        {isReviewEnabled && (
+            <div
+                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                    } justify-center`}
+                onClick={handleFinishAndReview}
+            >
+                {
+                    review === false
+                    &&
+                    <div className="group w-full">
+                        <button
+                            className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
 
-                                            >
-                                                Finish and Review
-                                                <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                                    >
-                                                        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                                    </svg>
-                                                </span>
-                                            </button>
-                                        </div>
+                        >
+                            Finish and Review
+                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                >
+                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                }
+            </div>
+        )}
 
-
-                                    }
-
-
-
-                                </div>
-                            )}
-
-                            {
-                                review === true
-                                &&
-                                <div className="group w-full">
-                                    <button
-                                        className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
-                                        onClick={() => {
-                                            navigation('/dashboard')
-                                        }}
-                                    >
-                                        Back to Dashboard
-                                        <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="20"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                            >
-                                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                            </svg>
-                                        </span>
-                                    </button>
-                                </div>
-
-
-                            }
-
-
-
-                        </div>
-                    )}
+        {
+            review === true
+            &&
+            <div className="group w-full">
+                <button
+                    className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                    onClick={() => {
+                        navigation('/dashboard')
+                    }}
+                >
+                    Back to Dashboard
+                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                        >
+                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        }
+    </div>
+)}
 
                     {
                         isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
@@ -841,220 +870,202 @@ console.log("isQuestionReview:",isQuestionReview);
 
 
                 {/* Sidebar Section */}
-
-                    <div className={`hidden  lg:block fixed right-0 top-0 `}>
-
-
-                        <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   dark:border-[1px] dark:border-[#3A3A48]  h-screen dark:bg-[#1E1E2A] text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
-                        <div className="flex items-center justify-between mt-5">
-                            <div className="flex items-center">
+                    <div className={`hidden lg:block fixed right-0 top-0`}>
+                        <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                            <div className="flex items-center justify-between mt-5">
+                                <div className="flex items-center"></div>
+                                <div className="absolute left-1/2 transform -translate-x-1/2">
+                                    <Logo />
+                                </div>
+                                <div className="flex items-center mr-5 cursor-pointer" onClick={() => setToggleSidebar(!toggleSidebar)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-left dark:text-white">
+                                        <path d="m11 17-5-5 5-5" />
+                                        <path d="m18 17-5-5 5-5" />
+                                    </svg>
+                                </div>
                             </div>
 
-                            <div className="absolute left-1/2 transform -translate-x-1/2">
-                                <Logo />
-                            </div>
-
-                            <div className="flex items-center mr-5 cursor-pointer" onClick={() => {
-                                setToggleSidebar(!toggleSidebar)
-                            }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left dark:text-white"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col items-center justify-center mt-10">
-                            {
-                                isTimerMode["mode"] === "Endless" &&
-                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
-                                    <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                        <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                            <div className="flex flex-col items-center justify-center mt-10">
+                                {isTimerMode["mode"] === "Endless" && (
+                                    <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"} text-[#ffff] text-center`}>
+                                        <div>
+                                            <p className="text-[12px] mt-3">Accuracy</p>
+                                            <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                        </div>
                                     </div>
+                                )}
 
-
-
-                                </div>}
-
-                            {
-                                isTimerMode["mode"] === "Exam" && (
-                                    <div
-                                        className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
-                                            } text-[#ffff] text-center`}
-                                    >
+                                {isTimerMode["mode"] === "Exam" && (
+                                    <div className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"} text-[#ffff] text-center`}>
                                         <div>
                                             <p className="text-[12px] mt-3">Time:</p>
-                                           
-                                            {
-                                                review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
-                                            }
+                                            {review === true ? (
+                                                <p className="font-black text-[36px]">{'00:00'}</p>
+                                            ) : (
+                                                <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                            )}
                                         </div>
                                     </div>
-                                )
-                            }
-
-
-
-                        </div>
-
-                        <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white ">
-                                <span
-                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
-                                        }`}
-                                    onClick={() => handleFilterChange('All')}
-                                >
-                                    All
-                                </span>
-                                <span
-                                    className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
-                                        }`}
-                                    onClick={() => handleFilterChange('Flagged')}
-                                >
-                                    Flagged
-                                </span>
-                                <span
-                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
-                                        }`}
-                                    onClick={() => handleFilterChange('Unseen')}
-                                >
-                                    Unseen
-                                </span>
+                                )}
                             </div>
 
-                        </div>
+                            <div className="">
+                                <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
+                                    <span
+                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
+                                        onClick={() => handleFilterChange('All')}
+                                    >
+                                        All
+                                    </span>
+                                    <span
+                                        className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
+                                        onClick={() => handleFilterChange('Flagged')}
+                                    >
+                                        Flagged
+                                    </span>
+                                    <span
+                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
+                                        onClick={() => handleFilterChange('Unseen')}
+                                    >
+                                        Unseen
+                                    </span>
+                                </div>
+                            </div>
 
-                        <div className="flex justify-center items-center">
-                            <div className="grid grid-cols-5 gap-2">
-                                {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                    const bgColor = result.result[num] === true ? "bg-[#3CC8A1]" : result.result[num] === false ? "bg-[#FF453A]" : "bg-gray-300";
-                                    return (
-                                        <div key={i}>
-                                            <div
-                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                onClick={() => markQuestion(num)} // Use `num` for marking
-                                            >
-                                                <p>{num + 1}</p>
+                            <div className="flex justify-center items-center">
+                                <div className="grid grid-cols-5 gap-2">
+                                    {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                        const bgColor = attempted[num] === true
+                                            ? "bg-[#3CC8A1]" // Correct answer
+                                            : attempted[num] === false
+                                                ? "bg-[#FF453A]" // Incorrect answer
+                                                : "bg-gray-300"; // Unattempted
+                                      
+
+                                        return (
+                                            <div key={i}>
+                                                <div
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                    onClick={() => {
+                                                        setCurrentIndex(num); // Navigate to the selected question
+                                                    }}
+                                                >
+                                                    <p>{num + 1}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
+                                <button
+                                    className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                    onClick={currentPage > 0 ? prevPage : null}
+                                    disabled={currentPage === 0}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-move-left"
+                                    >
+                                        <path d="M6 8L2 12L6 16" />
+                                        <path d="M2 12H22" />
+                                    </svg>
+                                </button>
+
+                                <button
+                                    className={`${((currentPage + 1) * itemsPerPage) >= data.data.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                    onClick={((currentPage + 1) * itemsPerPage) < data.data.length ? nextPage : null}
+                                    disabled={((currentPage + 1) * itemsPerPage) >= data.data.length}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-move-right"
+                                    >
+                                        <path d="M18 8L22 12L18 16" />
+                                        <path d="M2 12H22" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="py-5 px-10 text-[#D4D4D8]">
+                                <hr />
+                            </div>
+
+                            <div>
+                                <DeepChatAI W='200px' />
+                                <hr className='mx-5' />
+                            </div>
+
+                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
+                                <div
+                                    className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"} justify-center`}
+                                    onClick={handleFinishAndReview}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-check"
+                                    >
+                                        <path d="M20 6 9 17l-5-5" />
+                                    </svg>
+                                    <p>Finish and Review</p>
+                                </div>
+                                <hr className="w-[200px] my-2" />
+
+                                <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap" onClick={handleShowPopup}>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-chevron-left"
+                                    >
+                                        <path d="m15 18-6-6 6-6" />
+                                    </svg>
+                                    <p>Back to Dashboard</p>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                            <button
-                                className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                                    }`}
-                                onClick={currentPage > 0 ? prevPage : null}
-                                disabled={currentPage === 0} // Disable button when on the first page
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-move-left"
-                                >
-                                    <path d="M6 8L2 12L6 16" />
-                                    <path d="M2 12H22" />
+
+                        <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px] 3A3A48 dark:border-[1px] dark:border-[#3A3A48] h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300 dark:bg-[#1E1E2A] text-black`}>
+                            <div className="flex items-center cursor-pointer dark:bg-[#1E1E2A]" onClick={() => setToggleSidebar(!toggleSidebar)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white">
+                                    <path d="m6 17 5-5-5-5" />
+                                    <path d="m13 17 5-5-5-5" />
                                 </svg>
-                            </button>
-
-                            <button
-                                className={`${((currentPage + 1) * itemsPerPage) >= data.data.length
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'cursor-pointer'
-                                    }`}
-                                onClick={
-                                    ((currentPage + 1) * itemsPerPage) < data.data.length ? nextPage : null
-                                }
-                                disabled={((currentPage + 1) * itemsPerPage) >= data.data.length}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-move-right"
-                                >
-                                    <path d="M18 8L22 12L18 16" />
-                                    <path d="M2 12H22" />
-                                </svg>
-                            </button>
-
-                        </div>
-                        <div className="py-5 px-10 text-[#D4D4D8]">
-                            <hr />
-                        </div>
-
-                        <div>
-                            <DeepChatAI W='200px' />
-                            <hr className='mx-5' />
-                        </div>
-
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
-                            
-                            <div
-                                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
-                                    } justify-center`}
-                                onClick={handleFinishAndReview}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-check"
-                                >
-                                    <path d="M20 6 9 17l-5-5" />
-                                </svg>
-                                <p>Finish and Review</p>
                             </div>
-                            <hr className="w-[200px] my-2" />
+                        </div>
+                    </div>
                 
-                            <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap"
-                                onClick={handleShowPopup}>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-chevron-left"
-                                >
-                                    <path d="m15 18-6-6 6-6" />
-                                </svg>
-                                <p>Back to Dashboard</p>
-                            </div>
-                        </div>
-
-
-                    </div>
-                        <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px] 3A3A48 dark:border-[1px] dark:border-[#3A3A48] h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300  dark:bg-[#1E1E2A] text-black  `}>
-
-                        <div className="flex items-center  cursor-pointer dark:bg-[#1E1E2A]" onClick={() => {
-                            setToggleSidebar(!toggleSidebar)
-                        }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white"><path d="m6 17 5-5-5-5" /><path d="m13 17 5-5-5-5" /></svg>                        </div>
-
-                    </div>
-                </div>
             </div>
             </div>
             {showPopup && (

@@ -12,9 +12,11 @@ const mcqsSlice = createSlice({
         // Reducer to reset the state
         resetState: (state) => {
             state.data = [];
+
             state.loading = false;
             state.error = null;
         },
+ 
     },
     extraReducers: (builder) => {
         builder

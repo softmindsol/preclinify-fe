@@ -25,6 +25,7 @@ import { clearMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import FileUpload from "./Upload";
 import { setModeType } from "../redux/features/question-gen/question-gen.slice";
 import supabase from "../config/helper";
+import { resetAttempts, setActive } from "../redux/features/attempts/attempts.slice";
  
 
 const Questioning = () => {
@@ -97,48 +98,7 @@ const Questioning = () => {
         });
     };
 
-    const handleFileUpload = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const fileContent = e.target.result;
-                const extractedData = processFileContent(fileContent);
-            };
-            reader.readAsText(file); // Assuming the file is a text file
-        }
-    };
-
-    const processFileContent = (content) => {
-        // Split the content into lines
-        const lines = content.split('\n');
-
-        // Map through each line to extract data
-        const questions = lines.map(line => {
-            const [question_text, options, correct_answer] = line.split(','); // Adjust based on your file format
-
-            // Debugging: Log the extracted values
-            console.log("Extracted values:", { question_text, options, correct_answer });
-
-            // Check if options is defined and valid JSON
-            let parsedOptions;
-            try {
-                parsedOptions = options ? JSON.parse(options) : []; // Default to an empty array if options is undefined
-            } catch (error) {
-                console.error("Error parsing options:", options, error);
-                parsedOptions = []; // Default to an empty array on error
-            }
-
-            return {
-                question_text,
-                options: parsedOptions,
-                correct_answer,
-            };
-        });
-
-        return questions; // Return the extracted data
-    };
-
+  
     const handleSelectAll = (isChecked) => {
         if (isChecked) {
             // Select all module IDs
@@ -226,6 +186,11 @@ const Questioning = () => {
     }, [limit, isSession])
 
 
+
+
+
+
+
     useEffect(() => {
         dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
         setIsLoading(true)
@@ -243,8 +208,10 @@ const Questioning = () => {
         // Dispatch Redux action to clear 'result' from Redux store
         dispatch(clearResult());
         dispatch(clearMcqsAccuracy())
+        dispatch(resetAttempts([]))
         dispatch(setResetLimit())
         dispatch(resetQuestionReviewValue());
+        dispatch(setActive(true));
     }, []);
 
 
@@ -291,7 +258,6 @@ const Questioning = () => {
         }
     }, [selectedModules, limit, selectedOption]);
 
-    // console.log("selectedModules:", selectedModules);
 
     useEffect(() => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
@@ -360,7 +326,7 @@ const Questioning = () => {
     }, [selectedModules]);
 
 
-    console.log("selectedOption:", selectedOption);
+console.log();
 
     
 
