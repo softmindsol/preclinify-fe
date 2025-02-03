@@ -36,6 +36,8 @@ const FileUpload = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            console.log("response.data.generatedQuestions", response.data.generatedQuestions);
+            
             setData(response.data.generatedQuestions); // Set the generated questions
             toast.success("Question generated successfully!");
         } catch (error) {
@@ -54,6 +56,10 @@ const FileUpload = () => {
     // Save data to Redux store when `data` changes
     useEffect(() => {
         if (data) {
+
+            
+            console.log("data:",data);
+            
             dispatch(insertQuesGenData(data))
                 .then(() => {
                     toast.success("Question successfully stored in the database!");

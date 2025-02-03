@@ -21,7 +21,7 @@ import attemptReducer from './features/attempts/attempts.slice'
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['attempts','darkMode', "quesGenInsert",'module','osceBot', 'mcqsQuestion', 'osce','accuracy', 'questionReview', "sqa","sessions","mode","limit"], // Persist these in localStorage
+    whitelist: ['attempts', 'darkMode', "quesGen",'module','osceBot', 'mcqsQuestion', 'osce','accuracy', 'questionReview', "sqa","sessions","mode","limit"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -45,7 +45,7 @@ const rootReducer = combineReducers({
     recentSession: recentSessionsReducer,
     osce: osceReducer,
     osceBot: osceBotReducer,
-    quesGenInsert: quesGenInsertReducer,
+    quesGen: quesGenInsertReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 

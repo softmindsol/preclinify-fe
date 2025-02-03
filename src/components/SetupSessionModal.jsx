@@ -5,6 +5,7 @@ import { debounce } from "../utils/GlobalApiHandler";
 import { Link, useNavigate } from "react-router-dom";
 import { changeMode } from "../redux/features/mode/mode.slice";
 import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
+import { fetchQuesGenModules } from "../redux/features/question-gen/question-gen.service";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
@@ -14,8 +15,9 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const isLoading = useSelector(
         (state) => state?.loading?.[fetchMcqsByModules.typePrefix]
     );
-    console.log("loader:", isLoading);
-     
+    const isQuesGenLoading = useSelector(
+        (state) => state?.loading?.[fetchQuesGenModules.typePrefix]
+    );
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
     const [numQuestions, setNumQuestions] = useState();
@@ -77,10 +79,14 @@ const navigation=useNavigate()
             else if (type === 'SBA') {
                 navigation("/question-card");
             }
+            
         }
-       
+        if (isQuesGenLoading===false){
+            if (type === 'QuesGen') {
+                navigation("/question-generator");
+            } 
     }
-
+    }
 
 
 

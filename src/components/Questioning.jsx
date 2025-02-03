@@ -26,9 +26,16 @@ import FileUpload from "./Upload";
 import { setModeType } from "../redux/features/question-gen/question-gen.slice";
 import supabase from "../config/helper";
 import { resetAttempts, setActive } from "../redux/features/attempts/attempts.slice";
+import { fetchQuesGenModules,fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
  
 
 const Questioning = () => {
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
+    const recentSession = useSelector(state => state.recentSession.recentSessions);
+    const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
+    const questionGenModule = useSelector(state => state?.quesGen)
+    const data = useSelector((state) => state.module);
+    const { limit } = useSelector((state) => state.limit);
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const [storedSession, setStoredSession] = useState([])
     const [selectedModules, setSelectedModules] = useState([]);
@@ -36,8 +43,6 @@ const Questioning = () => {
     const [moduleId, setModuleId] = useState(null)
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
-    const data = useSelector((state) => state.module);
-    const { limit } = useSelector((state) => state.limit);
     const [selectedOption, setSelectedOption] = useState('SBA');
     const [recentSessions, setRecentSessions] = useState([]);
     const [isSession, setIsSession] = useState(false)
@@ -52,11 +57,8 @@ const Questioning = () => {
     );
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
-    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
 
-    const recentSession = useSelector(state => state.recentSession.recentSessions);
-
-
+    const [quesGenModule, setQuesGenModule]=useState([])
     const handleToggle = () => {
         setIsSortedByPresentation(prev => !prev);
     };
@@ -66,7 +68,7 @@ const Questioning = () => {
         setSelectedOption(event.target.value); // Update state with the selected value
     };
     const toggleDrawer = () => {
-        setIsOpen((prevState) => !prevState)
+    setIsOpen((prevState) => !prevState)
     }
 
 
@@ -187,22 +189,41 @@ const Questioning = () => {
 
 
 
+    console.log("questionGenModule:", questionGenModule);
+    
 
 
 
 
     useEffect(() => {
-        dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
-        setIsLoading(true)
-        dispatch(fetchModules())
-            .unwrap()
-            .then(() => {
-                setIsLoading(false)
-                dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
-            }).catch(err => {
-                dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
-                setIsLoading(false)
-            })
+        if(type==='SBA' || type==='SAQ'){
+            dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
+            setIsLoading(true)
+            dispatch(fetchModules())
+                .unwrap()
+                .then(() => {
+                    setIsLoading(false)
+                    dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+                }).catch(err => {
+                    dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+                    setIsLoading(false)
+                })
+        }
+
+        else if (type === 'QuesGen'){
+            dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
+            setIsLoading(true)
+            dispatch(fetchQuesGenModules())
+                .unwrap()
+                .then(() => {
+                    setIsLoading(false)
+                    dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: false }));
+                }).catch(err => {
+                    dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: false }));
+                    setIsLoading(false)
+                })
+        }
+
 
         sessionStorage.removeItem('persist:result');
         // Dispatch Redux action to clear 'result' from Redux store
@@ -254,6 +275,18 @@ const Questioning = () => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
                     });
             }
+           else if (selectedOption === 'QuesGen') {
+                dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
+                dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
+                    .unwrap()
+                    .then(() => {
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                    })
+                    .catch((err) => {
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                    });
+            } 
+
 
         }
     }, [selectedModules, limit, selectedOption]);
@@ -326,7 +359,7 @@ const Questioning = () => {
     }, [selectedModules]);
 
 
-console.log();
+    console.log("selectedModules:", selectedModules);
 
     
 
@@ -435,7 +468,7 @@ console.log();
                                     {/* Continue Button */}
                                     <button
                                         onClick={handleContinue}
-                                        disabled={selectedModules.length === 0} // Disable the button if no modules are selected
+                                        disabled={selectedModules.length === 0 } // Disable the button if no modules are selected
                                         className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-transparent hover:text-[#3CC8A1]'} text-[12px] md:text-[14px] 2xl:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}>
                                         Continue &gt;
                                     </button>
@@ -568,53 +601,98 @@ console.log();
                         <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
                         <div>
-                        
-                               { sortedModules?.map((row) => {
-                                    const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                    const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+                                    {
+                                        (type === 'QuesGen') && (
+                                            questionGenModule?.modules && questionGenModule.modules.length > 0 ? (
+                                                questionGenModule.modules.map((row, id) => (
+                                                    <div key={id} className="grid md:grid-cols-2 items-center py-3">
+                                                        <div
+                                                            className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                                                        >
+                                                            <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="mr-2 custom-checkbox hover:opacity-70"
+                                                                    checked={selectedModules.includes(row.module)}
+                                                                    onChange={() => handleCheckboxChange(row.module)}
+                                                                />
+                                                                {row.module}
+                                                            </label>
+                                                        </div>
 
-                                    // Calculate widths based on total counts
-                                    const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                    const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                    const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+                                                        {/* Uncomment and use the following code if you want to display the progress bars */}
+                                                        {/* <div className="flex items-center justify-center space-x-1">
+                        <div
+                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                            style={{ width: `${correctWidth}%` }}
+                        ></div>
+                        <div
+                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                            style={{ width: `${incorrectWidth}%` }}
+                        ></div>
+                        <div
+                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                            style={{ width: `${unansweredWidth}%` }}
+                        ></div>
+                    </div> */}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="text-center py-3 text-gray-500">
+                                                    No modules available.
+                                                </div>
+                                            )
+                                        )
+                                    }
+{
+                                        (type === 'SBA' || type === 'SAQ') && sortedModules?.map((row) => {
+                                            const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
-                                    return (
-                                        <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                            <div
-                                                className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                                            >
-                                                <label className="flex items-center cursor-pointer hover:opacity-85">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="mr-2 custom-checkbox hover:opacity-70"
-                                                        checked={selectedModules.includes(row.categoryId)}
-                                                        onChange={() => handleCheckboxChange(row.categoryId)}
-                                                    />
-                                                    {row.categoryName}
-                                                </label>
-                                            </div>
+                                            // Calculate widths based on total counts
+                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+
+                                            return (
+                                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                                    <div
+                                                        className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                                                    >
+                                                        <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="mr-2 custom-checkbox hover:opacity-70"
+                                                                checked={selectedModules.includes(row.categoryId)}
+                                                                onChange={() => handleCheckboxChange(row.categoryId)}
+                                                            />
+                                                            {row.categoryName}
+                                                        </label>
+                                                    </div>
 
 
-                                            <div className="flex items-center justify-center space-x-1">
-                                                {/* Green */}
-                                                <div
-                                                    className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                                    style={{ width: `${correctWidth}%` }}
-                                                ></div>
-                                                {/* Red */}
-                                                <div
-                                                    className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                                    style={{ width: `${incorrectWidth}%` }}
-                                                ></div>
-                                                {/* Gray */}
-                                                <div
-                                                    className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                                    style={{ width: `${unansweredWidth}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                                    <div className="flex items-center justify-center space-x-1">
+                                                        {/* Green */}
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                                            style={{ width: `${correctWidth}%` }}
+                                                        ></div>
+                                                        {/* Red */}
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                                            style={{ width: `${incorrectWidth}%` }}
+                                                        ></div>
+                                                        {/* Gray */}
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                                            style={{ width: `${unansweredWidth}%` }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+}
+                              
                         </div>
 
                     </div>
