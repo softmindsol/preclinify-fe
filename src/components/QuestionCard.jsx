@@ -36,16 +36,17 @@ const calculateTimeForQuestions = (numQuestions) => {
     return totalTimeInSeconds; // Return total time in seconds
 };
 const QuestionCard = () => {
-    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const dispatch = useDispatch();
+    const attempted = useSelector((state) => state.attempts?.attempts);
     const [isOpen, setIsOpen] = useState(false);
+    const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState([]);
     const [isAnswered, setIsAnswered] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [attempts, setAttempts] = useState([]); // Array to track question status: null = unseen, true = correct, false = incorrect
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const navigation = useNavigate();
     const [border, setBorder] = useState(true);
@@ -57,8 +58,8 @@ const QuestionCard = () => {
     const [isReviewEnabled, setIsReviewEnabled] = useState(false);
     const [toggleSidebar, setToggleSidebar] = useState(false);
     const itemsPerPage = 10;
-const [article,setArticle]=useState({})
-    const isQuestionReview=useSelector(state=>state.questionReview.value)
+    const [article, setArticle] = useState({})
+    const isQuestionReview = useSelector(state => state.questionReview.value)
     // Get the items to show for the current page
     const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
@@ -70,18 +71,21 @@ const [article,setArticle]=useState({})
         const savedTime = localStorage.getItem('examTimer');
         return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
     });
-
+    
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
-    const attempted = useSelector((state) => state.attempts?.attempts);
     const active = useSelector((state) => state.attempts?.active);
 
-        
 
 
+
+
+    console.log("attempted:", attempted);
+
+ 
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
@@ -164,39 +168,40 @@ const [article,setArticle]=useState({})
         setIsAnswered(true);
     };
 
-   const handleCheckAnswer = () => {
-    if (selectedAnswer) {
-        setIsButtonClicked(true);
-        setIsAccordionVisible(true);
-        setBorder(false);
-
-        // Get the correct answer from answersArray using correctAnswerId
-        const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
-
-        // Check if the selected answer matches the correct answer
-        const isCorrect = selectedAnswer === correctAnswer;
-    
+    const handleCheckAnswer = () => {
         dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
 
-        // Update attempts
-        setAttempts((prev) => {
-            const updatedAttempts = [...prev];
-            updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
-            dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+        if (selectedAnswer) {
+            setIsButtonClicked(true);
+            setIsAccordionVisible(true);
+            setBorder(false);
 
-            dispatch(setResult({ updatedAttempts }));
-            return updatedAttempts;
-        });
-       
+            // Get the correct answer from answersArray using correctAnswerId
+            const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
 
-        // Expand accordion for the correct answer
-        setIsAccordionOpen((prev) => {
-            const newAccordionState = [...prev];
-            newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
-            return newAccordionState;
-        });
-    }
-};
+            // Check if the selected answer matches the correct answer
+            const isCorrect = selectedAnswer === correctAnswer;
+
+
+            // Update attempts
+            setAttempts((prev) => {
+                const updatedAttempts = [...prev];
+                updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
+                dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+
+                dispatch(setResult({ updatedAttempts }));
+                return updatedAttempts;
+            });
+
+
+            // Expand accordion for the correct answer
+            setIsAccordionOpen((prev) => {
+                const newAccordionState = [...prev];
+                newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
+                return newAccordionState;
+            });
+        }
+    };
 
 
 
@@ -205,14 +210,14 @@ const [article,setArticle]=useState({})
             setCurrentIndex((prev) => prev + 1);
 
             // Check if the next question has been attempted
-            if (attempts[currentIndex + 1] !== null) {
+            if (attempted[currentIndex + 1] !== null) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
             } else {
                 setIsAnswered(false);
                 setIsAccordionVisible(false);
             }
-            if (isQuestionReview){
+            if (isQuestionReview) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
             }
@@ -224,7 +229,7 @@ const [article,setArticle]=useState({})
             setCurrentIndex((prev) => prev - 1);
 
             // Check if the previous question has been attempted
-            if (attempts[currentIndex - 1] !== null) {
+            if (attempted[currentIndex - 1] !== null) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
             } else {
@@ -262,8 +267,8 @@ const [article,setArticle]=useState({})
 
     // Update attempts based on user actions
     const markQuestion = (index, status) => {
-    
-        
+
+
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
             updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
@@ -316,28 +321,25 @@ const [article,setArticle]=useState({})
             setIsSubMenuOpen(false); // Close the menu if the click is outside
         }
     };
- 
 
 
 
-    
+
+
     useEffect(() => {
-        if (data?.data?.length) {
-            setIsAccordionOpen(Array(data.data.length).fill(false));
+        // if (data?.data?.length) {
+        //     setIsAccordionOpen(Array(data.data.length).fill(false));
+        
+        
+        // }
+        if (active) {
             setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
-
-
-
-        }
-    }, [data]);
-
-    
-    useEffect(()=>{
-        if (active){
             dispatch(setAttempted(Array(data.data.length).fill(null))); // Dispatch the updated attempts array to Redux
         }
 
-    },[])
+    }, [data.data]);
+
+
 
     useEffect(() => {
         const correct = attempts.filter((attempt) => attempt === true).length;
@@ -346,7 +348,7 @@ const [article,setArticle]=useState({})
         setAccuracy(totalAttempted > 0 ? ((correct / totalAttempted) * 100).toFixed(1) : 0);
 
         const hasAnswer = attempts.some(value => value === true || value === false);
-       
+
         setIsFinishEnabled(hasAnswer);
 
     }, [attempts]);
@@ -426,7 +428,7 @@ const [article,setArticle]=useState({})
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [currentIndex, attempted, data.data]);
- 
+
     useEffect(() => {
 
         if (review) {
@@ -440,94 +442,122 @@ const [article,setArticle]=useState({})
         }
     }, [review])
 
-    
-    
+
+    console.log("data.data:", data.data);
+    console.log("currentIndex:", currentIndex);
+    console.log("data.data[currentIndex]:", data.data[currentIndex]);
 
 
     return (
         <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `} >
             <div className="dark:bg-[#1E1E2A] min-h-screen">
 
-        
-            <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
-                <div className=''>
-                    <img src="/assets/small-logo.png" alt="" />
+
+                <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
+                    <div className=''>
+                        <img src="/assets/small-logo.png" alt="" />
+                    </div>
+
+                    <div className='' onClick={toggleDrawer}>
+                        <TbBaselineDensityMedium />
+                    </div>
                 </div>
-
-                <div className='' onClick={toggleDrawer}>
-                    <TbBaselineDensityMedium />
-                </div>
-            </div>
-            <div className=" mx-auto  flex items-center justify-center p-6  text-black   ">
+                <div className=" mx-auto  flex items-center justify-center p-6  text-black   ">
 
 
-                <div className={`max-w-full  transition-all duration-150  w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
+                    <div className={`max-w-full  transition-all duration-150  w-[100%] md:w-[80%] lg:w-[70%] xl:w-[55%] ${toggleSidebar ? "2xl:w-[55%] " : '2xl:w-[40%] '} ${toggleSidebar ? "lg:mr-[130px] " : 'lg:mr-[200px] '}  `}>
 
-                    {/* Header Section */}
-                    <div className="bg-[#3CC8A1]   text-white p-6 rounded-md flex items-center justify-between relative">
-                        {/* Progress Bar */}
-                        <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
-                            <div
-                                className="bg-[#60B0FA] h-full transition-all duration-300 ease-in-out"
-                                style={{ width: `${((currentIndex + 1) / data.data.length) * 100}%` }}
-                            ></div>
-                        </div>
-
-                        {/* Left Icon */}
-                        <div className="absolute left-4">
-                            <div className="relative  ">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer "
-                                    onClick={(e) => toggleMenu(e)} // Toggle submenu on click
-                                >
-                                    <circle cx="12" cy="12" r="1" />
-                                    <circle cx="19" cy="12" r="1" />
-                                    <circle cx="5" cy="12" r="1" />
-                                </svg>
-
-                                {/* Submenu */}
-                                {isSubMenuOpen && (
-                                    <div
-                                        ref={menuRef} // Attach ref to the submenu container
-                                        className="absolute right-0 mt-2 w-[150px] bg-white shadow-lg rounded-md border border-gray-300"
-                                    >
-                                        <ul>
-                                            <li
-                                                className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2"
-                                                onClick={() => alert('Report clicked')}
-                                            >
-                                                Report
-                                            </li>
-                                        </ul>
-                                    </div>
-                                )}
+                        {/* Header Section */}
+                        <div className="bg-[#3CC8A1]   text-white p-6 rounded-md flex items-center justify-between relative">
+                            {/* Progress Bar */}
+                            <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
+                                <div
+                                    className="bg-[#60B0FA] h-full transition-all duration-300 ease-in-out"
+                                    style={{ width: `${((currentIndex + 1) / data.data.length) * 100}%` }}
+                                ></div>
                             </div>
 
-                        </div>
+                            {/* Left Icon */}
+                            <div className="absolute left-4">
+                                <div className="relative  ">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-ellipsis lg:w-6 lg:h-6 w-4 h-4 cursor-pointer "
+                                        onClick={(e) => toggleMenu(e)} // Toggle submenu on click
+                                    >
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="19" cy="12" r="1" />
+                                        <circle cx="5" cy="12" r="1" />
+                                    </svg>
 
-                        {/* Question Navigation */}
-                        <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button className={`text-white ${currentIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
-                                &larr;
-                            </button>
-                            <h2 className="font-semibold text-center">
-                                Question {currentIndex + 1} of {data.data.length}
-                            </h2>
-                            <button className={`text-white ${currentIndex + 1 === data.data.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
-                                &rarr;
-                            </button>
-                        </div>
+                                    {/* Submenu */}
+                                    {isSubMenuOpen && (
+                                        <div
+                                            ref={menuRef} // Attach ref to the submenu container
+                                            className="absolute right-0 mt-2 w-[150px] bg-white shadow-lg rounded-md border border-gray-300"
+                                        >
+                                            <ul>
+                                                <li
+                                                    className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2"
+                                                    onClick={() => alert('Report clicked')}
+                                                >
+                                                    Report
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
 
-                        {/* Right Icons */}
-                        <div className="absolute right-4 flex space-x-4">
-                            <div className="relative">
+                            </div>
+
+                            {/* Question Navigation */}
+                            <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
+                                <button className={`text-white ${currentIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
+                                    &larr;
+                                </button>
+                                <h2 className="font-semibold text-center">
+                                    Question {currentIndex + 1} of {data.data.length}
+                                </h2>
+                                <button className={`text-white ${currentIndex + 1 === data.data.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
+                                    &rarr;
+                                </button>
+                            </div>
+
+                            {/* Right Icons */}
+                            <div className="absolute right-4 flex space-x-4">
+                                <div className="relative">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-flask-conical cursor-pointer hover:opacity-80"
+                                        onClick={beakerToggledHandler}
+                                    >
+                                        <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
+                                        <path d="M6.453 15h11.094" />
+                                        <path d="M8.5 2h7" />
+
+                                    </svg>
+                                    {
+                                        beakerToggle && <div className="absolute top-3 left-24">
+                                            <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+                                        </div>
+                                    }
+
+                                </div>
+
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -538,338 +568,312 @@ const [article,setArticle]=useState({})
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="lucide lucide-flask-conical cursor-pointer hover:opacity-80"
-                                    onClick={beakerToggledHandler}
+                                    className="lucide lucide-flag cursor-pointer hover:opacity-80"
+                                    onClick={() => {
+                                        handleFilterChange('Unseen');
+                                        setToggleSidebar(false)
+                                    }}
                                 >
-                                    <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
-                                    <path d="M6.453 15h11.094" />
-                                    <path d="M8.5 2h7" />
-
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                    <line x1="4" x2="4" y1="22" y2="15" />
                                 </svg>
+                            </div>
+                        </div>
+
+                        {/* Question start */}
+                        {data?.data.length > 0 && (
+                            <div className="mt-6 p-6" key={currentIndex}>
+                                <p className="text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white">
+                                    {data.data[currentIndex].questionStem}
+                                </p>
+
+                                <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
+                                    {data.data[currentIndex].leadQuestion}
+                                </h3>
+
+                                {/* Options Section */}
+                                <div className="mt-4 space-y-4">
+                                    {
+                                        data.data[currentIndex].answersArray.map((answer, index) => {
+                                            const isSelected = selectedAnswer === answer;
+                                            const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+
+
+                                            // Determine the border color based on whether the button has been clicked
+                                            const borderColor = isButtonClicked || attempted[currentIndex] !== null
+                                                ? isCorrectAnswer
+                                                    ? "border-[#22C55E]"
+                                                    : "border-[#EF4444]"
+                                                : "";
+                                            const bgColor = isButtonClicked || attempted[currentIndex] !== null
+                                                ? isCorrectAnswer
+                                                    ? "bg-[#DCFCE7]"
+                                                    : "bg-[#FEE2E2]"
+                                                : "";
+
+                                            return (
+                                                <div>
+                                                    {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                                        <label
+                                                            key={index}
+                                                            className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
+                                                            onClick={() => handleAnswerSelect(answer, index)}
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                name="answer"
+                                                                className="form-radio h-5 w-5 text-green-500 "
+                                                                checked={isSelected}
+                                                                readOnly
+                                                            />
+                                                            <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
+                                                            <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
+                                                                {["Q", "W", "E", "R", "T"][index]}
+                                                            </span>
+                                                        </label>
+                                                    ) : (
+                                                        <div
+                                                            className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); // Prevent propagation
+                                                                toggleAccordion(index);
+                                                            }}
+                                                        >
+                                                            <label
+                                                                key={index}
+                                                                className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
+                                                                onClick={() => handleAnswerSelect(answer, index)}
+                                                            >
+                                                                <div
+                                                                    className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
+                                                                        ? isCorrectAnswer
+                                                                            ? "bg-green-100 border border-green-500"
+                                                                            : "bg-red-100 border border-red-500"
+                                                                        : "bg-gray-100 border border-gray-300"
+                                                                        }`}
+                                                                >
+                                                                    {(isButtonClicked || attempted[currentIndex] !== null) && (
+                                                                        isCorrectAnswer ? (
+                                                                            <svg
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                strokeWidth="2"
+                                                                                stroke="green"
+                                                                                className="w-4 h-4"
+                                                                            >
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                            </svg>
+                                                                        ) : (
+                                                                            <svg
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                strokeWidth="2"
+                                                                                stroke="red"
+                                                                                className="w-4 h-4"
+                                                                            >
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                                            </svg>
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                                <span className="text-[#27272A] flex-1">{answer}</span>
+                                                                {isAccordionOpen[index] ? (
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        className="lucide lucide-chevron-up"
+                                                                    >
+                                                                        <path d="m18 15-6-6-6 6" />
+                                                                    </svg>
+                                                                ) : (
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        className="lucide lucide-chevron-down"
+                                                                    >
+                                                                        <path d="m6 9 6 6 6-6" />
+                                                                    </svg>
+                                                                )}
+                                                            </label>
+
+                                                            {/* Conditionally render the hr and p tags */}
+                                                            {isAccordionOpen[index] && (
+                                                                <>
+                                                                    <hr className={`mx-5 ${borderColor}`} />
+                                                                    <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
+                                                                        {data.data[currentIndex].explanationList[index]}
+                                                                    </p>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+
+                                {/* Submit Button */}
                                 {
-                                    beakerToggle && <div className="absolute top-3 left-24">
-                                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+                                    !isReviewEnabled && (
+                                        isAccordionVisible ? (
+                                            <div className="group">
+                                                <button
+                                                    className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                                    onClick={nextQuestion}
+                                                >
+                                                    Next Question
+                                                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="20"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                        >
+                                                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="group">
+                                                <button
+                                                    className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                                    onClick={handleCheckAnswer}
+                                                >
+                                                    Check Answer
+                                                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="20"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                        >
+                                                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        )
+                                    )
+                                }
+                                {isReviewEnabled && (
+                                    <div
+                                        className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                            } justify-center`}
+                                        onClick={handleFinishAndReview}
+                                    >
+                                        {
+                                            review === false
+                                            &&
+                                            <div className="group w-full">
+                                                <button
+                                                    className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+
+                                                >
+                                                    Finish and Review
+                                                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="20"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                        >
+                                                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                )}
+
+                                {
+                                    review === true
+                                    &&
+                                    <div className="group w-full">
+                                        <button
+                                            className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                            onClick={() => {
+                                                navigation('/dashboard')
+                                            }}
+                                        >
+                                            Back to Dashboard
+                                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="20"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                >
+                                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                </svg>
+                                            </span>
+                                        </button>
                                     </div>
                                 }
-
-                            </div>
-
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                onClick={() => {
-                                    handleFilterChange('Unseen');
-                                    setToggleSidebar(false)
-                                }}
-                            >
-                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                <line x1="4" x2="4" y1="22" y2="15" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    {/* Question start */}
-                  {data?.data.length > 0 && (
-    <div className="mt-6 p-6" key={currentIndex}>
-        <p className="text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white">
-            {data.data[currentIndex].questionStem}
-        </p>
-
-        <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
-            {data.data[currentIndex].leadQuestion}
-        </h3>
-
-        {/* Options Section */}
-        <div className="mt-4 space-y-4">
-            {
-            data.data[currentIndex].answersArray.map((answer, index) => {
-                const isSelected = selectedAnswer === answer;
-                const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
-               
-
-                // Determine the border color based on whether the button has been clicked
-                const borderColor = isButtonClicked || attempted[currentIndex] !== null
-                    ? isCorrectAnswer
-                        ? "border-[#22C55E]"
-                        : "border-[#EF4444]"
-                    : "";
-                const bgColor = isButtonClicked || attempted[currentIndex] !== null
-                    ? isCorrectAnswer
-                        ? "bg-[#DCFCE7]"
-                        : "bg-[#FEE2E2]"
-                    : "";
-
-                return (
-                    <div>
-                        {!isAccordionVisible && attempted[currentIndex] === null ? (
-                            <label
-                                key={index}
-                                className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
-                                onClick={() => handleAnswerSelect(answer, index)}
-                            >
-                                <input
-                                    type="radio"
-                                    name="answer"
-                                    className="form-radio h-5 w-5 text-green-500 "
-                                    checked={isSelected}
-                                    readOnly
-                                />
-                                <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
-                                <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
-                                    {["Q", "W", "E", "R", "T"][index]}
-                                </span>
-                            </label>
-                        ) : (
-                            <div
-                                className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Prevent propagation
-                                    toggleAccordion(index);
-                                }}
-                            >
-                                <label
-                                    key={index}
-                                    className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
-                                    onClick={() => handleAnswerSelect(answer, index)}
-                                >
-                                    <div
-                                            className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
-                                            ? isCorrectAnswer
-                                                ? "bg-green-100 border border-green-500"
-                                                : "bg-red-100 border border-red-500"
-                                            : "bg-gray-100 border border-gray-300"
-                                            }`}
-                                    >
-                                            {(isButtonClicked || attempted[currentIndex] !== null) && (
-                                            isCorrectAnswer ? (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="2"
-                                                    stroke="green"
-                                                    className="w-4 h-4"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="2"
-                                                    stroke="red"
-                                                    className="w-4 h-4"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            )
-                                        )}
-                                    </div>
-                                    <span className="text-[#27272A] flex-1">{answer}</span>
-                                    {isAccordionOpen[index] ? (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="lucide lucide-chevron-up"
-                                        >
-                                            <path d="m18 15-6-6-6 6" />
-                                        </svg>
-                                    ) : (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="lucide lucide-chevron-down"
-                                        >
-                                            <path d="m6 9 6 6 6-6" />
-                                        </svg>
-                                    )}
-                                </label>
-
-                                {/* Conditionally render the hr and p tags */}
-                                {isAccordionOpen[index] && (
-                                    <>
-                                        <hr className={`mx-5 ${borderColor}`} />
-                                        <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
-                                            {data.data[currentIndex].explanationList[index]}
-                                        </p>
-                                    </>
-                                )}
                             </div>
                         )}
+
+                        {
+                            isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
+                                <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
+                                <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
+                            </div>
+                        }
+                        {
+
+                            isAccordionVisible && <DiscussionBoard />
+                        }
+                        {
+
+                            isAccordionVisible && <Article article={article} />
+                        }
+
                     </div>
-                );
-            })}
-        </div>
-
-        {/* Submit Button */}
-        {
-            !isReviewEnabled && (
-                isAccordionVisible ? (
-                    <div className="group">
-                        <button
-                            className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                            onClick={nextQuestion}
-                        >
-                            Next Question
-                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                >
-                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                ) : (
-                    <div className="group">
-                        <button
-                            className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                            onClick={handleCheckAnswer}
-                        >
-                            Check Answer
-                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                >
-                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                )
-            )
-        }
-        {isReviewEnabled && (
-            <div
-                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
-                    } justify-center`}
-                onClick={handleFinishAndReview}
-            >
-                {
-                    review === false
-                    &&
-                    <div className="group w-full">
-                        <button
-                            className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
-
-                        >
-                            Finish and Review
-                            <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                >
-                                    <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                }
-            </div>
-        )}
-
-        {
-            review === true
-            &&
-            <div className="group w-full">
-                <button
-                    className="mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
-                    onClick={() => {
-                        navigation('/dashboard')
-                    }}
-                >
-                    Back to Dashboard
-                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                        >
-                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                        </svg>
-                    </span>
-                </button>
-            </div>
-        }
-    </div>
-)}
-
-                    {
-                        isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
-                            <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
-                            <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
-                        </div>
-                    }
-                    {
-
-                        isAccordionVisible && <DiscussionBoard  />
-                    }
-                    {
-
-                        isAccordionVisible && <Article article={article} />
-                    }
-                  
-                </div>
 
 
 
-                {/* Sidebar Section */}
+                    {/* Sidebar Section */}
                     <div className={`hidden lg:block fixed right-0 top-0`}>
                         <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                             <div className="flex items-center justify-between mt-5">
@@ -940,7 +944,7 @@ const [article,setArticle]=useState({})
                                             : attempted[num] === false
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
-                                      
+
 
                                         return (
                                             <div key={i}>
@@ -1065,15 +1069,15 @@ const [article,setArticle]=useState({})
                             </div>
                         </div>
                     </div>
-                
-            </div>
+
+                </div>
             </div>
             {showPopup && (
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
 
-      
-          
+
+
 
             <Drawer
                 open={isOpen}
@@ -1119,7 +1123,7 @@ const [article,setArticle]=useState({})
                                 >
                                     <div>
                                         <p className="text-[12px] mt-3">Time:</p>
-                                       
+
                                         {
                                             review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
                                         }
@@ -1158,28 +1162,27 @@ const [article,setArticle]=useState({})
 
                     <div className="flex justify-center items-center">
                         <div className="grid grid-cols-5 gap-2">
-                            {
-                                indicesToDisplay.map((num, i) => {
-                                    const bgColor =
-                                        result.result[num] === true
-                                            ? "bg-[#3CC8A1]" // Correct
-                                            : result.result[num] === false
-                                                ? "bg-[#FF453A]" // Incorrect (Flagged)
-                                                : "bg-gray-300"; // Unseen (null)
+                           {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                        const bgColor = attempted[num] === true
+                                            ? "bg-[#3CC8A1]" // Correct answer
+                                            : attempted[num] === false
+                                                ? "bg-[#FF453A]" // Incorrect answer
+                                                : "bg-gray-300"; // Unattempted
 
-                                    return (
-                                        <div key={i}>
-                                            <div
-                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px]`}
-                                                onClick={() => markQuestion(num)} // Use `num` for marking
-                                            >
-                                                <p>{num + 1}</p>
+
+                                        return (
+                                            <div key={i}>
+                                                <div
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                    onClick={() => {
+                                                        setCurrentIndex(num); // Navigate to the selected question
+                                                    }}
+                                                >
+                                                    <p>{num + 1}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })
-
-                            }
+                                        );
+                                    })}
                         </div>
                     </div>
                     <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
