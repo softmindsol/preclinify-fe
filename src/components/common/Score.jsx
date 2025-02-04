@@ -27,6 +27,7 @@ const Score = () => {
     const navigate=useNavigate();
     const recentSession = useSelector(state => state?.recentSession?.recentSessions);
        const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
+       const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
    
     
     const toggleDrawer = () => {
@@ -35,9 +36,26 @@ const Score = () => {
     
     const handleQuestionReview=()=>{
         
-        dispatch(setQuestionReview(true))
+        dispatch(setQuestionReview(true));
+        
+    if(type=="SBA"){
         navigate("/question-card");
+
+       
     }
+    else if (type == "SAQ") { 
+        navigate("/short-question");
+    }
+    else if (type == "Mock") {
+        navigate("/mock-test");
+     }
+    else if (type == "QuesGen") { 
+        navigate("/question-generator");
+    }
+    }
+
+    console.log("type:",type);
+    
 
 
 

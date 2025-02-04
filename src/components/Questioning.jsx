@@ -327,16 +327,16 @@ const Questioning = () => {
                     });
 
 
-                dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
+                dispatch(setLoading({ key: 'modules/fetchMockTestById', value: true }));
                 dispatch(fetchMockTestById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
                         console.log("response:", res);
 
-                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                        dispatch(setLoading({ key: 'modules/fetchMockTestById', value: false }));
                     })
                     .catch((err) => {
-                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                        dispatch(setLoading({ key: 'modules/fetchMockTestById', value: false }));
                     });
 
 

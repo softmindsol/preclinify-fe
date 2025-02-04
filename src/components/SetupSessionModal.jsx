@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { changeMode } from "../redux/features/mode/mode.slice";
 import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
 import { fetchQuesGenModules } from "../redux/features/question-gen/question-gen.service";
-import { fetchMockTest } from "../redux/features/mock-test/mock.service";
+import { fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
         (state) => state?.loading?.[fetchQuesGenModules.typePrefix]
     );
     const isMockLoading = useSelector(
-        (state) => state?.loading?.[fetchMockTest.typePrefix]
+        (state) => state?.loading?.[fetchMockTestById.typePrefix]
     );
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
@@ -33,6 +33,8 @@ const navigation=useNavigate()
         correct: true,
     });
 
+    console.log("isMockLoading:", isMockLoading);
+    
     
     const toggleQuestionType = (type) => {
         setQuestionTypes((prev) => ({
