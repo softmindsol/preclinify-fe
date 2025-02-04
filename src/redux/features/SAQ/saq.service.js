@@ -56,6 +56,31 @@ export const fetchShortQuestionByModules = createAsyncThunk(
     }
 );
 
+export const fetchModulesById = createAsyncThunk(
+    'modules/fetchSQAModules',
+    async ({ ids }, { rejectWithValue }) => {
+
+        try {
+            // Fetch modules where the 'id' is in the provided 'ids' array
+            const { data, error } = await supabase
+                .from('modulesNew')
+                .select('*')
+                .in('categoryId', ids); // Filter modules based on the provided IDs
+
+            // If there's an error in the response, reject it
+            if (error) {
+                console.log("error:", error);
+
+                return rejectWithValue(error.message);
+            }
+
+            return data; // Return the fetched modules
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 export const fetchSqaChild = createAsyncThunk(
     'modules/fetchSqaChild',
     async ({ parentIds, limit }, { rejectWithValue }) => {

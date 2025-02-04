@@ -273,7 +273,9 @@ const Questioning = () => {
                                 console.log("SQA Child Response", res);
 
                             })
-                            .catch()
+                            .catch((err)=>{
+
+                            })
 
                         // }
 
@@ -311,9 +313,6 @@ const Questioning = () => {
                             .then((res) => {
                                 setIsLoading(false);
                                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
-                               
-                                
-                            
                                 
                             })
                             .catch((err) => {
@@ -689,7 +688,7 @@ const Questioning = () => {
                                         )
                                     )}
 {
-                                        (type === 'SBA' || type === 'SAQ') && sortedModules?.map((row) => {
+                                        (type === 'SBA' ) && sortedModules?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
