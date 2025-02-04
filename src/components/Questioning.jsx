@@ -417,7 +417,6 @@ const Questioning = () => {
 
 
 
-    console.log("selectedModules:", selectedModules);
     
 
     return (
@@ -446,15 +445,15 @@ const Questioning = () => {
                         <div className=" h-[137px] p-4 ">
                             {/* Tab Section */}
                             <div className="flex items-center text-[#3F3F46] justify-between space-x-2 text-[12px] md:text-[16px] font-medium">
-                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[33%] dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[2px] dark:border-[#3A3A48]   rounded-[8px]">
+                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[50%] dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[2px] dark:border-[#3A3A48]   rounded-[8px]">
+                                Clinical
+                                </button>
+                                <button className="px-4 py-2 bg-[#E4E4E7]  text-gray-500 w-[50%] sm:w-[50%] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48]  rounded-[8px]">
                                     Pre-clinical
                                 </button>
-                                <button className="px-4 py-2 bg-[#E4E4E7]  text-gray-500 w-[50%] sm:w-[33%] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48]  rounded-[8px]">
-                                    Clinical
-                                </button>
-                                <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 dark:hover:text-white w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48] ">
+                                {/* <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 dark:hover:text-white w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48] ">
                                     Data <span className="md:block hidden ml-2 ">Interpretation</span>
-                                </button>
+                                </button> */}
 
                             </div>
 
@@ -464,7 +463,7 @@ const Questioning = () => {
                                 <div className="flex items-center p-8 gap-x-10  ">
 
 
-                                    <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre clinical</p>
+                                    <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Clinical</p>
                                     <div className="xl:flex items-center bg-white border border-gray-300 dark:border-[2px] dark:border-[#3A3A48] rounded-md px-3 py-2  hidden dark:bg-[#1E1E2A]">
                                         <div className="group">
                                             <svg

@@ -46,6 +46,7 @@ const QuestionCard = () => {
     const [isAnswered, setIsAnswered] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const navigation = useNavigate();
@@ -78,19 +79,11 @@ const QuestionCard = () => {
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
     const active = useSelector((state) => state.attempts?.active);
-
-
-
-
-
-    console.log("attempted:", attempted);
-
  
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     };
-
 
     // Arrays to store indices
     const unseenIndices = [];
@@ -109,8 +102,8 @@ const QuestionCard = () => {
         }
 
         if (selectedFilter === 'Flagged') {
-            // Check if item is flagged
-            const isFlagged = attempts[displayNumber] === true || attempts[displayNumber] === false;
+            // Check if item is flagged (attempted)
+            const isFlagged = attempted[displayNumber] === true || attempted[displayNumber] === false;
             if (isFlagged) {
                 flaggedIndices.push(displayNumber); // Store index for flagged items
                 return true;
@@ -118,8 +111,8 @@ const QuestionCard = () => {
         }
 
         if (selectedFilter === 'Unseen') {
-            // Check if item is unseen
-            const isUnseen = attempts[displayNumber] === null;
+            // Check if item is unseen (unattempted)
+            const isUnseen = attempted[displayNumber] === null;
             if (isUnseen) {
                 unseenIndices.push(displayNumber); // Store index for unseen items
                 return true;
@@ -442,10 +435,7 @@ const QuestionCard = () => {
         }
     }, [review])
 
-
-    console.log("data.data:", data.data);
-    console.log("currentIndex:", currentIndex);
-    console.log("data.data[currentIndex]:", data.data[currentIndex]);
+    console.log("attempted:", attempted);
 
 
     return (
@@ -759,11 +749,12 @@ const QuestionCard = () => {
                                         ) : (
                                             <div className="group">
                                                 <button
-                                                    className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
+                                                        className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
                                                     onClick={handleCheckAnswer}
+                                                        disabled={isAnswered===false}
                                                 >
                                                     Check Answer
-                                                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
+                                                        <span className={`bg-white rounded-[4px] px-[2px]  ${isAnswered && 'group-hover:bg-[#3CC8A1]'}  transition-all duration-300 ease-in-out`}>
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             width="20"
@@ -774,7 +765,7 @@ const QuestionCard = () => {
                                                             strokeWidth="2"
                                                             strokeLinecap="round"
                                                             strokeLinejoin="round"
-                                                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                                                className={`lucide lucide-space text-black  ${isAnswered && 'group-hover:text-white'} transition-all duration-300 ease-in-out`}
                                                         >
                                                             <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
                                                         </svg>
@@ -939,25 +930,34 @@ const QuestionCard = () => {
                             <div className="flex justify-center items-center">
                                 <div className="grid grid-cols-5 gap-2">
                                     {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                        // Determine the background color based on the question status
                                         const bgColor = attempted[num] === true
                                             ? "bg-[#3CC8A1]" // Correct answer
                                             : attempted[num] === false
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
 
-
-                                        return (
-                                            <div key={i}>
-                                                <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                    onClick={() => {
-                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                    }}
-                                                >
-                                                    <p>{num + 1}</p>
+                                        // Only display questions that match the selected filter
+                                        if (
+                                            selectedFilter === 'All' ||
+                                            (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false)) ||
+                                            (selectedFilter === 'Unseen' && attempted[num] === null)
+                                        ) {
+                                            return (
+                                                <div key={i}>
+                                                    <div
+                                                        className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                        onClick={() => {
+                                                            setCurrentIndex(num); // Navigate to the selected question
+                                                        }}
+                                                    >
+                                                        <p>{num + 1}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
+                                            );
+                                        } else {
+                                            return null; // Skip rendering if the question doesn't match the filter
+                                        }
                                     })}
                                 </div>
                             </div>

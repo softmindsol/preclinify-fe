@@ -45,13 +45,13 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div className="flex items-center flex-wrap justify-around -mt-24 md:-mt-48">
+            {/* <div className="flex items-center flex-wrap justify-around -mt-24 md:-mt-48">
                 <img src="/assets/LeicesterLogo-1.png" alt="" />
                 <img src="/assets/university-of-birmingham-logo.png" alt="" />
                 <img src="/assets/University_of_Manchester-Logo.png" alt="" />
                 <img src="/assets/University_of_Bristol-Logo.png" alt="" />
                 <img src="/assets/Newcastle-University-Logo.png" alt="" />
-            </div>
+            </div> */}
 
             <div className="w-[90%] lg:w-[58rem] xl:w-[75rem] 2xl:w-[105rem] mx-auto p-[2rem] lg:p-10 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-[2rem] md:gap-32 items-center">
