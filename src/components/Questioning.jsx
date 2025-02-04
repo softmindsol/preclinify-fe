@@ -417,7 +417,7 @@ const Questioning = () => {
 
 
 
-    console.log("");
+    console.log("selectedModules:", selectedModules);
     
 
     return (
