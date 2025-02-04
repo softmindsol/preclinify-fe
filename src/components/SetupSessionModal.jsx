@@ -7,12 +7,15 @@ import { changeMode } from "../redux/features/mode/mode.slice";
 import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
 import { fetchQuesGenModules } from "../redux/features/question-gen/question-gen.service";
 import { fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
+import { fetchShortQuestionByModules } from "../redux/features/SAQ/saq.service";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
     const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
     const isLoading = useSelector(state => state?.loading?.[fetchMcqsByModules.typePrefix]);
+    const isLoadingShortQuestion = useSelector(state => state?.loading?.[fetchShortQuestionByModules.typePrefix]);
+
     const isQuesGenLoading = useSelector(state => state?.loading?.[fetchQuesGenModules.typePrefix]);
     const isMockLoading = useSelector(state => state?.loading?.[fetchMockTestById.typePrefix]);
     const modalRef = useRef(null); // Reference for modal container
@@ -68,7 +71,7 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     };
 
     const handleQuestion = () => {
-        if (type === 'SAQ' && !isLoading) {
+        if (type === 'SAQ' && !isLoadingShortQuestion) {
             navigation('/short-question');
         } else if (type === 'SBA' && !isLoading) {
             navigation("/question-card");
@@ -225,11 +228,11 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
                         <div className="absolute left-5 right-5 bottom-3 ">
                             <button
                                 onClick={handleQuestion}
-                                className={`py-2 ${isLoading || isQuesGenLoading || isMockLoading ? "bg-[#82c7b4]" : "bg-[#3CC8A1]"} ${isLoading || isQuesGenLoading || isMockLoading && 'disabled:cursor-not-allowed'} w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white`}
-                                disabled={isLoading || isQuesGenLoading || isMockLoading}
+                                className={`py-2 ${isLoading || isLoadingShortQuestion || isQuesGenLoading || isMockLoading ? "bg-[#82c7b4]" : "bg-[#3CC8A1]"} ${isLoading || isQuesGenLoading || isMockLoading && 'disabled:cursor-not-allowed'} w-[100%] text-[16px] font-semibold text-white rounded-[8px] hover:bg-[#2e9e7e] dark:text-white`}
+                                disabled={isLoading || isLoadingShortQuestion || isQuesGenLoading || isMockLoading}
                             >
                                 {
-                                    isLoading || isQuesGenLoading || isMockLoading ? 'Loading...' : 'Start Questions'
+                                    isLoading || isLoadingShortQuestion || isQuesGenLoading || isMockLoading ? 'Loading...' : 'Start Questions'
                                 }
                             </button>
                         </div>
