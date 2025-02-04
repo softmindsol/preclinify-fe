@@ -85,14 +85,9 @@ const MockTestQuestion = () => {
 
 
 
-    console.log("attempted:", attempted);
-
-
-
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     };
-
 
     // Arrays to store indices
     const unseenIndices = [];
@@ -111,8 +106,8 @@ const MockTestQuestion = () => {
         }
 
         if (selectedFilter === 'Flagged') {
-            // Check if item is flagged
-            const isFlagged = attempts[displayNumber] === true || attempts[displayNumber] === false;
+            // Check if item is flagged (attempted)
+            const isFlagged = attempted[displayNumber] === true || attempted[displayNumber] === false;
             if (isFlagged) {
                 flaggedIndices.push(displayNumber); // Store index for flagged items
                 return true;
@@ -120,8 +115,8 @@ const MockTestQuestion = () => {
         }
 
         if (selectedFilter === 'Unseen') {
-            // Check if item is unseen
-            const isUnseen = attempts[displayNumber] === null;
+            // Check if item is unseen (unattempted)
+            const isUnseen = attempted[displayNumber] === null;
             if (isUnseen) {
                 unseenIndices.push(displayNumber); // Store index for unseen items
                 return true;
@@ -130,7 +125,6 @@ const MockTestQuestion = () => {
 
         return false; // Hide items that don't match the filter
     });
-
 
 
     const getQuestionRange = (currentIndex) => {
@@ -936,25 +930,34 @@ const MockTestQuestion = () => {
                             <div className="flex justify-center items-center">
                                 <div className="grid grid-cols-5 gap-2">
                                     {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                        // Determine the background color based on the question status
                                         const bgColor = attempted[num] === true
                                             ? "bg-[#3CC8A1]" // Correct answer
                                             : attempted[num] === false
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
 
-
-                                        return (
-                                            <div key={i}>
-                                                <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                    onClick={() => {
-                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                    }}
-                                                >
-                                                    <p>{num + 1}</p>
+                                        // Only display questions that match the selected filter
+                                        if (
+                                            selectedFilter === 'All' ||
+                                            (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false)) ||
+                                            (selectedFilter === 'Unseen' && attempted[num] === null)
+                                        ) {
+                                            return (
+                                                <div key={i}>
+                                                    <div
+                                                        className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                        onClick={() => {
+                                                            setCurrentIndex(num); // Navigate to the selected question
+                                                        }}
+                                                    >
+                                                        <p>{num + 1}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
+                                            );
+                                        } else {
+                                            return null; // Skip rendering if the question doesn't match the filter
+                                        }
                                     })}
                                 </div>
                             </div>
