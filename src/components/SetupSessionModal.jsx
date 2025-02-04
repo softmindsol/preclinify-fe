@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { changeMode } from "../redux/features/mode/mode.slice";
 import { fetchMcqsByModules } from "../redux/features/SBA/sba.service";
 import { fetchQuesGenModules } from "../redux/features/question-gen/question-gen.service";
+import { fetchMockTest } from "../redux/features/mock-test/mock.service";
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
@@ -17,6 +18,9 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     );
     const isQuesGenLoading = useSelector(
         (state) => state?.loading?.[fetchQuesGenModules.typePrefix]
+    );
+    const isMockLoading = useSelector(
+        (state) => state?.loading?.[fetchMockTest.typePrefix]
     );
     const modalRef = useRef(null); // Reference for modal container
 const navigation=useNavigate()
@@ -86,6 +90,11 @@ const navigation=useNavigate()
                 navigation("/question-generator");
             } 
     }
+        if (isMockLoading === false) {
+            if (type === 'Mock') {
+                navigation("/mock-test");
+            }
+        }
     }
 
 
@@ -104,7 +113,6 @@ const navigation=useNavigate()
         dispatch(changeMode({ mode: modeType, timer }));
     }, [modeType, timer, dispatch]);
 
-    console.log("type:",type);
     
     return (
         <div className={`flex items-center justify-center bg-white rounded-[4px]  ${darkModeRedux ? 'dark' : ''} `}>
@@ -147,8 +155,7 @@ const navigation=useNavigate()
                                 <div className="relative w-full ">
                                     <input
                                         type="text"
-                                        value={numQuestions}
-                                        onChange={handleNumQuestionsChange}
+                            
 
                                         className="w-full  py-[10px] border dark:border-[1px] dark:border-[#3A3A48] rounded placeholder-transparent text-end px-[20px] dark:bg-[#1E1E2A] dark:text-white"
                                     />

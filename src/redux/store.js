@@ -16,12 +16,13 @@ import darkModeReducer from './features/dark-mode/dark-mode.slice';
 import { osceReducer } from './features/osce-static/osce-static.slice';
 import  osceBotReducer  from './features/osce-bot/osce-bot.slice';
 import quesGenInsertReducer from './features/question-gen/question-gen.slice'
+import mockModulesReducer from './features/mock-test/mock.slice'
 import attemptReducer from './features/attempts/attempts.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['attempts', 'darkMode', "quesGen",'module','osceBot', 'mcqsQuestion', 'osce','accuracy', 'questionReview', "sqa","sessions","mode","limit"], // Persist these in localStorage
+    whitelist: ['attempts', 'darkMode', "quesGen", 'module', 'osceBot', 'mcqsQuestion', 'osce', 'accuracy', 'questionReview', "sqa", "sessions", "mode", "limit","mockModules"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -46,6 +47,7 @@ const rootReducer = combineReducers({
     osce: osceReducer,
     osceBot: osceBotReducer,
     quesGen: quesGenInsertReducer,
+    mockModules: mockModulesReducer,
     result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 

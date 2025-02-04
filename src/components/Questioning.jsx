@@ -27,13 +27,15 @@ import { setModeType } from "../redux/features/question-gen/question-gen.slice";
 import supabase from "../config/helper";
 import { resetAttempts, setActive } from "../redux/features/attempts/attempts.slice";
 import { fetchQuesGenModules,fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
+import { fetchModulesById, fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
  
 
 const Questioning = () => {
     const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
     const recentSession = useSelector(state => state.recentSession.recentSessions);
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
-    const questionGenModule = useSelector(state => state?.quesGen)
+    const questionGenModule = useSelector(state => state?.quesGen);
+    const { mockTestIds, modules, loading, error } = useSelector((state) => state.mockModules);
     const data = useSelector((state) => state.module);
     const { limit } = useSelector((state) => state.limit);
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
@@ -69,8 +71,7 @@ const Questioning = () => {
     };
     const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState)
-    }
-
+    }    
 
     const handleCheckboxChange = (categoryId) => {
         const selectedModule = data.data.find((module) => module.categoryId === categoryId); // Find the selected module
@@ -170,8 +171,6 @@ const Questioning = () => {
             dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
                 .unwrap()
                 .then((res) => {
-                    console.log("flatModuleIds:", flatModuleIds);
-                    console.log("res", res);
                 })
                 .catch((err) => {
                     console.error("Error fetching questions:", err);
@@ -186,14 +185,6 @@ const Questioning = () => {
         }
 
     }, [limit, isSession])
-
-
-
-    console.log("questionGenModule:", questionGenModule);
-    
-
-
-
 
     useEffect(() => {
         if(type==='SBA' || type==='SAQ'){
@@ -224,6 +215,21 @@ const Questioning = () => {
                 })
         }
 
+       else if (type === 'Mock') {
+            dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: true }));
+            setIsLoading(true)
+            dispatch(fetchModules())
+                .unwrap()
+                .then(() => {
+                    setIsLoading(false)
+                    dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+                }).catch(err => {
+                    dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+                    setIsLoading(false)
+                })
+        }
+
+
 
         sessionStorage.removeItem('persist:result');
         // Dispatch Redux action to clear 'result' from Redux store
@@ -240,8 +246,9 @@ const Questioning = () => {
     useEffect(() => {
         dispatch(setPreclinicalType({ selectedOption }));
 
-        if (selectedModules.length > 0) {
+        // if (selectedModules.length > 0) {
             if (selectedOption === 'SBA') {
+                
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
                 dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
@@ -279,18 +286,68 @@ const Questioning = () => {
                 dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
                 dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
-                    .then(() => {
+                    .then((res) => {
+                        console.log("response:",res);
+                        
                         dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
                     })
                     .catch((err) => {
                         dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
                     });
             } 
+            else if (selectedOption === 'Mock') {
+              
+
+                
+                dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
+                // Fetch IDs from mockTable
+                dispatch(fetchMockTest())
+                    .unwrap()
+                    .then((ids) => {
+                     
+                        // Pass the fetched IDs to fetchModules
+                        dispatch(fetchModulesById({ ids }))
+                            .unwrap()
+                            .then((res) => {
+                                setIsLoading(false);
+                                dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+                               
+                                
+                            
+                                
+                            })
+                            .catch((err) => {
+                                setIsLoading(false);
+                                dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+                            });
+                    })
+                    .catch((err) => {
+                        setIsLoading(false);
+                        dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+                    });
 
 
-        }
+                dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
+                dispatch(fetchMockTestById({ moduleIds: selectedModules, totalLimit: limit }))
+                    .unwrap()
+                    .then((res) => {
+                        console.log("response:", res);
+
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                    })
+                    .catch((err) => {
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                    });
+
+
+
+
+            } 
+
+         
+
+        // }
     }, [selectedModules, limit, selectedOption]);
-
 
     useEffect(() => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
@@ -353,14 +410,14 @@ const Questioning = () => {
                 console.error("Error fetching daily work:", err);
             }
         };
-        const module = selectedModules[0] || null
-        localStorage.setItem('module', JSON.stringify(module))
+        // const module = selectedModules[0] || null
+        // localStorage.setItem('module', JSON.stringify(module))
         fetchDailyWork();
     }, [selectedModules]);
 
 
-    console.log("selectedModules:", selectedModules);
 
+    console.log("");
     
 
     return (
@@ -601,14 +658,19 @@ const Questioning = () => {
                         <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
                         <div>
-                                    {
-                                        (type === 'QuesGen') && (
-                                            questionGenModule?.modules && questionGenModule.modules.length > 0 ? (
-                                                questionGenModule.modules.map((row, id) => (
+                                    {(type === 'QuesGen') && (
+                                        questionGenModule?.modules?.length > 0 ? (
+                                            questionGenModule.modules
+                                                .filter((row, index, arr) => (
+                                                    // Keep only first occurrence of each module
+                                                    arr.findIndex(r => r.module === row.module) === index
+                                                )
+                                                   
+                                                
+                                            )
+                                                .map((row, id) => (
                                                     <div key={id} className="grid md:grid-cols-2 items-center py-3">
-                                                        <div
-                                                            className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                                                        >
+                                                        <div className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white">
                                                             <label className="flex items-center cursor-pointer hover:opacity-85">
                                                                 <input
                                                                     type="checkbox"
@@ -619,31 +681,14 @@ const Questioning = () => {
                                                                 {row.module}
                                                             </label>
                                                         </div>
-
-                                                        {/* Uncomment and use the following code if you want to display the progress bars */}
-                                                        {/* <div className="flex items-center justify-center space-x-1">
-                        <div
-                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                            style={{ width: `${correctWidth}%` }}
-                        ></div>
-                        <div
-                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                            style={{ width: `${incorrectWidth}%` }}
-                        ></div>
-                        <div
-                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                            style={{ width: `${unansweredWidth}%` }}
-                        ></div>
-                    </div> */}
                                                     </div>
                                                 ))
-                                            ) : (
-                                                <div className="text-center py-3 text-gray-500">
-                                                    No modules available.
-                                                </div>
-                                            )
+                                        ) : (
+                                            <div className="text-center py-3 text-gray-500">
+                                                No modules available.
+                                            </div>
                                         )
-                                    }
+                                    )}
 {
                                         (type === 'SBA' || type === 'SAQ') && sortedModules?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
@@ -692,6 +737,54 @@ const Questioning = () => {
                                             );
                                         })
 }
+                                    {
+                                        (type === 'Mock' ) && modules?.map((row) => {
+                                            // const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                            // const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+
+                                            // // Calculate widths based on total counts
+                                            // const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                            // const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                            // const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+
+                                            return (
+                                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                                    <div
+                                                        className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                                                    >
+                                                        <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="mr-2 custom-checkbox hover:opacity-70"
+                                                                checked={selectedModules.includes(row.categoryId)}
+                                                                onChange={() => handleCheckboxChange(row.categoryId)}
+                                                            />
+                                                            {row.categoryName}
+                                                        </label>
+                                                    </div>
+
+
+                                                    {/* <div className="flex items-center justify-center space-x-1">
+                                                       
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                                            style={{ width: `${correctWidth}%` }}
+                                                        ></div>
+                                                      
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                                            style={{ width: `${incorrectWidth}%` }}
+                                                        ></div>
+                                                        
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                                            style={{ width: `${unansweredWidth}%` }}
+                                                        ></div>
+                                                    </div> */}
+                                                </div>
+                                            );
+                                        })
+                                    }
                               
                         </div>
 
