@@ -24,24 +24,23 @@ const FileUpload = () => {
         if (!fileToUpload) {
             toast.error("Please upload a file!");
             return;
-        }
+        }  
 
         const formData = new FormData();
         formData.append("file", fileToUpload);
 
         try {
             setLoading(true);
-            const response = await axios.post(`${process.env.REACT_PUBLIC_BACKEND_URL}/api/v1/upload`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log("response.data.generatedQuestions", response.data.generatedQuestions);
             
             setData(response.data.generatedQuestions); // Set the generated questions
             toast.success("Question generated successfully!");
         } catch (error) {
-            console.error("Error uploading file:", error);
+           
             toast.error("Failed to upload and summarize the file.");
         } finally {
             setLoading(false);
@@ -56,10 +55,6 @@ const FileUpload = () => {
     // Save data to Redux store when `data` changes
     useEffect(() => {
         if (data) {
-
-            
-            console.log("data:",data);
-            
             dispatch(insertQuesGenData(data))
                 .then(() => {
                     toast.success("Question successfully stored in the database!");
