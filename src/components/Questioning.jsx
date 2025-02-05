@@ -726,7 +726,7 @@ const Questioning = () => {
                         <div>
                                     {
                                         selectedTab ==='Pre-clinical' &&
-                                    (type === 'QuesGen') && (
+                                     (
                                         questionGenModule?.modules?.length > 0 ? (
                                             questionGenModule.modules
                                                 .filter((row, index, arr) => (
