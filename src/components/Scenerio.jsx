@@ -3,9 +3,8 @@ import Sidebar from "./common/Sidebar";
 import { Link, NavLink } from "react-router-dom";
 import Logo from "./common/Logo";
 import { RxCross2 } from "react-icons/rx";
-import Drawer from 'react-modern-drawer'
-//import styles 👇
-import 'react-modern-drawer/dist/index.css'
+import Drawer from 'react-modern-drawer';
+import 'react-modern-drawer/dist/index.css';
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOSCEData } from "../redux/features/osce-static/osce-static.service";
@@ -13,19 +12,40 @@ import { fetchOSCEData } from "../redux/features/osce-static/osce-static.service
 const Scenarios = () => {
     const { data, loading, error } = useSelector((state) => state.osce);
     const dispatch = useDispatch();
+    const [isOpen, setIsOpen] = useState(false);
+    const [sortAscending, setSortAscending] = useState(true); // State to track sorting order
 
     useEffect(() => {
         localStorage.removeItem('minutes');
         localStorage.removeItem('seconds');
         dispatch(fetchOSCEData());
     }, [dispatch]);
-    const [isOpen, setIsOpen] = useState(false)
-    const toggleDrawer = () => {
-        setIsOpen((prevState) => !prevState)
-    }
-    return (
-        <div className="md:flex  min-h-screen">
 
+    const toggleDrawer = () => {
+        setIsOpen((prevState) => !prevState);
+    };
+
+    // Function to sort data by ID
+    const sortDataById = (data) => {
+        return data.slice().sort((a, b) => {
+            if (sortAscending) {
+                return a.id - b.id; // Ascending order
+            } else {
+                return b.id - a.id; // Descending order
+            }
+        });
+    };
+
+    // Toggle sorting order
+    const toggleSortOrder = () => {
+        setSortAscending((prev) => !prev);
+    };
+
+    // Sorted data
+    const sortedData = sortDataById(data);
+
+    return (
+        <div className="md:flex min-h-screen">
             <div className="hidden md:block fixed h-full">
                 <Sidebar />
             </div>
@@ -33,30 +53,23 @@ const Scenarios = () => {
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
-
                 <div className='' onClick={toggleDrawer}>
                     <TbBaselineDensityMedium />
                 </div>
             </div>
 
-
-            <div className="px-10 mt-8  w-full md:ml-[250px]">
-
-
+            <div className="px-10 mt-8 w-full md:ml-[250px]">
                 {/* Tabs */}
-                <div className="flex justify-center w-full items-center gap-x-2  text-[14px] lg:text-[16px] xl:text-[20px]  ">
-                    <div className="flex justify-center  w-full items-center space-x-4 bg-[#ffff]  rounded-tl-[4px] rounded-tr-[4px]">
-                        <button className="px-4  flex items-center space-x-4   py-2 text-[#3F3F46] font-semibold">
+                <div className="flex justify-center w-full items-center gap-x-2 text-[14px] lg:text-[16px] xl:text-[20px]">
+                    <div className="flex justify-center w-full items-center space-x-4 bg-[#ffff] rounded-tl-[4px] rounded-tr-[4px]">
+                        <button className="px-4 flex items-center space-x-4 py-2 text-[#3F3F46] font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notepad-text"><path d="M8 2v4" /><path d="M12 2v4" /><path d="M16 2v4" /><rect width="16" height="18" x="4" y="4" rx="2" /><path d="M8 10h6" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
                             <span>Static Scenarios</span>
-
                         </button>
-
                     </div>
-                    <div className="flex justify-center w-full items-center  bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px]">
-                        <button className=" flex items-center space-x-4  text-[#3F3F46] px-4 py-2 font-medium">
+                    <div className="flex justify-center w-full items-center bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px]">
+                        <button className="flex items-center space-x-4 text-[#3F3F46] px-4 py-2 font-medium">
                             <NavLink to={'/osce-ai-bot'} className={'flex items-center space-x-4'}>
-
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" /></svg>
                                 <span>AI Patient Scenarios</span>
                             </NavLink>
@@ -65,10 +78,8 @@ const Scenarios = () => {
                 </div>
 
                 <div className="bg-white p-5 rounded-[8px]">
-
-
                     {/* Categories */}
-                    <div className="flex items-center justify-center ">
+                    <div className="flex items-center justify-center">
                         <div className="grid sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6 justify-items-center">
                             {[
                                 { cat: "Examination", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-stethoscope"><path d="M11 2v2" /><path d="M5 2v2" /><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" /><path d="M8 15a6 6 0 0 0 12 0v-3" /><circle cx="20" cy="10" r="2" /></svg> },
@@ -78,62 +89,38 @@ const Scenarios = () => {
                             ].map((category) => (
                                 <button
                                     key={category.cat}
-                                    className="h-[45px] lg:h-[56px] w-[200px] lg:w-[242px]  text-white bg-[#3CC8A1] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center gap-x-5 hover:bg-transparent transition-all duration-200 hover:text-[#3CC8A1] border border-[#3CC8A1] text-[14px] lg:text-[18px]"
+                                    className="h-[45px] lg:h-[56px] w-[200px] lg:w-[242px] text-white bg-[#3CC8A1] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center gap-x-5 hover:bg-transparent transition-all duration-200 hover:text-[#3CC8A1] border border-[#3CC8A1] text-[14px] lg:text-[18px]"
                                 >
                                     <span>{category.icon}</span>
                                     <span className="text-[20px]">{category.cat}</span>
                                 </button>
                             ))}
                         </div>
-
                     </div>
 
-
-
-                    <div className=" ">
-                        <div className="  flex items-center justify-center flex-wrap gap-5">
-                            {[
-
-                                { cat: "Documentation", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notepad-text"><path d="M8 2v4" /><path d="M12 2v4" /><path d="M16 2v4" /><rect width="16" height="18" x="4" y="4" rx="2" /><path d="M8 10h6" /><path d="M8 14h8" /><path d="M8 18h5" /></svg> },
-                                { cat: "Emergency", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ambulance"><path d="M10 10H6" /><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14" /><path d="M8 8v4" /><path d="M9 18h6" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg> },
-                                { cat: "Exam Circuits", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alarm-clock"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /><path d="M6.38 18.7 4 21" /><path d="M17.64 18.67 20 21" /></svg> },
-                            ].map((category) => (
-                                <button
-                                    key={category}
-                                    className=" h-[45px] lg:h-[56px] w-[200px] lg:w-[242px] text-[14px] lg:text-[18px] text-white bg-[#3CC8A1] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center gap-x-5 hover:bg-transparent transition-all duration-200 hover:text-[#3CC8A1] border border-[#3CC8A1]"               >
-                                    <span>   {category.icon}</span>
-                                    <span className="text-[20px]">{category.cat}</span>
-
-
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-
+                    {/* Sort by Presentation */}
                     <div className="flex flex-col xl:flex-row items-center gap-5 justify-around mt-10">
                         <div className="flex items-center space-x-2">
                             <label htmlFor="sort" className="text-[#71717A] text-[14px] 2xl:text-[16px] font-semibold">
                                 Sort By Presentation
                             </label>
                             <div
-                                className={`relative inline-flex items-center h-5 w-10  cursor-pointer sm:ml-32 rounded-full transition-colors ${false ? "bg-green-500" : "bg-gray-300"
-                                    }`}
+                                className={`relative inline-flex items-center h-5 w-10 cursor-pointer sm:ml-32 rounded-full transition-colors ${sortAscending ? "bg-green-500" : "bg-gray-300"}`}
+                                onClick={toggleSortOrder}
                             >
                                 <span
-                                    className={`absolute left-0.5 top-0.5 h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${false ? "translate-x-5" : "translate-x-0"
-                                        }`}
+                                    className={`absolute left-0.5 top-0.5 h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${sortAscending ? "translate-x-5" : "translate-x-0"}`}
                                 ></span>
                             </div>
                         </div>
 
                         {/* Search */}
-                        <div className="flex  items-center gap-x-5 ">
-                            <div className="relative ">
+                        <div className="flex items-center gap-x-5">
+                            <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="Search for specialties, topics and symptoms"
-                                    className=" py-2 px-4 text-[14px] text-black bg-[#F4F4F5] w-[347px] h-[45px] placeholder:text-[12px]"
+                                    className="py-2 px-4 text-[14px] text-black bg-[#F4F4F5] w-[347px] h-[45px] placeholder:text-[12px]"
                                 />
                                 <button className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-400">
                                     <svg
@@ -152,52 +139,26 @@ const Scenarios = () => {
                                     </svg>
                                 </button>
                             </div>
-
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal"><line x1="21" x2="14" y1="4" y2="4" /><line x1="10" x2="3" y1="4" y2="4" /><line x1="21" x2="12" y1="12" y2="12" /><line x1="8" x2="3" y1="12" y2="12" /><line x1="21" x2="16" y1="20" y2="20" /><line x1="12" x2="3" y1="20" y2="20" /><line x1="14" x2="14" y1="2" y2="6" /><line x1="8" x2="8" y1="10" y2="14" /><line x1="16" x2="16" y1="18" y2="22" /></svg>
                         </div>
-
                     </div>
 
-                    {/* Filters */}
-                    <div className="flex justify-center xl:justify-around items-center mb-6 xl:mr-32 my-10">
-                        <div className="flex space-x-2">
-                            {["Cardiology", "GastroIntestinal", "Child Health"].map((filter) => (
-                                <div
-                                    key={filter}
-                                    className="group text-[#FF9741] border border-[#FF9741] hover:bg-[#FF9741] hover:text-white transition-all duration-200 py-1 px-3 rounded-full  text-[14px] 2xl:text-[16px] font-semibold flex items-center space-x-2"
-                                >
-                                    <span className="group-hover:text-white transition-colors duration-200 text-[16px] font-semibold">{filter}</span>
-                                    <button className="text-[#FF9741] font-bold group-hover:text-white transition-colors duration-200">
-                                        &times;
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div></div>
-
-                    </div>
                     {/* Cards */}
                     <div className="flex items-center justify-center mt-10 pb-">
-
-
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10 ">
-                            {data.map((osce) => (
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10">
+                            {sortedData.map((osce) => (
                                 <div
                                     key={osce.id}
-                                    className="p-4 bg-[#F4F4F5]  hover:opacity-75 cursor-pointer relative rounded-[8px] w-[172px] shadow-md text-center"
+                                    className="p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] w-[172px] shadow-md text-center"
                                 >
-                                    <Link to={`/static-scenerios-detail/${osce.id}`} >
-                                        <div className="flex flex-col h-full justify-between" >
-
-
-
+                                    <Link to={`/static-scenerios-detail/${osce.id}`}>
+                                        <div className="flex flex-col h-full justify-between">
                                             <div>
-                                                <p className="absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA]  lg:text-[14px]">History</p>
-                                                <div className="text-[20px] text-[#3F3F46] mt-3  font-bold">
+                                                <p className="absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px]">History</p>
+                                                <div className="text-[20px] text-[#3F3F46] mt-3 font-bold">
                                                     {osce.category}
                                                 </div>
-                                                <div className="text-[16px] text-[#A1A1AA] font-semibold ">
+                                                <div className="text-[16px] text-[#A1A1AA] font-semibold">
                                                     {osce.stationName}
                                                 </div>
                                             </div>

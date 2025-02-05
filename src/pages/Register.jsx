@@ -155,9 +155,9 @@ const Register = () => {
                                 className='w-full h-[50px] text-[14px] sm:text-[16px] rounded-[8px] bg-[#FFE9D6] text-[#FF9741] font-medium hover:bg-[#e3863a] hover:text-white transition-all duration-150'
                             >
                                 {isLoading ? (
-                                    <div className="flex justify-center items-center">
-                                       <Loader/>
-                                    </div>
+                                  
+                                      "Loading..."
+                                    
                                 ) : (
                                     "Sign Up"
                                 )}

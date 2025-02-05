@@ -24,7 +24,10 @@ export const fetchOSCEDataById = createAsyncThunk(
                 .select('*')
                 .eq('id', id)
                 .single(); // Use .single() if you expect only one result
+                console.log("data:", data);
             if (error) throw error;
+
+            
             return data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
