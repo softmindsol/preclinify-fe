@@ -23,6 +23,40 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Add this CSS to your styles */
+input[type="radio"] {
+    appearance: none; /* Remove default styling */
+    width: 20px; /* Set width */
+    height: 20px; /* Set height */
+    border: 2px solid #ccc; /* Border color */
+    border-radius: 50%; /* Make it circular */
+    cursor: pointer; /* Change cursor */
+    position: relative; /* Position relative for the pseudo-element */
+}
+
+/* Create a pseudo-element for the inner circle */
+input[type="radio"]::before {
+    content: ''; /* Required for pseudo-elements */
+    position: absolute; /* Position it absolutely */
+    top: 2px; /* Adjust to create padding */
+    left: 2px; /* Adjust to create padding */
+    width: 12px; /* Inner circle width */
+    height: 12px; /* Inner circle height */
+    border-radius: 50%; /* Make it circular */
+    background-color: transparent; /* Default background */
+    transition: background-color 0.2s; /* Smooth transition */
+}
+
+/* Change the background color when checked */
+input[type="radio"]:checked::before {
+    background-color: #3CC8A1; /* Change background color when checked */
+}
+
+/* Change border color when checked */
+input[type="radio"]:checked {
+    border: 2px solid #3CC8A1; /* Change border color when checked */
+}
+
 
 .swiper {
   width: 100%;

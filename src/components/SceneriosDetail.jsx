@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Logo from './common/Logo'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOSCEDataById } from '../redux/features/osce-static/osce-static.service';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loader from './common/Loader';
 import DashboardModal from './common/DashboardModal';
 import { FaStar } from "react-icons/fa";
+import { setLoading } from '../redux/features/loader/loader.slice';
+import { fetchOSCEDataById } from '../redux/features/osce-static/osce-static.service';
 
 const SceneriosDetail = () => {
     const [minutes, setMinutes] = useState(8); // Starting minute
@@ -15,7 +16,7 @@ const SceneriosDetail = () => {
     const { selectedData, loading, error } = useSelector((state) => state.osce);
     const dispatch = useDispatch();
     const [showPopup, setShowPopup] = useState(false);
-
+const [loader,setLoader]=useState(false)
     const [openPanel, setOpenPanel] = useState(null);
     const { id } = useParams(); // Extract 'id' from the URL
     const [checkboxState, setCheckboxState] = useState([]);
@@ -24,8 +25,6 @@ const SceneriosDetail = () => {
     const togglePanel = (panel) => {
         setOpenPanel(openPanel === panel ? null : panel);
     };
-
-    console.log("id:",id);
     
 
     const extractHeadings = (markdown) => {
@@ -103,13 +102,13 @@ const SceneriosDetail = () => {
             setSeconds(parseInt(savedSeconds, 10));
         }
 
-        dispatch(fetchOSCEDataById(id));
+    
 
         return () => {
             localStorage.removeItem('minutes');
             localStorage.removeItem('seconds');
         };
-    }, [dispatch, id]);
+    }, []);
 
     useEffect(() => {
         let timerInterval;
@@ -140,8 +139,13 @@ const SceneriosDetail = () => {
     }, [timerActive, minutes, seconds, navigate]);
 
     useEffect(() => {
-        dispatch(fetchOSCEDataById(id));
-    }, [dispatch]);
+    
+            console.log("Fetching static Osce");
+            dispatch(fetchOSCEDataById(id))
+           
+    
+    }, []);
+
 
 
     return (
@@ -282,7 +286,7 @@ const SceneriosDetail = () => {
                                                                     </tr>
                                                                 ))}
 
-                                                                {/* Extra Gap Row After Each Section */}
+                                                               
                                                                 <tr>
                                                                     <td colSpan={2} className="h-4"></td>
                                                                 </tr>
@@ -333,7 +337,8 @@ const SceneriosDetail = () => {
                                 }
                             ].map((panel) => (
                                 <div key={panel.id} className="border-b last:border-b-0 mb-2 bg-white ">
-                                    {/* Accordion Header */}
+                                    
+                                    
                                     <button
                                         onClick={() => togglePanel(panel.id)}
                                         className="w-full text-left p-4 bg-white flex justify-between items-center"
@@ -374,7 +379,7 @@ const SceneriosDetail = () => {
                                         </span>
                                     </button>
 
-                                    {/* Accordion Content with Smooth Transition */}
+                               
                                     <div
                                         className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${openPanel === panel.id ? "max-h-full" : "max-h-0"
                                             }`}

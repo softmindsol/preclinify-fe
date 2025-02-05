@@ -13,7 +13,8 @@ const Scenarios = () => {
     const { data, loading, error } = useSelector((state) => state.osce);
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
-    const [sortAscending, setSortAscending] = useState(true); // State to track sorting order
+    const [sortAscending, setSortAscending] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
     useEffect(() => {
         localStorage.removeItem('minutes');
@@ -43,6 +44,12 @@ const Scenarios = () => {
 
     // Sorted data
     const sortedData = sortDataById(data);
+
+    // Filtered data based on search query
+    const filteredData = sortedData.filter(osce =>
+        osce.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        osce.stationName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="md:flex min-h-screen">
@@ -105,7 +112,7 @@ const Scenarios = () => {
                                 Sort By Presentation
                             </label>
                             <div
-                                className={`relative inline-flex items-center h-5 w-10 cursor-pointer sm:ml-32 rounded-full transition-colors ${sortAscending ? "bg-green-500" : "bg-gray-300"}`}
+                                className={`relative inline-flex items-center h-5 w-10 cursor-pointer sm:ml-32 rounded-full transition-colors ${sortAscending ? "bg-[#3CC8A1]" : "bg-gray-300"}`}
                                 onClick={toggleSortOrder}
                             >
                                 <span
@@ -121,6 +128,8 @@ const Scenarios = () => {
                                     type="text"
                                     placeholder="Search for specialties, topics and symptoms"
                                     className="py-2 px-4 text-[14px] text-black bg-[#F4F4F5] w-[347px] h-[45px] placeholder:text-[12px]"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                                 <button className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-400">
                                     <svg
@@ -146,7 +155,7 @@ const Scenarios = () => {
                     {/* Cards */}
                     <div className="flex items-center justify-center mt-10 pb-">
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10">
-                            {sortedData.map((osce) => (
+                            {filteredData.map((osce) => (
                                 <div
                                     key={osce.id}
                                     className="p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] w-[172px] shadow-md text-center"

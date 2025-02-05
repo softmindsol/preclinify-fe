@@ -138,6 +138,10 @@ const QuestionCard = () => {
 
         return false; // Hide items that don't match the filter
     });
+
+ 
+
+
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
             if (Array.isArray(prev)) {
@@ -325,6 +329,7 @@ const QuestionCard = () => {
     };
 
 
+    
 
 
 
@@ -621,7 +626,7 @@ const QuestionCard = () => {
                                                             <input
                                                                 type="radio"
                                                                 name="answer"
-                                                                className="form-radio h-5 w-5 text-green-500 "
+                                                                className="form-radio h-5 w-5  text-green-500 focus:ring-green-500 "
                                                                 checked={isSelected}
                                                                 readOnly
                                                             />
@@ -945,6 +950,11 @@ const QuestionCard = () => {
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
 
+                                         if (
+                                        selectedFilter === 'All' ||
+                                        (selectedFilter === 'Flagged' && (attempts[num] === true || attempts[num] === false)) ||
+                                        (selectedFilter === 'Unseen' && attempts[num] === null)
+                                    ) {
                                         return (
                                             <div key={i}>
                                                 <div
@@ -957,6 +967,9 @@ const QuestionCard = () => {
                                                 </div>
                                             </div>
                                         );
+                                    } else {
+                                        return null; // Skip rendering if the question doesn't match the filter
+                                    }
                                     })}
                                 </div>
                             </div>
