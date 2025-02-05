@@ -203,8 +203,8 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className='flex-grow lg:ml-[250px] py-2 md:py-10 overflow-y-auto   dark:bg-[#1E1E2A] text-black '>
-                <div className='flex flex-row  items-center  h-[150px] justify-center sm:justify-evenly w-full gap-x-3 xs:gap-x-16 sm:gap-x-36 xl:gap-x-16 py-5'>
+            <div className='flex-grow  lg:ml-[250px] py-2 md:py-10 overflow-y-auto   dark:bg-[#1E1E2A] text-black '>
+                <div className='flex flex-row   items-center  h-[150px] justify-center  sm:justify-evenly w-full gap-x-3 xs:gap-x-16 sm:gap-x-36 xl:gap-x-36 2xl:gap-x-20 py-5'>
                     <p className='text-[18px] sm:text-[24px] xl:text-[32px] text-[#52525B] font-extrabold dark:text-white'>Hello Sainavi,</p>
                     <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
                         <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] dark:bg-[#1E1E2A] dark:border-[1px] dark:border-[#3A3A48]'>
