@@ -18,13 +18,13 @@ const Hero = () => {
         <div className="mt-8  overflow-y-auto">
             <div className="relative  h-[60vh] md:h-[77vh] lg:h-screen  flex items-center justify-center ">
                 <div
-                    className="hidden md:block md:absolute top-32 left-0 w-[150px] h-[450px] lg:w-[200px] lg:h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat"
-                    style={{ backgroundImage: `url('/assets/HomePageBG-1.png')` }}
+                    className="hidden md:block md:absolute top-32 -left-10 w-[150px] h-[450px] lg:w-[200px] lg:h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat"
+                    style={{ backgroundImage: `url('/assets/HomePageBG.png')` }}
                 ></div>
 
                 <div
                     className="hidden md:block md:absolute top-32 right-0 w-[150px] h-[450px] lg:w-[200px] lg:h-[500px] xl:w-[273px] xl:h-[557px] bg-cover bg-no-repeat"
-                    style={{ backgroundImage: `url('/assets/HomePageBG-2.png')` }}
+                    style={{ backgroundImage: `url('/assets/HomePageBG.png')` }}
                 ></div>
 
                 <div className="text-center w-[90%] md:w-[35%] xl:w-[40%] space-y-5 2xl:space-y-10 ">
@@ -53,7 +53,7 @@ const Hero = () => {
                 <img src="/assets/Newcastle-University-Logo.png" alt="" />
             </div> */}
 
-            <div className="w-[90%] lg:w-[58rem] xl:w-[75rem] 2xl:w-[105rem] mx-auto p-[2rem] lg:p-10 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
+            <div className="w-[90%] lg:w-[58rem] xl:w-[75rem] md:-mt-28 2xl:w-[105rem] mx-auto p-[2rem] lg:p-10 mt-12 flex items-center justify-center bg-gray-50  rounded-[48px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-[2rem] md:gap-32 items-center">
                    
                     <div>

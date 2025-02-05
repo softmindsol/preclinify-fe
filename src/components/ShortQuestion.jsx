@@ -31,7 +31,9 @@ const calculateTimeForQuestions = (numQuestions) => {
     return totalTimeInSeconds; // Return total time in seconds
 };
 const ShortQuestion = () => {
-    const sqa = useSelector(state => state?.sqa || [])
+    const sqa = useSelector(state => state?.SQA?.organizedData || []);
+    console.log("redux SQA:", sqa);
+
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const [childIndex, setChildIndex] = useState(0)
@@ -44,17 +46,17 @@ const ShortQuestion = () => {
     const [correctAnswers, setCorrectAnswers] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState("")
-    const [attempts, setAttempts] = useState(Array(sqa?.sqaChildData.length).fill(null)); // Initialize with null    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
-
+    
     const navigation = useNavigate();
     const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
-    const data = useSelector((state) => state.mcqsQuestion || []);
+    // const data = useSelector((state) => state.mcqsQuestion || []);
     const result = useSelector((state) => state.result);
     const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
     const [isReviewEnabled, setIsReviewEnabled] = useState(false)
-    const itemsPerPage = 20;
+    const itemsPerPage = 10;
     // Get the items to show for the current page
-    const currentItems = data.data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+  
+    
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
     const isTimerMode = useSelector((state) => state.mode);
@@ -70,8 +72,20 @@ const ShortQuestion = () => {
     const [beakerToggle, setBeakerToggle] = useState(false);
     const [error, setError] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
+    const [parentIndex,setParentIndex]=useState(0)
+    const totalQuestions = sqa.reduce((total, parent) => total + parent.children.length, 0);
 
+    // Initialize attempts with null values
+    const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
+    // const currentItems = sqa.children.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+    const allChildren = sqa.flatMap(parent => parent.children); // or use: const allChildren = [].concat(...sqa.map(parent => parent.children));
 
+    // Get the current items based on the current page
+    const currentItems = allChildren.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+    // console.log("allChildren:", allChildren);
+    // console.log("currentItems:", currentItems);
+    
     const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
     }
@@ -116,8 +130,6 @@ const ShortQuestion = () => {
 
 
     };
-
-    console.log("mcqsAccuracy:", mcqsAccuracy);
     
 
     const handleCorrectClick = () => {
@@ -142,7 +154,7 @@ const ShortQuestion = () => {
     const allIndices = [];
 
     // Filter items based on the selected filter
-    const filteredItems = sqa?.sqaChildData.filter((question, index) => {
+    const filteredItems = currentItems?.filter((question, index) => {
         const displayNumber = currentPage * itemsPerPage + index;
 
         // All items
@@ -178,8 +190,11 @@ const ShortQuestion = () => {
 
     // Function to navigate to the next question
     const nextQuestion = () => {
-        if (childIndex < sqa?.sqaChildData.length - 1) {
-            setChildIndex((prev) => prev + 1);
+        if (childIndex < sqa[parentIndex]?.children.length - 1) {
+            setChildIndex(prev => prev + 1);
+        } else if (parentIndex < sqa.length - 1) {
+            setParentIndex(prev => prev + 1);
+            setChildIndex(0);
         }
 
     };
@@ -188,9 +203,29 @@ const ShortQuestion = () => {
     // Function to navigate to the previous question
     const prevQuestion = () => {
         if (childIndex > 0) {
-            setChildIndex((prev) => prev - 1);
+            setChildIndex(prev => prev - 1);
+        } else if (parentIndex > 0) {
+            setParentIndex(prev => prev - 1);
+            setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
         }
 
+    };
+
+    const nextPage = () => {
+        if ((currentPage + 1) * itemsPerPage < allChildren.length) {
+            setCurrentPage(currentPage + 1);
+            setCurrentIndex(prev => prev+10); 
+            
+        }
+
+    }
+
+    // Function to go to the previous page
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+            setCurrentIndex(0); 
+        }
     };
 
 
@@ -221,20 +256,6 @@ const ShortQuestion = () => {
     };
 
 
-    const nextPage = () => {
-        if ((currentPage + 1) * itemsPerPage < sqa?.sqaChildData.length) {
-            setCurrentPage(currentPage + 1);
-        }
-
-    }
-
-    // Function to go to the previous page
-    const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
-
     const markQuestion = (index, status) => {
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
@@ -258,6 +279,17 @@ const ShortQuestion = () => {
         setTotalAttempts(prev => prev + 1);
     };
 
+
+    const getQuestionRange = (currentIndex) => {
+       // Number of items to show in the sidebar
+        const start = Math.floor(currentIndex / itemsPerPage) * itemsPerPage; // Calculate the start index
+        const end = Math.min(start + itemsPerPage, allChildren.length); // Calculate the end index
+        
+        return { start, end };
+    };
+
+    // Get the range of questions to display
+    const { start, end } = getQuestionRange(currentIndex);
 
     const handleFinishAndReview = () => {
         if (isReviewEnabled) {
@@ -299,11 +331,16 @@ const ShortQuestion = () => {
     // Check if it's time to enable the Finish button
     useEffect(() => {
         setIsReviewEnabled(false);
-        if (sqa?.sqaChildData.length === childIndex + 1) {
+        if (sqa[parentIndex]?.children.length === childIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
         }
-    }, [childIndex, sqa?.sqaChildData.length]); // Re-run whenever currentIndex changes
+    }, [childIndex, sqa[parentIndex]?.children.length]); // Re-run whenever currentIndex changes
+    useEffect(() => {
+        const totalQuestions = sqa.reduce((acc, parent) => acc + parent.children.length, 0);
+        const currentQuestionNumber = childIndex + 1 + sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0);
 
+        setIsReviewEnabled(currentQuestionNumber === totalQuestions);
+    }, [childIndex, parentIndex, sqa]);
 
 
     return (
@@ -328,10 +365,15 @@ const ShortQuestion = () => {
 
                     <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6   rounded-md flex items-center justify-between relative">
                         {/* Progress Bar */}
-                        <div className="absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden">
+                        <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[#D4D4D8] rounded-md overflow-hidden">
                             <div
                                 className="bg-[#60B0FA] h-full transition-all duration-300 ease-in-out"
-                                style={{ width: `${((childIndex + 1) / sqa?.sqaChildData.length) * 100}%` }}
+                                style={{
+                                    width: `${(
+                                        (childIndex + 1 + sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0)) /
+                                        sqa.reduce((total, parent) => total + parent.children.length, 0)
+                                    ) * 100}%`
+                                }}
                             ></div>
                         </div>
 
@@ -375,14 +417,24 @@ const ShortQuestion = () => {
                         </div>
 
                         {/* Question Navigation */}
+                     
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button className={`text-white ${childIndex + 1 <= 1 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
+                            <button className={`text-white ${childIndex + 1 <= 1 && parentIndex === 0 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
                                 &larr;
                             </button>
                             <h2 className="font-semibold text-center">
-                                Question {childIndex + 1} of {sqa?.sqaChildData.length}
+                                Question {
+                                    // Calculate current question number
+                                    childIndex + 1 +
+                                    sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0)
+                                } of {
+                                    // Calculate total questions
+                                    sqa.reduce((total, parent) => total + parent.children.length, 0)
+                                }
                             </h2>
-                            <button className={`text-white ${childIndex + 1 === sqa?.sqaChildData?.length ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={nextQuestion}>
+                            <button className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
+                                    (parentIndex === sqa.length - 1) ? 'opacity-70 cursor-not-allowed' : ''
+                                }`} onClick={nextQuestion}>
                                 &rarr;
                             </button>
                         </div>
@@ -441,14 +493,13 @@ const ShortQuestion = () => {
                     {/* Question Section */}
                     <div className="mt-6  p-6 ">
                         <p className="text-[#000000] text-justify w-[100%] lg:w-[720px] dark:text-white">
-                            {sqa?.shortQuestions[0].parentQuestion}
+                            {sqa[parentIndex]?.parentQuestion}
                         </p>
 
                         <h3 className="mt-4 text-[14px] text-[#27272A]  w-[100%] lg:w-[720px] font-bold text-wrap dark:text-white">
-                            {sqa?.sqaChildData[childIndex]?.questionLead}
+                            {sqa[parentIndex]?.children[childIndex]?.questionLead}
                         </h3>
 
-                        {/* Options Section */}
                         <div>
 
 
@@ -481,7 +532,7 @@ const ShortQuestion = () => {
                                     <textarea
                                         className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                         placeholder="This is the user’s answer"
-                                        value={sqa.sqaChildData[childIndex].idealAnswer}
+                                        value={sqa[parentIndex].children[childIndex].idealAnswer}
                                     />
                                 </div>
                         }
@@ -658,61 +709,107 @@ const ShortQuestion = () => {
                         </div>
 
                         <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white ">
+                            <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
                                 <span
-                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
-                                        }`}
+                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
                                     onClick={() => handleFilterChange('All')}
                                 >
                                     All
                                 </span>
                                 <span
-                                    className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
-                                        }`}
+                                    className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
                                     onClick={() => handleFilterChange('Flagged')}
                                 >
                                     Flagged
                                 </span>
                                 <span
-                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'
-                                        }`}
+                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
                                     onClick={() => handleFilterChange('Unseen')}
                                 >
                                     Unseen
                                 </span>
                             </div>
-
                         </div>
+
 
                         <div className="flex justify-center items-center">
                             <div className="grid grid-cols-5 gap-2">
-                                {
-                                    indicesToDisplay.map((num, i) => {
-                                        const bgColor =
-                                            result.result[num] === true
-                                                ? "bg-[#3CC8A1]" // Correct
-                                                : result.result[num] === false
-                                                    ? "bg-[#FF453A]" // Incorrect (Flagged)
-                                                    : "bg-gray-300"; // Unseen (null)
+                                {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                    // Determine the background color based on the question status
+                                    const bgColor = attempts[num] === true
+                                        ? "bg-[#3CC8A1]" // Correct answer
+                                        : attempts[num] === false
+                                            ? "bg-[#FF453A]" // Incorrect answer
+                                            : "bg-gray-300"; // Unattempted
 
+                                    // Only display questions that match the selected filter
+                                    if (
+                                        selectedFilter === 'All' ||
+                                        (selectedFilter === 'Flagged' && (attempts[num] === true || attempts[num] === false)) ||
+                                        (selectedFilter === 'Unseen' && attempts[num] === null)
+                                    ) {
                                         return (
                                             <div key={i}>
                                                 <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] dark:bg-[#1E1E2A]   dark:border`}
-                                                    onClick={() => markQuestion(num)} // Use `num` for marking
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                    onClick={() => {
+                                                        setCurrentIndex(num); // Navigate to the selected question
+                                                    }}
                                                 >
                                                     <p>{num + 1}</p>
                                                 </div>
                                             </div>
                                         );
-                                    })
-
-                                }
+                                    } else {
+                                        return null; // Skip rendering if the question doesn't match the filter
+                                    }
+                                })}
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg>
+                            <button
+                                className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                onClick={currentPage > 0 ? prevPage : null}
+                                disabled={currentPage === 0}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-move-left"
+                                >
+                                    <path d="M6 8L2 12L6 16" />
+                                    <path d="M2 12H22" />
+                                </svg>
+                            </button>
+
+                            <button
+                                className={`${((currentPage + 1) * itemsPerPage) >= allChildren.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                onClick={((currentPage + 1) * itemsPerPage) < allChildren.length ? nextPage : null}
+                                disabled={((currentPage + 1) * itemsPerPage) >= allChildren.length}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-move-right"
+                                >
+                                    <path d="M18 8L22 12L18 16" />
+                                    <path d="M2 12H22" />
+                                </svg>
+                            </button>
                         </div>
                         <div className="py-5 px-10 text-[#D4D4D8]">
                             <hr />
@@ -890,8 +987,49 @@ const ShortQuestion = () => {
                         </div>
                     </div>
                     <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-left cursor-pointer" onClick={prevPage} ><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-move-right cursor-pointer" onClick={nextPage} ><path d="M18 8L22 12L18 16" /><path d="M2 12H22" /></svg> */}
+                        <button
+                            className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                            onClick={currentPage > 0 ? prevPage : null}
+                            disabled={currentPage === 0}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-move-left"
+                            >
+                                <path d="M6 8L2 12L6 16" />
+                                <path d="M2 12H22" />
+                            </svg>
+                        </button>
+
+                        <button
+                            className={`${((currentPage + 1) * itemsPerPage) >= currentItems.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                            onClick={((currentPage + 1) * itemsPerPage) < currentItems.length ? nextPage : null}
+                            disabled={((currentPage + 1) * itemsPerPage) >= currentItems.length}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-move-right"
+                            >
+                                <path d="M18 8L22 12L18 16" />
+                                <path d="M2 12H22" />
+                            </svg>
+                        </button>
                     </div>
                     <div className="py-5 px-10 text-[#D4D4D8]">
                         <hr />

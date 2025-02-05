@@ -2,51 +2,30 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../../../config/helper";
 
 // Fetch MCQs by moduleId with limit
+
+
 export const fetchShortQuestionByModules = createAsyncThunk(
     'modules/fetchShortQuestionByModules',
-    async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
+      
+        
         try {
-            if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
-                return rejectWithValue('Invalid moduleIds');
-            }
-
-            // Calculate the limit for each module
-            const baseLimit = Math.floor(totalLimit / moduleIds.length);
-            const remainder = totalLimit % moduleIds.length;
-
-            // Prepare limits for each module
-            const moduleLimits = moduleIds.map((moduleId, index) => {
-                return {
-                    moduleId,
-                    limit: baseLimit + (index < remainder ? 1 : 0),
-                };
-            });
-
-            // Run multiple requests in parallel
-            const promises = moduleLimits.map(async ({ moduleId, limit }) => {
+           
                 let query = supabase
                     .from('saqParent')
                     .select('*')
-                    .eq('categoryId', moduleId)
-                    .limit(limit);
+                    
 
                 const { data, error } = await query;
                 if (error) {
-                    throw new Error(`Error fetching data for moduleId ${moduleId}: ${error.message}`);
+                    throw new Error(`Error fetching data for moduleId  ${error.message}`);
                 }
 
 
-                return data; // Return the fetched data
-            });
+            const ids = data.map(item => item.categoryId);
 
-            const results = await Promise.all(promises); // Wait for all requests to complete
-            console.log("results:", results);
-
-            // Combine all fetched data into a single array
-            const combinedData = results.flat(); // Flatten the array of arrays into a single array
-            console.log("combinedData:", combinedData);
-
-            return combinedData; // Return the combined data
+            return{ ids,data}; // Return the fetched data
+         
         } catch (error) {
             return rejectWithValue({
                 message: error?.message || 'An unexpected error occurred',
@@ -81,6 +60,31 @@ export const fetchModulesById = createAsyncThunk(
     }
 );
 
+export const fetchShortQuestionByModulesById = createAsyncThunk(
+    'modules/fetchShortQuestionByModuleById',
+    async ({ moduleIds }, { rejectWithValue }) => {
+       
+
+        try {
+            const { data, error } = await supabase
+                .from('saqParent')
+                .select('*')
+                .in('categoryId', moduleIds); // 'in' method ka use
+
+            if (error) {
+                throw new Error(`Error fetching data for moduleId: ${error.message}`);
+            }
+
+            return data;
+        } catch (error) {
+            return rejectWithValue({
+                message: error?.message || 'An unexpected error occurred',
+                stack: error?.stack,
+            });
+        }
+    }
+);
+
 export const fetchSqaChild = createAsyncThunk(
     'modules/fetchSqaChild',
     async ({ parentIds, limit }, { rejectWithValue }) => {
@@ -92,7 +96,7 @@ export const fetchSqaChild = createAsyncThunk(
             const query = supabase
                 .from('saqChild')
                 .select('*')
-                .eq('parentQuestionId', parentIds);
+                .in('parentQuestionId', parentIds);
 
             // Apply limit only if limit is provided
             if (limit) {
@@ -100,8 +104,8 @@ export const fetchSqaChild = createAsyncThunk(
             }
 
             const { data, error } = await query;
-            console.log("service:", data);
-            console.log("limit services:", limit)
+            // console.log("service:", data);
+            // console.log("limit services:", limit)
 
             if (error) {
                 return rejectWithValue(error.message || 'Failed to fetch module questions');

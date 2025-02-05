@@ -90,9 +90,26 @@ const QuestionCard = () => {
     const flaggedIndices = [];
     const allIndices = [];
 
-    // Filter items based on the selected filter
-    const filteredItems = currentItems.filter((question, index) => {
-        const displayNumber = currentPage * itemsPerPage + index;
+   
+
+ 
+  
+    const getQuestionRange = (currentPage) => {
+        // const itemsPerPage = 10; // Number of items to show in the sidebar
+        const start = Math.floor(currentPage / itemsPerPage) * itemsPerPage; // Calculate the start index
+        const end = Math.min(start + itemsPerPage, data?.data?.length); // Calculate the end index
+
+        console.log(start,end);
+        
+        return { start, end };
+    };
+
+  
+    // Get the range of questions to display
+    const { start, end } = getQuestionRange(currentIndex);
+    // Filtered items to display based on the selected filter
+    const filteredItems = data.data.slice(start, end).filter((question, index) => {
+        const displayNumber = start + index;
 
         // All items
         allIndices.push(displayNumber);
@@ -121,19 +138,6 @@ const QuestionCard = () => {
 
         return false; // Hide items that don't match the filter
     });
-
-
-
-    const getQuestionRange = (currentIndex) => {
-        const itemsPerPage = 10; // Number of items to show in the sidebar
-        const start = Math.floor(currentIndex / itemsPerPage) * itemsPerPage; // Calculate the start index
-        const end = Math.min(start + itemsPerPage, data.data.length); // Calculate the end index
-        return { start, end };
-    };
-
-    // Get the range of questions to display
-    const { start, end } = getQuestionRange(currentIndex);
-
     const toggleAccordion = (index) => {
         setIsAccordionOpen((prev) => {
             if (Array.isArray(prev)) {
@@ -237,15 +241,20 @@ const QuestionCard = () => {
     };
     const nextPage = () => {
         if ((currentPage + 1) * itemsPerPage < data.data.length) {
-            setCurrentPage(currentPage + 1);
+            setCurrentPage((prev) => prev + 1);
+            setCurrentIndex(10); 
         }
 
-    }
+       
 
-    // Function to go to the previous page
+    };
+
+
+
     const prevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
+            setCurrentIndex(0); // Reset to the first question of the new page
         }
     };
 
@@ -930,34 +939,24 @@ const QuestionCard = () => {
                             <div className="flex justify-center items-center">
                                 <div className="grid grid-cols-5 gap-2">
                                     {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                        // Determine the background color based on the question status
                                         const bgColor = attempted[num] === true
                                             ? "bg-[#3CC8A1]" // Correct answer
                                             : attempted[num] === false
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
 
-                                        // Only display questions that match the selected filter
-                                        if (
-                                            selectedFilter === 'All' ||
-                                            (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false)) ||
-                                            (selectedFilter === 'Unseen' && attempted[num] === null)
-                                        ) {
-                                            return (
-                                                <div key={i}>
-                                                    <div
-                                                        className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                        onClick={() => {
-                                                            setCurrentIndex(num); // Navigate to the selected question
-                                                        }}
-                                                    >
-                                                        <p>{num + 1}</p>
-                                                    </div>
+                                        return (
+                                            <div key={i}>
+                                                <div
+                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                    onClick={() => {
+                                                        setCurrentIndex(num); // Navigate to the selected question
+                                                    }}
+                                                >
+                                                    <p>{num + 1}</p>
                                                 </div>
-                                            );
-                                        } else {
-                                            return null; // Skip rendering if the question doesn't match the filter
-                                        }
+                                            </div>
+                                        );
                                     })}
                                 </div>
                             </div>

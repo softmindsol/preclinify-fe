@@ -45,7 +45,7 @@ const Slider = () => {
                               “Preclinify has been an incredible tool for my revision, helping me reinforce my knowledge and prepare effectively for exams.
                           </p>
                           <p>
-                              The questions are engaging, highly relevant, and come with well-explained answers that make complex topics easier to understand. I highly recommend it to fellow aspiring doctors!”
+                              The questions are engaging, highly relevant, and come with well-explained answers that make complex topics easier to understand. 
                           </p>
                           <p className='text-[12px] sm:text-[16px] font-bold xl:text-[20px] 2xl:text-[24px] text-[#FF9741]' style={{ marginTop: '10px' }}>
                               Mohammad, University College London

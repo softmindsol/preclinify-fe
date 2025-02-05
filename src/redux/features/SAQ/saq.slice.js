@@ -1,58 +1,88 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchShortQuestionByModules, fetchSqaChild } from './saq.service'; // Import your async actions
+import { createSlice } from "@reduxjs/toolkit";
+import {
+    fetchShortQuestionByModules,
+    fetchModulesById,
+    fetchShortQuestionByModulesById,
+    fetchSqaChild
+} from "./saq.service";
 
 const initialState = {
-    shortQuestions: [],  // Store the short questions data
-    sqaChildData: [],    // Store the child data
-    loading: false,      // Loading state
-    error: null,         // Error state
+    shortQuestions: [],
+    modules: [],
+    sqaChildren: [],
+    organizedData: [],
+    loading: false,
+    error: null
 };
 
-const modulesSlice = createSlice({
-    name: 'sqa',
+const shortQuestionSlice = createSlice({
+    name: "SQA",
     initialState,
-    reducers: {
-        // You can add additional reducers here if necessary
-        resetModulesState: (state) => {
-            state.shortQuestions = [];
-            state.sqaChildData = [];
-            state.loading = false;
-            state.error = null;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
-        // Handle the loading, success, and error for fetchShortQuestionByModules
         builder
+            // Fetch Short Questions
             .addCase(fetchShortQuestionByModules.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(fetchShortQuestionByModules.fulfilled, (state, action) => {
                 state.loading = false;
-                state.shortQuestions = action.payload;  // Store the data from the response
-                state.error = null;  // Clear the error if the request was successful
+                state.shortQuestions = action.payload.data;
             })
             .addCase(fetchShortQuestionByModules.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || 'Failed to fetch questions';  // Set the error message
-            });
+                state.error = action.payload;
+            })
 
-        // Handle the loading, success, and error for fetchSqaChild
-        builder
+            // Fetch Modules by ID
+            .addCase(fetchModulesById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchModulesById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.modules = action.payload;
+            })
+            .addCase(fetchModulesById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Fetch Short Questions by Module IDs
+            .addCase(fetchShortQuestionByModulesById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchShortQuestionByModulesById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.shortQuestions = action.payload;
+            })
+            .addCase(fetchShortQuestionByModulesById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Fetch SQA Child Questions
             .addCase(fetchSqaChild.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(fetchSqaChild.fulfilled, (state, action) => {
                 state.loading = false;
-                state.sqaChildData = action.payload;  // Store the data from the response
-                state.error = null;  // Clear the error if the request was successful
+                state.sqaChildren = action.payload;
+
+                // Organize data by mapping parents with their children
+                state.organizedData = state.shortQuestions.map(parent => ({
+                    ...parent,
+                    children: action.payload.filter(child => child.parentQuestionId === parent.id)
+                }));
             })
             .addCase(fetchSqaChild.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || 'Failed to fetch child data';  // Set the error message
+                state.error = action.payload;
             });
-    },
+    }
 });
 
-export const { resetModulesState } = modulesSlice.actions;
-
-export default modulesSlice.reducer;
+export default shortQuestionSlice.reducer;

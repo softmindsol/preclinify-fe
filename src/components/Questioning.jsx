@@ -17,7 +17,7 @@ import { clearResult } from "../redux/features/result/result.slice";
 import { setResetLimit } from "../redux/features/limit/limit.slice";
 import Loader from "./common/Loader";
 import { resetQuestionReviewValue } from "../redux/features/question-review/question-review.slice";
-import { fetchShortQuestionByModules, fetchSqaChild } from "../redux/features/SAQ/saq.service";
+import { fetchShortQuestionByModules, fetchShortQuestionByModulesById, fetchSqaChild } from "../redux/features/SAQ/saq.service";
 
 import { setPreclinicalType } from "../redux/features/mode/mode.slice";
 import { clearRecentSessions, updateRecentSessions } from "../redux/features/recent-session/recent-session.slice";
@@ -31,6 +31,9 @@ import { fetchModulesById, fetchMockTest, fetchMockTestById } from "../redux/fea
  
 
 const Questioning = () => {
+        const sqa = useSelector(state => state?.SQA || [])
+    console.log("SQA:",sqa);
+    
     const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
     const recentSession = useSelector(state => state.recentSession.recentSessions);
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
@@ -46,6 +49,7 @@ const Questioning = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
     const [selectedOption, setSelectedOption] = useState('SBA');
+    const [selectedPreClinicalOption, setSelectedPreClinicalOption] = useState('QuesGen');
     const [recentSessions, setRecentSessions] = useState([]);
     const [isSession, setIsSession] = useState(false)
     const [sessionId, setSessionId] = useState([])
@@ -54,15 +58,19 @@ const Questioning = () => {
     const [isToggled, setIsToggled] = useState(false);
     const [localRecentSession, setLocalRecentSession] = useState([]);
     const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
+    const [saqModule,setSAQModule]=useState([]);
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
-
-    const [quesGenModule, setQuesGenModule]=useState([])
+    const [selectedTab, setSelectedTab] = useState('Clinical');
     const handleToggle = () => {
         setIsSortedByPresentation(prev => !prev);
+    };
+   
+    const handleTabChange = (tab) => {
+        setSelectedTab(tab); // Update the selected tab
     };
 
     // Handler to update the selected option
@@ -101,6 +109,9 @@ const Questioning = () => {
         });
     };
 
+    const preClinicalHandler =()=>{
+       setSelectedPreClinicalOption('QuesGen')
+   }
   
     const handleSelectAll = (isChecked) => {
         if (isChecked) {
@@ -261,28 +272,69 @@ const Questioning = () => {
             } 
             else if (selectedOption === 'SAQ') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
+                
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
-                        console.log("SQA Parent Response:", res);
-                        // if (res.id !== null && res.id !== undefined){
-                        dispatch(fetchSqaChild({ parentIds: res[0].id, limit: limit }))
+
+                        dispatch(fetchModulesById({ ids: res.ids }))
                             .unwrap()
-                            .then(res => {
-                                console.log("SQA Child Response", res);
-
+                            .then((res) => {
+                                setIsLoading(false);
+                                dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+                              
+                                setSAQModule(res)
                             })
-                            .catch((err)=>{
-
+                            .catch((err) => {
+                                setIsLoading(false);
+                                dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
                             })
-
-                        // }
 
                     })
                     .catch((err) => {
                         dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
                     });
+
+
+
+                    // Fetch Question By ID
+                dispatch(fetchShortQuestionByModulesById({ moduleIds: selectedModules }))
+                    .unwrap()
+                    .then((res) => {
+                        dispatch(setLoading({ key: 'modules/fetchShortQuestionByModuleById', value: false }));
+
+                        if (res && res.length > 0) {
+                            // Extracting all parentIds
+                            const parentIds = res.map(item => item.id);
+
+                            // Dispatch fetchSqaChild with all parentIds
+                            dispatch(fetchSqaChild({ parentIds, limit }))
+                                .unwrap()
+                                .then(childRes => {
+                                    console.log("SQA Child Response", childRes);
+
+                                    // Organizing Data
+                                    const organizedData = res.map(parent => ({
+                                        ...parent,
+                                        children: childRes.filter(child => child.parentQuestionId === parent.id)
+                                    }));
+
+                                    console.log("Organized Data", organizedData);
+                                })
+                                .catch(err => {
+                                    console.log("Error fetching SQA Child:", err);
+                                });
+                        }
+                    })
+                    .catch((err) => {
+                        dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: false }));
+                    });
+
+
+
+
+
             }
            else if (selectedOption === 'QuesGen') {
                 dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
@@ -298,7 +350,7 @@ const Questioning = () => {
                     });
             } 
             else if (selectedOption === 'Mock') {
-              
+               
 
                 
                 dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
@@ -330,7 +382,7 @@ const Questioning = () => {
                 dispatch(fetchMockTestById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
-                        console.log("response:", res);
+                     
 
                         dispatch(setLoading({ key: 'modules/fetchMockTestById', value: false }));
                     })
@@ -346,7 +398,8 @@ const Questioning = () => {
          
 
         // }
-    }, [selectedModules, limit, selectedOption]);
+    }, [selectedModules, limit, selectedOption, selectedPreClinicalOption]);
+    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
 
     useEffect(() => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
@@ -416,7 +469,9 @@ const Questioning = () => {
 
 
 
+    console.log("selectedModules:", selectedModules);
     
+    console.log("selectedOption:", selectedOption);
 
     return (
         <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
@@ -444,18 +499,19 @@ const Questioning = () => {
                         <div className=" h-[137px] p-4 ">
                             {/* Tab Section */}
                             <div className="flex items-center text-[#3F3F46] justify-between space-x-2 text-[12px] md:text-[16px] font-medium">
-                                <button className="px-4 py-2  bg-white w-[50%] sm:w-[50%] dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[2px] dark:border-[#3A3A48]   rounded-[8px]">
-                                Clinical
+                                <button
+                                    className={`w-[50%] px-4 py-2 ${selectedTab === 'Clinical' ? 'bg-white text-black' : 'bg-[#E4E4E7] text-gray-500'} rounded-[8px]`}
+                                    onClick={() => handleTabChange('Clinical')}
+                                >
+                                    Clinical
                                 </button>
-                                <button className="px-4 py-2 bg-[#E4E4E7]  text-gray-500 w-[50%] sm:w-[50%] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48]  rounded-[8px]">
+                                <button
+                                    className={`w-[50%] px-4 py-2 ${selectedTab === 'Pre-clinical' ? 'bg-white text-black' : 'bg-[#E4E4E7] text-gray-500'} rounded-[8px]`}
+                                    onClick={() => handleTabChange('Pre-clinical')}
+                                >
                                     Pre-clinical
                                 </button>
-                                {/* <button className="px-4 py-2 flex items-center justify-center  text-gray-500 hover:text-gray-800 dark:hover:text-white w-[50%] sm:w-[33%] bg-[#E4E4E7]  rounded-[8px] dark:bg-[#1E1E2A]  dark:border-[1px] dark:border-[#3A3A48] ">
-                                    Data <span className="md:block hidden ml-2 ">Interpretation</span>
-                                </button> */}
-
                             </div>
-
                             {/* Search and Button Section */}
                             <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48] ">
                                 {/* Search Bar */}
@@ -492,16 +548,27 @@ const Questioning = () => {
                                 </div>
                                 <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
                                     <div className="relative w-[105px]">
-                                        <select
-                                            className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-[#1E1E2A]"
-                                            value={selectedOption} // Bind the selected value to state
-                                            onChange={handleSelectChange} // Trigger the handler on change
-                                        >
-                                            <option>SBA</option>
-                                            <option>SAQ</option>
-                                            <option>Mock</option>
-                                            <option>QuesGen</option>
-                                        </select>
+                                        {
+                                            selectedTab === 'Clinical' ? <select
+                                                className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-[#1E1E2A]"
+                                                value={selectedOption} // Bind the selected value to state
+                                                onChange={handleSelectChange} // Trigger the handler on change
+                                            >
+                                                <option>SBA</option>
+                                                <option>SAQ</option>
+                                                <option>Mock</option>
+                                          
+                                            </select> :
+                                                <select
+                                                    className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-[#1E1E2A]"
+                                                    value={selectedPreClinicalOption} // Bind the selected value to state
+                                                    onChange={preClinicalHandler} // Trigger the handler on change
+                                                >
+                                                 
+                                                    <option>QuesGen</option>
+                                                </select>
+                                        }
+                                      
                                         <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                             <svg
                                                 className="w-4 h-4 text-gray-400"
@@ -532,48 +599,49 @@ const Questioning = () => {
                             </div>
                         </div>
                         {
-                            selectedOption === 'QuesGen' ?
-                               <FileUpload />
+                            selectedTab === "Pre-clinical" &&  <FileUpload />
+                              
+                        }
 
-                                :
-                                <div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
-                                    <div className="w-[35%] flex items-center justify-between mr-10">
-                                        <p className="font-bold text-[12px] sm:text-[16px] 2xl:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
-                                            Recent Sessions
-                                        </p>
-                                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48] " />
-                                    </div>
+                        {
+                         selectedTab ==="Clinical" && (<div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
+                                <div className="w-[35%] flex items-center justify-between mr-10">
+                                    <p className="font-bold text-[12px] sm:text-[16px] 2xl:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
+                                        Recent Sessions
+                                    </p>
+                                    <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48] " />
+                                </div>
 
 
-                                    <div className="w-[65%] space-y-3">
-                                        {localRecentSession.length > 0 ? (
-                                            localRecentSession.map((sessionId, index) => {
-                                                const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
+                                <div className="w-[65%] space-y-3">
+                                    {localRecentSession.length > 0 ? (
+                                        localRecentSession.map((sessionId, index) => {
+                                            const categoryIds = sessionId.split(',').map(id => id.trim()); // Convert to array of strings
 
-                                                // Find category names corresponding to the category IDs
-                                                const categoryNames = categoryIds.map(id => {
-                                                    const category = data.data.find(item => item.categoryId === parseInt(id)); // Find the category by ID
-                                                    return category ? category.categoryName : null; // Return the category name or null if not found
-                                                }).filter(name => name !== null); // Filter out any null values
+                                            // Find category names corresponding to the category IDs
+                                            const categoryNames = categoryIds.map(id => {
+                                                const category = data.data.find(item => item.categoryId === parseInt(id)); // Find the category by ID
+                                                return category ? category.categoryName : null; // Return the category name or null if not found
+                                            }).filter(name => name !== null); // Filter out any null values
 
-                                                // Return the JSX for each session
-                                                return (
-                                                    <div key={index} className="flex items-center justify-between">
-                                                        <div>
-                                                            <p className="text-[14px] 2xl:text-[16px] font-medium text-[#3F3F46] dark:text-white">
-                                                                {categoryNames.join(', ')} {/* Join category names into a single string */}
-                                                            </p>
-                                                            <p className="text-[12px] 2xl:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
-                                                        </div>
-                                                        <div>
-                                                            <button
-                                                                onClick={() => {
-                                                                    setSessionId(sessionId);
-                                                                    setIsSession(true);
-                                                                    handleContinue()
-                                                                }
-                                                                }
-                                                                className="border-[1px] border-[#FF9741] 
+                                            // Return the JSX for each session
+                                            return (
+                                                <div key={index} className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-[14px] 2xl:text-[16px] font-medium text-[#3F3F46] dark:text-white">
+                                                            {categoryNames.join(', ')} {/* Join category names into a single string */}
+                                                        </p>
+                                                        <p className="text-[12px] 2xl:text-[14px] font-semibold text-[#D4D4D8]">Recent Session</p>
+                                                    </div>
+                                                    <div>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSessionId(sessionId);
+                                                                setIsSession(true);
+                                                                handleContinue()
+                                                            }
+                                                            }
+                                                            className="border-[1px] border-[#FF9741] 
                                                                 text-[12px] md:text-[16px] 
                                                                 p-2 font-semibold rounded-[4px] 
                                                                 text-[#FF9741] 
@@ -584,20 +652,20 @@ const Questioning = () => {
                                                                 dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] 
                                                                 dark:hover:text-[#FF9741] 
                                                                 dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60">
-                                                                Continue &gt;
-                                                            </button>
-                                                        </div>
+                                                            Continue &gt;
+                                                        </button>
                                                     </div>
-                                                );
-                                            })
-                                        ) : (
-                                            <div className="flex items-center justify-center">
-                                                <p>No Session</p>
-                                            </div>
-                                        )}
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <div className="flex items-center justify-center">
+                                            <p>No Session</p>
+                                        </div>
+                                    )}
 
-                                    </div>
                                 </div>
+                            </div>)
                         }
 
 
@@ -656,7 +724,9 @@ const Questioning = () => {
                         <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
                         <div>
-                                    {(type === 'QuesGen') && (
+                                    {
+                                        selectedTab ==='Pre-clinical' &&
+                                    (type === 'QuesGen') && (
                                         questionGenModule?.modules?.length > 0 ? (
                                             questionGenModule.modules
                                                 .filter((row, index, arr) => (
@@ -686,9 +756,13 @@ const Questioning = () => {
                                                 No modules available.
                                             </div>
                                         )
-                                    )}
+                                    )
+                                    
+                                    }
+
+
 {
-                                        (type === 'SBA' ) && sortedModules?.map((row) => {
+                                        selectedTab === 'Clinical' &&   (  (type === 'SBA' ) && sortedModules?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
@@ -733,10 +807,59 @@ const Questioning = () => {
                                                     </div>
                                                 </div>
                                             );
-                                        })
+                                        }))
 }
                                     {
-                                        (type === 'Mock' ) && modules?.map((row) => {
+                                        selectedTab === 'Clinical' &&  (  (type === 'SAQ') && saqModule?.map((row) => {
+                                            // const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                            // const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+
+                                            // // Calculate widths based on total counts
+                                            // const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                            // const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                            // const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+
+                                            return (
+                                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                                    <div
+                                                        className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                                                    >
+                                                        <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="mr-2 custom-checkbox hover:opacity-70"
+                                                                checked={selectedModules.includes(row.categoryId)}
+                                                                onChange={() => handleCheckboxChange(row.categoryId)}
+                                                            />
+                                                            {row.categoryName}
+                                                        </label>
+                                                    </div>
+
+
+                                                    {/* <div className="flex items-center justify-center space-x-1">
+                                                      
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                                            style={{ width: `${correctWidth}%` }}
+                                                        ></div>
+                                                     
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                                            style={{ width: `${incorrectWidth}%` }}
+                                                        ></div>
+                                                    
+                                                        <div
+                                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                                            style={{ width: `${unansweredWidth}%` }}
+                                                        ></div>
+                                                    </div> */}
+                                                </div>
+                                            );
+                                        }))
+                                    }
+                                    {
+                                    (
+                                            selectedTab === 'Clinical' &&   (type === 'Mock' ) && modules?.map((row) => {
                                             // const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             // const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
@@ -781,7 +904,7 @@ const Questioning = () => {
                                                     </div> */}
                                                 </div>
                                             );
-                                        })
+                                        }))
                                     }
                               
                         </div>
