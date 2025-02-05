@@ -12,7 +12,7 @@ else
 fi
 
 # Check if the build directory exists
-if [ -d "dist" ]; then
+if [ -d "build" ]; then
   echo "Build directory exists."
 else
   echo "Build directory does not exist." >&2
@@ -30,7 +30,7 @@ fi
 
 # Copy the new build directory to the deployment location
 echo "Copying new build directory..."
-echo $sudo_pass | sudo -S cp -r dist /var/www/html/preclinify-fe-build
+echo $sudo_pass | sudo -S cp -r build /var/www/html/preclinify-fe-build
 echo "New build directory copied to /var/www/html/preclinify-fe-build."
 
 # Check if the PM2 process exists
