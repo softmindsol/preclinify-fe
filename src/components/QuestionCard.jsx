@@ -20,6 +20,7 @@ import DashboardModal from "./common/DashboardModal";
 import Article from "./Article";
 import { setAttemptedData } from "../redux/features/SBA/sba.slice";
 import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
+import FeedbackModal from "./common/Feedback";
 
 
 
@@ -46,6 +47,7 @@ const QuestionCard = () => {
     const [isAnswered, setIsAnswered] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -412,6 +414,11 @@ const QuestionCard = () => {
         }
 
     }, [currentIndex, data.data.length]); // Re-run whenever currentIndex changes
+
+    const reportHandler = () => {
+        setShowFeedBackModal(!showFeedBackModal)
+    }
+
 
     // Add this useEffect hook to handle keyboard events
     useEffect(() => {
@@ -860,7 +867,7 @@ const QuestionCard = () => {
                         {
                             isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
                                 <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
-                                <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
+                                <button onClick={reportHandler} className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
                             </div>
                         }
                         {
@@ -1086,7 +1093,9 @@ const QuestionCard = () => {
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
 
-
+            {
+                showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+            }
 
 
             <Drawer

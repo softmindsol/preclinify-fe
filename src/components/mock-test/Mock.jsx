@@ -20,6 +20,7 @@ import DashboardModal from "../common/DashboardModal";
 import Article from "../Article";
 import { setAttemptedData } from "../../redux/features/SBA/sba.slice";
 import { setActive, setAttempted } from "../../redux/features/attempts/attempts.slice";
+import FeedbackModal from "../common/Feedback";
 
 
 
@@ -37,8 +38,8 @@ const calculateTimeForQuestions = (numQuestions) => {
 };
 const MockTestQuestion = () => {
     const mockData = useSelector((state) => state.mockModules?.mockTestData);
-    console.log("mockData:", mockData);
-    
+     const [showFeedBackModal, setShowFeedBackModal]=useState(false)
+ 
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const dispatch = useDispatch();
     const attempted = useSelector((state) => state.attempts?.attempts);
@@ -125,6 +126,11 @@ const MockTestQuestion = () => {
 
         return false; // Hide items that don't match the filter
     });
+
+
+    const reportHandler = () => {
+        setShowFeedBackModal(!showFeedBackModal)
+    }
 
 
     const getQuestionRange = (currentIndex) => {
@@ -848,7 +854,7 @@ const MockTestQuestion = () => {
                         {
                             isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
                                 <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
-                                <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
+                                <button onClick={reportHandler} className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
                             </div>
                         }
                         {
@@ -859,7 +865,9 @@ const MockTestQuestion = () => {
 
                             isAccordionVisible && <Article article={article} />
                         }
-
+                        {
+                            showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+                        }
                     </div>
 
 
@@ -1075,7 +1083,9 @@ const MockTestQuestion = () => {
             {showPopup && (
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
-
+            {
+                showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+            }
 
 
 

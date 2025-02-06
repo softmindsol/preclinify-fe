@@ -16,6 +16,7 @@ import DashboardModal from "./common/DashboardModal";
 import ChemistryBeaker from "./chemistry-beaker";
 import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
 import { setAttemptedShortQuestion, setUserAnswers } from "../redux/features/SAQ/saq.slice";
+import FeedbackModal from "./common/Feedback";
 
 
 
@@ -36,6 +37,7 @@ const ShortQuestion = () => {
     const sqa = useSelector(state => state?.SQA?.organizedData || []);
     const attempted = useSelector((state) => state.attempts?.attempts);
     console.log("attempted:", attempted);
+    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
 const [attempts, setAttempts] = useState(attempted); 
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
@@ -210,7 +212,6 @@ const [attempts, setAttempts] = useState(attempted);
         return false; // Hide items that don't match the filter
     });
 
-    console.log("accuracy:", accuracy);
     
 
 
@@ -268,7 +269,9 @@ const [attempts, setAttempts] = useState(attempted);
         setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
     };
 
-
+const reportHandler=()=>{
+    setShowFeedBackModal(!showFeedBackModal)
+}
 
     const indicesToDisplay =
         selectedFilter === 'All' ? allIndices
@@ -656,7 +659,7 @@ console.log("Attempt:",attempts);
                         <div className="flex items-center w-[100%] lg:w-[720px] gap-x-10 justify-between mt-5">
                             <div className="flex items-center w-full  justify-between  ">
                                 <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
-                                <button className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
+                                <button onClick={reportHandler} className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>
                             </div>
                         </div>
 
@@ -911,7 +914,9 @@ console.log("Attempt:",attempts);
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
 
-
+{
+                showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+}
 
             <Drawer
                 open={isOpen}
