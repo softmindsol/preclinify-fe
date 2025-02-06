@@ -243,22 +243,24 @@ const QuestionCard = () => {
             }
         }
     };
+
+
+
+    // Correct the nextPage function
     const nextPage = () => {
-        if ((currentPage + 1) * itemsPerPage < data.data.length) {
-            setCurrentPage((prev) => prev + 1);
-            setCurrentIndex(10); 
+        const newPage = currentPage + 1;
+        if (newPage * itemsPerPage < data.data.length) {
+            setCurrentPage(newPage);
+            setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the new page
         }
-
-       
-
     };
 
-
-
+    // Correct the prevPage function
     const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage(currentPage - 1);
-            setCurrentIndex(0); // Reset to the first question of the new page
+        const newPage = currentPage - 1;
+        if (newPage >= 0) {
+            setCurrentPage(newPage);
+            setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the previous page
         }
     };
 

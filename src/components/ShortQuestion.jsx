@@ -78,7 +78,7 @@ const [attempts, setAttempts] = useState(attempted);
     const [showPopup, setShowPopup] = useState(false);
     const [parentIndex,setParentIndex]=useState(0)
     const totalQuestions = sqa.reduce((total, parent) => total + parent.children.length, 0);
-
+    const [checkedAnswers, setCheckedAnswers] = useState(Array(totalQuestions).fill(false));
     // Initialize attempts with null values
     // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
     // const currentItems = sqa.children.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
@@ -93,18 +93,20 @@ const [attempts, setAttempts] = useState(attempted);
     const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
     }
-    function handleCheckAnswer() {
-           dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
-        if (!userAnswer.trim()) { // Check if userAnswer is empty or only spaces
-            setError(true); // Set an error if empty
 
-        } else {
-            setError(false); // Clear the error
-            setTestCheckAnswer(true); // Perform the action when input is valid
+
+
+    const handleCheckAnswer = () => {
+        if (!userAnswer.trim()) {
+            setError(true);
+            return;
         }
-    }
 
-
+        const globalIndex = getGlobalIndex();
+        const newChecked = [...checkedAnswers];
+        newChecked[globalIndex] = true;
+        setCheckedAnswers(newChecked);
+    };
 
 
     function handleShowPopup() {
