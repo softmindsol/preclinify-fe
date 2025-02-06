@@ -478,7 +478,7 @@ const Questioning = () => {
             <div className=" hidden lg:block fixed h-full">
                 <Sidebar />
             </div>
-
+ 
             <div className="flex-grow lg:ml-[260px] xl:ml-[250px]  overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
 
 

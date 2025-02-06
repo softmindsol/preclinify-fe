@@ -15,6 +15,7 @@ const Scenarios = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [sortAscending, setSortAscending] = useState(true);
     const [searchQuery, setSearchQuery] = useState(""); // State for search query
+    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
 
     useEffect(() => {
         localStorage.removeItem('minutes');
@@ -52,7 +53,7 @@ const Scenarios = () => {
     );
 
     return (
-        <div className="md:flex min-h-screen">
+        <div className={`md:flex min-h-screen ${darkModeRedux ? 'dark' : ''}`}>
             <div className="hidden md:block fixed h-full">
                 <Sidebar />
             </div>
@@ -64,18 +65,22 @@ const Scenarios = () => {
                     <TbBaselineDensityMedium />
                 </div>
             </div>
+                
+                
+            <div className="dark:bg-[#1E1E2A] md:ml-[250px] w-full px-10">
 
-            <div className="px-10 mt-8 w-full md:ml-[250px]">
+
+            <div className=" mt-8   ">
                 {/* Tabs */}
                 <div className="flex justify-center w-full items-center gap-x-2 text-[14px] lg:text-[16px] xl:text-[20px]">
-                    <div className="flex justify-center w-full items-center space-x-4 bg-[#ffff] rounded-tl-[4px] rounded-tr-[4px]">
-                        <button className="px-4 flex items-center space-x-4 py-2 text-[#3F3F46] font-semibold">
+                        <div className="flex justify-center w-full items-center space-x-4 bg-[#ffff] rounded-tl-[4px] rounded-tr-[4px] border dark:bg-[#1E1E2A] dark:border-[#3A3A48]">
+                            <button className="px-4 flex items-center space-x-4 py-2 text-[#3F3F46] font-semibold dark:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notepad-text"><path d="M8 2v4" /><path d="M12 2v4" /><path d="M16 2v4" /><rect width="16" height="18" x="4" y="4" rx="2" /><path d="M8 10h6" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
                             <span>Static Scenarios</span>
                         </button>
                     </div>
-                    <div className="flex justify-center w-full items-center bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px]">
-                        <button className="flex items-center space-x-4 text-[#3F3F46] px-4 py-2 font-medium">
+                        <div className="flex justify-center w-full items-center bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px] dark:bg-[#1E1E2A] border dark:border-[#3A3A48] ">
+                            <button className="flex items-center space-x-4 text-[#3F3F46] px-4 py-2 font-medium dark:text-white">
                             <NavLink to={'/osce-ai-bot'} className={'flex items-center space-x-4'}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" /></svg>
                                 <span>AI Patient Scenarios</span>
@@ -84,7 +89,7 @@ const Scenarios = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-[8px]">
+                    <div className="bg-white p-5 rounded-[8px] dark:bg-[#1E1E2A] border dark:border-[#3A3A48]">
                     {/* Categories */}
                     <div className="flex items-center justify-center">
                         <div className="grid sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6 justify-items-center">
@@ -148,7 +153,7 @@ const Scenarios = () => {
                                     </svg>
                                 </button>
                             </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal"><line x1="21" x2="14" y1="4" y2="4" /><line x1="10" x2="3" y1="4" y2="4" /><line x1="21" x2="12" y1="12" y2="12" /><line x1="8" x2="3" y1="12" y2="12" /><line x1="21" x2="16" y1="20" y2="20" /><line x1="12" x2="3" y1="20" y2="20" /><line x1="14" x2="14" y1="2" y2="6" /><line x1="8" x2="8" y1="10" y2="14" /><line x1="16" x2="16" y1="18" y2="22" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal dark:text-white"><line x1="21" x2="14" y1="4" y2="4" /><line x1="10" x2="3" y1="4" y2="4" /><line x1="21" x2="12" y1="12" y2="12" /><line x1="8" x2="3" y1="12" y2="12" /><line x1="21" x2="16" y1="20" y2="20" /><line x1="12" x2="3" y1="20" y2="20" /><line x1="14" x2="14" y1="2" y2="6" /><line x1="8" x2="8" y1="10" y2="14" /><line x1="16" x2="16" y1="18" y2="22" /></svg>
                         </div>
                     </div>
 
@@ -158,20 +163,20 @@ const Scenarios = () => {
                             {filteredData.map((osce) => (
                                 <div
                                     key={osce.id}
-                                    className="p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] w-[172px] shadow-md text-center"
+                                    className="p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] w-[172px] shadow-md text-center dark:bg-[#1E1E2A] border dark:border-[#3A3A48] "
                                 >
                                     <Link to={`/static-scenerios-detail/${osce.id}`}>
                                         <div className="flex flex-col h-full justify-between">
                                             <div>
-                                                <p className="absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px]">History</p>
-                                                <div className="text-[20px] text-[#3F3F46] mt-3 font-bold">
+                                                <p className="absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px] dark:text-white">History</p>
+                                                <div className="text-[20px] text-[#3F3F46] mt-3 font-bold dark:text-white">
                                                     {osce.category}
                                                 </div>
-                                                <div className="text-[16px] text-[#A1A1AA] font-semibold">
+                                                <div className="text-[16px] text-[#A1A1AA] font-semibold dark:text-white">
                                                     {osce.stationName}
                                                 </div>
                                             </div>
-                                            <div className="text-[48px] text-[#52525B] font-bold">#{osce.id}</div>
+                                            <div className="text-[48px] text-[#52525B] font-bold dark:text-white">#{osce.id}</div>
                                         </div>
                                     </Link>
                                 </div>
@@ -180,7 +185,7 @@ const Scenarios = () => {
                     </div>
                 </div>
             </div>
-
+            </div>
             <Drawer
                 open={isOpen}
                 onClose={toggleDrawer}

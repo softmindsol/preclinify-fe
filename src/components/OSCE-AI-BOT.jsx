@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import ConfirmationModal from "./common/Confirmation-OSCE";
 import supabase from "../config/helper";
+import { useSelector } from "react-redux";
 
 const OSCEAIBOT = () => {
     const recognitionRef = useRef(null);
@@ -15,6 +16,7 @@ const OSCEAIBOT = () => {
     const [voices, setVoices] = useState([]);
     const [summary, setSummary] = useState(""); // State for summary
     const [score, setScore] = useState(0); // State for score
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
 
     // Define categories and their associated keywords
     const categories = {
@@ -255,7 +257,7 @@ const OSCEAIBOT = () => {
     }, []);
 
     return (
-        <div>
+        <div className={` ${darkModeRedux ? 'dark' : ''}`}>
             <div className="w-full fixed top-0 flex items-center justify-center">
                 <header className="w-[70%] bg-white shadow-md py-4 px-8 flex justify-between items-center">
                     <Logo />
