@@ -144,7 +144,7 @@ const ShortQuestion = () => {
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
-        nextQuestion()
+    
 
     };
 
