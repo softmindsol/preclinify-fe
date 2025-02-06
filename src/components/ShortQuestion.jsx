@@ -58,9 +58,7 @@ const [attempts, setAttempts] = useState(attempted);
     const [isReviewEnabled, setIsReviewEnabled] = useState(false)
     const itemsPerPage = 10;
     // Get the items to show for the current page
-    const shortQuestion = useSelector(state => state?.SQA)
         const active = useSelector((state) => state.attempts?.active);
-    console.log("shortQuestion:", shortQuestion);
     
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
@@ -103,14 +101,10 @@ const [attempts, setAttempts] = useState(attempted);
             return;
         } else {
             setError(false);
-            dispatch(setUserAnswers(currentIndex, userAnswer)); // Store user answer in Redux
-            dispatch(setAttemptedShortQuestion(currentIndex)); // Mark question as attempted
+          
             setTestCheckAnswer(true);
         }
     };
-
-
-    
 
     const nextQuestion = () => {
         if (childIndex < sqa[parentIndex]?.children.length - 1) {

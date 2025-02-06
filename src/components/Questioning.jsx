@@ -320,7 +320,6 @@ const Questioning = () => {
                                         children: childRes.filter(child => child.parentQuestionId === parent.id)
                                     }));
 
-                                    console.log("Organized Data", organizedData);
                                 })
                                 .catch(err => {
                                     console.log("Error fetching SQA Child:", err);
@@ -336,19 +335,22 @@ const Questioning = () => {
 
 
             }
-           else if (selectedOption === 'QuesGen') {
-                dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
-                dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
-                    .unwrap()
-                    .then((res) => {
-                        console.log("response:",res);
+            // else if (selectedPreClinicalOption === 'QuesGen') {
+            //     console.log("QuesGen");
+
+
+            //     dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
+            //     dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
+            //         .unwrap()
+            //         .then((res) => {
+            //             console.log("response:",res);
                         
-                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
-                    })
-                    .catch((err) => {
-                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
-                    });
-            } 
+            //             dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+            //         })
+            //         .catch((err) => {
+            //             dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+            //         });
+            // } 
             else if (selectedOption === 'Mock') {
                
 
@@ -394,12 +396,27 @@ const Questioning = () => {
 
 
             } 
+    }, [selectedModules, limit, selectedOption, selectedPreClinicalOption, selectedTab]);
+   
+    
+    useEffect(() => {
+        if (selectedPreClinicalOption === 'QuesGen') {
+            dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
+            dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
+                .unwrap()
+                .then((res) => {
+                    console.log("response:", res);
+                    dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                })
+                .catch((err) => {
+                    dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                });
+        }
+    }, [selectedPreClinicalOption, selectedModules, limit]);
 
-         
 
-        // }
-    }, [selectedModules, limit, selectedOption, selectedPreClinicalOption]);
-    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
+
+
 
     useEffect(() => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
@@ -410,6 +427,9 @@ const Questioning = () => {
         }
         dispatch(clearRecentSessions())
     }, []);
+
+    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
+    
 
     useEffect(() => {
         if (recentSessions.length > 0) {
