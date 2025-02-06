@@ -234,7 +234,7 @@ const [loader,setLoader]=useState(false)
                                         Report a problem
                                     </button>
                                 </div>
-
+ 
                             </div>
 
                             {/* Panels */}

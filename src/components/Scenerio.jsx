@@ -73,13 +73,13 @@ const Scenarios = () => {
             <div className=" mt-8   ">
                 {/* Tabs */}
                 <div className="flex justify-center w-full items-center gap-x-2 text-[14px] lg:text-[16px] xl:text-[20px]">
-                        <div className="flex justify-center w-full items-center space-x-4 bg-[#ffff] rounded-tl-[4px] rounded-tr-[4px] border dark:bg-[#1E1E2A] dark:border-[#3A3A48]">
+                        <div className="flex justify-center w-full items-center space-x-4 bg-[#ffff] rounded-tl-[4px] rounded-tr-[4px] dark:border dark:bg-[#1E1E2A] dark:border-[#3A3A48]">
                             <button className="px-4 flex items-center space-x-4 py-2 text-[#3F3F46] font-semibold dark:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notepad-text"><path d="M8 2v4" /><path d="M12 2v4" /><path d="M16 2v4" /><rect width="16" height="18" x="4" y="4" rx="2" /><path d="M8 10h6" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
                             <span>Static Scenarios</span>
                         </button>
                     </div>
-                        <div className="flex justify-center w-full items-center bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px] dark:bg-[#1E1E2A] border dark:border-[#3A3A48] ">
+                        <div className="flex justify-center w-full items-center bg-[#E4E4E7] rounded-tl-[4px] rounded-tr-[4px] dark:bg-[#1E1E2A] dark:border dark:border-[#3A3A48] ">
                             <button className="flex items-center space-x-4 text-[#3F3F46] px-4 py-2 font-medium dark:text-white">
                             <NavLink to={'/osce-ai-bot'} className={'flex items-center space-x-4'}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" /></svg>
@@ -89,7 +89,7 @@ const Scenarios = () => {
                     </div>
                 </div>
 
-                    <div className="bg-white p-5 rounded-[8px] dark:bg-[#1E1E2A] border dark:border-[#3A3A48]">
+                    <div className="bg-white p-5 rounded-[8px] dark:bg-[#1E1E2A] dark:border dark:border-[#3A3A48]">
                     {/* Categories */}
                     <div className="flex items-center justify-center">
                         <div className="grid sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6 justify-items-center">
@@ -144,7 +144,7 @@ const Scenarios = () => {
                                         strokeWidth={1.5}
                                         stroke="currentColor"
                                         className="w-5 h-5"
-                                    >
+                                    > 
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
