@@ -335,22 +335,6 @@ const Questioning = () => {
 
 
             }
-            // else if (selectedPreClinicalOption === 'QuesGen') {
-            //     console.log("QuesGen");
-
-
-            //     dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
-            //     dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
-            //         .unwrap()
-            //         .then((res) => {
-            //             console.log("response:",res);
-                        
-            //             dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
-            //         })
-            //         .catch((err) => {
-            //             dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
-            //         });
-            // } 
             else if (selectedOption === 'Mock') {
                
 
@@ -396,7 +380,7 @@ const Questioning = () => {
 
 
             } 
-    }, [selectedModules, limit, selectedOption, selectedPreClinicalOption, selectedTab]);
+    }, [selectedModules, limit, selectedOption, selectedTab]);
    
     
     useEffect(() => {
