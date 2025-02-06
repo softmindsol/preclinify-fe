@@ -49,7 +49,7 @@ const Questioning = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
     const [selectedOption, setSelectedOption] = useState('SBA');
-    const [selectedPreClinicalOption, setSelectedPreClinicalOption] = useState('QuesGen');
+    const [selectedPreClinicalOption, setSelectedPreClinicalOption] = useState('');
     const [recentSessions, setRecentSessions] = useState([]);
     const [isSession, setIsSession] = useState(false)
     const [sessionId, setSessionId] = useState([])
@@ -257,7 +257,7 @@ const Questioning = () => {
     useEffect(() => {
         dispatch(setPreclinicalType({ selectedOption }));
 
-        // if (selectedModules.length > 0) {
+        if (selectedTab==='Clinical') {
             if (selectedOption === 'SBA') {
                 
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
@@ -380,24 +380,43 @@ const Questioning = () => {
 
 
             } 
+        }
     }, [selectedModules, limit, selectedOption, selectedTab]);
    
     
     useEffect(() => {
-        if (selectedPreClinicalOption === 'QuesGen') {
-            dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
-            dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
-                .unwrap()
-                .then((res) => {
-                    console.log("response:", res);
-                    dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
-                })
-                .catch((err) => {
-                    dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
-                });
-        }
-    }, [selectedPreClinicalOption, selectedModules, limit]);
+        if (selectedTab ==='Pre-clinical'){
+            if (selectedPreClinicalOption === 'QuesGen') {
+              
+                dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
+                setIsLoading(true)
+                dispatch(fetchQuesGenModules())
+                    .unwrap()
+                    .then(() => {
+                        setIsLoading(false)
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: false }));
+                    }).catch(err => {
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: false }));
+                        setIsLoading(false)
+                    })
 
+                dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: true }));
+                dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
+                    .unwrap()
+                    .then((res) => {
+                        console.log("response:", res);
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                    })
+                    .catch((err) => {
+                        console.error("Error fetching QuesGen modules:", err);
+                        dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
+                    });
+            }
+        }
+       
+    }, [selectedPreClinicalOption, selectedModules, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
+
+    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
 
 
 
@@ -410,10 +429,7 @@ const Questioning = () => {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }
         dispatch(clearRecentSessions())
-    }, []);
-
-    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
-    
+    }, []);    
 
     useEffect(() => {
         if (recentSessions.length > 0) {
@@ -473,10 +489,6 @@ const Questioning = () => {
 
 
 
-    console.log("selectedModules:", selectedModules);
-    
-    console.log("selectedOption:", selectedOption);
-
     return (
         <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
             <div className=" hidden lg:block fixed h-full">
@@ -520,9 +532,11 @@ const Questioning = () => {
                             <div className="flex justify-between items-center rounded-[8px] h-[110px] bg-white dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48] ">
                                 {/* Search Bar */}
                                 <div className="flex items-center p-8 gap-x-10  ">
+                                    {selectedTab === 'Clinical' && <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Clinical</p>
+                                    }
 
-
-                                    <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Clinical</p>
+                                    {selectedTab === 'Pre-clinical' && <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre Clinical</p>
+}
                                     <div className="xl:flex items-center bg-white border border-gray-300 dark:border-[2px] dark:border-[#3A3A48] rounded-md px-3 py-2  hidden dark:bg-[#1E1E2A]">
                                         <div className="group">
                                             <svg
@@ -568,7 +582,7 @@ const Questioning = () => {
                                                     value={selectedPreClinicalOption} // Bind the selected value to state
                                                     onChange={preClinicalHandler} // Trigger the handler on change
                                                 >
-                                                 
+                                                 <option value="" >Select</option>
                                                     <option>QuesGen</option>
                                                 </select>
                                         }

@@ -28,6 +28,7 @@ export const fetchQuesGenModuleById = createAsyncThunk(
     'modules/fetchQuesGenModuleById',
     async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
         try {
+            console.log("fetchQuesGenModuleById redux");
 
             if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
                 return rejectWithValue('Invalid moduleIds');
