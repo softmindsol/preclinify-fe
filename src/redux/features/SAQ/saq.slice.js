@@ -27,6 +27,8 @@ const shortQuestionSlice = createSlice({
             state.attempts = action.payload;
         },
         setUserAnswers: (state, action) => {
+            console.log("action.payload:", action.payload);
+            
             state.userAnswers = action.payload;
         },
         setCheckedAnswers: (state, action) => {

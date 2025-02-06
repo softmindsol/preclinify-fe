@@ -109,6 +109,9 @@ const [attempts, setAttempts] = useState(attempted);
         }
     };
 
+
+    
+
     const nextQuestion = () => {
         if (childIndex < sqa[parentIndex]?.children.length - 1) {
             setChildIndex(prev => prev + 1);
