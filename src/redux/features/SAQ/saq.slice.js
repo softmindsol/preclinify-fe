@@ -9,8 +9,12 @@ import {
 const initialState = {
     shortQuestions: [],
     modules: [],
+    attempts: [],
+
     sqaChildren: [],
     organizedData: [],
+    userAnswers: [],
+    checkedAnswers: [],
     loading: false,
     error: null
 };
@@ -18,7 +22,17 @@ const initialState = {
 const shortQuestionSlice = createSlice({
     name: "SQA",
     initialState,
-    reducers: {},
+    reducers: {
+        setAttempted: (state, action) => {
+            state.attempts = action.payload;
+        },
+        setUserAnswers: (state, action) => {
+            state.userAnswers = action.payload;
+        },
+        setCheckedAnswers: (state, action) => {
+            state.checkedAnswers = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             // Fetch Short Questions
@@ -84,5 +98,7 @@ const shortQuestionSlice = createSlice({
             });
     }
 });
+
+export const { setAttempted, setUserAnswers, setCheckedAnswers } = shortQuestionSlice.actions;
 
 export default shortQuestionSlice.reducer;
