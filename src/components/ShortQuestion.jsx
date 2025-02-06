@@ -14,6 +14,7 @@ import { setMcqsAccuracy } from "../redux/features/accuracy/accuracy.slice";
 import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 import DashboardModal from "./common/DashboardModal";
 import ChemistryBeaker from "./chemistry-beaker";
+import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
 
 
 
@@ -33,7 +34,9 @@ const calculateTimeForQuestions = (numQuestions) => {
 const ShortQuestion = () => {
     const sqa = useSelector(state => state?.SQA?.organizedData || []);
     console.log("redux SQA:", sqa);
-
+    const attempted = useSelector((state) => state.attempts?.attempts);
+    console.log("attempted:", attempted);
+const [attempts, setAttempts] = useState(attempted); 
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const [childIndex, setChildIndex] = useState(0)
@@ -56,6 +59,7 @@ const ShortQuestion = () => {
     const itemsPerPage = 10;
     // Get the items to show for the current page
   
+        const active = useSelector((state) => state.attempts?.active);
     
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
@@ -76,7 +80,7 @@ const ShortQuestion = () => {
     const totalQuestions = sqa.reduce((total, parent) => total + parent.children.length, 0);
 
     // Initialize attempts with null values
-    const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
+    // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
     // const currentItems = sqa.children.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const allChildren = sqa.flatMap(parent => parent.children); // or use: const allChildren = [].concat(...sqa.map(parent => parent.children));
 
@@ -90,6 +94,7 @@ const ShortQuestion = () => {
         setBeakerToggle(!beakerToggle)
     }
     function handleCheckAnswer() {
+           dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
         if (!userAnswer.trim()) { // Check if userAnswer is empty or only spaces
             setError(true); // Set an error if empty
 
@@ -112,41 +117,43 @@ const ShortQuestion = () => {
     };
 
     const handleIncorrectClick = () => {
-        dispatch(setMcqsAccuracy({ accuracy }))
-        markQuestion(childIndex, false); // Mark as incorrect
-        setTestCheckAnswer(false); // Reset testCheckAnswer
-        setChildIndex((prev) => prev + 1);
-        setUserAnswer('')
-
+         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+  markQuestion(globalIndex, false);
+        dispatch(setMcqsAccuracy({ accuracy }));
+        setTestCheckAnswer(false);
+        setUserAnswer('');
+        nextQuestion(); // Use nextQuestion instead of manual increment
     };
 
     const handlePartialClick = () => {
-        dispatch(setMcqsAccuracy({ accuracy }))
-        markQuestion(childIndex, 'partial'); // Mark as partial
-        setTestCheckAnswer(false); // Reset testCheckAnswer
-        setChildIndex((prev) => prev + 1)
-        setUserAnswer('')
-
-
-
+        const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+        markQuestion(globalIndex, 'partial');
+        dispatch(setMcqsAccuracy({ accuracy }));
+        setTestCheckAnswer(false);
+        setUserAnswer('');
+        nextQuestion(); // Use nextQuestion instead of manual increment
     };
-    
 
     const handleCorrectClick = () => {
-        dispatch(setMcqsAccuracy({ accuracy }))
-        markQuestion(childIndex, true); // Mark as correct
+        const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+        markQuestion(globalIndex, true);
+
+        dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
-        setUserAnswer('')
-        setChildIndex((prev) => prev + 1)
-
-
+        setUserAnswer('');
+        nextQuestion(); // Use nextQuestion instead of manual increment
     };
-
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     
 
     };
+
+
+    console.log("Total Questions:", totalQuestions);
+    console.log("Initial Attempts Array:", attempts);
+
+
 
     // Arrays to store indices
     const unseenIndices = [];
@@ -196,6 +203,7 @@ const ShortQuestion = () => {
         if (childIndex < sqa[parentIndex]?.children.length - 1) {
             setChildIndex(prev => prev + 1);
         } else if (parentIndex < sqa.length - 1) {
+            // Move to next parent and reset child index
             setParentIndex(prev => prev + 1);
             setChildIndex(0);
         }
@@ -258,11 +266,14 @@ const ShortQuestion = () => {
         }
     };
 
-
+   
     const markQuestion = (index, status) => {
+  
+        
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
             updatedAttempts[index] = status; // Update specific question status
+ dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
             return updatedAttempts;
         });
 
@@ -282,6 +293,10 @@ const ShortQuestion = () => {
         setTotalAttempts(prev => prev + 1);
     };
 
+    // const handleMark = (status) => {
+    //     markQuestion(currentIndex, status);
+    // };
+  
 
     const getQuestionRange = (currentIndex) => {
        // Number of items to show in the sidebar
@@ -344,6 +359,19 @@ const ShortQuestion = () => {
 
         setIsReviewEnabled(currentQuestionNumber === totalQuestions);
     }, [childIndex, parentIndex, sqa]);
+
+        useEffect(() => {
+            // if (data?.data?.length) {
+            //     setIsAccordionOpen(Array(data.data.length).fill(false));
+            
+            
+            // }
+            if (active) {
+                setAttempts(Array(allChildren.length).fill(null)); // Initialize attempts as unseen
+                dispatch(setAttempted(Array(allChildren.length).fill(null))); // Dispatch the updated attempts array to Redux
+            }
+    
+        }, []);
 
 console.log("Attempt:",attempts);
 
@@ -534,9 +562,9 @@ console.log("Attempt:",attempts);
                                     />
 
                                     <textarea
-                                        className="rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
+                                        className="rounded-[6px] lg:w-[720px] h-[180px] mt-2 p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                         placeholder="This is the user’s answer"
-                                        value={sqa[parentIndex].children[childIndex].idealAnswer}
+                                        value={sqa[parentIndex]?.children[childIndex]?.idealAnswer}
                                     />
                                 </div>
                         }
@@ -740,18 +768,18 @@ console.log("Attempt:",attempts);
                             <div className="grid grid-cols-5 gap-2">
                                 {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
                                     // Determine the background color based on the question status
-                                    const bgColor = attempts[num] === true
+                                    const bgColor = attempted[num] === true
                                         ? "bg-[#3CC8A1]" // Correct answer
-                                        : attempts[num] === false
+                                        : attempted[num] === false
                                             ? "bg-[#FF453A]" // Incorrect answer
-                                            : attempts[num] === 'partial'   ? "bg-[#FF9741]" // No answer
+                                            : attempted[num] === 'partial'   ? "bg-[#FF9741]" // No answer
                                             : "bg-gray-300"; // Unattempted
 
                                     // Only display questions that match the selected filter
                                     if (
                                         selectedFilter === 'All' ||
-                                        (selectedFilter === 'Flagged' && (attempts[num] === true || attempts[num] === false || attempts[num]==='partial')) ||
-                                        (selectedFilter === 'Unseen' && attempts[num] === null)
+                                        (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
+                                        (selectedFilter === 'Unseen' && attempted[num] === null)
                                     ) {
                                         return (
                                             <div key={i}>

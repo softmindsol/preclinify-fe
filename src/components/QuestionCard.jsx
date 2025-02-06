@@ -957,7 +957,7 @@ const QuestionCard = () => {
                                     ) {
                                         return (
                                             <div key={i}>
-                                                <div
+                                                 <div
                                                     className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
                                                     onClick={() => {
                                                         setCurrentIndex(num); // Navigate to the selected question
