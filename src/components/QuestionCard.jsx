@@ -94,19 +94,15 @@ const QuestionCard = () => {
 
  
   
+    // Update getQuestionRange to use currentPage correctly
     const getQuestionRange = (currentPage) => {
-        // const itemsPerPage = 10; // Number of items to show in the sidebar
-        const start = Math.floor(currentPage / itemsPerPage) * itemsPerPage; // Calculate the start index
-        const end = Math.min(start + itemsPerPage, data?.data?.length); // Calculate the end index
-
-        console.log(start,end);
-        
+        const start = currentPage * itemsPerPage;
+        const end = Math.min(start + itemsPerPage, data.data.length);
         return { start, end };
     };
 
-  
-    // Get the range of questions to display
-    const { start, end } = getQuestionRange(currentIndex);
+    // Use currentPage to determine the start and end indices
+    const { start, end } = getQuestionRange(currentPage);
     // Filtered items to display based on the selected filter
     const filteredItems = data.data.slice(start, end).filter((question, index) => {
         const displayNumber = start + index;
