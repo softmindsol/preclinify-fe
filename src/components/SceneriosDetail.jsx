@@ -140,8 +140,9 @@ const [loader,setLoader]=useState(false)
 
     useEffect(() => {
     
-            console.log("Fetching static Osce");
-            dispatch(fetchOSCEDataById(id))
+            setTimeout(()=>{
+                dispatch(fetchOSCEDataById(id))
+            },3000)
            
     
     }, []);
