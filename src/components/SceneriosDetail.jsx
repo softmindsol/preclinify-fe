@@ -234,7 +234,7 @@ const [loader,setLoader]=useState(false)
                             </div>
 
                             {/* Panels */}
-                            {/* {[
+                            {[
                                 {
                                     id: 1,
                                     title: "Candidate Brief",
@@ -388,7 +388,7 @@ const [loader,setLoader]=useState(false)
                                         </div>
                                     </div>
                                 </div>
-                            ))} */}
+                            ))}
 
                         </div>
                     </div>}
