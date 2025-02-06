@@ -829,13 +829,13 @@ const Questioning = () => {
 }
                                     {
                                         selectedTab === 'Clinical' &&  (  (type === 'SAQ') && saqModule?.map((row) => {
-                                            // const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                            // const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+                                            const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
-                                            // // Calculate widths based on total counts
-                                            // const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                            // const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                            // const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+                                            // Calculate widths based on total counts
+                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
 
                                             return (
                                                 <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
@@ -854,7 +854,7 @@ const Questioning = () => {
                                                     </div>
 
 
-                                                    {/* <div className="flex items-center justify-center space-x-1">
+                                                    <div className="flex items-center justify-center space-x-1">
                                                       
                                                         <div
                                                             className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
@@ -870,7 +870,7 @@ const Questioning = () => {
                                                             className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
                                                             style={{ width: `${unansweredWidth}%` }}
                                                         ></div>
-                                                    </div> */}
+                                                    </div>
                                                 </div>
                                             );
                                         }))
@@ -878,13 +878,13 @@ const Questioning = () => {
                                     {
                                     (
                                             selectedTab === 'Clinical' &&   (type === 'Mock' ) && modules?.map((row) => {
-                                            // const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                            // const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+                                            const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
-                                            // // Calculate widths based on total counts
-                                            // const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                            // const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                            // const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+                                            // Calculate widths based on total counts
+                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
 
                                             return (
                                                 <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
@@ -903,7 +903,7 @@ const Questioning = () => {
                                                     </div>
 
 
-                                                    {/* <div className="flex items-center justify-center space-x-1">
+                                                    <div className="flex items-center justify-center space-x-1">
                                                        
                                                         <div
                                                             className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
@@ -919,7 +919,7 @@ const Questioning = () => {
                                                             className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
                                                             style={{ width: `${unansweredWidth}%` }}
                                                         ></div>
-                                                    </div> */}
+                                                    </div>
                                                 </div>
                                             );
                                         }))
