@@ -166,7 +166,7 @@ const ShortQuestion = () => {
 
         if (selectedFilter === 'Flagged') {
             // Check if item is flagged
-            const isFlagged = attempts[displayNumber] === true || attempts[displayNumber] === false;
+            const isFlagged = attempts[displayNumber] === true || attempts[displayNumber] === false || attempts[displayNumber] === 'partial';
             if (isFlagged) {
                 flaggedIndices.push(displayNumber); // Store index for flagged items
                 return true;
@@ -184,6 +184,9 @@ const ShortQuestion = () => {
 
         return false; // Hide items that don't match the filter
     });
+
+    console.log("accuracy:", accuracy);
+    
 
 
 
@@ -342,6 +345,7 @@ const ShortQuestion = () => {
         setIsReviewEnabled(currentQuestionNumber === totalQuestions);
     }, [childIndex, parentIndex, sqa]);
 
+console.log("Attempt:",attempts);
 
     return (
         <div className={`min-h-screen  ${darkModeRedux ? 'dark' : ''} `}>
@@ -678,9 +682,9 @@ const ShortQuestion = () => {
                         <div className="flex flex-col items-center justify-center mt-10">
                             {
                                 isTimerMode["mode"] === "Endless" &&
-                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${accuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
                                     <div>  <p className="text-[12px] mt-3">Accuracy</p>
-                                            <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                            <p className="font-black text-[36px]">{accuracy}%</p>
                                     </div>
 
 
@@ -740,12 +744,13 @@ const ShortQuestion = () => {
                                         ? "bg-[#3CC8A1]" // Correct answer
                                         : attempts[num] === false
                                             ? "bg-[#FF453A]" // Incorrect answer
+                                            : attempts[num] === 'partial'   ? "bg-[#FF9741]" // No answer
                                             : "bg-gray-300"; // Unattempted
 
                                     // Only display questions that match the selected filter
                                     if (
                                         selectedFilter === 'All' ||
-                                        (selectedFilter === 'Flagged' && (attempts[num] === true || attempts[num] === false)) ||
+                                        (selectedFilter === 'Flagged' && (attempts[num] === true || attempts[num] === false || attempts[num]==='partial')) ||
                                         (selectedFilter === 'Unseen' && attempts[num] === null)
                                     ) {
                                         return (
