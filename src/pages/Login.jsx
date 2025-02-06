@@ -112,7 +112,7 @@ const Login = () => {
                             disabled={loading} // Disable the button while loading
                         >
                             {loading ? (
-                               <Loader/>
+                                'Loading...'
                             ) : (
                                 'Log in'
                             )}
