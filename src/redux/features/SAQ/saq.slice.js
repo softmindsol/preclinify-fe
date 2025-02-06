@@ -23,7 +23,7 @@ const shortQuestionSlice = createSlice({
     name: "SQA",
     initialState,
     reducers: {
-        setAttempted: (state, action) => {
+        setAttemptedShortQuestion: (state, action) => {
             state.attempts = action.payload;
         },
         setUserAnswers: (state, action) => {
@@ -99,6 +99,6 @@ const shortQuestionSlice = createSlice({
     }
 });
 
-export const { setAttempted, setUserAnswers, setCheckedAnswers } = shortQuestionSlice.actions;
+export const { setAttemptedShortQuestion, setUserAnswers, setCheckedAnswers } = shortQuestionSlice.actions;
 
 export default shortQuestionSlice.reducer;

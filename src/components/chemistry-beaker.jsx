@@ -18,9 +18,9 @@ const ChemistryBeaker = ({ beakerToggledHandler }) => {
                 <svg onClick={beakerToggledHandler} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x cursor-pointer"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </div>
             <div className="flex space-x-[22px] border-b mb-4">
-                <button className={` ${tab === 'HAEM' && 'text-blue-500 border-b-2 border-blue-500 '} px-4 py-2`} onClick={(e) => tabHandler(e, "HAEM")}>HAEM</button>
-                <button className={`text-[#000000] px-4 py-2 ${tab === 'CHEM' && 'text-blue-500 border-b-2 border-blue-500 '}`} onClick={(e) => tabHandler(e, "CHEM")}>CHEM</button>
-                <button className={`text-[#000000] px-4 py-2 ${tab === 'MISCELLANEOUS' && 'text-blue-500 border-b-2 border-blue-500 '}`} onClick={(e) => tabHandler(e, "MISCELLANEOUS")}>MISCELLANEOUS</button>
+                <button className={` ${tab === 'HAEM' && 'text-[#3CC8A1] border-b-2 border-[#3CC8A1] '} px-4 py-2`} onClick={(e) => tabHandler(e, "HAEM")}>HAEM</button>
+                <button className={`text-[#000000] px-4 py-2 ${tab === 'CHEM' && ' text-[#3CC8A1] border-b-2 border-[#3CC8A1] '}`} onClick={(e) => tabHandler(e, "CHEM")}>CHEM</button>
+                <button className={`text-[#000000] px-4 py-2 ${tab === 'MISCELLANEOUS' && 'text-[#3CC8A1] border-b-2 border-[#3CC8A1] '}`} onClick={(e) => tabHandler(e, "MISCELLANEOUS")}>MISCELLANEOUS</button>
             </div>
             <div className="font-light">
                 {

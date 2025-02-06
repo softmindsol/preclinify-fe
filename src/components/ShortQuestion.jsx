@@ -15,6 +15,7 @@ import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 import DashboardModal from "./common/DashboardModal";
 import ChemistryBeaker from "./chemistry-beaker";
 import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
+import { setAttemptedShortQuestion, setUserAnswers } from "../redux/features/SAQ/saq.slice";
 
 
 
@@ -33,7 +34,6 @@ const calculateTimeForQuestions = (numQuestions) => {
 };
 const ShortQuestion = () => {
     const sqa = useSelector(state => state?.SQA?.organizedData || []);
-    console.log("redux SQA:", sqa);
     const attempted = useSelector((state) => state.attempts?.attempts);
     console.log("attempted:", attempted);
 const [attempts, setAttempts] = useState(attempted); 
@@ -43,10 +43,8 @@ const [attempts, setAttempts] = useState(attempted);
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
-    const [isAccordionOpen, setIsAccordionOpen] = useState([]);
     const [totalScore, setTotalScore] = useState(0);
     const [totalAttempts, setTotalAttempts] = useState(0);
-    const [correctAnswers, setCorrectAnswers] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState("")
     
@@ -58,8 +56,9 @@ const [attempts, setAttempts] = useState(attempted);
     const [isReviewEnabled, setIsReviewEnabled] = useState(false)
     const itemsPerPage = 10;
     // Get the items to show for the current page
-  
+    const shortQuestion = useSelector(state => state?.SQA)
         const active = useSelector((state) => state.attempts?.active);
+    console.log("shortQuestion:", shortQuestion);
     
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
@@ -87,24 +86,47 @@ const [attempts, setAttempts] = useState(attempted);
     // Get the current items based on the current page
     const currentItems = allChildren.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
-    // console.log("allChildren:", allChildren);
-    // console.log("currentItems:", currentItems);
+    
     
     const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
     }
 
+    
 
 
     const handleCheckAnswer = () => {
         if (!userAnswer.trim()) {
             setError(true);
             return;
+        } else {
+            setError(false);
+            dispatch(setUserAnswers(currentIndex, userAnswer)); // Store user answer in Redux
+            dispatch(setAttemptedShortQuestion(currentIndex)); // Mark question as attempted
+            setTestCheckAnswer(true);
         }
-        else {
-            setError(false); // Clear the error
-            setTestCheckAnswer(true); // Perform the action when input is valid
+    };
+
+    const nextQuestion = () => {
+        if (childIndex < sqa[parentIndex]?.children.length - 1) {
+            setChildIndex(prev => prev + 1);
+        } else if (parentIndex < sqa.length - 1) {
+            setParentIndex(prev => prev + 1);
+            setChildIndex(0);
         }
+        setCurrentIndex(prev => prev + 1); // Update current index
+        setUserAnswer(""); // Clear the answer input for the next question
+    };
+
+    const prevQuestion = () => {
+        if (childIndex > 0) {
+            setChildIndex(prev => prev - 1);
+        } else if (parentIndex > 0) {
+            setParentIndex(prev => prev - 1);
+            setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
+        }
+        setCurrentIndex(prev => prev - 1); // Update current index
+        setUserAnswer(""); // Clear the answer input for the previous question
     };
 
 
@@ -151,11 +173,6 @@ const [attempts, setAttempts] = useState(attempted);
     };
 
 
-    console.log("Total Questions:", totalQuestions);
-    console.log("Initial Attempts Array:", attempts);
-
-
-
     // Arrays to store indices
     const unseenIndices = [];
     const flaggedIndices = [];
@@ -199,29 +216,29 @@ const [attempts, setAttempts] = useState(attempted);
 
 
 
-    // Function to navigate to the next question
-    const nextQuestion = () => {
-        if (childIndex < sqa[parentIndex]?.children.length - 1) {
-            setChildIndex(prev => prev + 1);
-        } else if (parentIndex < sqa.length - 1) {
-            // Move to next parent and reset child index
-            setParentIndex(prev => prev + 1);
-            setChildIndex(0);
-        }
+    // // Function to navigate to the next question
+    // const nextQuestion = () => {
+    //     if (childIndex < sqa[parentIndex]?.children.length - 1) {
+    //         setChildIndex(prev => prev + 1);
+    //     } else if (parentIndex < sqa.length - 1) {
+    //         // Move to next parent and reset child index
+    //         setParentIndex(prev => prev + 1);
+    //         setChildIndex(0);
+    //     }
 
-    };
+    // };
 
 
-    // Function to navigate to the previous question
-    const prevQuestion = () => {
-        if (childIndex > 0) {
-            setChildIndex(prev => prev - 1);
-        } else if (parentIndex > 0) {
-            setParentIndex(prev => prev - 1);
-            setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
-        }
+    // // Function to navigate to the previous question
+    // const prevQuestion = () => {
+    //     if (childIndex > 0) {
+    //         setChildIndex(prev => prev - 1);
+    //     } else if (parentIndex > 0) {
+    //         setParentIndex(prev => prev - 1);
+    //         setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
+    //     }
 
-    };
+    // };
 
     const nextPage = () => {
         if ((currentPage + 1) * itemsPerPage < allChildren.length) {
