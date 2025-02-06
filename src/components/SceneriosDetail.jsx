@@ -138,13 +138,8 @@ const [loader,setLoader]=useState(false)
         return () => clearInterval(timerInterval);
     }, [timerActive, minutes, seconds, navigate]);
 
-    useEffect(() => {
-    
-            setTimeout(()=>{
-                dispatch(fetchOSCEDataById(id))
-            },3000)
-           
-    
+    useEffect(() => {  
+            dispatch(fetchOSCEDataById(id))   
     }, []);
 
 
@@ -239,7 +234,7 @@ const [loader,setLoader]=useState(false)
                             </div>
 
                             {/* Panels */}
-                            {[
+                            {/* {[
                                 {
                                     id: 1,
                                     title: "Candidate Brief",
@@ -393,7 +388,7 @@ const [loader,setLoader]=useState(false)
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))} */}
 
                         </div>
                     </div>}
