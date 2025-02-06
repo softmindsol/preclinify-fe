@@ -4,7 +4,6 @@ import supabase from '../config/helper';
 import Logo from '../components/common/Logo';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import Loader from '../components/common/Loader';
 
 const Register = () => {
     const [email, setEmail] = useState('');

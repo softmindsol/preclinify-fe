@@ -3,7 +3,6 @@ import supabase from '../config/helper';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/common/Logo';
 import {toast} from 'sonner'; // Import the toast module
-import Loader from '../components/common/Loader';
 import { resendVerificationEmail } from '../utils/authUtils';
 
 const Login = () => {

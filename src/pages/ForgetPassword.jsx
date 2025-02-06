@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Logo from '../components/common/Logo';
 import supabase from '../config/helper';
-import Loader from '../components/common/Loader';
 import { toast } from 'sonner';
 
 const ForgetPassword = () => {
