@@ -145,7 +145,7 @@ const Scenarios = () => {
                         </div>
 
                         <div className="flex flex-col xl:flex-row items-center gap-5 justify-around mt-10">
-                            <div className="flex items-center space-x-2">
+                            {/* <div className="flex items-center space-x-2">
                                 <label htmlFor="sort" className="text-[#71717A] text-[14px] 2xl:text-[16px] font-semibold">
                                     Sort By Presentation
                                 </label>
@@ -157,7 +157,7 @@ const Scenarios = () => {
                                         className={`absolute left-0.5 top-0.5 h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${sortAscending ? "translate-x-5" : "translate-x-0"}`}
                                     ></span>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className="flex items-center gap-x-5">
                                 <div className="relative">

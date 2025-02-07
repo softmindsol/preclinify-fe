@@ -26,6 +26,7 @@ import ChatHistory from './components/common/ChatHistory';
 import OSCEAIBOT from './components/OSCE-AI-BOT';
 import QuestionGenerator from './components/question-generation/QuestionGenerator';
 import MockTestQuestion from './components/mock-test/Mock';
+import PersonalInformation from './pages/PersonalInformation';
 
 function App() {
   const {theme} = useContext(ThemeContext);
@@ -59,6 +60,8 @@ function App() {
         <Route path='/osce-ai-bot' element={<OSCEAIBOT />} />
         <Route path='/question-generator' element={<QuestionGenerator />} />
         <Route path='/mock-test' element={<MockTestQuestion />} />
+        <Route path='/personal-info' element={<PersonalInformation />} />
+
       </Routes>
     </div>
   );
