@@ -95,16 +95,16 @@ export const fetchMcqsByModules = createAsyncThunk(
 // Fetch MCQs by moduleId with limit
 export const fetchConditionNameById= createAsyncThunk(
     'mcqs/fetchConditionNameById',
-    async ({ Id }, { rejectWithValue }) => {
-        console.log("Id:",Id);
+    async ({ id }, { rejectWithValue }) => {
+        console.log("Id:", id);
         
         try {
-            if (!Id) return rejectWithValue(' conditionNames ID is not defined for this question.');
+            if (!id) return rejectWithValue(' conditionNames ID is not defined for this question.');
 
             const query = supabase
                 .from('conditionNames')
                 .select('*')
-                .eq('id', Id);
+                .eq('id', id);
 
        
 

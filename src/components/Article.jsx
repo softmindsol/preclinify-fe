@@ -1,8 +1,8 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
-const Article = ({ article=[] }) => {
-    if (!article || article.length === 0) {
+const Article = ({ article = [], id }) => {
+    if (!id) {
         return (
             <div className="flex justify-center items-center ">
                 <p className="text-lg font-medium text-gray-500">No article data available.</p>

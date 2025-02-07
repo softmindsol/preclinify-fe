@@ -167,42 +167,75 @@ const QuestionCard = () => {
         setIsAnswered(true);
     };
 
+    // const handleCheckAnswer = () => {
+    //     dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
+
+    //     if (selectedAnswer) {
+    //         setIsButtonClicked(true);
+    //         setIsAccordionVisible(true);
+    //         setBorder(false);
+
+    //         // Get the correct answer from answersArray using correctAnswerId
+    //         const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
+
+    //         // Check if the selected answer matches the correct answer
+    //         const isCorrect = selectedAnswer === correctAnswer;
+
+
+    //         // Update attempts
+    //         setAttempts((prev) => {
+    //             const updatedAttempts = [...prev];
+    //             updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
+    //             dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+    //             dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
+    //             dispatch(setResult({ updatedAttempts }));
+    //             return updatedAttempts;
+    //         });
+
+
+    //         // Expand accordion for the correct answer
+    //         setIsAccordionOpen((prev) => {
+    //             const newAccordionState = [...prev];
+    //             newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
+    //             return newAccordionState;
+    //         });
+    //     }
+    // };
+
     const handleCheckAnswer = () => {
-        dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
+        dispatch(setActive(false));
 
         if (selectedAnswer) {
             setIsButtonClicked(true);
             setIsAccordionVisible(true);
             setBorder(false);
 
-            // Get the correct answer from answersArray using correctAnswerId
             const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
-
-            // Check if the selected answer matches the correct answer
             const isCorrect = selectedAnswer === correctAnswer;
 
-
-            // Update attempts
             setAttempts((prev) => {
                 const updatedAttempts = [...prev];
-                updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
-                dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
-
+                updatedAttempts[currentIndex] = isCorrect;
+                dispatch(setAttempted(updatedAttempts));
+                dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }));
                 dispatch(setResult({ updatedAttempts }));
                 return updatedAttempts;
             });
 
-
-            // Expand accordion for the correct answer
+            // Open the correct answer's accordion and selected if incorrect
             setIsAccordionOpen((prev) => {
-                const newAccordionState = [...prev];
-                newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
+                const newAccordionState = [...prev].fill(false); // Close all first
+                const selectedIndex = data.data[currentIndex].answersArray.indexOf(selectedAnswer);
+                const correctIndex = data.data[currentIndex].correctAnswerId;
+
+                newAccordionState[correctIndex] = true; // Always open correct answer
+                if (!isCorrect) {
+                    newAccordionState[selectedIndex] = true; // Open selected if incorrect
+                }
                 return newAccordionState;
             });
         }
     };
-
-
 
     const nextQuestion = () => {
         if (currentIndex < data?.data.length - 1) {
@@ -329,16 +362,23 @@ const QuestionCard = () => {
     };
 
 
-    
-
-
+    useEffect(() => {
+        if (data?.data?.length) {
+            const initialAccordionState = data.data[currentIndex].answersArray.map(() => false);
+            setIsAccordionOpen(initialAccordionState);
+        }
+    }, [data.data]);
 
     useEffect(() => {
-        // if (data?.data?.length) {
-        //     setIsAccordionOpen(Array(data.data.length).fill(false));
-        
-        
-        // }
+        // Reset accordion state when the current question changes
+        if (data.data[currentIndex]?.answersArray) {
+            const numAnswers = data.data[currentIndex].answersArray.length;
+            setIsAccordionOpen(Array(numAnswers).fill(false));
+        }
+    }, [currentIndex, data.data]);
+
+    useEffect(() => {
+
         if (active) {
             setAttempts(Array(data.data.length).fill(null)); // Initialize attempts as unseen
             dispatch(setAttempted(Array(data.data.length).fill(null))); // Dispatch the updated attempts array to Redux
@@ -579,7 +619,7 @@ const QuestionCard = () => {
                                     strokeLinejoin="round"
                                     className="lucide lucide-flag cursor-pointer hover:opacity-80"
                                     onClick={() => {
-                                        handleFilterChange('Unseen');
+                                        handleFilterChange('Flagged');
                                         setToggleSidebar(false)
                                     }}
                                 >
@@ -601,7 +641,7 @@ const QuestionCard = () => {
                                 </h3>
 
                                 {/* Options Section */}
-                                <div className="mt-4 space-y-4">
+                                {/* <div className="mt-4 space-y-4">
                                     {
                                         data.data[currentIndex].answersArray.map((answer, index) => {
                                             const isSelected = selectedAnswer === answer;
@@ -721,7 +761,7 @@ const QuestionCard = () => {
                                                                 )}
                                                             </label>
 
-                                                            {/* Conditionally render the hr and p tags */}
+                                                           
                                                             {isAccordionOpen[index] && (
                                                                 <>
                                                                     <hr className={`mx-5 ${borderColor}`} />
@@ -735,8 +775,143 @@ const QuestionCard = () => {
                                                 </div>
                                             );
                                         })}
-                                </div>
+                                </div> */}
+                         
+                                    <div className="mt-4 space-y-4">
+                                            {
+                                            data.data[currentIndex].answersArray.map((answer, index) => {
+                                                const isSelected = selectedAnswer === answer;
+                                                const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
 
+                                                // Determine the border color based on whether the button has been clicked
+                                                const borderColor = isButtonClicked || attempted[currentIndex] !== null
+                                                    ? isCorrectAnswer
+                                                        ? "border-[#22C55E]"
+                                                        : "border-[#EF4444]"
+                                                    : "";
+                                                const bgColor = isButtonClicked || attempted[currentIndex] !== null
+                                                    ? isCorrectAnswer
+                                                        ? "bg-[#DCFCE7]"
+                                                        : "bg-[#FEE2E2]"
+                                                    : "";
+
+                                                return (
+                                                    <div key={index}>
+                                                        {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                                            <label
+                                                                className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
+                                                                onClick={() => handleAnswerSelect(answer, index)}
+                                                            >
+                                                                <input
+                                                                    type="radio"
+                                                                    name="answer"
+                                                                    className="form-radio h-5 w-5 text-green-500 focus:ring-green-500"
+                                                                    checked={isSelected}
+                                                                    readOnly
+                                                                />
+                                                                <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
+                                                                <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
+                                                                    {["Q", "W", "E", "R", "T"][index]}
+                                                                </span>
+                                                            </label>
+                                                        ) : (
+                                                            <div
+                                                                className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // Prevent propagation
+                                                                    toggleAccordion(index);
+                                                                }}
+                                                            >
+                                                                <label
+                                                                    className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
+                                                                    onClick={() => handleAnswerSelect(answer, index)}
+                                                                >
+                                                                    <div
+                                                                        className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
+                                                                            ? isCorrectAnswer
+                                                                                ? "bg-green-100 border border-green-500"
+                                                                                : "bg-red-100 border border-red-500"
+                                                                            : "bg-gray-100 border border-gray-300"
+                                                                            }`}
+                                                                    >
+                                                                        {(isButtonClicked || attempted[currentIndex] !== null) && (
+                                                                            isCorrectAnswer ? (
+                                                                                <svg
+                                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                                    fill="none"
+                                                                                    viewBox="0 0 24 24"
+                                                                                    strokeWidth="2"
+                                                                                    stroke="green"
+                                                                                    className="w-4 h-4"
+                                                                                >
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                                </svg>
+                                                                            ) : (
+                                                                                <svg
+                                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                                    fill="none"
+                                                                                    viewBox="0 0 24 24"
+                                                                                    strokeWidth="2"
+                                                                                    stroke="red"
+                                                                                    className="w-4 h-4"
+                                                                                >
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                                                </svg>
+                                                                            )
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="text-[#27272A] flex-1">{answer}</span>
+                                                                    {isAccordionOpen[index] ? (
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="24"
+                                                                            height="24"
+                                                                            viewBox="0 0 24 24"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth="2"
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            className="lucide lucide-chevron-up"
+                                                                        >
+                                                                            <path d="m18 15-6-6-6 6" />
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="24"
+                                                                            height="24"
+                                                                            viewBox="0 0 24 24"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth="2"
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            className="lucide lucide-chevron-down"
+                                                                        >
+                                                                            <path d="m6 9 6 6 6-6" />
+                                                                        </svg>
+                                                                    )}
+                                                                </label>
+
+                                                                {/* Conditionally render the hr and p tags */}
+                                                                {isAccordionOpen[index] && (
+                                                                    <>
+                                                                        <hr className={`mx-5 ${borderColor}`} />
+                                                                        <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
+                                                                            {data.data[currentIndex].explanationList[index]}
+                                                                        </p>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })
+                                            }
+                                    </div>
+                                  
+                                
                                 {/* Submit Button */}
                                 {
                                     !isReviewEnabled && (
@@ -876,7 +1051,7 @@ const QuestionCard = () => {
                         }
                         {
 
-                            isAccordionVisible && <Article article={article} />
+                            isAccordionVisible && <Article article={article} id={data?.data[currentIndex]?.conditionName} />
                         }
 
                     </div>
