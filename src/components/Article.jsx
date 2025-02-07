@@ -1,7 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
-const Article = ({ article = [], id }) => {
+const Article = ({ article, id }) => {
     if (!id) {
         return (
             <div className="flex justify-center items-center ">
@@ -10,6 +10,10 @@ const Article = ({ article = [], id }) => {
         );
     }
 
+    console.log("id:", id);
+    
+
+    console.log("article:", article);
 
     const { conditionName = "Untitled", textbookContent = "" } = article[0] || {};
     // Function to extract headings dynamically for the Table of Contents

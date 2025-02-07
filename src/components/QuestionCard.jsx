@@ -217,7 +217,11 @@ const QuestionCard = () => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect;
                 dispatch(setAttempted(updatedAttempts));
-                dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }));
+                dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
+                .unwrap()
+                .then(res=>{
+                    setArticle(res)
+                })
                 dispatch(setResult({ updatedAttempts }));
                 return updatedAttempts;
             });
