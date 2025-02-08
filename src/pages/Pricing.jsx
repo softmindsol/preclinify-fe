@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import Navbar from '../components/common/Navbar';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Tag } from 'lucide-react';
 
 const Pricing = () => {
     const [isAnnual, setIsAnnual] = useState(false);
-    const [discountCode, setDiscountCode] = useState('');
-    const [appliedDiscount, setAppliedDiscount] = useState(0);
 
     const pricingPlans = {
         termly: [
             {
                 title: "The OSCE plan",
                 price: 35,
-                monthlyPrice: (35/3).toFixed(2), // 3 months
+                monthlyPrice: (35 / 3).toFixed(2),
                 features: [
                     "Station specific OSCE scenarios",
                     "60 hours of OSCE bot access"
@@ -21,9 +19,10 @@ const Pricing = () => {
             {
                 title: "The Full Package",
                 price: 45,
-                monthlyPrice: (45/3).toFixed(2), // 3 months
+                monthlyPrice: (45 / 3).toFixed(2),
+                hasDiscount: true,
+                discount: 20, // 20% discount for Termly
                 features: [
-                    "The Full Package",
                     "Everything in OSCE",
                     "MLA + Clinical Bank",
                     "SAQ question bank",
@@ -38,7 +37,7 @@ const Pricing = () => {
             {
                 title: "The OSCE plan",
                 price: 50,
-                monthlyPrice: (50/12).toFixed(2), // 12 months
+                monthlyPrice: (50 / 12).toFixed(2),
                 features: [
                     "Station specific OSCE scenarios",
                     "60 hours of OSCE bot access"
@@ -47,9 +46,10 @@ const Pricing = () => {
             {
                 title: "The Full Package",
                 price: 65,
-                monthlyPrice: (65/12).toFixed(2), // 12 months
+                monthlyPrice: (65 / 12).toFixed(2),
+                hasDiscount: true,
+                discount: 30, // 30% discount for Annual
                 features: [
-                    "The Full Package",
                     "Everything in OSCE",
                     "MLA + Clinical Bank",
                     "SAQ question bank",
@@ -72,28 +72,13 @@ const Pricing = () => {
         ]
     };
 
-    const handleDiscountCode = (code) => {
-        const discountCodes = {
-            'DISCOUNT20': 20,
-            'DISCOUNT30': 30
-        };
-        
-        const discount = discountCodes[code.toUpperCase()];
-        if (discount) {
-            setAppliedDiscount(discount);
-            setDiscountCode(code);
-        } else {
-            setAppliedDiscount(0);
-        }
+    // Discounts for termly and annual plans
+    const discounts = {
+        termly: 20, // 20% discount for termly plan
+        annual: 30  // 30% discount for annual plan
     };
 
-    const calculateDiscountedPrice = (price) => {
-        if (appliedDiscount) {
-            return (price * (100 - appliedDiscount) / 100).toFixed(2);
-        }
-        return price;
-    };
-
+    // Get the current plans based on the selected plan
     const getCurrentPlans = () => {
         return isAnnual ? pricingPlans.annual : pricingPlans.termly;
     };
@@ -127,30 +112,45 @@ const Pricing = () => {
                 <div>
                     <div className="flex flex-col lg:flex-row items-center justify-center gap-x-5">
                         {getCurrentPlans().map((plan, index) => (
-                            <div key={index} className="mt-5 relative transition hover:shadow-greenBlur rounded-[16px]">
-                                <div className="h-[500px] lg:h-[556px] w-[270px] lg:w-[310px] border-[1px] border-[#3CC8A1] rounded-[16px]">
-                                    <div className="h-[100px] lg:h-[140px] w-full bg-[#3CC8A1] text-center rounded-tr-[14px] rounded-tl-[14px] p-5">
-                                        <p className="text-white font-bold text-[16px] lg:text-[20px]">{plan.title}</p>
-                                        <p className="text-white font-extrabold text-[26px] lg:text-[40px]">
-                                            {plan.showTotalOnly ? (
-                                                <>£{plan.price}<span className="text-[16px]">/year</span></>
-                                            ) : (
-                                                <>£{plan.monthlyPrice}<span className="text-[16px]">/month</span></>
-                                            )}
-                                        </p>
+                            <div key={index} className="mt-5 mb-8 relative transition hover:shadow-greenBlur rounded-[16px]">
+                                <div className="h-[500px] lg:h-[610px] w-[270px] lg:w-[310px] border-[1px] border-[#3CC8A1] rounded-[16px]">
+                                    <div className="p-8 bg-[#3CC8A1] text-white text-center">
+                                        <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
+                                        <div className="text-4xl font-bold">
+                                            £{plan.showTotalOnly ? plan.price : plan.monthlyPrice}
+                                            <span className="text-lg font-normal">
+                                                /{plan.showTotalOnly ? 'annual' : 'month'}
+                                            </span>
+                                        </div>
+
+                                        {plan.hasDiscount && (
+                                            <div className="mt-3 inline-flex items-center bg-white/20 rounded-full px-3 py-1">
+                                                <Tag size={14} className="mr-2" />
+                                                <span className="text-sm">
+                                                    {`Save up to ${plan.discount}% ${isAnnual ? 'annually' : 'termly'}`}
+                                                </span>
+                                            </div>
+                                        )}
+
                                     </div>
                                     <div className={`p-8 space-y-2 ${plan.title === "The OSCE plan" ? 'text-[16px] lg:text-[18px]' : 'text-[14px] lg:text-[16px]'}`}>
-                                        {plan.features.map((feature, featureIndex) => (
-                                            <div key={featureIndex} className="flex items-center gap-x-5">
-                                                <CheckCircle className="text-[#FF9741]" size={20} />
-                                                <p className={`font-medium text-[#3F3F46] ${plan.title === "The OSCE plan" ? 'w-[60%]' : plan.title === "The Pass Guarantee" ? 'w-[65%]' : ''}`}>
-                                                    {feature}
-                                                </p>
+                                        <div className="space-y-4">
+                                            {plan.features.map((feature, featureIndex) => (
+                                                <div key={featureIndex} className="flex items-start">
+                                                    <CheckCircle className="text-[#FF9741] flex-shrink-0 mt-1" size={18} />
+                                                    <span className="ml-3 text-gray-700">{feature}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {plan.hasDiscount && (
+                                            <div className="mt-6 text-sm text-gray-500 rounded-lg p-3">
+
+                                                {`Apply your discount code at checkout for up to ${plan.discount}% off`}
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
 
-                                    <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2">
+                                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2">
                                         <button className="text-[16px] rounded-[8px] font-semibold text-[#3CC8A1] bg-transparent border-[1px] border-[#3CC8A1] hover:bg-[#3CC8A1] hover:text-white w-[232px] h-[40px] transition-all duration-200">
                                             Get Access
                                         </button>
