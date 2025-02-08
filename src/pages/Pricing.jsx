@@ -11,7 +11,8 @@ const Pricing = () => {
         termly: [
             {
                 title: "The OSCE plan",
-                price: 50,
+                price: 35,
+                monthlyPrice: (35/3).toFixed(2), // 3 months
                 features: [
                     "Station specific OSCE scenarios",
                     "60 hours of OSCE bot access"
@@ -19,7 +20,8 @@ const Pricing = () => {
             },
             {
                 title: "The Full Package",
-                price: 65,
+                price: 45,
+                monthlyPrice: (45/3).toFixed(2), // 3 months
                 features: [
                     "The Full Package",
                     "Everything in OSCE",
@@ -35,7 +37,8 @@ const Pricing = () => {
         annual: [
             {
                 title: "The OSCE plan",
-                price: 35,
+                price: 50,
+                monthlyPrice: (50/12).toFixed(2), // 12 months
                 features: [
                     "Station specific OSCE scenarios",
                     "60 hours of OSCE bot access"
@@ -43,7 +46,8 @@ const Pricing = () => {
             },
             {
                 title: "The Full Package",
-                price: 45,
+                price: 65,
+                monthlyPrice: (65/12).toFixed(2), // 12 months
                 features: [
                     "The Full Package",
                     "Everything in OSCE",
@@ -57,7 +61,8 @@ const Pricing = () => {
             },
             {
                 title: "The Pass Guarantee",
-                price: 3680,
+                price: 1280,
+                showTotalOnly: true,
                 features: [
                     "Everything in The Full Package",
                     "Guaranteed pass of this academic year",
@@ -116,31 +121,8 @@ const Pricing = () => {
                     </p>
                 </div>
                 <div className="text-[16px] font-medium text-[#71717A] mt-2">
-                    <p>Save at least <span className="text-[#FF9741] font-bold">35%</span> with an annual plan</p>
+                    <p>Save with an annual plan</p>
                 </div>
-
-                {/* Discount Code Input */}
-                <div className="mt-4">
-                    <input
-                        type="text"
-                        placeholder="Enter discount code"
-                        className="px-4 py-2 border border-[#3CC8A1] rounded-l-[8px] focus:outline-none"
-                        value={discountCode}
-                        onChange={(e) => setDiscountCode(e.target.value)}
-                    />
-                    <button
-                        onClick={() => handleDiscountCode(discountCode)}
-                        className="px-4 py-2 bg-[#3CC8A1] text-white rounded-r-[8px] hover:bg-[#35b38f]"
-                    >
-                        Apply
-                    </button>
-                </div>
-
-                {appliedDiscount > 0 && (
-                    <div className="mt-2 text-[#3CC8A1]">
-                        {appliedDiscount}% discount applied!
-                    </div>
-                )}
 
                 <div>
                     <div className="flex flex-col lg:flex-row items-center justify-center gap-x-5">
@@ -150,9 +132,10 @@ const Pricing = () => {
                                     <div className="h-[100px] lg:h-[140px] w-full bg-[#3CC8A1] text-center rounded-tr-[14px] rounded-tl-[14px] p-5">
                                         <p className="text-white font-bold text-[16px] lg:text-[20px]">{plan.title}</p>
                                         <p className="text-white font-extrabold text-[26px] lg:text-[40px]">
-                                        &pound;{calculateDiscountedPrice(plan.price)}
-                                            {appliedDiscount > 0 && (
-                                                <span className="text-[16px] line-through ml-2">&pound;{plan.price}</span>
+                                            {plan.showTotalOnly ? (
+                                                `£${plan.price}`
+                                            ) : (
+                                                <>£{plan.monthlyPrice}<span className="text-[16px]">/month</span></>
                                             )}
                                         </p>
                                     </div>
