@@ -21,6 +21,8 @@ import Article from "../Article";
 import { setAttemptedData } from "../../redux/features/SBA/sba.slice";
 import { setActive, setAttempted } from "../../redux/features/attempts/attempts.slice";
 import FeedbackModal from "../common/Feedback";
+import { initializeFlags, toggleFlag } from "../../redux/features/flagged/flagged.slice";
+import { initializeVisited, markVisited } from "../../redux/features/flagged/visited.slice";
 
 
 
@@ -80,6 +82,9 @@ const QuestionGeneration = () => {
   const [beakerToggle, setBeakerToggle] = useState(false);
   const menuRef = useRef(null);
   const active = useSelector((state) => state.attempts?.active);
+  const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
+  const visited = useSelector((state) => state.visited.visitedQuestions);
+
     const [showFeedBackModal, setShowFeedBackModal]=useState(false)
 
 
@@ -195,8 +200,22 @@ const QuestionGeneration = () => {
         newAccordionState[questionGenModule[currentIndex].correct_Answer] = true; // Expand the correct answer's explanation
         return newAccordionState;
       });
+    
+     let value = false;
+                dispatch(markVisited({ currentIndex, value }));
+    
+    
+    
+    
     }
   };
+
+
+    // Modified flag handler
+    const handleFlagQuestion = () => {
+        dispatch(toggleFlag(currentIndex));
+    };
+
   const reportHandler = () => {
     setShowFeedBackModal(!showFeedBackModal)
   }
@@ -218,6 +237,11 @@ const QuestionGeneration = () => {
         setIsAnswered(true);
         setIsAccordionVisible(true);
       }
+
+       let value=true
+                  if (isAnswered === false){
+                      dispatch(markVisited({ currentIndex, value }));
+                  }
     }
   };
 
@@ -324,11 +348,7 @@ const QuestionGeneration = () => {
 
 
   useEffect(() => {
-    // if (data?.data?.length) {
-    //     setIsAccordionOpen(Array(data.data.length).fill(false));
-
-
-    // }
+   
     if (active) {
       setAttempts(Array(questionGenModule.length).fill(null)); // Initialize attempts as unseen
       dispatch(setAttempted(Array(questionGenModule.length).fill(null))); // Dispatch the updated attempts array to Redux
@@ -336,7 +356,15 @@ const QuestionGeneration = () => {
 
   }, [questionGenModule]);
 
+ useEffect(() => {
 
+   if (questionGenModule?.length > 0) {
+            if (active) {
+              dispatch(initializeFlags(questionGenModule?.length));
+              dispatch(initializeVisited(questionGenModule?.length));
+            }
+        }
+ }, [questionGenModule]);
 
   useEffect(() => {
     const correct = attempts.filter((attempt) => attempt === true).length;
@@ -556,16 +584,13 @@ const QuestionGeneration = () => {
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
+                  fill={flaggedQuestions[currentIndex] ? 'white' : 'none'}
+                  stroke={flaggedQuestions[currentIndex] ? 'white' : 'currentColor'}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                  onClick={() => {
-                    handleFilterChange('Unseen');
-                    setToggleSidebar(false)
-                  }}
+                  onClick={handleFlagQuestion}
                 >
                   <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                   <line x1="4" x2="4" y1="22" y2="15" />
@@ -849,7 +874,7 @@ const QuestionGeneration = () => {
               </div>
             )}
 
-            {
+            { 
               isAccordionVisible && <div className="flex items-center mx-7  justify-between  ">
                 <p className="font-medium text-[16px] text-[#3F3F46] dark:text-white" >Notice a problem with this question?</p>
                 <button onClick={reportHandler} className="text-[14px] text-[#193154] p-3 rounded-[4px] bg-gray-200  font-semibold hover:bg-[#d9d9db] transition-all duration-300">Report</button>

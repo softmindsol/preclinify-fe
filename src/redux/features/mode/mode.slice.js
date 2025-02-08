@@ -7,7 +7,7 @@ const modeSlice=createSlice({
         mode:"Endless",
         questionMode:"SBA",
         time:0
-    },
+    }, 
 
     reducers:{
         changeMode:(state,action)=>{

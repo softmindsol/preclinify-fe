@@ -387,7 +387,8 @@ const Questioning = () => {
     useEffect(() => {
         if (selectedTab ==='Pre-clinical'){
             if (selectedPreClinicalOption === 'QuesGen') {
-              
+                dispatch(setPreclinicalType({ selectedPreClinicalOption }));
+
                 dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
                 setIsLoading(true)
                 dispatch(fetchQuesGenModules())

@@ -12,6 +12,8 @@ import { fetchShortQuestionByModules } from "../redux/features/SAQ/saq.service";
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
     const dispatch = useDispatch();
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
+    const typeQues = useSelector((state) => state.mode?.questionMode?.selectedPreClinicalOption);
+
     const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
     const isLoading = useSelector(state => state?.loading?.[fetchMcqsByModules.typePrefix]);
     const isLoadingShortQuestion = useSelector(state => state?.loading?.[fetchShortQuestionByModules.typePrefix]);
@@ -70,12 +72,15 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
         }
     };
 
+    console.log("typeQues:", typeQues);
+    
+
     const handleQuestion = () => {
         if (type === 'SAQ' && !isLoadingShortQuestion) {
             navigation('/short-question');
         } else if (type === 'SBA' && !isLoading) {
             navigation("/question-card");
-        } else if (type === 'QuesGen' && !isQuesGenLoading) {
+        } else if (typeQues === 'QuesGen' && !isQuesGenLoading) {
             navigation("/question-generator");
         } else if (type === 'Mock' && !isMockLoading) {
             navigation("/mock-test");
