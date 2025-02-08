@@ -351,12 +351,6 @@ const MockTestQuestion = () => {
         }
     };
 
-
-
-    // useEffect(() => {
-    //     dispatch(markVisited(currentIndex));
-    // }, [currentIndex, dispatch]);
-
     useEffect(() => {
     
         if (active) {
