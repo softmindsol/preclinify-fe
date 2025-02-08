@@ -405,7 +405,7 @@ const Questioning = () => {
                 dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
-                        console.log("response:", res);
+                       
                         dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
                     })
                     .catch((err) => {
@@ -417,8 +417,6 @@ const Questioning = () => {
        
     }, [selectedPreClinicalOption, selectedModules, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
 
-    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
-
 
 
 
@@ -426,6 +424,9 @@ const Questioning = () => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
+
+        console.log("storedSessions:", storedSessions);
+        
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }

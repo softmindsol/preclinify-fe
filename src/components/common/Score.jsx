@@ -54,7 +54,6 @@ const Score = () => {
     }
     }
 
-    console.log("type:",type);
     
 
 
@@ -81,22 +80,22 @@ const Score = () => {
     }, []);
 
     
-   useEffect(() => {
-       if (recentSession.length > 0) {
-    
+    useEffect(() => {
+        if (recentSession.length > 0) {
             // Retrieve existing sessions from localStorage
             const existingSessions = JSON.parse(localStorage.getItem('recentSessions')) || [];
 
-            // Combine existing sessions with the new session entry
-           const updatedSessions = [...existingSessions, ...recentSession];
+            // Combine existing sessions with the new session entry while removing duplicates
+            const updatedSessions = Array.from(new Set([...existingSessions, ...recentSession]));
 
             // Keep only the last 3 sessions
-            const trimmedSessions = updatedSessions.slice(-3); // This will keep only the last 3 sessions
+            const trimmedSessions = updatedSessions.slice(-3);
 
             // Store the updated sessions in localStorage
             localStorage.setItem('recentSessions', JSON.stringify(trimmedSessions));
         }
-   }, []);
+    }, [recentSession]); // Dependency added to run effect when recentSession changes
+
 
     return (
         <div className={`lg:flex  min-h-screen w-full ${darkModeRedux ? 'dark' : ''}`}>
