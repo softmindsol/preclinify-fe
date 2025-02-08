@@ -4,6 +4,8 @@ import { CheckCircle } from 'lucide-react';
 
 const Pricing = () => {
     const [isAnnual, setIsAnnual] = useState(false);
+    const [discountCode, setDiscountCode] = useState('');
+    const [appliedDiscount, setAppliedDiscount] = useState(0);
 
     const pricingPlans = {
         termly: [
@@ -70,6 +72,28 @@ const Pricing = () => {
         ]
     };
 
+    const handleDiscountCode = (code) => {
+        const discountCodes = {
+            'DISCOUNT20': 20,
+            'DISCOUNT30': 30
+        };
+        
+        const discount = discountCodes[code.toUpperCase()];
+        if (discount) {
+            setAppliedDiscount(discount);
+            setDiscountCode(code);
+        } else {
+            setAppliedDiscount(0);
+        }
+    };
+
+    const calculateDiscountedPrice = (price) => {
+        if (appliedDiscount) {
+            return (price * (100 - appliedDiscount) / 100).toFixed(2);
+        }
+        return price;
+    };
+
     const getCurrentPlans = () => {
         return isAnnual ? pricingPlans.annual : pricingPlans.termly;
     };
@@ -109,7 +133,7 @@ const Pricing = () => {
                                         <p className="text-white font-bold text-[16px] lg:text-[20px]">{plan.title}</p>
                                         <p className="text-white font-extrabold text-[26px] lg:text-[40px]">
                                             {plan.showTotalOnly ? (
-                                                `£${plan.price}`
+                                                <>£{plan.price}<span className="text-[16px]">/year</span></>
                                             ) : (
                                                 <>£{plan.monthlyPrice}<span className="text-[16px]">/month</span></>
                                             )}
