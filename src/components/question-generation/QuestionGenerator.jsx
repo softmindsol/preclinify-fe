@@ -194,18 +194,23 @@ const QuestionGeneration = () => {
       });
 
 
+      
       // Expand accordion for the correct answer
       setIsAccordionOpen((prev) => {
-        const newAccordionState = [...prev];
-        newAccordionState[questionGenModule[currentIndex].correct_Answer] = true; // Expand the correct answer's explanation
+        const newAccordionState = [...prev].fill(false); 
+        const correctIndex = questionGenModule[currentIndex].correct_Answer;
+
+        newAccordionState[correctIndex] = true; 
+
         return newAccordionState;
       });
+
+                  let value = false;
+                  dispatch(markVisited({ currentIndex, value }));
     
-     let value = false;
-                dispatch(markVisited({ currentIndex, value }));
     
     
-    
+      
     
     }
   };
@@ -220,30 +225,43 @@ const QuestionGeneration = () => {
     setShowFeedBackModal(!showFeedBackModal)
   }
 
+const nextQuestion = () => {
+        if (currentIndex < questionGenModule.length - 1) {
+            // Mark the current question as unseen if skipped
+            if (attempted[currentIndex] === null) {
+                setAttempts((prev) => {
+                    const updatedAttempts = [...prev];
+                    updatedAttempts[currentIndex] = null; // Mark as unseen
+                    return updatedAttempts;
+                });
+            }
+            if (attempted[currentIndex + 1] !== null) {
+                setIsAnswered(true);
+                setIsAccordionVisible(true);
+            } else {
+                setIsAnswered(false);
+                setIsAccordionVisible(false);
+            }
 
-  const nextQuestion = () => {
-    if (currentIndex < questionGenModule?.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+            if (isQuestionReview) {
+                setIsAnswered(true);
+                setIsAccordionVisible(true);
+              if (questionGenModule[currentIndex]?.conditionName !== null) {
+                  dispatch(fetchConditionNameById({ id: questionGenModule[currentIndex]?.conditionName }))
+                        .unwrap()
+                        .then(res => {
+                            setArticle(res)
+                        })
+                }
+            } 
 
-      // Check if the next question has been attempted
-      if (attempted[currentIndex + 1] !== null) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
-      } else {
-        setIsAnswered(false);
-        setIsAccordionVisible(false);
-      }
-      if (isQuestionReview) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
-      }
-
-       let value=true
-                  if (isAnswered === false){
-                      dispatch(markVisited({ currentIndex, value }));
-                  }
-    }
-  };
+            let value=true
+            if (isAnswered === false){
+                dispatch(markVisited({ currentIndex, value }));
+            }
+            setCurrentIndex((prev) => prev + 1);
+        }
+    };
 
   const prevQuestion = () => {
     if (currentIndex > 0) {
@@ -969,21 +987,48 @@ const QuestionGeneration = () => {
                         : "bg-gray-300"; // Unattempted
 
                     // Only display questions that match the selected filter
+                    // Only display questions that match the selected filter
                     if (
                       selectedFilter === 'All' ||
-                      (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false)) ||
-                      (selectedFilter === 'Unseen' && attempted[num] === null)
+                      (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
+                      (selectedFilter === 'Unseen' && visited[num] === true)
                     ) {
                       return (
                         <div key={i}>
-                          <div
-                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                            onClick={() => {
-                              setCurrentIndex(num); // Navigate to the selected question
-                            }}
-                          >
-                            <p>{num + 1}</p>
-                          </div>
+                          {
+                            flaggedQuestions[num] ? <div
+                              className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                              onClick={() => {
+                                setCurrentIndex(num); // Navigate to the selected question
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill={flaggedQuestions[num] ? 'white' : 'none'}
+                                stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
+
+                              >
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                <line x1="4" x2="4" y1="22" y2="15" />
+                              </svg>
+                            </div> :
+                              <div
+                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                onClick={() => {
+                                  setCurrentIndex(num); // Navigate to the selected question
+                                }}
+                              >
+                                <p>{num + 1}</p>
+                              </div>
+                          }
+
                         </div>
                       );
                     } else {
