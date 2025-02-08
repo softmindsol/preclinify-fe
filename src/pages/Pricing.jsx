@@ -133,7 +133,7 @@ const Pricing = () => {
                                         <p className="text-white font-bold text-[16px] lg:text-[20px]">{plan.title}</p>
                                         <p className="text-white font-extrabold text-[26px] lg:text-[40px]">
                                             {plan.showTotalOnly ? (
-                                                `£${plan.price}`
+                                                <>£{plan.price}<span className="text-[16px]">/year</span></>
                                             ) : (
                                                 <>£{plan.monthlyPrice}<span className="text-[16px]">/month</span></>
                                             )}
