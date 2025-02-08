@@ -604,8 +604,8 @@ const MockTestQuestion = () => {
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
-                                    fill={flaggedQuestions[currentIndex] ? 'red' : 'none'}
-                                    stroke={flaggedQuestions[currentIndex] ? 'red' : 'currentColor'}
+                                    fill={flaggedQuestions[currentIndex] ? 'white' : 'none'}
+                                    stroke={flaggedQuestions[currentIndex] ? 'white' : 'currentColor'}
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -1009,8 +1009,8 @@ const MockTestQuestion = () => {
                                                                 width="16"
                                                                 height="16"
                                                                 viewBox="0 0 24 24"
-                                                                fill={flaggedQuestions[num] ? 'red' : 'none'}
-                                                                stroke={flaggedQuestions[num] ? 'red' : 'currentColor'}
+                                                                fill={flaggedQuestions[num] ? 'white' : 'none'}
+                                                                stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
                                                                 strokeWidth="2"
                                                                 strokeLinecap="round"
                                                                 strokeLinejoin="round"
