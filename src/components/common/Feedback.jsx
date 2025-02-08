@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 const FeedbackModal = ({ showFeedBackModal ,setShowFeedBackModal  }) => {
     const [feedback, setFeedback] = useState("");
-
+    const [loading, setLoading] = useState(false);
     const handleFeedBack = async () => {
         if (!feedback) {
             // Optional: Add validation to ensure feedback is provided
@@ -13,6 +13,7 @@ const FeedbackModal = ({ showFeedBackModal ,setShowFeedBackModal  }) => {
         }
 
         try {
+            setLoading(true);
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/submit-feedback`, {
                 feedback,
             });
@@ -24,6 +25,9 @@ const FeedbackModal = ({ showFeedBackModal ,setShowFeedBackModal  }) => {
         }
         catch (error) {
             toast.error("Failed to submit feedback.");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -47,9 +51,10 @@ const FeedbackModal = ({ showFeedBackModal ,setShowFeedBackModal  }) => {
                         Cancel
                     </button>
                     <button
+                        disabled={loading}
                         className="px-4 py-2 bg-[#3CC8A1] text-white rounded-md hover:bg-[#2c9d7d]"
                         onClick={handleFeedBack}>
-                        Submit
+                        {loading ? "Submitting..." : "Submit"}
                     </button>
                 </div>
             </div>
