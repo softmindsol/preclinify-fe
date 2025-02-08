@@ -21,6 +21,8 @@ import Article from "../Article";
 import { setAttemptedData } from "../../redux/features/SBA/sba.slice";
 import { setActive, setAttempted } from "../../redux/features/attempts/attempts.slice";
 import FeedbackModal from "../common/Feedback";
+import { initializeFlags, toggleFlag } from "../../redux/features/flagged/flagged.slice";
+import { initializeVisited, markVisited } from "../../redux/features/flagged/visited.slice";
 
 
 
@@ -39,7 +41,6 @@ const calculateTimeForQuestions = (numQuestions) => {
 const MockTestQuestion = () => {
     const mockData = useSelector((state) => state.mockModules?.mockTestData);
      const [showFeedBackModal, setShowFeedBackModal]=useState(false)
- 
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const dispatch = useDispatch();
     const attempted = useSelector((state) => state.attempts?.attempts);
@@ -81,14 +82,21 @@ const MockTestQuestion = () => {
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
     const active = useSelector((state) => state.attempts?.active);
+    const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
+    const visited = useSelector((state) => state.visited.visitedQuestions);
 
 
-
+    // console.log("flaggedQuestions:", flaggedQuestions);
+    
+    // console.log("visited:", visited);
 
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     };
+
+    console.log("isAnswered:", isAnswered);
+    
 
     // Arrays to store indices
     const unseenIndices = [];
@@ -96,36 +104,19 @@ const MockTestQuestion = () => {
     const allIndices = [];
 
     // Filter items based on the selected filter
-    const filteredItems = currentItems.filter((question, index) => {
-        const displayNumber = currentPage * itemsPerPage + index;
-
-        // All items
-        allIndices.push(displayNumber);
-
-        if (selectedFilter === 'All') {
-            return true; // Include all items
-        }
-
-        if (selectedFilter === 'Flagged') {
-            // Check if item is flagged (attempted)
-            const isFlagged = attempted[displayNumber] === true || attempted[displayNumber] === false;
-            if (isFlagged) {
-                flaggedIndices.push(displayNumber); // Store index for flagged items
-                return true;
-            }
-        }
-
-        if (selectedFilter === 'Unseen') {
-            // Check if item is unseen (unattempted)
-            const isUnseen = attempted[displayNumber] === null;
-            if (isUnseen) {
-                unseenIndices.push(displayNumber); // Store index for unseen items
-                return true;
-            }
-        }
-
-        return false; // Hide items that don't match the filter
-    });
+ const filteredItems = currentItems.filter((question, index) => {
+  const displayNumber = currentPage * itemsPerPage + index;
+  
+  if (selectedFilter === 'Flagged') {
+    return flaggedQuestions[displayNumber];
+  }
+  
+  if (selectedFilter === 'Unseen') {
+    return visited[displayNumber] && attempted[displayNumber] === null;
+  }
+  
+  return true; // For 'All' filter
+});
 
 
     const reportHandler = () => {
@@ -190,28 +181,52 @@ const MockTestQuestion = () => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
                 dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
-
+  if (mockData[currentIndex]?.conditionName!==null){
+      dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
+                        .unwrap()
+                        .then(res => {
+                            setArticle(res)
+                        })
+                }
                 dispatch(setResult({ updatedAttempts }));
                 return updatedAttempts;
             });
 
+        
 
             // Expand accordion for the correct answer
             setIsAccordionOpen((prev) => {
-                const newAccordionState = [...prev];
-                newAccordionState[mockData[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
+                const newAccordionState = [...prev].fill(false); // Close all first
+                const selectedIndex = mockData[currentIndex].answersArray.indexOf(selectedAnswer);
+                const correctIndex = mockData[currentIndex].correctAnswerId;
+
+                newAccordionState[correctIndex] = true; // Always open correct answer
+                if (!isCorrect) {
+                    newAccordionState[selectedIndex] = true; // Open selected if incorrect
+                }
                 return newAccordionState;
             });
+            let value = false;
+            dispatch(markVisited({ currentIndex, value }));
         }
     };
 
 
+    // Modified flag handler
+    const handleFlagQuestion = () => {
+        dispatch(toggleFlag(currentIndex));
+    };
 
     const nextQuestion = () => {
         if (currentIndex < mockData.length - 1) {
-            setCurrentIndex((prev) => prev + 1);
-
-            // Check if the next question has been attempted
+            // Mark the current question as unseen if skipped
+            if (attempted[currentIndex] === null) {
+                setAttempts((prev) => {
+                    const updatedAttempts = [...prev];
+                    updatedAttempts[currentIndex] = null; // Mark as unseen
+                    return updatedAttempts;
+                });
+            }
             if (attempted[currentIndex + 1] !== null) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
@@ -219,29 +234,49 @@ const MockTestQuestion = () => {
                 setIsAnswered(false);
                 setIsAccordionVisible(false);
             }
+
             if (isQuestionReview) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
+                if (mockData[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
+                        .unwrap()
+                        .then(res => {
+                            setArticle(res)
+                        })
+                }
+            } 
+
+            let value=true
+            if (isAnswered === false){
+                dispatch(markVisited({ currentIndex, value }));
             }
+            setCurrentIndex((prev) => prev + 1);
         }
     };
 
     const prevQuestion = () => {
         if (currentIndex > 0) {
-            setCurrentIndex((prev) => prev - 1);
-
-            // Check if the previous question has been attempted
-            if (attempted[currentIndex - 1] !== null) {
-                setIsAnswered(true);
-                setIsAccordionVisible(true);
-            } else {
-                setIsAnswered(false);
-                setIsAccordionVisible(false);
+            // Mark the current question as unseen if skipped
+            if (attempted[currentIndex] === null) {
+                setAttempts((prev) => {
+                    const updatedAttempts = [...prev];
+                    updatedAttempts[currentIndex] = null; // Mark as unseen
+                    return updatedAttempts;
+                });
             }
             if (isQuestionReview) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
-            }
+                if (mockData[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
+                        .unwrap()
+                        .then(res => {
+                            setArticle(res)
+                        })
+                }
+            } 
+            setCurrentIndex((prev) => prev - 1);
         }
     };
     const nextPage = () => {
@@ -308,7 +343,7 @@ const MockTestQuestion = () => {
 
     const handleBackToDashboard = () => {
         navigation('/dashboard');
-    };
+    };  
 
     const indicesToDisplay =
         selectedFilter === 'All' ? allIndices
@@ -326,14 +361,12 @@ const MockTestQuestion = () => {
 
 
 
-
+    // useEffect(() => {
+    //     dispatch(markVisited(currentIndex));
+    // }, [currentIndex, dispatch]);
 
     useEffect(() => {
-        // if (data?.data?.length) {
-        //     setIsAccordionOpen(Array(data.data.length).fill(false));
-
-
-        // }
+    
         if (active) {
             setAttempts(Array(mockData.length).fill(null)); // Initialize attempts as unseen
             dispatch(setAttempted(Array(mockData.length).fill(null))); // Dispatch the updated attempts array to Redux
@@ -408,7 +441,7 @@ const MockTestQuestion = () => {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met 
         }
 
-    }, [currentIndex, mockData.length]); // Re-run whenever currentIndex changes
+    }, [currentIndex, mockData?.length]); // Re-run whenever currentIndex changes
 
     // Add this useEffect hook to handle keyboard events
     useEffect(() => {
@@ -444,6 +477,17 @@ const MockTestQuestion = () => {
         }
     }, [review])
 
+    useEffect(() => {
+
+        if (mockData?.length > 0) {
+            if (active) {
+            dispatch(initializeFlags(mockData?.length));
+            dispatch(initializeVisited(mockData?.length));
+            }
+        }
+    }, [mockData]);
+
+    
 
     return (
         <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `} >
@@ -560,28 +604,26 @@ const MockTestQuestion = () => {
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
+                                    fill={flaggedQuestions[currentIndex] ? 'red' : 'none'}
+                                    stroke={flaggedQuestions[currentIndex] ? 'red' : 'currentColor'}
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                    onClick={() => {
-                                        handleFilterChange('Unseen');
-                                        setToggleSidebar(false)
-                                    }}
+                                    onClick={handleFlagQuestion}
                                 >
                                     <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                     <line x1="4" x2="4" y1="22" y2="15" />
                                 </svg>
+
                             </div>
                         </div>
 
                         {/* Question start */}
-                        {mockData.length > 0 && (
+                        {mockData?.length > 0 && (
                             <div className="mt-6 p-6" key={currentIndex}>
                                 <p className="text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white">
-                                    {mockData[currentIndex].questionStem}
+                                    {mockData[currentIndex]?.questionStem}
                                 </p>
 
                                 <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
@@ -591,9 +633,9 @@ const MockTestQuestion = () => {
                                 {/* Options Section */}
                                 <div className="mt-4 space-y-4">
                                     {
-                                        mockData[currentIndex].answersArray.map((answer, index) => {
+                                        mockData[currentIndex]?.answersArray?.map((answer, index) => {
                                             const isSelected = selectedAnswer === answer;
-                                            const isCorrectAnswer = index === mockData[currentIndex].correctAnswerId;
+                                            const isCorrectAnswer = index === mockData[currentIndex]?.correctAnswerId;
 
 
                                             // Determine the border color based on whether the button has been clicked
@@ -610,7 +652,7 @@ const MockTestQuestion = () => {
 
                                             return (
                                                 <div>
-                                                    {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                                    {!isAccordionVisible  && attempted[currentIndex] === null ? (
                                                         <label
                                                             key={index}
                                                             className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
@@ -863,7 +905,9 @@ const MockTestQuestion = () => {
                         }
                         {
 
-                            isAccordionVisible && <Article article={article} />
+                            isAccordionVisible && <Article article={article} id={mockData[currentIndex]?.conditionName}    
+
+                 />
                         }
                         {
                             showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
@@ -948,19 +992,45 @@ const MockTestQuestion = () => {
                                         // Only display questions that match the selected filter
                                         if (
                                             selectedFilter === 'All' ||
-                                            (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false)) ||
-                                            (selectedFilter === 'Unseen' && attempted[num] === null)
+                                            (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true )) ||
+                                            (selectedFilter === 'Unseen' && visited[num] === true)
                                         ) {
                                             return (
                                                 <div key={i}>
-                                                    <div
-                                                        className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                        onClick={() => {
-                                                            setCurrentIndex(num); // Navigate to the selected question
-                                                        }}
-                                                    >
-                                                        <p>{num + 1}</p>
-                                                    </div>
+                                                 {
+                                                        flaggedQuestions[num] ? <div
+                                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                            onClick={() => {
+                                                                setCurrentIndex(num); // Navigate to the selected question
+                                                            }}
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="16"
+                                                                height="16"
+                                                                viewBox="0 0 24 24"
+                                                                fill={flaggedQuestions[num] ? 'red' : 'none'}
+                                                                stroke={flaggedQuestions[num] ? 'red' : 'currentColor'}
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
+                                                              
+                                                            >
+                                                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                                                <line x1="4" x2="4" y1="22" y2="15" />
+                                                            </svg>
+                                                        </div> :
+                                                            <div
+                                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                                onClick={() => {
+                                                                    setCurrentIndex(num); // Navigate to the selected question
+                                                                }}
+                                                            >
+                                                                <p>{num + 1}</p>
+                                                            </div>
+                                                 }
+                                                    
                                                 </div>
                                             );
                                         } else {

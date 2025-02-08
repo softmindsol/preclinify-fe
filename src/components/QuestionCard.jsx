@@ -21,6 +21,8 @@ import Article from "./Article";
 import { setAttemptedData } from "../redux/features/SBA/sba.slice";
 import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
 import FeedbackModal from "./common/Feedback";
+import { initializeFlags, toggleFlag } from "../redux/features/flagged/flagged.slice";
+import { initializeVisited, markVisited } from "../redux/features/flagged/visited.slice";
 
 
 
@@ -74,6 +76,9 @@ const QuestionCard = () => {
         const savedTime = localStorage.getItem('examTimer');
         return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
     });
+    
+      const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
+        const visited = useSelector((state) => state.visited.visitedQuestions);
     
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
@@ -241,27 +246,78 @@ const QuestionCard = () => {
                 }
                 return newAccordionState;
             });
+
+              let value = false;
+                        dispatch(markVisited({ currentIndex, value }));
         }
     };
 
-    const nextQuestion = () => {
-        if (currentIndex < data?.data.length - 1) {
-            setCurrentIndex((prev) => prev + 1);
+     // Modified flag handler
+        const handleFlagQuestion = () => {
+            dispatch(toggleFlag(currentIndex));
+        };
+    
+    // const nextQuestion = () => {
+    //     if (currentIndex < data?.data.length - 1) {
+    //         setCurrentIndex((prev) => prev + 1);
 
-            // Check if the next question has been attempted
-            if (attempted[currentIndex + 1] !== null) {
-                setIsAnswered(true);
-                setIsAccordionVisible(true);
-            } else {
-                setIsAnswered(false);
-                setIsAccordionVisible(false);
+    //         // Check if the next question has been attempted
+    //         if (attempted[currentIndex + 1] !== null) {
+    //             setIsAnswered(true);
+    //             setIsAccordionVisible(true);
+    //         } else {
+    //             setIsAnswered(false);
+    //             setIsAccordionVisible(false);
+    //         }
+    //         if (isQuestionReview) {
+    //             setIsAnswered(true);
+    //             setIsAccordionVisible(true);
+    //         }
+    //          let value=true
+    //                     if (isAnswered === false){
+    //                         dispatch(markVisited({ currentIndex, value }));
+    //                     }
+    //     }
+        
+    // };
+
+      const nextQuestion = () => {
+          if (currentIndex < data?.data.length - 1) {
+                // Mark the current question as unseen if skipped
+                if (attempted[currentIndex] === null) {
+                    setAttempts((prev) => {
+                        const updatedAttempts = [...prev];
+                        updatedAttempts[currentIndex] = null; // Mark as unseen
+                        return updatedAttempts;
+                    });
+                }
+                if (attempted[currentIndex + 1] !== null) {
+                    setIsAnswered(true);
+                    setIsAccordionVisible(true);
+                } else {
+                    setIsAnswered(false);
+                    setIsAccordionVisible(false);
+                }
+    
+                if (isQuestionReview) {
+                    setIsAnswered(true);
+                    setIsAccordionVisible(true);
+                    if (data?.data[currentIndex]?.conditionName !== null) {
+                        dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
+                            .unwrap()
+                            .then(res => {
+                                setArticle(res)
+                            })
+                    }
+                } 
+    
+                let value=true
+                if (isAnswered === false){
+                    dispatch(markVisited({ currentIndex, value }));
+                }
+                setCurrentIndex((prev) => prev + 1);
             }
-            if (isQuestionReview) {
-                setIsAnswered(true);
-                setIsAccordionVisible(true);
-            }
-        }
-    };
+        };
 
     const prevQuestion = () => {
         if (currentIndex > 0) {
@@ -394,6 +450,16 @@ const QuestionCard = () => {
     }, [data.data]);
 
 
+    useEffect(() => {
+    
+        if (data?.data?.length > 0) {
+                if (active) {
+                    dispatch(initializeFlags(data?.data?.length));
+                    dispatch(initializeVisited(data?.data?.length));
+                }
+            }
+    }, [data?.data]);
+    
 
     useEffect(() => {
         const correct = attempts.filter((attempt) => attempt === true).length;
@@ -619,20 +685,18 @@ const QuestionCard = () => {
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
+                                    fill={flaggedQuestions[currentIndex] ? 'red' : 'none'}
+                                    stroke={flaggedQuestions[currentIndex] ? 'red' : 'currentColor'}
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                    onClick={() => {
-                                        handleFilterChange('Flagged');
-                                        setToggleSidebar(false)
-                                    }}
+                                    onClick={handleFlagQuestion}
                                 >
                                     <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                     <line x1="4" x2="4" y1="22" y2="15" />
                                 </svg>
+
                             </div>
                         </div>
 
@@ -786,9 +850,9 @@ const QuestionCard = () => {
                          
                                     <div className="mt-4 space-y-4">
                                             {
-                                            data.data[currentIndex].answersArray.map((answer, index) => {
+                                            data.data[currentIndex]?.answersArray.map((answer, index) => {
                                                 const isSelected = selectedAnswer === answer;
-                                                const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
+                                                const isCorrectAnswer = index === data?.data[currentIndex]?.correctAnswerId;
 
                                                 // Determine the border color based on whether the button has been clicked
                                                 const borderColor = isButtonClicked || attempted[currentIndex] !== null
@@ -1136,22 +1200,46 @@ const QuestionCard = () => {
                                             : attempted[num] === false
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
-
-                                         if (
-                                        selectedFilter === 'All' ||
-                                        (selectedFilter === 'Flagged' && (attempts[num] === true || attempts[num] === false)) ||
-                                        (selectedFilter === 'Unseen' && attempts[num] === null)
-                                    ) {
+                                        if (
+                                            selectedFilter === 'All' ||
+                                            (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
+                                            (selectedFilter === 'Unseen' && visited[num] === true)
+                                        ) {
                                         return (
                                             <div key={i}>
-                                                 <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                    onClick={() => {
-                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                    }}
-                                                >
-                                                    <p>{num + 1}</p>
-                                                </div>
+                                                {
+                                                    flaggedQuestions[num] ? <div
+                                                        className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                        onClick={() => {
+                                                            setCurrentIndex(num); // Navigate to the selected question
+                                                        }}
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            viewBox="0 0 24 24"
+                                                            fill={flaggedQuestions[num] ? 'red' : 'none'}
+                                                            stroke={flaggedQuestions[num] ? 'red' : 'currentColor'}
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="lucide lucide-flag cursor-pointer hover:opacity-80"
+
+                                                        >
+                                                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                                            <line x1="4" x2="4" y1="22" y2="15" />
+                                                        </svg>
+                                                    </div> :
+                                                        <div
+                                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                            onClick={() => {
+                                                                setCurrentIndex(num); // Navigate to the selected question
+                                                            }}
+                                                        >
+                                                            <p>{num + 1}</p>
+                                                        </div>
+                                                }
                                             </div>
                                         );
                                     } else {
