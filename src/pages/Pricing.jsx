@@ -101,7 +101,7 @@ const Pricing = () => {
                                 <div className='h-[500px] lg:h-[556px] w-[270px] lg:w-[310px] border-[1px] border-[#3CC8A1] rounded-[16px]'>
                                     <div className='h-[100px] lg:h-[140px] w-full bg-[#3CC8A1] text-center rounded-tr-[14px] rounded-tl-[14px] p-5'>
                                         <p className='text-white font-bold text-[16px] lg:text-[20px]'>{plan.title}</p>
-                                        <p className='text-white font-extrabold text-[26px] lg:text-[40px]'>£{plan.price}</p>
+                                        <p className='text-white font-extrabold text-[26px] lg:text-[40px]'>&pound;{plan.price}</p>
                                     </div>
                                     <div className={`p-8 space-y-2 ${plan.title === "The OSCE plan" ? 'text-[16px] lg:text-[18px]' : 'text-[14px] lg:text-[16px]'}`}>
                                         {plan.features.map((feature, featureIndex) => (
