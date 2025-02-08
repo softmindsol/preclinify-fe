@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Navbar from '../components/common/Navbar'
 import { CheckCircle } from 'lucide-react';
 
 const Pricing = () => {
@@ -72,19 +73,20 @@ const Pricing = () => {
 
     return (
         <div className=''>
+            <Navbar />
             <div className='flex flex-col items-center justify-center h-screen mt-[500px] lg:mt-24 2xl:mt-32'>
                 <div className='font-semibold text-[24px] lg:text-[36px] text-[#52525B] text-center'>
                     <p>So confident </p>
                     <p>we can even guarantee you pass.</p>
                 </div>
                 <div className="flex w-[224px] p-8 font-bold h-[50px] items-center justify-center bg-[#3CC8A1] rounded-[8px] text-white gap-x-8">
-                    <p 
+                    <p
                         className={`hover:bg-white/20 px-4 py-2 cursor-pointer rounded ${!isAnnual ? 'bg-white/20' : ''}`}
                         onClick={() => setIsAnnual(false)}
                     >
                         Termly
                     </p>
-                    <p 
+                    <p
                         className={`hover:bg-white/20 px-4 py-2 cursor-pointer rounded ${isAnnual ? 'bg-white/20' : ''}`}
                         onClick={() => setIsAnnual(true)}
                     >
