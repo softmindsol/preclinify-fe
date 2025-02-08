@@ -85,17 +85,9 @@ const MockTestQuestion = () => {
     const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
     const visited = useSelector((state) => state.visited.visitedQuestions);
 
-
-    // console.log("flaggedQuestions:", flaggedQuestions);
-    
-    // console.log("visited:", visited);
-
-
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     };
-
-    console.log("isAnswered:", isAnswered);
     
 
     // Arrays to store indices
