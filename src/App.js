@@ -27,6 +27,8 @@ import OSCEAIBOT from './components/OSCE-AI-BOT';
 import QuestionGenerator from './components/question-generation/QuestionGenerator';
 import MockTestQuestion from './components/mock-test/Mock';
 import PersonalInformation from './pages/PersonalInformation';
+import CheckoutSuccess from './pages/CheckoutSuccess';
+import CheckoutCancel from './pages/CheckoutCancel';
 
 function App() {
   const {theme} = useContext(ThemeContext);
@@ -62,6 +64,9 @@ function App() {
         <Route path='/mock-test' element={<MockTestQuestion />} />
         <Route path='/personal-info' element={<PersonalInformation />} />
 
+        {/* Checkout  */}
+        <Route path="/checkout-success" element={<CheckoutSuccess />} />
+        <Route path="/checkout-cancelled" element={<CheckoutCancel />} />
       </Routes>
     </div>
   );
