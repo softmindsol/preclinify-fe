@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Logo from "./common/Logo";
 import DiscussionBoard from "./Discussion";
 import DeepChatAI from "./DeepChat";
@@ -93,14 +93,16 @@ const [attempts, setAttempts] = useState(attempted);
     const userAnswers = useSelector(state => state?.userAnswers?.answers)
      
 
-    console.log("userAnswers:", userAnswers);
-    
+    console.log("visited:", visited);
+
     const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
     }
 
     
     const handleCheckAnswer = () => {
+                dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
+        
         if (!userAnswer.trim()) {
             setError(true);
             return;
@@ -125,14 +127,23 @@ const [attempts, setAttempts] = useState(attempted);
             setParentIndex(prev => prev + 1);
             setChildIndex(0);
         }
+
         setCurrentIndex(prev => prev + 1); // Update current index
-        // setUserAnswers(""); // Clear the answer input for the next question
         setTestCheckAnswer(false);
-        setUserAnswerState(userAnswers[currentIndex + 1] || ""); 
-         let value=true
-        if (isAnswered === false){
+
+        const nextIndex = currentIndex + 1;
+        setUserAnswerState(userAnswers[nextIndex] || "");
+
+        let value = true;
+        if (!isAnswered) {
             dispatch(markVisited({ currentIndex, value }));
         }
+
+        // Check if the next question has a valid answer
+        const hasValidAnswer = userAnswers[nextIndex] !== null && userAnswers[nextIndex] !== "";
+    
+
+        setTestCheckAnswer(hasValidAnswer);
     };
 
     const prevQuestion = () => {
@@ -142,15 +153,18 @@ const [attempts, setAttempts] = useState(attempted);
             setParentIndex(prev => prev - 1);
             setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
         }
+
         setCurrentIndex(prev => prev - 1); // Update current index
-        // setUserAnswers(""); // Clear the answer input for the previous question
         setTestCheckAnswer(false);
-        setUserAnswerState(userAnswers[currentIndex - 1] || ""); 
 
-        if (userAnswers[currentIndex - 1] !== undefined){
-            setTestCheckAnswer(true);
+        const prevIndex = currentIndex - 1;
+        setUserAnswerState(userAnswers[prevIndex] || "");
 
-        }
+        // Check if the previous question has a valid answer
+        const hasValidAnswer = userAnswers[prevIndex] !== null && userAnswers[prevIndex] !== "";
+        console.log(`hasValidAnswer for index ${prevIndex}:`, hasValidAnswer);
+
+        setTestCheckAnswer(hasValidAnswer);
     };
 
 
@@ -162,34 +176,34 @@ const [attempts, setAttempts] = useState(attempted);
     const handleBackToDashboard = () => {
         navigation('/dashboard');
     };
-
-    const handleIncorrectClick = () => {
-         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
-  markQuestion(globalIndex, false);
+    const handleIncorrectClick = useCallback(() => {
+        const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+        markQuestion(globalIndex, false);
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
         setUserAnswerState('');
-        nextQuestion(); // Use nextQuestion instead of manual increment
-    };
+        nextQuestion();
+    }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
-    const handlePartialClick = () => {
+    const handlePartialClick = useCallback(() => {
         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
         markQuestion(globalIndex, 'partial');
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
         setUserAnswerState('');
-        nextQuestion(); // Use nextQuestion instead of manual increment
-    };
+        nextQuestion();
+    }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
-    const handleCorrectClick = () => {
+    const handleCorrectClick = useCallback(() => {
         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
         markQuestion(globalIndex, true);
-
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
         setUserAnswerState('');
-        nextQuestion(); // Use nextQuestion instead of manual increment
-    };
+        nextQuestion();
+    }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
+
+
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     
@@ -241,31 +255,6 @@ const [attempts, setAttempts] = useState(attempted);
         dispatch(toggleFlag(currentIndex));
     };
 
-
-    // // Function to navigate to the next question
-    // const nextQuestion = () => {
-    //     if (childIndex < sqa[parentIndex]?.children.length - 1) {
-    //         setChildIndex(prev => prev + 1);
-    //     } else if (parentIndex < sqa.length - 1) {
-    //         // Move to next parent and reset child index
-    //         setParentIndex(prev => prev + 1);
-    //         setChildIndex(0);
-    //     }
-
-    // };
-
-
-    // // Function to navigate to the previous question
-    // const prevQuestion = () => {
-    //     if (childIndex > 0) {
-    //         setChildIndex(prev => prev - 1);
-    //     } else if (parentIndex > 0) {
-    //         setParentIndex(prev => prev - 1);
-    //         setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
-    //     }
-
-    // };
-
     const nextPage = () => {
         if ((currentPage + 1) * itemsPerPage < allChildren.length) {
             setCurrentPage(currentPage + 1);
@@ -313,13 +302,11 @@ const reportHandler=()=>{
     };
 
    
-    const markQuestion = (index, status) => {
-  
-        
+    const markQuestion = useCallback((index, status) => {
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
             updatedAttempts[index] = status; // Update specific question status
- dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+            dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
             return updatedAttempts;
         });
 
@@ -337,7 +324,7 @@ const reportHandler=()=>{
 
         // Increment total attempts
         setTotalAttempts(prev => prev + 1);
-    };
+    }, [dispatch]);
 
     // const handleMark = (status) => {
     //     markQuestion(currentIndex, status);
@@ -369,29 +356,32 @@ const reportHandler=()=>{
     };
 
 
-    const handleKeyDown = (event) => {
-        switch (event.key) {
-            case '1':
-                handleIncorrectClick();
-                break;
-            case '2':
-                handlePartialClick();
-                break;
-            case '3':
-                handleCorrectClick();
-                break;
-            default:
-                break; // Ignore other keys
-        }
-    };
-
+  
     useEffect(() => {
         if (sqa.length > 0) {
-            dispatch(initializeAnswers(totalQuestions)); // Initialize answers when the component mounts
+            if (active){
+                dispatch(initializeAnswers(totalQuestions)); // Initialize answers when the component mounts
+            }
         }
     }, [sqa, dispatch, totalQuestions]);
 
     useEffect(() => {
+        const handleKeyDown = (event) => {
+            switch (event.key) {
+                case '1': // Key "1" for Incorrect
+                    handleIncorrectClick();
+                    break;
+                case '2': // Key "2" for Partial
+                    handlePartialClick();
+                    break;
+                case '3': // Key "3" for Correct
+                    handleCorrectClick();
+                    break;
+                default:
+                    break; // Ignore other keys
+            }
+        };
+
         // Add event listener for keydown
         window.addEventListener('keydown', handleKeyDown);
 
@@ -399,7 +389,7 @@ const reportHandler=()=>{
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []); 
+    }, [handleIncorrectClick, handlePartialClick, handleCorrectClick]); // Add dependencies to avoid stale closures
 
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
@@ -443,24 +433,16 @@ const reportHandler=()=>{
         if (active) {
             setAttempts(Array(allChildren?.length).fill(null)); // Initialize attempts as unseen
             dispatch(setAttempted(Array(allChildren?.length).fill(null))); // Dispatch the updated attempts array to Redux
+            dispatch(initializeVisited(allChildren.length));
+            dispatch(initializeFlags(allChildren.length));
         }
+
+        const hasValidAnswer = userAnswers[currentIndex] !== null && userAnswers[currentIndex] !== "";
+        setTestCheckAnswer(hasValidAnswer);
     }, [active]); // Ensure 'active' is the only dependency
      
-    useEffect(() => {
-        if (allChildren?.length > 0 && active) {
-            
-
-            
-
-            if (!flaggedQuestions) {
-                dispatch(initializeFlags(allChildren.length));
-            }
-            if (!visited) {
-                dispatch(initializeVisited(allChildren.length));
-            }
-        }
-    }, [allChildren, active]);
-
+  
+   
 
     return (
         <div className={`min-h-screen  ${darkModeRedux ? 'dark' : ''} `}>
@@ -538,18 +520,24 @@ const reportHandler=()=>{
                         {/* Question Navigation */}
                      
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button onClick={prevQuestion} className="disabled:cursor-not-allowed disabled:opacity-80" disabled={childIndex <= 0}>&larr;</button>
-                            {/* <div className="bg-[#3CC8A1] w-[90%] sm:w-[95%] text-white p-6 mt-5 lg:w-[720px] ml-6 rounded-md flex items-center justify-between relative">
-                               
-                                <div className="absolute right-4 flex space-x-4">
-                                    <button onClick={prevQuestion} disabled={childIndex <= 0}>&larr;</button>
-                                    <button onClick={nextQuestion} disabled={childIndex >= sqa[parentIndex]?.children.length - 1}>&rarr;</button>
-                                </div>
-                            </div> */}
+                            <button className={`text-white ${childIndex + 1 <= 1 && parentIndex === 0 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
+                                &larr;
+                            </button>
                             <h2 className="font-semibold text-center">
-                                Question {childIndex + 1} of {totalQuestions}
+                                Question {
+                                    // Calculate current question number
+                                    childIndex + 1 +
+                                    sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0)
+                                } of {
+                                    // Calculate total questions
+                                    sqa.reduce((total, parent) => total + parent.children.length, 0)
+                                }
                             </h2>
-                            <button onClick={nextQuestion} className="disabled:cursor-not-allowed disabled:opacity-80" disabled={childIndex >= sqa[parentIndex]?.children.length - 1}>&rarr;</button>
+                            <button className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
+                                (parentIndex === sqa.length - 1) ? 'opacity-70 cursor-not-allowed' : ''
+                                }`} onClick={nextQuestion}>
+                                &rarr;
+                            </button>
                         </div>
 
                         {/* Right Icons */}

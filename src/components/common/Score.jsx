@@ -22,13 +22,20 @@ const Score = () => {
     const [correct, setCorrect] = useState(null);
     const [incorrect, setIncorrect] = useState(null);
     const [unseen, setUnseen] = useState(0);
+    const [sqacorrect, setSqaCorrect] = useState(0);
+    const [sqaincorrect, setSqaIncorrect] = useState(0);
+    const [sqaunseen, setSqaUnseen] = useState(0);
+    const [sqaPartial, setSqapartial] = useState(0);
     const [feedback, setFeedback] = useState(null);
-    const [totalAttemped, setTotalAttemped] = useState(0)
+    const [totalAttemped, setTotalAttemped] = useState(0);
+    const [saqTotalAttempted,setSaqTotalAttemped]=useState(0);
     const navigate=useNavigate();
     const recentSession = useSelector(state => state?.recentSession?.recentSessions);
        const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
        const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
    
+    const attempts = useSelector(state => state?.attempts?.attempts);
+    console.log("attempts:", attempts);
     
     const toggleDrawer = () => {
         setIsOpen((prevState) => !prevState)
@@ -65,7 +72,22 @@ const Score = () => {
         // Calculate counts for correct, incorrect, and unseen
         const correctCount = result.result.filter(value => value === true).length;
         const incorrectCount = result.result.filter(value => value === false).length;
+        const partialCount = result.result.filter(value => value === 'partial').length;
         const unseenCount = result.result.filter(value => value === null || value === undefined).length;
+
+
+        const sqaCorrectCount = attempts.filter(value => value === true).length;
+        const sqaIncorrectCount = attempts.filter(value => value === false).length;
+        const sqaPartialCount = attempts.filter(value => value === 'partial').length;
+        const sqaUnseenCount = attempts.filter(value => value === null || value === undefined).length;
+
+        
+        setSqaCorrect(sqaCorrectCount);
+        setSqaIncorrect(sqaIncorrectCount);
+        setSqaUnseen(sqaUnseenCount);
+        setSqapartial(  sqaPartialCount);
+        setSaqTotalAttemped(sqaCorrectCount + sqaIncorrectCount + sqaPartialCount);
+    
 
         // Update the states
         setCorrect(correctCount);
@@ -115,7 +137,7 @@ const Score = () => {
                 </div>
             </div>
                 <div className='w-full lg:ml-[150px]  min-h-screen  dark:bg-black'>
-
+ 
 
                 <div className='flex items-center justify-center flex-col '>
                     <div>
@@ -136,13 +158,27 @@ const Score = () => {
 
                     <div className='space-y-3 flex flex-col-reverse md:flex-col'>
                         <div className='text-center md:mr-[380px] mt-2 md:mt-5'>
-                                <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>Total Attempted: {totalAttemped}</p>
+                  {(type == 'SAQ') ? 
+
+                                    <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>Total Attempted: {saqTotalAttempted}</p> : <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>Total Attempted: {totalAttemped}</p>
+
+                  }
                         </div>
-                            <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
-                            <p>Correct:{correct || 0}</p>
-                            <p>Incorrect: {incorrect || 0}</p>
-                            <p>Not Attempted: {unseen || 0}</p>
-                        </div>
+                        {
+                                (type == 'SAQ') ? <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
+                                    <p>Correct:{sqacorrect || 0}</p>
+                                    <p>Incorrect: {sqaincorrect || 0}</p>
+                                    <p>Partial: {sqaPartial || 0}</p>
+                                    <p>Not Attempted: {sqaunseen || 0}</p>
+                                </div> : <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
+                                    <p>Correct:{correct || 0}</p>
+                                    <p>Incorrect: {incorrect || 0}</p>
+                                    <p>Not Attempted: {unseen || 0}</p>
+                                </div>
+                        }
+                           
+
+
                     </div>
                    
                     <div className='flex justify-center mt-5 items-center'>

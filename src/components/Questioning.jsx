@@ -28,6 +28,7 @@ import supabase from "../config/helper";
 import { resetAttempts, setActive } from "../redux/features/attempts/attempts.slice";
 import { fetchQuesGenModules,fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
 import { fetchModulesById, fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
+import { clearFlags } from "../redux/features/flagged/flagged.slice";
  
 
 const Questioning = () => {
@@ -249,6 +250,7 @@ const Questioning = () => {
         dispatch(resetAttempts([]))
         dispatch(setResetLimit())
         dispatch(resetQuestionReviewValue());
+        dispatch(clearFlags())
         dispatch(setActive(true));
     }, []);
 
