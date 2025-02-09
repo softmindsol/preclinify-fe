@@ -201,7 +201,7 @@ const MockTestQuestion = () => {
             let value = false;
             dispatch(markVisited({ currentIndex, value }));
         }
-    };
+    }; 
 
 
     // Modified flag handler
