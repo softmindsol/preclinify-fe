@@ -226,7 +226,8 @@ const [loader,setLoader]=useState(false)
                                         <span>04.10.24</span>
                                     </div>
 
-                                    <button className="bg-transparent px-2 py-1 rounded text-xs border border-white">
+                                    <button 
+                                    className="bg-transparent px-2 py-1 rounded text-xs border border-white">
                                         Report a problem
                                     </button>
                                 </div>

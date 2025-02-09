@@ -557,7 +557,7 @@ const nextQuestion = () => {
                       <ul>
                         <li
                           className="hover:bg-[#3CC8A1] text-[#3F3F46] hover:text-white cursor-pointer p-2"
-                          onClick={() => alert('Report clicked')}
+                          onClick={reportHandler}
                         >
                           Report
                         </li>
