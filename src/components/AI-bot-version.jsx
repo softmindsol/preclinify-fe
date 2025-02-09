@@ -486,7 +486,7 @@ const AINewVersion = () => {
             </div>
 
 {
-                feedbackModal && (<FeedbackModal showFeedBackModal={feedbackModal} setShowFeedBackModal={setFeedbackModalOpen}/>)
+                showFeedBackModal && (<FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal}/>)
 }
             {showPopup && (
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
