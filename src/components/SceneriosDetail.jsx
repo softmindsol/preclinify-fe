@@ -21,6 +21,7 @@ const [loader,setLoader]=useState(false)
     const { id } = useParams(); // Extract 'id' from the URL
     const [checkboxState, setCheckboxState] = useState([]);
     const [score, setScore] = useState(0);
+    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
 
     const togglePanel = (panel) => {
         setOpenPanel(openPanel === panel ? null : panel);
@@ -142,7 +143,9 @@ const [loader,setLoader]=useState(false)
             dispatch(fetchOSCEDataById(id))   
     }, []);
 
-
+    const reportHandler=()=>{
+        setShowFeedBackModal(!showFeedBackModal)
+    }
 
     return (
         <div className='w-full'>
@@ -226,7 +229,9 @@ const [loader,setLoader]=useState(false)
                                         <span>04.10.24</span>
                                     </div>
 
-                                    <button className="bg-transparent px-2 py-1 rounded text-xs border border-white">
+                                    <button 
+                                    onClick={reportHandler}
+                                    className="bg-transparent px-2 py-1 rounded text-xs border border-white">
                                         Report a problem
                                     </button>
                                 </div>

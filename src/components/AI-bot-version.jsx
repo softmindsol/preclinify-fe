@@ -31,7 +31,7 @@ const AINewVersion = () => {
     const [isMicActive, setIsMicActive] = useState(false); // New state for mic button effect
     const [inputText, setInputText] = useState("");
     const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
-    const [feedbackModal, setFeedbackModalOpen]=useState(false)
+    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
     const togglePanel = (panel) => {
         setOpenPanel(openPanel === panel ? null : panel);
     };
@@ -77,10 +77,6 @@ const AINewVersion = () => {
     const handleInputChange = (e) => {
         setInputText(e.target.value);
     };
-
-    const feedbackHandler=()=>{
-        setFeedbackModalOpen(true)
-    }
 
     useEffect(() => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -324,7 +320,9 @@ const AINewVersion = () => {
             };
         }
     }, []);
-
+    const reportHandler = () => {
+        setShowFeedBackModal(!showFeedBackModal)
+    }
     return (
         <div className='w-full'>
             {/* Sidebar */}
@@ -370,7 +368,7 @@ const AINewVersion = () => {
                    
 
                     <div className="text-center bg-[#F4F4F5] hover:bg-[#e4e4e6] mb-5 text-[16px] p-1 rounded-[6px] text-[#3F3F46]">
-                        <button onClick={feedbackHandler}>Report a problem</button>
+                        <button onClick={reportHandler}>Report a problem</button>
                     </div>
                     <div className="flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
@@ -488,7 +486,7 @@ const AINewVersion = () => {
             </div>
 
 {
-                feedbackModal && (<FeedbackModal showFeedBackModal={feedbackModal} setShowFeedBackModal={setFeedbackModalOpen}/>)
+                showFeedBackModal && (<FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal}/>)
 }
             {showPopup && (
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
