@@ -91,7 +91,7 @@ const [attempts, setAttempts] = useState(attempted);
     const flaggedQuestions = useSelector((state) => state?.flagged?.flaggedQuestions);
     const visited = useSelector((state) => state?.visited?.visitedQuestions);
     const userAnswers = useSelector(state => state?.userAnswers?.answers)
-     
+    const beakerRef = useRef(null);
 
     console.log("visited:", visited);
 
@@ -441,7 +441,19 @@ const reportHandler=()=>{
         setTestCheckAnswer(hasValidAnswer);
     }, [active]); // Ensure 'active' is the only dependency
      
-  
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (beakerRef.current && !beakerRef.current.contains(event.target)) {
+                setBeakerToggle(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
    
 
     return (
@@ -561,11 +573,7 @@ const reportHandler=()=>{
                                     <path d="M8.5 2h7" />
 
                                 </svg>
-                                {
-                                    beakerToggle && <div className="absolute top-3 left-24">
-                                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-                                    </div>
-                                }
+                               
 
                             </div>
 
@@ -994,7 +1002,16 @@ const reportHandler=()=>{
 
 {
                 showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
-}
+            }
+            <div
+                ref={beakerRef}
+                className={`absolute top-0 right-0 transition-all duration-500 ${beakerToggle ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+                    }`}
+            >
+                <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+            </div>
+
+
 
             <Drawer
                 open={isOpen}
