@@ -28,12 +28,11 @@ import supabase from "../config/helper";
 import { resetAttempts, setActive } from "../redux/features/attempts/attempts.slice";
 import { fetchQuesGenModules,fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
 import { fetchModulesById, fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
+import { clearFlags } from "../redux/features/flagged/flagged.slice";
  
 
 const Questioning = () => {
-        const sqa = useSelector(state => state?.SQA || [])
-    console.log("SQA:",sqa);
-    
+        const sqa = useSelector(state => state?.SQA || [])    
     const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
     const recentSession = useSelector(state => state.recentSession.recentSessions);
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
@@ -49,7 +48,7 @@ const Questioning = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
     const [selectedOption, setSelectedOption] = useState('SBA');
-    const [selectedPreClinicalOption, setSelectedPreClinicalOption] = useState('');
+    const [selectedPreClinicalOption, setSelectedPreClinicalOption] = useState('QuesGen');
     const [recentSessions, setRecentSessions] = useState([]);
     const [isSession, setIsSession] = useState(false)
     const [sessionId, setSessionId] = useState([])
@@ -249,6 +248,7 @@ const Questioning = () => {
         dispatch(resetAttempts([]))
         dispatch(setResetLimit())
         dispatch(resetQuestionReviewValue());
+        dispatch(clearFlags())
         dispatch(setActive(true));
     }, []);
 
@@ -259,20 +259,24 @@ const Questioning = () => {
 
         if (selectedTab==='Clinical') {
             if (selectedOption === 'SBA') {
-                
+                setIsLoading(true);
+
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
                 dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then(() => {
+                        setIsLoading(false);
+
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     })
                     .catch((err) => {
+                        setIsLoading(false);
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     });
             } 
             else if (selectedOption === 'SAQ') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
-                
+                setIsLoading(true);
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
@@ -338,7 +342,8 @@ const Questioning = () => {
             else if (selectedOption === 'Mock') {
                
 
-                
+                setIsLoading(true);
+
                 dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
                 // Fetch IDs from mockTable
                 dispatch(fetchMockTest())
@@ -405,7 +410,7 @@ const Questioning = () => {
                 dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
-                        console.log("response:", res);
+                       
                         dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
                     })
                     .catch((err) => {
@@ -417,8 +422,6 @@ const Questioning = () => {
        
     }, [selectedPreClinicalOption, selectedModules, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
 
-    console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
-
 
 
 
@@ -426,6 +429,9 @@ const Questioning = () => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
+
+        console.log("storedSessions:", storedSessions);
+        
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }
@@ -583,7 +589,7 @@ const Questioning = () => {
                                                     value={selectedPreClinicalOption} // Bind the selected value to state
                                                     onChange={preClinicalHandler} // Trigger the handler on change
                                                 >
-                                                 <option value="" >Select</option>
+                                                
                                                     <option>QuesGen</option>
                                                 </select>
                                         }
@@ -781,7 +787,7 @@ const Questioning = () => {
 
 
 {
-                                        selectedTab === 'Clinical' &&   (  (type === 'SBA' ) && sortedModules?.map((row) => {
+                                        selectedTab === 'Clinical' &&   ((type === 'SBA' ) && sortedModules?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 

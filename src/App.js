@@ -29,6 +29,7 @@ import MockTestQuestion from './components/mock-test/Mock';
 import PersonalInformation from './pages/PersonalInformation';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import CheckoutCancel from './pages/CheckoutCancel';
+import AINewVersion from './components/AI-bot-version';
 
 function App() {
   const {theme} = useContext(ThemeContext);
@@ -59,7 +60,7 @@ function App() {
         <Route path="/osce" element={<><Scenarios /></>} />
         <Route path="/static-scenerios-detail/:id" element={<><SceneriosDetail /></>} />
         <Route path='/contact-us' element={<ContactPage/>}/>
-        <Route path='/osce-ai-bot' element={<OSCEAIBOT />} />
+        <Route path='/osce-ai-bot' element={<AINewVersion />} />
         <Route path='/question-generator' element={<QuestionGenerator />} />
         <Route path='/mock-test' element={<MockTestQuestion />} />
         <Route path='/personal-info' element={<PersonalInformation />} />

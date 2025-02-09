@@ -75,6 +75,7 @@ const QuestionGeneration = () => {
     const savedTime = localStorage.getItem('examTimer');
     return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
   });
+    const beakerRef = useRef(null);
 
   const review = useSelector(state => state.questionReview.value)
   const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
@@ -485,6 +486,18 @@ const nextQuestion = () => {
     }
   }, [review])
 
+ useEffect(() => {
+        function handleClickOutside(event) {
+            if (beakerRef.current && !beakerRef.current.contains(event.target)) {
+                setBeakerToggle(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
 
   return (
@@ -589,12 +602,7 @@ const nextQuestion = () => {
                     <path d="M8.5 2h7" />
 
                   </svg>
-                  {
-                    beakerToggle && <div className="absolute top-3 left-24">
-                      <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-                    </div>
-                  }
-
+                
                 </div>
 
                 <svg
@@ -1152,6 +1160,14 @@ const nextQuestion = () => {
         <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
       )}
 
+
+      <div
+        ref={beakerRef}
+        className={`absolute top-0 right-0 transition-all duration-500 ${beakerToggle ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+          }`}
+      >
+        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+      </div>
 
 
 

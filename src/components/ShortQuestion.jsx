@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Logo from "./common/Logo";
 import DiscussionBoard from "./Discussion";
 import DeepChatAI from "./DeepChat";
@@ -15,9 +15,11 @@ import { fetchConditionNameById } from "../redux/features/SBA/sba.service";
 import DashboardModal from "./common/DashboardModal";
 import ChemistryBeaker from "./chemistry-beaker";
 import { setActive, setAttempted } from "../redux/features/attempts/attempts.slice";
-import { setAttemptedShortQuestion, setUserAnswers } from "../redux/features/SAQ/saq.slice";
+import { setAttemptedShortQuestion } from "../redux/features/SAQ/saq.slice";
 import FeedbackModal from "./common/Feedback";
-
+import { initializeVisited, markVisited } from "../redux/features/flagged/visited.slice";
+import { initializeFlags, toggleFlag } from "../redux/features/flagged/flagged.slice";
+import { initializeAnswers, setUserAnswers } from "../redux/features/SAQ/userAnswer.slice";
 
 
 // Function to format the time in MM:SS format
@@ -48,8 +50,8 @@ const [attempts, setAttempts] = useState(attempted);
     const [totalScore, setTotalScore] = useState(0);
     const [totalAttempts, setTotalAttempts] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState("")
-    
+    // const [userAnswer, setUserAnswer] = useState("")
+    const [userAnswer, setUserAnswerState] = useState("");
     const navigation = useNavigate();
     const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
     // const data = useSelector((state) => state.mcqsQuestion || []);
@@ -75,8 +77,9 @@ const [attempts, setAttempts] = useState(attempted);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const [error, setError] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
+    const [isAnswered,setIsAnswered]=useState(false)
     const [parentIndex,setParentIndex]=useState(0)
-    const totalQuestions = sqa.reduce((total, parent) => total + parent.children.length, 0);
+    const totalQuestions = sqa.reduce((total, parent) => total + parent?.children?.length, 0);
     const [checkedAnswers, setCheckedAnswers] = useState(Array(totalQuestions).fill(false));
     // Initialize attempts with null values
     // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
@@ -85,25 +88,36 @@ const [attempts, setAttempts] = useState(attempted);
 
     // Get the current items based on the current page
     const currentItems = allChildren.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+    const flaggedQuestions = useSelector((state) => state?.flagged?.flaggedQuestions);
+    const visited = useSelector((state) => state?.visited?.visitedQuestions);
+    const userAnswers = useSelector(state => state?.userAnswers?.answers)
+    const beakerRef = useRef(null);
 
-    
-    
+    console.log("visited:", visited);
+
     const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
     }
 
     
-
-
     const handleCheckAnswer = () => {
+                dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
+        
         if (!userAnswer.trim()) {
             setError(true);
             return;
         } else {
             setError(false);
-          
+            setIsAnswered(true)
             setTestCheckAnswer(true);
+
+            
         }
+        dispatch(setUserAnswers({ index: currentIndex, answer: userAnswer }));
+        setUserAnswerState("");
+        let value = false;
+        dispatch(markVisited({ currentIndex, value }));
+      
     };
 
     const nextQuestion = () => {
@@ -113,8 +127,23 @@ const [attempts, setAttempts] = useState(attempted);
             setParentIndex(prev => prev + 1);
             setChildIndex(0);
         }
+
         setCurrentIndex(prev => prev + 1); // Update current index
-        setUserAnswer(""); // Clear the answer input for the next question
+        setTestCheckAnswer(false);
+
+        const nextIndex = currentIndex + 1;
+        setUserAnswerState(userAnswers[nextIndex] || "");
+
+        let value = true;
+        if (!isAnswered) {
+            dispatch(markVisited({ currentIndex, value }));
+        }
+
+        // Check if the next question has a valid answer
+        const hasValidAnswer = userAnswers[nextIndex] !== null && userAnswers[nextIndex] !== "";
+    
+
+        setTestCheckAnswer(hasValidAnswer);
     };
 
     const prevQuestion = () => {
@@ -124,8 +153,18 @@ const [attempts, setAttempts] = useState(attempted);
             setParentIndex(prev => prev - 1);
             setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
         }
+
         setCurrentIndex(prev => prev - 1); // Update current index
-        setUserAnswer(""); // Clear the answer input for the previous question
+        setTestCheckAnswer(false);
+
+        const prevIndex = currentIndex - 1;
+        setUserAnswerState(userAnswers[prevIndex] || "");
+
+        // Check if the previous question has a valid answer
+        const hasValidAnswer = userAnswers[prevIndex] !== null && userAnswers[prevIndex] !== "";
+        console.log(`hasValidAnswer for index ${prevIndex}:`, hasValidAnswer);
+
+        setTestCheckAnswer(hasValidAnswer);
     };
 
 
@@ -137,34 +176,34 @@ const [attempts, setAttempts] = useState(attempted);
     const handleBackToDashboard = () => {
         navigation('/dashboard');
     };
-
-    const handleIncorrectClick = () => {
-         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
-  markQuestion(globalIndex, false);
+    const handleIncorrectClick = useCallback(() => {
+        const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+        markQuestion(globalIndex, false);
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
-        setUserAnswer('');
-        nextQuestion(); // Use nextQuestion instead of manual increment
-    };
+        setUserAnswerState('');
+        nextQuestion();
+    }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
-    const handlePartialClick = () => {
+    const handlePartialClick = useCallback(() => {
         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
         markQuestion(globalIndex, 'partial');
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
-        setUserAnswer('');
-        nextQuestion(); // Use nextQuestion instead of manual increment
-    };
+        setUserAnswerState('');
+        nextQuestion();
+    }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
-    const handleCorrectClick = () => {
+    const handleCorrectClick = useCallback(() => {
         const globalIndex = sqa.slice(0, parentIndex).reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
         markQuestion(globalIndex, true);
-
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
-        setUserAnswer('');
-        nextQuestion(); // Use nextQuestion instead of manual increment
-    };
+        setUserAnswerState('');
+        nextQuestion();
+    }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
+
+
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     
@@ -211,32 +250,10 @@ const [attempts, setAttempts] = useState(attempted);
 
     
 
-
-
-
-    // // Function to navigate to the next question
-    // const nextQuestion = () => {
-    //     if (childIndex < sqa[parentIndex]?.children.length - 1) {
-    //         setChildIndex(prev => prev + 1);
-    //     } else if (parentIndex < sqa.length - 1) {
-    //         // Move to next parent and reset child index
-    //         setParentIndex(prev => prev + 1);
-    //         setChildIndex(0);
-    //     }
-
-    // };
-
-
-    // // Function to navigate to the previous question
-    // const prevQuestion = () => {
-    //     if (childIndex > 0) {
-    //         setChildIndex(prev => prev - 1);
-    //     } else if (parentIndex > 0) {
-    //         setParentIndex(prev => prev - 1);
-    //         setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
-    //     }
-
-    // };
+    // Modified flag handler
+    const handleFlagQuestion = () => {
+        dispatch(toggleFlag(currentIndex));
+    };
 
     const nextPage = () => {
         if ((currentPage + 1) * itemsPerPage < allChildren.length) {
@@ -285,13 +302,11 @@ const reportHandler=()=>{
     };
 
    
-    const markQuestion = (index, status) => {
-  
-        
+    const markQuestion = useCallback((index, status) => {
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
             updatedAttempts[index] = status; // Update specific question status
- dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+            dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
             return updatedAttempts;
         });
 
@@ -309,7 +324,7 @@ const reportHandler=()=>{
 
         // Increment total attempts
         setTotalAttempts(prev => prev + 1);
-    };
+    }, [dispatch]);
 
     // const handleMark = (status) => {
     //     markQuestion(currentIndex, status);
@@ -339,6 +354,42 @@ const reportHandler=()=>{
         }
 
     };
+
+
+  
+    useEffect(() => {
+        if (sqa.length > 0) {
+            if (active){
+                dispatch(initializeAnswers(totalQuestions)); // Initialize answers when the component mounts
+            }
+        }
+    }, [sqa, dispatch, totalQuestions]);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            switch (event.key) {
+                case '1': // Key "1" for Incorrect
+                    handleIncorrectClick();
+                    break;
+                case '2': // Key "2" for Partial
+                    handlePartialClick();
+                    break;
+                case '3': // Key "3" for Correct
+                    handleCorrectClick();
+                    break;
+                default:
+                    break; // Ignore other keys
+            }
+        };
+
+        // Add event listener for keydown
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleIncorrectClick, handlePartialClick, handleCorrectClick]); // Add dependencies to avoid stale closures
 
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
@@ -378,20 +429,32 @@ const reportHandler=()=>{
         setIsReviewEnabled(currentQuestionNumber === totalQuestions);
     }, [childIndex, parentIndex, sqa]);
 
-        useEffect(() => {
-            // if (data?.data?.length) {
-            //     setIsAccordionOpen(Array(data.data.length).fill(false));
-            
-            
-            // }
-            if (active) {
-                setAttempts(Array(allChildren.length).fill(null)); // Initialize attempts as unseen
-                dispatch(setAttempted(Array(allChildren.length).fill(null))); // Dispatch the updated attempts array to Redux
-            }
-    
-        }, []);
+    useEffect(() => {
+        if (active) {
+            setAttempts(Array(allChildren?.length).fill(null)); // Initialize attempts as unseen
+            dispatch(setAttempted(Array(allChildren?.length).fill(null))); // Dispatch the updated attempts array to Redux
+            dispatch(initializeVisited(allChildren.length));
+            dispatch(initializeFlags(allChildren.length));
+        }
 
-console.log("Attempt:",attempts);
+        const hasValidAnswer = userAnswers[currentIndex] !== null && userAnswers[currentIndex] !== "";
+        setTestCheckAnswer(hasValidAnswer);
+    }, [active]); // Ensure 'active' is the only dependency
+     
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (beakerRef.current && !beakerRef.current.contains(event.target)) {
+                setBeakerToggle(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+   
 
     return (
         <div className={`min-h-screen  ${darkModeRedux ? 'dark' : ''} `}>
@@ -483,7 +546,7 @@ console.log("Attempt:",attempts);
                                 }
                             </h2>
                             <button className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
-                                    (parentIndex === sqa.length - 1) ? 'opacity-70 cursor-not-allowed' : ''
+                                (parentIndex === sqa.length - 1) ? 'opacity-70 cursor-not-allowed' : ''
                                 }`} onClick={nextQuestion}>
                                 &rarr;
                             </button>
@@ -510,11 +573,7 @@ console.log("Attempt:",attempts);
                                     <path d="M8.5 2h7" />
 
                                 </svg>
-                                {
-                                    beakerToggle && <div className="absolute top-3 left-24">
-                                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-                                    </div>
-                                }
+                               
 
                             </div>
 
@@ -523,20 +582,17 @@ console.log("Attempt:",attempts);
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
+                                fill={flaggedQuestions[currentIndex] ? 'white' : 'none'}
+                                stroke={flaggedQuestions[currentIndex] ? 'white' : 'currentColor'}
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                onClick={() => {
-                                    handleFilterChange('Unseen');
-                                    setToggleSidebar(false)
-                                }}
+                                onClick={handleFlagQuestion}
                             >
                                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                 <line x1="4" x2="4" y1="22" y2="15" />
-                            </svg>
+                            </svg>  
                         </div>
                     </div>
 
@@ -561,7 +617,7 @@ console.log("Attempt:",attempts);
                                     placeholder="Type here to answer the question..."
                                     onChange={(e) => {
                                         setError(false); // Set an error if empty
-                                        setUserAnswer(e.target.value)
+                                        setUserAnswerState(e.target.value)
                                     }}
                                     value={userAnswer}
 
@@ -575,7 +631,7 @@ console.log("Attempt:",attempts);
                                     <textarea
                                         className="rounded-[6px] bg-[#E4E4E7] w-[100%] lg:w-[720px] h-[120px] mt-2  p-5 text-wrap"
                                         placeholder="This is the user’s answer"
-                                        value={userAnswer}
+                                        value={userAnswer || userAnswers[currentIndex] || ""}
                                         readOnly
                                     />
 
@@ -595,13 +651,13 @@ console.log("Attempt:",attempts);
                                 <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3  flex items-center  ">
                                     <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3 flex items-center">
                                         <button className="bg-[#EF4444] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
-                                            Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">{incorrectCount}</span>
+                                            Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span>
                                         </button>
                                         <button className="bg-[#FF9741] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handlePartialClick}>
-                                            Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">{partialCount}</span>
+                                            Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">2</span>
                                         </button>
                                         <button className="bg-[#3CC8A1] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleCorrectClick}>
-                                            Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">{correctCount}</span>
+                                            Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">3</span>
                                         </button>
                                     </div>
 
@@ -759,26 +815,59 @@ console.log("Attempt:",attempts);
                                             : "bg-gray-300"; // Unattempted
 
                                     // Only display questions that match the selected filter
-                                    if (
-                                        selectedFilter === 'All' ||
-                                        (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
-                                        (selectedFilter === 'Unseen' && attempted[num] === null)
-                                    ) {
-                                        return (
-                                            <div key={i}>
-                                                <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                    onClick={() => {
-                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                    }}
-                                                >
-                                                    <p>{num + 1}</p>
+                                    // if (
+                                    //     selectedFilter === 'All' ||
+                                    //     (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
+                                    //     (selectedFilter === 'Unseen' && attempted[num] === null)
+                                    // )
+                                        if (
+                                            selectedFilter === 'All' ||
+                                            (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
+                                            (selectedFilter === 'Unseen' && visited[num] === true)
+                                        )
+                                    
+                                        {
+                                            return (
+                                                <div key={i}>
+                                                    {
+                                                        flaggedQuestions[num] ? <div
+                                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                            onClick={() => {
+                                                                setCurrentIndex(num); // Navigate to the selected question
+                                                            }}
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="16"
+                                                                height="16"
+                                                                viewBox="0 0 24 24"
+                                                                fill={flaggedQuestions[num] ? 'white' : 'none'}
+                                                                stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
+
+                                                            >
+                                                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                                                <line x1="4" x2="4" y1="22" y2="15" />
+                                                            </svg>
+                                                        </div> :
+                                                            <div
+                                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                                onClick={() => {
+                                                                    setCurrentIndex(num); // Navigate to the selected question
+                                                                }}
+                                                            >
+                                                                <p>{num + 1}</p>
+                                                            </div>
+                                                    }
+
                                                 </div>
-                                            </div>
-                                        );
-                                    } else {
-                                        return null; // Skip rendering if the question doesn't match the filter
-                                    }
+                                            );
+                                        } else {
+                                            return null; // Skip rendering if the question doesn't match the filter
+                                        }
                                 })}
                             </div>
                         </div>
@@ -913,7 +1002,16 @@ console.log("Attempt:",attempts);
 
 {
                 showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
-}
+            }
+            <div
+                ref={beakerRef}
+                className={`absolute top-0 right-0 transition-all duration-500 ${beakerToggle ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+                    }`}
+            >
+                <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+            </div>
+
+
 
             <Drawer
                 open={isOpen}

@@ -75,6 +75,7 @@ const MockTestQuestion = () => {
         const savedTime = localStorage.getItem('examTimer');
         return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
     });
+    const beakerRef = useRef(null);
 
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
@@ -84,6 +85,9 @@ const MockTestQuestion = () => {
     const active = useSelector((state) => state.attempts?.active);
     const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
     const visited = useSelector((state) => state.visited.visitedQuestions);
+
+
+
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
@@ -201,7 +205,7 @@ const MockTestQuestion = () => {
             let value = false;
             dispatch(markVisited({ currentIndex, value }));
         }
-    };
+    }; 
 
 
     // Modified flag handler
@@ -472,7 +476,19 @@ const MockTestQuestion = () => {
             }
         }
     }, [mockData]);
+    
+ useEffect(() => {
+        function handleClickOutside(event) {
+            if (beakerRef.current && !beakerRef.current.contains(event.target)) {
+                setBeakerToggle(false);
+            }
+        }
 
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
     
 
     return (
@@ -577,11 +593,7 @@ const MockTestQuestion = () => {
                                         <path d="M8.5 2h7" />
 
                                     </svg>
-                                    {
-                                        beakerToggle && <div className="absolute top-3 left-24">
-                                            <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-                                        </div>
-                                    }
+                                  
 
                                 </div>
 
@@ -898,9 +910,17 @@ const MockTestQuestion = () => {
                         {
                             showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
                         }
+
+                        
                     </div>
 
-
+                    <div
+                        ref={beakerRef}
+                        className={`absolute z-50 top-0 right-0 transition-all duration-500 ${beakerToggle ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+                            }`}
+                    >
+                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+                    </div>
 
                     {/* Sidebar Section */}
                     <div className={`hidden lg:block fixed right-0 top-0`}>
