@@ -23,8 +23,11 @@ const visitedSlice = createSlice({
         initializeVisited: (state, action) => {
             state.visitedQuestions = new Array(action.payload).fill(false);
         },
+        resetVisited:(state, action) => {
+            state.visitedQuestions = [];
+        }
     },
 });
 
-export const { markVisited, initializeVisited } = visitedSlice.actions;
+export const { markVisited, initializeVisited, resetVisited } = visitedSlice.actions;
 export default visitedSlice.reducer;

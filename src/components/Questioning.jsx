@@ -29,6 +29,8 @@ import { resetAttempts, setActive } from "../redux/features/attempts/attempts.sl
 import { fetchQuesGenModules,fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
 import { fetchModulesById, fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
 import { clearFlags } from "../redux/features/flagged/flagged.slice";
+import { clearUserAnswers } from "../redux/features/SAQ/userAnswer.slice";
+import { resetVisited } from "../redux/features/flagged/visited.slice";
  
 
 const Questioning = () => {
@@ -249,6 +251,8 @@ const Questioning = () => {
         dispatch(setResetLimit())
         dispatch(resetQuestionReviewValue());
         dispatch(clearFlags())
+        dispatch(clearUserAnswers());
+        dispatch(resetVisited())
         dispatch(setActive(true));
     }, []);
 
@@ -259,24 +263,20 @@ const Questioning = () => {
 
         if (selectedTab==='Clinical') {
             if (selectedOption === 'SBA') {
-                setIsLoading(true);
-
+                
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
                 dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then(() => {
-                        setIsLoading(false);
-
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     })
                     .catch((err) => {
-                        setIsLoading(false);
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     });
             } 
             else if (selectedOption === 'SAQ') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
-                setIsLoading(true);
+                
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
@@ -342,8 +342,7 @@ const Questioning = () => {
             else if (selectedOption === 'Mock') {
                
 
-                setIsLoading(true);
-
+                
                 dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
                 // Fetch IDs from mockTable
                 dispatch(fetchMockTest())
@@ -787,7 +786,7 @@ const Questioning = () => {
 
 
 {
-                                        selectedTab === 'Clinical' &&   ((type === 'SBA' ) && sortedModules?.map((row) => {
+                                        selectedTab === 'Clinical' &&   (  (type === 'SBA' ) && sortedModules?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
