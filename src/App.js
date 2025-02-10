@@ -60,7 +60,7 @@ function App() {
         <Route path="/osce" element={<><Scenarios /></>} />
         <Route path="/static-scenerios-detail/:id" element={<><SceneriosDetail /></>} />
         <Route path='/contact-us' element={<ContactPage/>}/>
-        <Route path='/osce-ai-bot' element={<AINewVersion />} />
+        <Route path='/osce-ai-bot/:categoryName' element={<AINewVersion />} />
         <Route path='/question-generator' element={<QuestionGenerator />} />
         <Route path='/mock-test' element={<MockTestQuestion />} />
         <Route path='/personal-info' element={<PersonalInformation />} />

@@ -1141,19 +1141,24 @@ const QuestionCard = () => {
 
                     {/* Sidebar Section */}
                     <div className={`hidden lg:block fixed right-0 top-0`}>
-                        <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
-                            <div className="flex items-center justify-between mt-5">
-                                <div className="flex items-center"></div>
-                                <div className="absolute left-1/2 transform -translate-x-1/2">
-                                    <Logo />
+                        <div className={` bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] flex flex-col items-center justify-between  h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+                            <div className="w-full">
+
+                        
+                                <div className="flex items-center justify-between mt-5 ">
+                                    <div className="flex items-center">
+                                    </div>
+
+                                    <div className="absolute left-1/2 transform -translate-x-1/2">
+                                        <Logo />
+                                    </div>
+
+                                    <div className="flex items-center cursor-pointer" onClick={() => {
+                                        setToggleSidebar(!toggleSidebar)
+                                    }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left dark:text-white mr-4"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
+                                    </div>
                                 </div>
-                                <div className="flex items-center mr-5 cursor-pointer" onClick={() => setToggleSidebar(!toggleSidebar)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-left dark:text-white">
-                                        <path d="m11 17-5-5 5-5" />
-                                        <path d="m18 17-5-5 5-5" />
-                                    </svg>
-                                </div>
-                            </div>
 
                             <div className="flex flex-col items-center justify-center mt-10">
                                 {isTimerMode["mode"] === "Endless" && (
@@ -1308,13 +1313,13 @@ const QuestionCard = () => {
                             <div className="py-5 px-10 text-[#D4D4D8]">
                                 <hr />
                             </div>
-
+                            </div>
                             <div>
                                 <DeepChatAI W='200px' />
                                 <hr className='mx-5' />
                             </div>
 
-                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
+                            <div className="text-[12px] mb-5">
                                 <div
                                     className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"} justify-center`}
                                     onClick={handleFinishAndReview}

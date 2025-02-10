@@ -39,8 +39,8 @@ const ShortQuestion = () => {
     const sqa = useSelector(state => state?.SQA?.organizedData || []);
     const attempted = useSelector((state) => state.attempts?.attempts);
     console.log("attempted:", attempted);
-    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
-const [attempts, setAttempts] = useState(attempted); 
+    const [showFeedBackModal, setShowFeedBackModal] = useState(false)
+    const [attempts, setAttempts] = useState(attempted);
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const [childIndex, setChildIndex] = useState(0)
@@ -60,8 +60,8 @@ const [attempts, setAttempts] = useState(attempted);
     const [isReviewEnabled, setIsReviewEnabled] = useState(false)
     const itemsPerPage = 10;
     // Get the items to show for the current page
-        const active = useSelector((state) => state.attempts?.active);
-    
+    const active = useSelector((state) => state.attempts?.active);
+
     const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
     const isTimerMode = useSelector((state) => state.mode);
@@ -77,15 +77,15 @@ const [attempts, setAttempts] = useState(attempted);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const [error, setError] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
-    const [isAnswered,setIsAnswered]=useState(false)
-    const [parentIndex,setParentIndex]=useState(0)
+    const [isAnswered, setIsAnswered] = useState(false)
+    const [parentIndex, setParentIndex] = useState(0)
     const totalQuestions = sqa.reduce((total, parent) => total + parent?.children?.length, 0);
     const [checkedAnswers, setCheckedAnswers] = useState(Array(totalQuestions).fill(false));
     // Initialize attempts with null values
     // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
     // const currentItems = sqa.children.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const allChildren = sqa.flatMap(parent => parent.children); // or use: const allChildren = [].concat(...sqa.map(parent => parent.children));
-
+    const [isAnswerChecked, setIsAnswerChecked] = useState(false);
     // Get the current items based on the current page
     const currentItems = allChildren.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
     const flaggedQuestions = useSelector((state) => state?.flagged?.flaggedQuestions);
@@ -99,10 +99,10 @@ const [attempts, setAttempts] = useState(attempted);
         setBeakerToggle(!beakerToggle)
     }
 
-    
+
     const handleCheckAnswer = () => {
-                dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
-        
+        dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
+        setIsAnswerChecked(true);
         if (!userAnswer.trim()) {
             setError(true);
             return;
@@ -111,13 +111,13 @@ const [attempts, setAttempts] = useState(attempted);
             setIsAnswered(true)
             setTestCheckAnswer(true);
 
-            
+
         }
         dispatch(setUserAnswers({ index: currentIndex, answer: userAnswer }));
         setUserAnswerState("");
         let value = false;
         dispatch(markVisited({ currentIndex, value }));
-      
+
     };
 
     const nextQuestion = () => {
@@ -127,7 +127,7 @@ const [attempts, setAttempts] = useState(attempted);
             setParentIndex(prev => prev + 1);
             setChildIndex(0);
         }
-
+        setIsAnswerChecked(false);
         setCurrentIndex(prev => prev + 1); // Update current index
         setTestCheckAnswer(false);
 
@@ -141,7 +141,7 @@ const [attempts, setAttempts] = useState(attempted);
 
         // Check if the next question has a valid answer
         const hasValidAnswer = userAnswers[nextIndex] !== null && userAnswers[nextIndex] !== "";
-    
+
 
         setTestCheckAnswer(hasValidAnswer);
     };
@@ -153,7 +153,7 @@ const [attempts, setAttempts] = useState(attempted);
             setParentIndex(prev => prev - 1);
             setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
         }
-
+        setIsAnswerChecked(false);
         setCurrentIndex(prev => prev - 1); // Update current index
         setTestCheckAnswer(false);
 
@@ -200,13 +200,15 @@ const [attempts, setAttempts] = useState(attempted);
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
         setUserAnswerState('');
-        nextQuestion();
+            nextQuestion();
+
+        
     }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
-    
+
 
     };
 
@@ -248,7 +250,7 @@ const [attempts, setAttempts] = useState(attempted);
         return false; // Hide items that don't match the filter
     });
 
-    
+
 
     // Modified flag handler
     const handleFlagQuestion = () => {
@@ -258,8 +260,8 @@ const [attempts, setAttempts] = useState(attempted);
     const nextPage = () => {
         if ((currentPage + 1) * itemsPerPage < allChildren.length) {
             setCurrentPage(currentPage + 1);
-            setCurrentIndex(prev => prev+10); 
-            
+            setCurrentIndex(prev => prev + 10);
+
         }
 
     }
@@ -268,7 +270,7 @@ const [attempts, setAttempts] = useState(attempted);
     const prevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
-            setCurrentIndex(0); 
+            setCurrentIndex(0);
         }
     };
 
@@ -283,9 +285,9 @@ const [attempts, setAttempts] = useState(attempted);
         setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
     };
 
-const reportHandler=()=>{
-    setShowFeedBackModal(!showFeedBackModal)
-}
+    const reportHandler = () => {
+        setShowFeedBackModal(!showFeedBackModal)
+    }
 
     const indicesToDisplay =
         selectedFilter === 'All' ? allIndices
@@ -301,7 +303,7 @@ const reportHandler=()=>{
         }
     };
 
-   
+
     const markQuestion = useCallback((index, status) => {
         setAttempts((prev) => {
             const updatedAttempts = [...prev];
@@ -321,21 +323,19 @@ const reportHandler=()=>{
             setPartialCount(prev => prev + 1);
             setTotalScore(prev => prev + 1); // Increment score by 1 for partial answers
         }
-
         // Increment total attempts
         setTotalAttempts(prev => prev + 1);
     }, [dispatch]);
 
-    // const handleMark = (status) => {
-    //     markQuestion(currentIndex, status);
-    // };
-  
+
+   
+
 
     const getQuestionRange = (currentIndex) => {
-       // Number of items to show in the sidebar
+        // Number of items to show in the sidebar
         const start = Math.floor(currentIndex / itemsPerPage) * itemsPerPage; // Calculate the start index
         const end = Math.min(start + itemsPerPage, allChildren.length); // Calculate the end index
-        
+
         return { start, end };
     };
 
@@ -356,10 +356,10 @@ const reportHandler=()=>{
     };
 
 
-  
+
     useEffect(() => {
         if (sqa.length > 0) {
-            if (active){
+            if (active) {
                 dispatch(initializeAnswers(totalQuestions)); // Initialize answers when the component mounts
             }
         }
@@ -367,6 +367,8 @@ const reportHandler=()=>{
 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            if (!isAnswerChecked) return; // Ignore key presses if the answer hasn't been checked
+
             switch (event.key) {
                 case '1': // Key "1" for Incorrect
                     handleIncorrectClick();
@@ -389,7 +391,7 @@ const reportHandler=()=>{
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [handleIncorrectClick, handlePartialClick, handleCorrectClick]); // Add dependencies to avoid stale closures
+    }, [isAnswerChecked, handleIncorrectClick, handlePartialClick, handleCorrectClick]);
 
     // Attach the click event listener to the document when the menu is open
     useEffect(() => {
@@ -437,10 +439,14 @@ const reportHandler=()=>{
             dispatch(initializeFlags(allChildren.length));
         }
 
-        const hasValidAnswer = userAnswers[currentIndex] !== null && userAnswers[currentIndex] !== "";
-        setTestCheckAnswer(hasValidAnswer);
+        if(review){
+            const hasValidAnswer = userAnswers[currentIndex] !== null && userAnswers[currentIndex] !== "";
+            setTestCheckAnswer(hasValidAnswer);
+        }
+
+       
     }, [active]); // Ensure 'active' is the only dependency
-     
+
     useEffect(() => {
         function handleClickOutside(event) {
             if (beakerRef.current && !beakerRef.current.contains(event.target)) {
@@ -454,7 +460,7 @@ const reportHandler=()=>{
         };
     }, []);
 
-   
+
 
     return (
         <div className={`min-h-screen  ${darkModeRedux ? 'dark' : ''} `}>
@@ -530,10 +536,10 @@ const reportHandler=()=>{
                         </div>
 
                         {/* Question Navigation */}
-                     
+
                         <div className="flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2 text-[14px] lg:text-[18px]">
-                            <button className={`text-white ${childIndex + 1 <= 1 && parentIndex === 0 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
-                                &larr;
+                            <button disabled={childIndex + 1 <= 1 && parentIndex === 0} className={`text-white ${childIndex + 1 <= 1 && parentIndex === 0 ? 'opacity-70 cursor-not-allowed' : ''}`} onClick={prevQuestion}>
+                                <img src="/assets/whiteLeftArrow.svg" alt="" />
                             </button>
                             <h2 className="font-semibold text-center">
                                 Question {
@@ -545,16 +551,17 @@ const reportHandler=()=>{
                                     sqa.reduce((total, parent) => total + parent.children.length, 0)
                                 }
                             </h2>
-                            <button className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
-                                (parentIndex === sqa.length - 1) ? 'opacity-70 cursor-not-allowed' : ''
+                            <button  className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
+                                (parentIndex === sqa.length - 1) ? 'opacity-70 disabled:cursor-not-allowed' : ''
                                 }`} onClick={nextQuestion}>
-                                &rarr;
+                                <img src="/assets/whiteRightArrow.svg" alt="" />
                             </button>
                         </div>
 
                         {/* Right Icons */}
                         <div className="absolute right-4 flex space-x-4">
                             <div className="relative">
+
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -573,7 +580,7 @@ const reportHandler=()=>{
                                     <path d="M8.5 2h7" />
 
                                 </svg>
-                               
+
 
                             </div>
 
@@ -592,7 +599,7 @@ const reportHandler=()=>{
                             >
                                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                 <line x1="4" x2="4" y1="22" y2="15" />
-                            </svg>  
+                            </svg>
                         </div>
                     </div>
 
@@ -639,6 +646,7 @@ const reportHandler=()=>{
                                         className="rounded-[6px] lg:w-[720px] h-[180px] mt-2 p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                         placeholder="This is the user’s answer"
                                         value={sqa[parentIndex]?.children[childIndex]?.idealAnswer}
+                                        readOnly
                                     />
                                 </div>
                         }
@@ -649,7 +657,32 @@ const reportHandler=()=>{
                         {
                             testCheckAnswer ?
                                 <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3  flex items-center  ">
-                                    <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3 flex items-center">
+                                    {review ? <button
+                                        className="mt-2  w-[100%] lg:w-[720px] text-[14px] flex items-center justify-center gap-x-3 lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                                        onClick={() => {
+                                            navigation('/dashboard')
+                                        }}
+                                    >
+                                        Back to Dashboard
+                                        <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="20"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                            >
+                                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                            </svg>
+                                        </span>
+                                    </button> :
+                                   
+                                   <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3 flex items-center">
                                         <button className="bg-[#EF4444] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
                                             Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span>
                                         </button>
@@ -661,6 +694,8 @@ const reportHandler=()=>{
                                         </button>
                                     </div>
 
+
+}
                                 </div> :
                                 <div className="group ">
                                     <button
@@ -699,12 +734,28 @@ const reportHandler=()=>{
 
                             >
 
-                                <button
-                                    className="mt-6 text-[14px]  lg:text-[16px] w-full bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
+                              { !review && <button
+                                    className="mt-2 group text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
 
                                 >
-                                    Finish and Review &darr;
-                                </button>
+                                    Finish and Review
+                                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
+                                        >
+                                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                        </svg>
+                                    </span>
+                                </button>}
                             </div>
                         )}
 
@@ -730,243 +781,220 @@ const reportHandler=()=>{
                 <div className={`hidden lg:block fixed right-0 top-0 dark:border  `}>
 
 
-                    <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[240px]   h-screen dark:bg-[#1E1E2A] text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 dark:border-[1px] dark:border-[#3A3A48]`}>
-                        <div className="flex items-center justify-between mt-5">
-                            <div className="flex items-center">
+                    <div className={` bg-white w-[28%] md:w-[25%] lg:w-[240px] flex flex-col items-center justify-between  h-screen dark:bg-[#1E1E2A] text-black   ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 dark:border-[1px] dark:border-[#3A3A48]`}>
+                        <div className="w-full">
+                            <div className="flex items-center justify-between mt-5 ">
+                                <div className="flex items-center">
+                                </div>
+
+                                <div className="absolute left-1/2 transform -translate-x-1/2">
+                                    <Logo />
+                                </div>
+
+                                <div className="flex items-center cursor-pointer" onClick={() => {
+                                    setToggleSidebar(!toggleSidebar)
+                                }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left dark:text-white"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
+                                </div>
                             </div>
 
-                            <div className="absolute left-1/2 transform -translate-x-1/2">
-                                <Logo />
-                            </div>
-
-                            <div className="flex items-center mr-5 cursor-pointer" onClick={() => {
-                                setToggleSidebar(!toggleSidebar)
-                            }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevrons-left dark:text-white"><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col items-center justify-center mt-10">
-                            {
-                                isTimerMode["mode"] === "Endless" &&
-                                <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${accuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
-                                    <div>  <p className="text-[12px] mt-3">Accuracy</p>
+                            <div className="flex flex-col   items-center justify-center mt-10">
+                                {
+                                    isTimerMode["mode"] === "Endless" &&
+                                    <div className={` h-[96px]  w-[90%]  rounded-[8px] bg-[#3CC8A1] ${accuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"}  text-[#ffff] text-center`}>
+                                        <div>  <p className="text-[12px] mt-3">Accuracy</p>
                                             <p className="font-black text-[36px]">{accuracy}%</p>
-                                    </div>
-
-
-
-                                </div>}
-
-                            {
-                                isTimerMode["mode"] === "Exam" && (
-                                    <div
-                                        className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
-                                            } text-[#ffff] text-center`}
-                                    >
-                                        <div>
-                                            <p className="text-[12px] mt-3">Time:</p>
-
-                                            {
-                                                review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
-                                            }
                                         </div>
-                                    </div>
-                                )
-                            }
 
 
 
-                        </div>
+                                    </div>}
 
-                        <div className="">
-                            <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
-                                <span
-                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                    onClick={() => handleFilterChange('All')}
-                                >
-                                    All
-                                </span>
-                                <span
-                                    className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                    onClick={() => handleFilterChange('Flagged')}
-                                >
-                                    Flagged
-                                </span>
-                                <span
-                                    className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                    onClick={() => handleFilterChange('Unseen')}
-                                >
-                                    Unseen
-                                </span>
+                                {
+                                    isTimerMode["mode"] === "Exam" && (
+                                        <div
+                                            className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
+                                                } text-[#ffff] text-center`}
+                                        >
+                                            <div>
+                                                <p className="text-[12px] mt-3">Time:</p>
+
+                                                {
+                                                    review === true ? <p className="font-black text-[36px]">{'00:00'}</p> : <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                }
+
+
+
                             </div>
-                        </div>
 
+                            <div className="">
+                                <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
+                                    <span
+                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
+                                        onClick={() => handleFilterChange('All')}
+                                    >
+                                        All
+                                    </span>
+                                    <span
+                                        className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
+                                        onClick={() => handleFilterChange('Flagged')}
+                                    >
+                                        Flagged
+                                    </span>
+                                    <span
+                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
+                                        onClick={() => handleFilterChange('Unseen')}
+                                    >
+                                        Unseen
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="flex justify-center items-center">
+                                    <div className="grid grid-cols-5 gap-2">
+                                        {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                            // Determine the background color based on the question status
+                                            const bgColor = attempted[num] === true
+                                                ? "bg-[#3CC8A1]" // Correct answer
+                                                : attempted[num] === false
+                                                    ? "bg-[#FF453A]" // Incorrect answer
+                                                    : attempted[num] === 'partial' ? "bg-[#FF9741]" // No answer
+                                                        : "bg-gray-300"; // Unattempted
 
-                        <div className="flex justify-center items-center">
-                            <div className="grid grid-cols-5 gap-2">
-                                {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                    // Determine the background color based on the question status
-                                    const bgColor = attempted[num] === true
-                                        ? "bg-[#3CC8A1]" // Correct answer
-                                        : attempted[num] === false
-                                            ? "bg-[#FF453A]" // Incorrect answer
-                                            : attempted[num] === 'partial'   ? "bg-[#FF9741]" // No answer
-                                            : "bg-gray-300"; // Unattempted
-
-                                    // Only display questions that match the selected filter
-                                    // if (
-                                    //     selectedFilter === 'All' ||
-                                    //     (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
-                                    //     (selectedFilter === 'Unseen' && attempted[num] === null)
-                                    // )
-                                        if (
-                                            selectedFilter === 'All' ||
-                                            (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
-                                            (selectedFilter === 'Unseen' && visited[num] === true)
-                                        )
-                                    
-                                        {
-                                            return (
-                                                <div key={i}>
-                                                    {
-                                                        flaggedQuestions[num] ? <div
-                                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                            onClick={() => {
-                                                                setCurrentIndex(num); // Navigate to the selected question
-                                                            }}
-                                                        >
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="16"
-                                                                height="16"
-                                                                viewBox="0 0 24 24"
-                                                                fill={flaggedQuestions[num] ? 'white' : 'none'}
-                                                                stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
-
-                                                            >
-                                                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                                                <line x1="4" x2="4" y1="22" y2="15" />
-                                                            </svg>
-                                                        </div> :
-                                                            <div
+                                            // Only display questions that match the selected filter
+                                            // if (
+                                            //     selectedFilter === 'All' ||
+                                            //     (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
+                                            //     (selectedFilter === 'Unseen' && attempted[num] === null)
+                                            // )
+                                            if (
+                                                selectedFilter === 'All' ||
+                                                (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
+                                                (selectedFilter === 'Unseen' && visited[num] === true)
+                                            ) {
+                                                return (
+                                                    <div key={i}>
+                                                        {
+                                                            flaggedQuestions[num] ? <div
                                                                 className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
                                                                 onClick={() => {
                                                                     setCurrentIndex(num); // Navigate to the selected question
                                                                 }}
                                                             >
-                                                                <p>{num + 1}</p>
-                                                            </div>
-                                                    }
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="16"
+                                                                    height="16"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill={flaggedQuestions[num] ? 'white' : 'none'}
+                                                                    stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="lucide lucide-flag cursor-pointer hover:opacity-80"
 
-                                                </div>
-                                            );
-                                        } else {
-                                            return null; // Skip rendering if the question doesn't match the filter
-                                        }
-                                })}
+                                                                >
+                                                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                                                    <line x1="4" x2="4" y1="22" y2="15" />
+                                                                </svg>
+                                                            </div> :
+                                                                <div
+                                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                                                    onClick={() => {
+                                                                        setCurrentIndex(num); // Navigate to the selected question
+                                                                    }}
+                                                                >
+                                                                    <p>{num + 1}</p>
+                                                                </div>
+                                                        }
+
+                                                    </div>
+                                                );
+                                            } else {
+                                                return null; // Skip rendering if the question doesn't match the filter
+                                            }
+                                        })}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between mx-9 mt-3 text-[#71717A]">
+                                    <button
+                                        className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={currentPage > 0 ? prevPage : null}
+                                        disabled={currentPage === 0}
+                                    >
+                                       <img src="/assets/leftArrow.svg" alt="" />
+                                    </button>
+
+                                    <button
+                                        className={`${((currentPage + 1) * itemsPerPage) >= allChildren.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={((currentPage + 1) * itemsPerPage) < allChildren.length ? nextPage : null}
+                                        disabled={((currentPage + 1) * itemsPerPage) >= allChildren.length}
+                                    >
+                                        <img src="/assets/rightArrow.svg" alt="" />
+                                    </button>
+                                </div>
+                                <div className="py-5 px-10 text-[#D4D4D8]">
+                                    <hr />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div className="  ">
+
+                            <div>
+                                <DeepChatAI W='200px' />
+                                <hr className='mx-5' />
                             </div>
                         </div>
-                        <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                            <button
-                                className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                onClick={currentPage > 0 ? prevPage : null}
-                                disabled={currentPage === 0}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-move-left"
+                        <div className="mb-2">
+                            <div className="  text-[12px]">
+
+                                <div
+                                    className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
+                                        } justify-center`}
+                                    onClick={handleFinishAndReview}
                                 >
-                                    <path d="M6 8L2 12L6 16" />
-                                    <path d="M2 12H22" />
-                                </svg>
-                            </button>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-check"
+                                    >
+                                        <path d="M20 6 9 17l-5-5" />
+                                    </svg>
+                                    <p>Finish and Review</p>
+                                </div>
+                                <hr className="w-[200px] my-2" />
 
-                            <button
-                                className={`${((currentPage + 1) * itemsPerPage) >= allChildren.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                onClick={((currentPage + 1) * itemsPerPage) < allChildren.length ? nextPage : null}
-                                disabled={((currentPage + 1) * itemsPerPage) >= allChildren.length}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-move-right"
-                                >
-                                    <path d="M18 8L22 12L18 16" />
-                                    <path d="M2 12H22" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div className="py-5 px-10 text-[#D4D4D8]">
-                            <hr />
-                        </div>
-
-                        <div>
-                            <DeepChatAI W='200px' />
-                            <hr className='mx-5' />
-                        </div>
-
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]">
-
-                            <div
-                                className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled ? "text-[#3CC8A1] cursor-pointer" : "text-[#D4D4D8] cursor-not-allowed"
-                                    } justify-center`}
-                                onClick={handleFinishAndReview}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-check"
-                                >
-                                    <path d="M20 6 9 17l-5-5" />
-                                </svg>
-                                <p>Finish and Review</p>
-                            </div>
-                            <hr className="w-[200px] my-2" />
-
-                            <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap"
-                                onClick={handleShowPopup}>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-chevron-left"
-                                >
-                                    <path d="m15 18-6-6 6-6" />
-                                </svg>
-                                <p>Back to Dashboard</p>
+                                <div className="flex items-center cursor-pointer gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap"
+                                    onClick={handleShowPopup}>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-chevron-left"
+                                    >
+                                        <path d="m15 18-6-6 6-6" />
+                                    </svg>
+                                    <p>Back to Dashboard</p>
+                                </div>
                             </div>
                         </div>
 
@@ -1000,7 +1028,7 @@ const reportHandler=()=>{
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
 
-{
+            {
                 showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
             }
             <div
