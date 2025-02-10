@@ -538,9 +538,20 @@ const QuestionCard = () => {
     }
 
 
-    // Add this useEffect hook to handle keyboard events
     useEffect(() => {
         const handleKeyPress = (e) => {
+            // Prevent default action for spacebar to avoid scrolling
+            if (e.key === " ") {
+                e.preventDefault();
+
+                if (isAnswered) {
+                    handleCheckAnswer(); // Call the check answer function
+                    console.log("spacebar pressed");
+                }
+                return; // Exit the function after handling spacebar
+            }
+
+            // Check if the current question has been attempted
             if (attempted[currentIndex] !== null) return;
 
             const key = e.key.toUpperCase();
@@ -549,15 +560,18 @@ const QuestionCard = () => {
 
             if (keyIndex !== -1 && keyIndex < data.data[currentIndex]?.answersArray.length) {
                 const answer = data.data[currentIndex].answersArray[keyIndex];
-                handleAnswerSelect(answer);
-                dispatch(setResult({ attempted }));
 
+                handleAnswerSelect(answer);
+                setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
+
+                dispatch(setResult({ attempted }));
             }
         };
 
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [currentIndex, attempted, data.data]);
+    }, [currentIndex, attempted, data.data, isAnswered]); // ✅ Added isAnswered in dependency array
+
 
     useEffect(() => {
 

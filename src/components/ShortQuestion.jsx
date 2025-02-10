@@ -618,7 +618,7 @@ const ShortQuestion = () => {
                         {
                             !testCheckAnswer ? <div>
                                 <textarea
-                                    className={`rounded-[6px]  lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal ${error ? 'border border-red-500' : "border"}`}
+                                    className={`rounded-[6px] w-[100%] lg:w-[720px] h-[180px] mt-2  p-5 text-wrap border border-[#ffff] placeholder:text-[#D4D4D8] placeholder:text-[14px] placeholder:font-normal ${error ? 'border border-red-500' : "border"}`}
                                     placeholder="Type here to answer the question..."
                                     onChange={(e) => {
                                         setError(false); // Set an error if empty
@@ -641,7 +641,7 @@ const ShortQuestion = () => {
                                     />
 
                                     <textarea
-                                        className="rounded-[6px] lg:w-[720px] h-[180px] mt-2 p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
+                                        className="rounded-[6px]  w-[100%] lg:w-[720px] h-[180px] mt-2 p-5 text-wrap border border-[#3CC8A1] placeholder:text-[#3F3F46] placeholder:font-semibold"
                                         placeholder="This is the user’s answer"
                                         value={sqa[parentIndex]?.children[childIndex]?.idealAnswer}
                                         readOnly
@@ -680,14 +680,14 @@ const ShortQuestion = () => {
                                         </span>
                                     </button> :
                                    
-                                   <div className="sm:space-x-5 flex-wrap md:space-x-10 lg:space-x-3 flex items-center">
-                                        <button className="bg-[#EF4444] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
+                                        <div className="sm:space-x-5 flex-wrap md:space-x-5 lg:space-x-3 flex items-center lg:justify-start justify-center w-[100%] ">
+                                        <button className="bg-[#EF4444] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
                                             Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span>
                                         </button>
-                                        <button className="bg-[#FF9741] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handlePartialClick}>
+                                            <button className="bg-[#FF9741] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handlePartialClick}>
                                             Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">2</span>
                                         </button>
-                                        <button className="bg-[#3CC8A1] w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleCorrectClick}>
+                                            <button className="bg-[#3CC8A1] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleCorrectClick}>
                                             Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">3</span>
                                         </button>
                                     </div>

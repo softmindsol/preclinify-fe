@@ -442,6 +442,17 @@ const MockTestQuestion = () => {
     // Add this useEffect hook to handle keyboard events
     useEffect(() => {
         const handleKeyPress = (e) => {
+            // Prevent spacebar from scrolling the page
+            if (e.key === " ") {
+                e.preventDefault();
+
+                if (isAnswered) {
+                    handleCheckAnswer(); // ✅ Spacebar pressed, check answer
+                    console.log("Spacebar pressed - Checking answer");
+                }
+                return; // Exit function to prevent other key checks
+            }
+
             if (attempted[currentIndex] !== null) return;
 
             const key = e.key.toUpperCase();
@@ -450,15 +461,18 @@ const MockTestQuestion = () => {
 
             if (keyIndex !== -1 && keyIndex < mockData[currentIndex]?.answersArray.length) {
                 const answer = mockData[currentIndex].answersArray[keyIndex];
-                handleAnswerSelect(answer);
-                dispatch(setResult({ attempted }));
 
+                handleAnswerSelect(answer);
+                setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
+
+                dispatch(setResult({ attempted }));
             }
         };
 
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [currentIndex, attempted, mockData]);
+    }, [currentIndex, attempted, mockData, isAnswered]); // ✅ Dependency array updated
+
 
     useEffect(() => {
 
