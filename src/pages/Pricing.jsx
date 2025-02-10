@@ -14,7 +14,7 @@ const Pricing = () => {
                 title: "The OSCE plan",
                 price: 35,
                 monthlyPrice: (35 / 3).toFixed(1),
-                "plan-slug":  PlanSlug("The OSCE plan", 3),
+                "plan-slug": PlanSlug("The OSCE plan", 3),
                 features: [
                     "Station specific OSCE scenarios",
                     "60 hours of OSCE bot access"
@@ -95,7 +95,7 @@ const Pricing = () => {
 
             if (response.status === 200) {
                 // Handle success (maybe show a success message to the user)
-            window.location.href = response.data.url; // Redirect user to Stripe checkout page
+                window.location.href = response.data.url; // Redirect user to Stripe checkout page
             }
         } catch (error) {
             console.error("Error with subscription:", error);
@@ -134,7 +134,7 @@ const Pricing = () => {
                         {getCurrentPlans().map((plan, index) => (
                             <div key={index} className="mt-5 mb-8 relative transition hover:shadow-greenBlur rounded-[16px]">
                                 <div className="h-[500px] lg:h-[590px] w-[270px] lg:w-[310px] border-[1px] border-[#3CC8A1] rounded-[16px]">
-                                    <div className="p-8 bg-[#3CC8A1] text-white text-center">
+                                    <div className="p-8 bg-[#3CC8A1] text-white text-center rounded-tr-[14px] rounded-tl-[14px]">
                                         <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
                                         <div className="font-bold">
                                             {plan.oldPrice && (
