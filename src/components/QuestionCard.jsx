@@ -319,7 +319,11 @@ const QuestionCard = () => {
                 setCurrentIndex((prev) => prev + 1);
             }
         };
+ const getAttemptedQuestions = () => {
+        return data.data.filter((_, index) => attempted[index] !== null);
+    };
 
+    const attemptedQuestions = getAttemptedQuestions();
     const prevQuestion = () => {
         if (currentIndex > 0) {
             setCurrentIndex((prev) => prev - 1);
@@ -534,9 +538,20 @@ const QuestionCard = () => {
     }
 
 
-    // Add this useEffect hook to handle keyboard events
     useEffect(() => {
         const handleKeyPress = (e) => {
+            // Prevent default action for spacebar to avoid scrolling
+            if (e.key === " ") {
+                e.preventDefault();
+
+                if (isAnswered) {
+                    handleCheckAnswer(); // Call the check answer function
+                    console.log("spacebar pressed");
+                }
+                return; // Exit the function after handling spacebar
+            }
+
+            // Check if the current question has been attempted
             if (attempted[currentIndex] !== null) return;
 
             const key = e.key.toUpperCase();
@@ -545,15 +560,18 @@ const QuestionCard = () => {
 
             if (keyIndex !== -1 && keyIndex < data.data[currentIndex]?.answersArray.length) {
                 const answer = data.data[currentIndex].answersArray[keyIndex];
-                handleAnswerSelect(answer);
-                dispatch(setResult({ attempted }));
 
+                handleAnswerSelect(answer);
+                setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
+
+                dispatch(setResult({ attempted }));
             }
         };
 
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [currentIndex, attempted, data.data]);
+    }, [currentIndex, attempted, data.data, isAnswered]); // ✅ Added isAnswered in dependency array
+
 
     useEffect(() => {
 
@@ -720,144 +738,6 @@ const QuestionCard = () => {
                                 <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
                                     {data.data[currentIndex].leadQuestion}
                                 </h3>
-
-                                {/* Options Section */}
-                                {/* <div className="mt-4 space-y-4">
-                                    {
-                                        data.data[currentIndex].answersArray.map((answer, index) => {
-                                            const isSelected = selectedAnswer === answer;
-                                            const isCorrectAnswer = index === data.data[currentIndex].correctAnswerId;
-
-
-                                            // Determine the border color based on whether the button has been clicked
-                                            const borderColor = isButtonClicked || attempted[currentIndex] !== null
-                                                ? isCorrectAnswer
-                                                    ? "border-[#22C55E]"
-                                                    : "border-[#EF4444]"
-                                                : "";
-                                            const bgColor = isButtonClicked || attempted[currentIndex] !== null
-                                                ? isCorrectAnswer
-                                                    ? "bg-[#DCFCE7]"
-                                                    : "bg-[#FEE2E2]"
-                                                : "";
-
-                                            return (
-                                                <div>
-                                                    {!isAccordionVisible && attempted[currentIndex] === null ? (
-                                                        <label
-                                                            key={index}
-                                                            className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
-                                                            onClick={() => handleAnswerSelect(answer, index)}
-                                                        >
-                                                            <input
-                                                                type="radio"
-                                                                name="answer"
-                                                                className="form-radio h-5 w-5  text-green-500 focus:ring-green-500 "
-                                                                checked={isSelected}
-                                                                readOnly
-                                                            />
-                                                            <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
-                                                            <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
-                                                                {["Q", "W", "E", "R", "T"][index]}
-                                                            </span>
-                                                        </label>
-                                                    ) : (
-                                                        <div
-                                                            className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // Prevent propagation
-                                                                toggleAccordion(index);
-                                                            }}
-                                                        >
-                                                            <label
-                                                                key={index}
-                                                                className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
-                                                                onClick={() => handleAnswerSelect(answer, index)}
-                                                            >
-                                                                <div
-                                                                    className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
-                                                                        ? isCorrectAnswer
-                                                                            ? "bg-green-100 border border-green-500"
-                                                                            : "bg-red-100 border border-red-500"
-                                                                        : "bg-gray-100 border border-gray-300"
-                                                                        }`}
-                                                                >
-                                                                    {(isButtonClicked || attempted[currentIndex] !== null) && (
-                                                                        isCorrectAnswer ? (
-                                                                            <svg
-                                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                                fill="none"
-                                                                                viewBox="0 0 24 24"
-                                                                                strokeWidth="2"
-                                                                                stroke="green"
-                                                                                className="w-4 h-4"
-                                                                            >
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                                            </svg>
-                                                                        ) : (
-                                                                            <svg
-                                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                                fill="none"
-                                                                                viewBox="0 0 24 24"
-                                                                                strokeWidth="2"
-                                                                                stroke="red"
-                                                                                className="w-4 h-4"
-                                                                            >
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                                            </svg>
-                                                                        )
-                                                                    )}
-                                                                </div>
-                                                                <span className="text-[#27272A] flex-1">{answer}</span>
-                                                                {isAccordionOpen[index] ? (
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        width="24"
-                                                                        height="24"
-                                                                        viewBox="0 0 24 24"
-                                                                        fill="none"
-                                                                        stroke="currentColor"
-                                                                        strokeWidth="2"
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        className="lucide lucide-chevron-up"
-                                                                    >
-                                                                        <path d="m18 15-6-6-6 6" />
-                                                                    </svg>
-                                                                ) : (
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        width="24"
-                                                                        height="24"
-                                                                        viewBox="0 0 24 24"
-                                                                        fill="none"
-                                                                        stroke="currentColor"
-                                                                        strokeWidth="2"
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        className="lucide lucide-chevron-down"
-                                                                    >
-                                                                        <path d="m6 9 6 6 6-6" />
-                                                                    </svg>
-                                                                )}
-                                                            </label>
-
-                                                           
-                                                            {isAccordionOpen[index] && (
-                                                                <>
-                                                                    <hr className={`mx-5 ${borderColor}`} />
-                                                                    <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
-                                                                        {data.data[currentIndex].explanationList[index]}
-                                                                    </p>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                </div> */}
-                         
                                     <div className="mt-4 space-y-4">
                                             {
                                             data.data[currentIndex]?.answersArray.map((answer, index) => {
@@ -1152,7 +1032,7 @@ const QuestionCard = () => {
                                     <div className="absolute left-1/2 transform -translate-x-1/2">
                                         <Logo />
                                     </div>
-
+ 
                                     <div className="flex items-center cursor-pointer" onClick={() => {
                                         setToggleSidebar(!toggleSidebar)
                                     }}>
@@ -1216,7 +1096,7 @@ const QuestionCard = () => {
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
                                         if (
-                                            selectedFilter === 'All' ||
+                                            selectedFilter === 'All' && (attempted[num] !== null || flaggedQuestions[num] === true || visited[num] === true) ||
                                             (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
                                             (selectedFilter === 'Unseen' && visited[num] === true)
                                         ) {

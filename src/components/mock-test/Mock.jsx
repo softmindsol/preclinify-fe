@@ -355,6 +355,12 @@ const MockTestQuestion = () => {
         }
     };
 
+
+    const getAttemptedQuestions = () => {
+        return mockData.filter((_, index) => attempted[index] !== null);
+    };
+
+    const attemptedQuestions = getAttemptedQuestions()
     useEffect(() => {
     
         if (active) {
@@ -436,6 +442,17 @@ const MockTestQuestion = () => {
     // Add this useEffect hook to handle keyboard events
     useEffect(() => {
         const handleKeyPress = (e) => {
+            // Prevent spacebar from scrolling the page
+            if (e.key === " ") {
+                e.preventDefault();
+
+                if (isAnswered) {
+                    handleCheckAnswer(); // ✅ Spacebar pressed, check answer
+                    console.log("Spacebar pressed - Checking answer");
+                }
+                return; // Exit function to prevent other key checks
+            }
+
             if (attempted[currentIndex] !== null) return;
 
             const key = e.key.toUpperCase();
@@ -444,15 +461,18 @@ const MockTestQuestion = () => {
 
             if (keyIndex !== -1 && keyIndex < mockData[currentIndex]?.answersArray.length) {
                 const answer = mockData[currentIndex].answersArray[keyIndex];
-                handleAnswerSelect(answer);
-                dispatch(setResult({ attempted }));
 
+                handleAnswerSelect(answer);
+                setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
+
+                dispatch(setResult({ attempted }));
             }
         };
 
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [currentIndex, attempted, mockData]);
+    }, [currentIndex, attempted, mockData, isAnswered]); // ✅ Dependency array updated
+
 
     useEffect(() => {
 
@@ -793,29 +813,30 @@ const MockTestQuestion = () => {
                                                     </span>
                                                 </button>
                                             </div>
-                                        ) : (
+                                        ) : ( 
                                             <div className="group">
-                                                <button
-                                                    className="mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] border border-[#3CC8A1]"
-                                                    onClick={handleCheckAnswer}
-                                                >
+                                                    <button
+                                                        className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
+                                                        onClick={handleCheckAnswer}
+                                                        disabled={isAnswered === false}
+                                                    >
                                                     Check Answer
-                                                    <span className="bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out">
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="20"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="2"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            className="lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out"
-                                                        >
-                                                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                                        </svg>
-                                                    </span>
+                                                        <span className={`bg-white rounded-[4px] px-[2px]  ${isAnswered && 'group-hover:bg-[#3CC8A1]'}  transition-all duration-300 ease-in-out`}>
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="20"
+                                                                height="24"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className={`lucide lucide-space text-black  ${isAnswered && 'group-hover:text-white'} transition-all duration-300 ease-in-out`}
+                                                            >
+                                                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                            </svg>
+                                                        </span>
                                                 </button>
                                             </div>
                                         )
@@ -1000,7 +1021,7 @@ const MockTestQuestion = () => {
 
                                         // Only display questions that match the selected filter
                                         if (
-                                            selectedFilter === 'All' ||
+                                               selectedFilter === 'All' &&( attempted[num]!==null || flaggedQuestions[num] === true || visited[num] === true) ||
                                             (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true )) ||
                                             (selectedFilter === 'Unseen' && visited[num] === true)
                                         ) {
@@ -1146,7 +1167,7 @@ const MockTestQuestion = () => {
                                 </div>
                             </div>
                         </div>
-
+ 
                         <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px] 3A3A48 dark:border-[1px] dark:border-[#3A3A48] h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300 dark:bg-[#1E1E2A] text-black`}>
                             <div className="flex items-center cursor-pointer dark:bg-[#1E1E2A]" onClick={() => setToggleSidebar(!toggleSidebar)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white">

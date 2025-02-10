@@ -11,9 +11,7 @@ const visitedSlice = createSlice({
         markVisited: (state, action) => {
             
             
-            const { currentIndex, value } = action.payload;
-            console.log(currentIndex, value);
-       
+            const { currentIndex, value } = action.payload;       
 
             // Ensure immutability
             state.visitedQuestions = state.visitedQuestions.map((val, idx) =>

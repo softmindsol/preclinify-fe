@@ -316,7 +316,6 @@ const Questioning = () => {
                             dispatch(fetchSqaChild({ parentIds, limit }))
                                 .unwrap()
                                 .then(childRes => {
-                                    console.log("SQA Child Response", childRes);
 
                                     // Organizing Data
                                     const organizedData = res.map(parent => ({
@@ -428,8 +427,6 @@ const Questioning = () => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
-
-        console.log("storedSessions:", storedSessions);
         
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
