@@ -127,7 +127,7 @@ const Score = () => {
             </div>
 
             <div className='flex-grow  overflow-y-auto overflow-x-hidden'>
-            <div className='flex items-center  justify-between p-5 bg-white  lg:hidden w-full '>
+            <div className='flex items-center  justify-between p-5 bg-white  lg:hidden w-full  '>
                 <div className=''>
                     <img src="/assets/small-logo.png" alt="" />
                 </div>
@@ -139,7 +139,7 @@ const Score = () => {
                 <div className='w-full lg:ml-[150px]  min-h-screen  dark:bg-black'>
  
 
-                <div className='flex items-center justify-center flex-col '>
+                <div className='flex items-center justify-center flex-col mt-5'>
                     <div>
                         <img src="/assets/score.png" alt="" className='w-[350px]' />
                     </div>
@@ -154,7 +154,7 @@ const Score = () => {
                     </div>
                 </div>
 
-                <div className='flex flex-col-reverse md:flex-col '>
+                <div className='flex flex-col-reverse md:flex-col mb-5 '>
 
                     <div className='space-y-3 flex flex-col-reverse md:flex-col'>
                         <div className='text-center md:mr-[380px] mt-2 md:mt-5'>

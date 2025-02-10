@@ -1152,7 +1152,7 @@ const QuestionCard = () => {
                                     <div className="absolute left-1/2 transform -translate-x-1/2">
                                         <Logo />
                                     </div>
-
+ 
                                     <div className="flex items-center cursor-pointer" onClick={() => {
                                         setToggleSidebar(!toggleSidebar)
                                     }}>

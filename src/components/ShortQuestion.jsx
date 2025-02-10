@@ -38,7 +38,6 @@ const calculateTimeForQuestions = (numQuestions) => {
 const ShortQuestion = () => {
     const sqa = useSelector(state => state?.SQA?.organizedData || []);
     const attempted = useSelector((state) => state.attempts?.attempts);
-    console.log("attempted:", attempted);
     const [showFeedBackModal, setShowFeedBackModal] = useState(false)
     const [attempts, setAttempts] = useState(attempted);
     const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -93,7 +92,6 @@ const ShortQuestion = () => {
     const userAnswers = useSelector(state => state?.userAnswers?.answers)
     const beakerRef = useRef(null);
 
-    console.log("visited:", visited);
 
     const beakerToggledHandler = () => {
         setBeakerToggle(!beakerToggle)
@@ -162,7 +160,6 @@ const ShortQuestion = () => {
 
         // Check if the previous question has a valid answer
         const hasValidAnswer = userAnswers[prevIndex] !== null && userAnswers[prevIndex] !== "";
-        console.log(`hasValidAnswer for index ${prevIndex}:`, hasValidAnswer);
 
         setTestCheckAnswer(hasValidAnswer);
     };
@@ -261,8 +258,9 @@ const ShortQuestion = () => {
         if ((currentPage + 1) * itemsPerPage < allChildren.length) {
             setCurrentPage(currentPage + 1);
             setCurrentIndex(prev => prev + 10);
+            console.log("currentPage:", currentPage);
 
-        }
+        } 
 
     }
 
@@ -271,6 +269,7 @@ const ShortQuestion = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
             setCurrentIndex(0);
+            
         }
     };
 
