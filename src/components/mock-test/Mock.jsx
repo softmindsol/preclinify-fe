@@ -355,6 +355,12 @@ const MockTestQuestion = () => {
         }
     };
 
+
+    const getAttemptedQuestions = () => {
+        return mockData.filter((_, index) => attempted[index] !== null);
+    };
+
+    const attemptedQuestions = getAttemptedQuestions()
     useEffect(() => {
     
         if (active) {
@@ -793,7 +799,7 @@ const MockTestQuestion = () => {
                                                     </span>
                                                 </button>
                                             </div>
-                                        ) : (
+                                        ) : ( 
                                             <div className="group">
                                                     <button
                                                         className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
@@ -1001,7 +1007,7 @@ const MockTestQuestion = () => {
 
                                         // Only display questions that match the selected filter
                                         if (
-                                            selectedFilter === 'All' ||
+                                               selectedFilter === 'All' &&( attempted[num]!==null || flaggedQuestions[num] === true || visited[num] === true) ||
                                             (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true )) ||
                                             (selectedFilter === 'Unseen' && visited[num] === true)
                                         ) {

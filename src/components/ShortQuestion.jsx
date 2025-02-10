@@ -258,7 +258,6 @@ const ShortQuestion = () => {
         if ((currentPage + 1) * itemsPerPage < allChildren.length) {
             setCurrentPage(currentPage + 1);
             setCurrentIndex(prev => prev + 10);
-            console.log("currentPage:", currentPage);
 
         } 
 
@@ -870,8 +869,10 @@ const ShortQuestion = () => {
                                             //     (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
                                             //     (selectedFilter === 'Unseen' && attempted[num] === null)
                                             // )
+                                            const hasValidAnswer = userAnswers[num] !== null && userAnswers[num] !== "";    
+
                                             if (
-                                                selectedFilter === 'All' ||
+                                                selectedFilter === 'All' && (userAnswers[num] !== null && userAnswers[num] !== "" || flaggedQuestions[num] === true || visited[num] === true) ||
                                                 (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
                                                 (selectedFilter === 'Unseen' && visited[num] === true)
                                             ) {

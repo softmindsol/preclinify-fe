@@ -1001,7 +1001,7 @@ const nextQuestion = () => {
                     // Only display questions that match the selected filter
                     // Only display questions that match the selected filter
                     if (
-                      selectedFilter === 'All' ||
+                      selectedFilter === 'All' && (attempted[num] !== null || flaggedQuestions[num] === true || visited[num] === true) ||
                       (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
                       (selectedFilter === 'Unseen' && visited[num] === true)
                     ) {

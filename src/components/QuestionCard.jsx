@@ -1082,7 +1082,7 @@ const QuestionCard = () => {
                                                 ? "bg-[#FF453A]" // Incorrect answer
                                                 : "bg-gray-300"; // Unattempted
                                         if (
-                                            selectedFilter === 'All' &&( attemptedQuestions[num] || flaggedQuestions[num] === true || visited[num] === true) ||
+                                            selectedFilter === 'All' && (attempted[num] !== null || flaggedQuestions[num] === true || visited[num] === true) ||
                                             (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
                                             (selectedFilter === 'Unseen' && visited[num] === true)
                                         ) {
