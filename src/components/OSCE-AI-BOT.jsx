@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "./common/Logo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import ConfirmationModal from "./common/Confirmation-OSCE";
 import supabase from "../config/helper";
@@ -17,6 +17,8 @@ const OSCEAIBOT = () => {
     const [summary, setSummary] = useState(""); // State for summary
     const [score, setScore] = useState(0); // State for score
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
+    const  categoryName  = useParams(); // Extract 'id' from the URL
+    console.log("categoryName:", categoryName);
 
     // Define categories and their associated keywords
     const categories = {
