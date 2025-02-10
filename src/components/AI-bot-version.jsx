@@ -463,7 +463,9 @@ const AINewVersion = () => {
                     <div className="text-center bg-[#F4F4F5] hover:bg-[#e4e4e6] mb-5 text-[16px] p-1 rounded-[6px] text-[#3F3F46]">
                         <button onClick={reportHandler}>Report a problem</button>
                     </div>
-
+                    {showFeedBackModal && (
+                <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+            )}
                     <div className="flex items-center border border-[#3CC8A1] px-4 py-2 rounded-[6px] ">
                         <div className=" flex items-center justify-between w-full">
                             <span className="text-[#28C3A6] font-medium text-[12px] ">Patient Voice</span>
@@ -497,7 +499,9 @@ const AINewVersion = () => {
                 </div>
             </div>
             </div>
-
+            {showFeedBackModal && (
+                <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+            )}
             <div className={` ${darkModeRedux ? 'dark' : ''}`}>
                 <main className="ml-[250px] mt-5 px-4 min-h-[540px] bg-white rounded-[8px] p-5">
                     <div className="transcript">
