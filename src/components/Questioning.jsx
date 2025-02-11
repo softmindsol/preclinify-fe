@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "./common/Sidebar";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 
@@ -42,8 +42,8 @@ const Questioning = () => {
     const questionGenModule = useSelector(state => state?.quesGen);
     const { mockTestIds, modules, loading, error } = useSelector((state) => state.mockModules);
     const data = useSelector((state) => state.module);
-  
-    
+
+
     const { limit } = useSelector((state) => state.limit);
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const [storedSession, setStoredSession] = useState([])
@@ -69,7 +69,7 @@ const Questioning = () => {
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
     const [selectedTab, setSelectedTab] = useState('Clinical');
-    const presentations=useSelector(state=>state.presentations.presentations)
+    const presentations = useSelector(state => state.presentations.presentations)
     const handleToggle = () => {
         setIsSortedByPresentation(prev => !prev);
     };
@@ -387,7 +387,7 @@ const Questioning = () => {
 
 
             }
-            else if(isSortedByPresentation){
+            else if (isSortedByPresentation) {
                 dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
                 dispatch(fetchMcqsByPresentationId({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
@@ -457,17 +457,17 @@ const Questioning = () => {
     }, [recentSessions]);
     // Effect to retrieve recent sessions from localStorage
 
-    
+
     // sort By presentation
     useEffect(() => {
         if (isSortedByPresentation) {
 
             dispatch(setLoading({ key: 'modules/fetchPresentation', value: true }));
-        dispatch(fetchPresentation({ moduleIds: selectedModules, totalLimit: limit }))
+            dispatch(fetchPresentation({ moduleIds: selectedModules, totalLimit: limit }))
                 .unwrap()
                 .then((res) => {
                     dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
-                    
+
                 })
                 .catch((err) => {
                     dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
@@ -476,7 +476,7 @@ const Questioning = () => {
     }, [isSortedByPresentation])
 
     console.log("presentations:", presentations);
-    
+
 
     // const sortedModules = isSortedByPresentation
     //     ? [
@@ -524,6 +524,25 @@ const Questioning = () => {
     }, [selectedModules]);
 
 
+    // Filtered modules based on the search query
+    const filteredData = useMemo(() => {
+        const filterModules = (moduleArray) => {
+            return moduleArray.filter((row) =>
+                row.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        };
+
+        if (selectedTab === 'Clinical' && !isSortedByPresentation && type === 'SBA') {
+            return filterModules(data.data || []);
+        }
+        if (selectedTab === 'Clinical' && !isSortedByPresentation && type === 'SAQ') {
+            return filterModules(saqModule || []);
+        }
+        if (selectedTab === 'Clinical' && !isSortedByPresentation && type === 'Mock') {
+            return filterModules(modules || []);
+        }
+        return [];
+    }, [searchQuery, selectedTab, isSortedByPresentation, type, data, saqModule, modules]);
 
     return (
         <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
@@ -595,9 +614,8 @@ const Questioning = () => {
                                             type="text"
                                             placeholder="Search for modules"
                                             onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-[#1E1E2A] placeholder:text-[#D4D4D8] placeholder:text-[12px] "
+                                            className="ml-2 w-[200px] 2xl:w-[280px] focus:outline-none dark:bg-[#1E1E2A] placeholder:text-[#D4D4D8] placeholder:text-[12px]"
                                         />
-
                                     </div>
                                 </div>
                                 <div className="space-y-3 xl:space-y-0 xl:space-x-5 p-8 flex flex-col xl:flex-row items-center">
@@ -814,199 +832,40 @@ const Questioning = () => {
 
                                     }
 
-{
-     selectedTab === 'Clinical' && isSortedByPresentation && presentations?.map((row, id) => {
-        const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+                                    {filteredData.map((row) => {
+                                        const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                        const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
-                                            // Calculate widths based on total counts
-                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
-        return (
-            <div key={row.presentationId} className="grid md:grid-cols-2 items-center py-3">
-                <div
-                    className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                >
-                    <label className="flex items-center cursor-pointer hover:opacity-85">
-                        <input
-                            type="checkbox"
-                            className="mr-2 custom-checkbox hover:opacity-70"
-                            checked={selectedModules.includes(row.presentationId)}
-                            onChange={() => handleCheckboxChange(row.presentationId)}
-                        />
-                        {row.presentationName}
-                    </label>
-                </div>
+                                        // Calculate widths based on total counts
+                                        const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                        const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                        const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
 
-
-                <div className="flex items-center justify-center space-x-1">
-                    {/* Green */}
-                    <div
-                        className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                        style={{ width: `${correctWidth}%` }}
-                    ></div>
-                    {/* Red */}
-                    <div
-                        className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                        style={{ width: `${incorrectWidth}%` }}
-                    ></div>
-                    {/* Gray */}
-                    <div
-                        className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                        style={{ width: `${unansweredWidth}%` }}
-                    ></div>
-                </div>
-            </div>
-        )
-     })
-}
-
-                                    {
-                                        selectedTab === 'Clinical' && !isSortedByPresentation && ((type === 'SBA') && data.data?.map((row) => {
-                                            const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
-
-                                            // Calculate widths based on total counts
-                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
-
-                                            return (
-                                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                                    <div
-                                                        className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                                                    >
-                                                        <label className="flex items-center cursor-pointer hover:opacity-85">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="mr-2 custom-checkbox hover:opacity-70"
-                                                                checked={selectedModules.includes(row.categoryId)}
-                                                                onChange={() => handleCheckboxChange(row.categoryId)}
-                                                            />
-                                                            {row.categoryName}
-                                                        </label>
-                                                    </div>
-
-
-                                                    <div className="flex items-center justify-center space-x-1">
-                                                        {/* Green */}
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                                            style={{ width: `${correctWidth}%` }}
-                                                        ></div>
-                                                        {/* Red */}
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                                            style={{ width: `${incorrectWidth}%` }}
-                                                        ></div>
-                                                        {/* Gray */}
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                                            style={{ width: `${unansweredWidth}%` }}
-                                                        ></div>
-                                                    </div>
+                                        return (
+                                            <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                                <div className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white">
+                                                    <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="mr-2 custom-checkbox hover:opacity-70"
+                                                            checked={selectedModules.includes(row.categoryId)}
+                                                            onChange={() => handleCheckboxChange(row.categoryId)}
+                                                        />
+                                                        {row.categoryName}
+                                                    </label>
                                                 </div>
-                                            );
-                                        }))
-                                    }
-                                    {
-                                        selectedTab === 'Clinical' && !isSortedByPresentation && ((type === 'SAQ') && saqModule?.map((row) => {
-                                            const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
-                                            // Calculate widths based on total counts
-                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
-
-                                            return (
-                                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                                    <div
-                                                        className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                                                    >
-                                                        <label className="flex items-center cursor-pointer hover:opacity-85">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="mr-2 custom-checkbox hover:opacity-70"
-                                                                checked={selectedModules.includes(row.categoryId)}
-                                                                onChange={() => handleCheckboxChange(row.categoryId)}
-                                                            />
-                                                            {row.categoryName}
-                                                        </label>
-                                                    </div>
-
-
-                                                    <div className="flex items-center justify-center space-x-1">
-
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                                            style={{ width: `${correctWidth}%` }}
-                                                        ></div>
-
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                                            style={{ width: `${incorrectWidth}%` }}
-                                                        ></div>
-
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                                            style={{ width: `${unansweredWidth}%` }}
-                                                        ></div>
-                                                    </div>
+                                                <div className="flex items-center justify-center space-x-1">
+                                                    {/* Green */}
+                                                    <div className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md" style={{ width: `${correctWidth}%` }}></div>
+                                                    {/* Red */}
+                                                    <div className="h-[19px] sm:h-[27px] bg-[#FF453A]" style={{ width: `${incorrectWidth}%` }}></div>
+                                                    {/* Gray */}
+                                                    <div className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md" style={{ width: `${unansweredWidth}%` }}></div>
                                                 </div>
-                                            );
-                                        }))
-                                    }
-                                    {
-                                        (
-                                            selectedTab === 'Clinical' && !isSortedByPresentation && (type === 'Mock') && modules?.map((row) => {
-                                                const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                                const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
-
-                                                // Calculate widths based on total counts
-                                                const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                                const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                                const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
-
-                                                return (
-                                                    <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                                        <div
-                                                            className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                                                        >
-                                                            <label className="flex items-center cursor-pointer hover:opacity-85">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className="mr-2 custom-checkbox hover:opacity-70"
-                                                                    checked={selectedModules.includes(row.categoryId)}
-                                                                    onChange={() => handleCheckboxChange(row.categoryId)}
-                                                                />
-                                                                {row.categoryName}
-                                                            </label>
-                                                        </div>
-
-
-                                                        <div className="flex items-center justify-center space-x-1">
-
-                                                            <div
-                                                                className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                                                style={{ width: `${correctWidth}%` }}
-                                                            ></div>
-
-                                                            <div
-                                                                className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                                                style={{ width: `${incorrectWidth}%` }}
-                                                            ></div>
-
-                                                            <div
-                                                                className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                                                style={{ width: `${unansweredWidth}%` }}
-                                                            ></div>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            }))
-                                    }
+                                            </div>
+                                        );
+                                    })}
 
                                 </div>
 
