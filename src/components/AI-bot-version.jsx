@@ -124,6 +124,7 @@ const AINewVersion = () => {
                 },
                 body: JSON.stringify({
                     model: "gpt-4",
+                    audio: { voice: "alloy", format: "wav" },
                     messages: [
                         {
                             role: "system",
