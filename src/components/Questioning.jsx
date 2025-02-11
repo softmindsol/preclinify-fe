@@ -535,7 +535,7 @@ const Questioning = () => {
   }, [state]);
 
   useEffect(() => {
-    if (state) {
+    if (state === 'QuesGen') {
       setSelectedTab('Pre-clinical');
       setSelectedPreClinicalOption(state);
     }
