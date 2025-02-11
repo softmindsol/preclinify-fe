@@ -21,11 +21,12 @@ import attemptReducer from './features/attempts/attempts.slice'
 import flaggedReducer from './features/flagged/flagged.slice'
 import visitedReducer from './features/flagged/visited.slice'
 import userAnswersReducer from './features/SAQ/userAnswer.slice'
+import presentationReducer from './features/sort-by-presentation/sort-by-presentation.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
     key: 'root',
     storage, // LocalStorage for modules and mcqsQuestion
-    whitelist: ['userAnswers','visited','flagged','attempts', 'darkMode', "quesGen", 'module', 'osceBot', 'mcqsQuestion', 'osce', 'accuracy', 'questionReview', "SQA", "sessions", "mode", "limit","mockModules"], // Persist these in localStorage
+    whitelist: ['presentations','userAnswers','visited','flagged','attempts', 'darkMode', "quesGen", 'module', 'osceBot', 'mcqsQuestion', 'osce', 'accuracy', 'questionReview', "SQA", "sessions", "mode", "limit","mockModules"], // Persist these in localStorage
 };
 
 const resultPersistConfig = {
@@ -36,6 +37,7 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+    presentations:presentationReducer,
     userAnswers: userAnswersReducer,
     visited: visitedReducer,
     flagged: flaggedReducer,

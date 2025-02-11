@@ -85,18 +85,6 @@ const Scenarios = () => {
         return matchesCategory && matchesFilters;
     });
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (categoryRef.current && !categoryRef.current.contains(event.target)) {
-                setSelectedCategory(null);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
 
     return (
         <div className={`md:flex min-h-screen ${darkModeRedux ? 'dark' : ''}`}>
@@ -143,20 +131,23 @@ const Scenarios = () => {
 
                     {activeTab === "static" ? (
                         <div className="bg-white p-5 rounded-[8px] dark:bg-[#1E1E2A] dark:border dark:border-[#3A3A48]">
-                            <div className="flex items-center justify-center" ref={categoryRef}>
+                            <div className="flex items-center justify-center" >
                                 <div className="grid sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6 justify-items-center">
                                     {[
                                         { cat: "Examination", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-stethoscope"><path d="M11 2v2" /><path d="M5 2v2" /><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" /><path d="M8 15a6 6 0 0 0 12 0v-3" /><circle cx="20" cy="10" r="2" /></svg> },
                                         { cat: "History", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-clock"><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><circle cx="8" cy="16" r="6" /><path d="M9.5 17.5 8 16.25V14" /></svg> },
                                         { cat: "Interpretation", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" /></svg> },
                                         { cat: "Counselling", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg> },
-                                        { cat: "Documentation", icon: <img src="/assets/documentation.svg" alt="" /> },
-                                        { cat: "Emergency", icon: <img src="/assets/emergency.svg" alt="" /> },
-                                        { cat: "Exam Circuits", icon: <img src="/assets/exam-circuit.svg" alt="" /> },
+                                        // { cat: "Documentation", icon: <img src="/assets/documentation.svg" alt="" /> },
+                                        // { cat: "Emergency", icon: <img src="/assets/emergency.svg" alt="" /> },
+                                        // { cat: "Exam Circuits", icon: <img src="/assets/exam-circuit.svg" alt="" /> },
                                     ].map((category) => (
                                         <button
                                             key={category.cat}
-                                            onClick={() => setSelectedCategory(category.cat)}
+                                            onClick={() => {
+                                                // Toggle the selected category
+                                                setSelectedCategory(prev => prev === category.cat ? null : category.cat);
+                                            }}
                                             className={`h-[45px] lg:h-[56px] w-[200px] lg:w-[242px] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center 
                                             ${selectedCategory === category.cat ? 'bg-transparent text-[#3CC8A1]' : 'bg-[#3CC8A1] text-white'} 
                                             transition-all duration-200 border border-[#3CC8A1] text-[14px] lg:text-[18px]`}
@@ -280,20 +271,23 @@ const Scenarios = () => {
                     ) : (
                         activeTab === "ai" && (
                             <div className="bg-white p-5 rounded-[8px] dark:bg-[#1E1E2A] dark:border dark:border-[#3A3A48]">
-                                <div className="flex items-center justify-center" ref={categoryRef}>
+                                <div className="flex items-center justify-center" >
                                     <div className="grid sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6 justify-items-center">
                                         {[
                                             { cat: "Examination", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-stethoscope"><path d="M11 2v2" /><path d="M5 2v2" /><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" /><path d="M8 15a6 6 0 0 0 12 0v-3" /><circle cx="20" cy="10" r="2" /></svg> },
                                             { cat: "History", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-clock"><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><circle cx="8" cy="16" r="6" /><path d="M9.5 17.5 8 16.25V14" /></svg> },
                                             { cat: "Interpretation", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" /></svg> },
                                             { cat: "Counselling", icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg> },
-                                            { cat: "Documentation", icon: <img src="/assets/documentation.svg" alt="" /> },
-                                            { cat: "Emergency", icon: <img src="/assets/emergency.svg" alt="" /> },
-                                            { cat: "Exam Circuits", icon: <img src="/assets/exam-circuit.svg" alt="" /> },
+                                            // { cat: "Documentation", icon: <img src="/assets/documentation.svg" alt="" /> },
+                                            // { cat: "Emergency", icon: <img src="/assets/emergency.svg" alt="" /> },
+                                            // { cat: "Exam Circuits", icon: <img src="/assets/exam-circuit.svg" alt="" /> },
                                         ].map((category) => (
                                             <button
                                                 key={category.cat}
-                                                onClick={() => setSelectedCategory(category.cat)}
+                                                onClick={() => {
+                                                    // Toggle the selected category
+                                                    setSelectedCategory(prev => prev === category.cat ? null : category.cat);
+                                                }}
                                                 className={`h-[45px] lg:h-[56px] w-[200px] lg:w-[242px] py-2 px-4 rounded-[4px] font-bold flex items-center justify-center 
                                             ${selectedCategory === category.cat ? 'bg-transparent text-[#3CC8A1]' : 'bg-[#3CC8A1] text-white'} 
                                             transition-all duration-200 border border-[#3CC8A1] text-[14px] lg:text-[18px]`}

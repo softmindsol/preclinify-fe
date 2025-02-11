@@ -26,21 +26,24 @@ import FileUpload from "./Upload";
 import { setModeType } from "../redux/features/question-gen/question-gen.slice";
 import supabase from "../config/helper";
 import { resetAttempts, setActive } from "../redux/features/attempts/attempts.slice";
-import { fetchQuesGenModules,fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
+import { fetchQuesGenModules, fetchQuesGenModuleById } from "../redux/features/question-gen/question-gen.service";
 import { fetchModulesById, fetchMockTest, fetchMockTestById } from "../redux/features/mock-test/mock.service";
 import { clearFlags } from "../redux/features/flagged/flagged.slice";
 import { clearUserAnswers } from "../redux/features/SAQ/userAnswer.slice";
 import { resetVisited } from "../redux/features/flagged/visited.slice";
- 
+import { fetchMcqsByPresentationId, fetchPresentation } from "../redux/features/sort-by-presentation/sort-by-presentation.service";
+
 
 const Questioning = () => {
-        const sqa = useSelector(state => state?.SQA || [])    
-    const darkModeRedux=useSelector(state=>state.darkMode.isDarkMode)
+    const sqa = useSelector(state => state?.SQA || [])
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const recentSession = useSelector(state => state.recentSession.recentSessions);
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption)
     const questionGenModule = useSelector(state => state?.quesGen);
     const { mockTestIds, modules, loading, error } = useSelector((state) => state.mockModules);
     const data = useSelector((state) => state.module);
+  
+    
     const { limit } = useSelector((state) => state.limit);
     const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
     const [storedSession, setStoredSession] = useState([])
@@ -59,17 +62,18 @@ const Questioning = () => {
     const [isToggled, setIsToggled] = useState(false);
     const [localRecentSession, setLocalRecentSession] = useState([]);
     const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
-    const [saqModule,setSAQModule]=useState([]);
+    const [saqModule, setSAQModule] = useState([]);
     const filteredModules = data.data.filter(module =>
         module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const [totals, setTotals] = useState({ totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 });
     const [moduleTotals, setModuleTotals] = useState({});
     const [selectedTab, setSelectedTab] = useState('Clinical');
+    const presentations=useSelector(state=>state.presentations.presentations)
     const handleToggle = () => {
         setIsSortedByPresentation(prev => !prev);
     };
-   
+
     const handleTabChange = (tab) => {
         setSelectedTab(tab); // Update the selected tab
     };
@@ -79,8 +83,8 @@ const Questioning = () => {
         setSelectedOption(event.target.value); // Update state with the selected value
     };
     const toggleDrawer = () => {
-    setIsOpen((prevState) => !prevState)
-    }    
+        setIsOpen((prevState) => !prevState)
+    }
 
     const handleCheckboxChange = (categoryId) => {
         const selectedModule = data.data.find((module) => module.categoryId === categoryId); // Find the selected module
@@ -110,10 +114,10 @@ const Questioning = () => {
         });
     };
 
-    const preClinicalHandler =()=>{
-       setSelectedPreClinicalOption('QuesGen')
-   }
-  
+    const preClinicalHandler = () => {
+        setSelectedPreClinicalOption('QuesGen')
+    }
+
     const handleSelectAll = (isChecked) => {
         if (isChecked) {
             // Select all module IDs
@@ -199,7 +203,7 @@ const Questioning = () => {
     }, [limit, isSession])
 
     useEffect(() => {
-        if(type==='SBA' || type==='SAQ'){
+        if (type === 'SBA' || type === 'SAQ') {
             dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
             setIsLoading(true)
             dispatch(fetchModules())
@@ -213,7 +217,7 @@ const Questioning = () => {
                 })
         }
 
-        else if (type === 'QuesGen'){
+        else if (type === 'QuesGen') {
             dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
             setIsLoading(true)
             dispatch(fetchQuesGenModules())
@@ -227,7 +231,7 @@ const Questioning = () => {
                 })
         }
 
-       else if (type === 'Mock') {
+        else if (type === 'Mock') {
             dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: true }));
             setIsLoading(true)
             dispatch(fetchModules())
@@ -261,9 +265,9 @@ const Questioning = () => {
     useEffect(() => {
         dispatch(setPreclinicalType({ selectedOption }));
 
-        if (selectedTab==='Clinical') {
+        if (selectedTab === 'Clinical') {
             if (selectedOption === 'SBA') {
-                
+
                 dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
                 dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
@@ -273,10 +277,10 @@ const Questioning = () => {
                     .catch((err) => {
                         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: false }));
                     });
-            } 
+            }
             else if (selectedOption === 'SAQ') {
                 dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
-                
+
                 dispatch(fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
@@ -287,7 +291,7 @@ const Questioning = () => {
                             .then((res) => {
                                 setIsLoading(false);
                                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
-                              
+
                                 setSAQModule(res)
                             })
                             .catch((err) => {
@@ -302,7 +306,7 @@ const Questioning = () => {
 
 
 
-                    // Fetch Question By ID
+                // Fetch Question By ID
                 dispatch(fetchShortQuestionByModulesById({ moduleIds: selectedModules }))
                     .unwrap()
                     .then((res) => {
@@ -339,22 +343,22 @@ const Questioning = () => {
 
             }
             else if (selectedOption === 'Mock') {
-               
 
-                
+
+
                 dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
                 // Fetch IDs from mockTable
                 dispatch(fetchMockTest())
                     .unwrap()
                     .then((ids) => {
-                     
+
                         // Pass the fetched IDs to fetchModules
                         dispatch(fetchModulesById({ ids }))
                             .unwrap()
                             .then((res) => {
                                 setIsLoading(false);
                                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
-                                
+
                             })
                             .catch((err) => {
                                 setIsLoading(false);
@@ -371,7 +375,7 @@ const Questioning = () => {
                 dispatch(fetchMockTestById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
-                     
+
 
                         dispatch(setLoading({ key: 'modules/fetchMockTestById', value: false }));
                     })
@@ -382,13 +386,24 @@ const Questioning = () => {
 
 
 
-            } 
+            }
+            else if(isSortedByPresentation){
+                dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
+                dispatch(fetchMcqsByPresentationId({ moduleIds: selectedModules, totalLimit: limit }))
+                    .unwrap()
+                    .then(() => {
+                        dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false }));
+                    })
+                    .catch((err) => {
+                        dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false }));
+                    });
+            }
         }
     }, [selectedModules, limit, selectedOption, selectedTab]);
-   
-    
+
+
     useEffect(() => {
-        if (selectedTab ==='Pre-clinical'){
+        if (selectedTab === 'Pre-clinical') {
             if (selectedPreClinicalOption === 'QuesGen') {
                 dispatch(setPreclinicalType({ selectedPreClinicalOption }));
 
@@ -408,7 +423,7 @@ const Questioning = () => {
                 dispatch(fetchQuesGenModuleById({ moduleIds: selectedModules, totalLimit: limit }))
                     .unwrap()
                     .then((res) => {
-                       
+
                         dispatch(setLoading({ key: 'modules/fetchQuesGenModuleById', value: false }));
                     })
                     .catch((err) => {
@@ -417,7 +432,7 @@ const Questioning = () => {
                     });
             }
         }
-       
+
     }, [selectedPreClinicalOption, selectedModules, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
 
 
@@ -427,12 +442,12 @@ const Questioning = () => {
         localStorage.removeItem('examTimer'); // Clear storage when timer ends
         // Check if recentSessions are available in localStorage
         const storedSessions = localStorage.getItem('recentSessions');
-        
+
         if (storedSessions) {
             setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
         }
         dispatch(clearRecentSessions())
-    }, []);    
+    }, []);
 
     useEffect(() => {
         if (recentSessions.length > 0) {
@@ -442,15 +457,33 @@ const Questioning = () => {
     }, [recentSessions]);
     // Effect to retrieve recent sessions from localStorage
 
+    
+    // sort By presentation
+    useEffect(() => {
+        if (isSortedByPresentation) {
 
+            dispatch(setLoading({ key: 'modules/fetchPresentation', value: true }));
+        dispatch(fetchPresentation({ moduleIds: selectedModules, totalLimit: limit }))
+                .unwrap()
+                .then((res) => {
+                    dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
+                    
+                })
+                .catch((err) => {
+                    dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
+                });
+        }
+    }, [isSortedByPresentation])
 
+    console.log("presentations:", presentations);
+    
 
-    const sortedModules = isSortedByPresentation
-        ? [
-            ...filteredModules.filter(module => selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)), // Sort selected modules alphabetically
-            ...filteredModules.filter(module => !selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)) // Sort unselected modules alphabetically
-        ]
-        : filteredModules;
+    // const sortedModules = isSortedByPresentation
+    //     ? [
+    //         ...filteredModules.filter(module => selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)), // Sort selected modules alphabetically
+    //         ...filteredModules.filter(module => !selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)) // Sort unselected modules alphabetically
+    //     ]
+    //     : filteredModules;
 
     useEffect(() => {
         const fetchDailyWork = async () => {
@@ -497,7 +530,7 @@ const Questioning = () => {
             <div className=" hidden lg:block fixed h-full">
                 <Sidebar />
             </div>
- 
+
             <div className="flex-grow lg:ml-[260px] xl:ml-[250px]  overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
 
 
@@ -539,7 +572,7 @@ const Questioning = () => {
                                     }
 
                                     {selectedTab === 'Pre-clinical' && <p className="text-[11px] sm:text-[16px] md:text-[18px] 2xl:text-[20px] font-semibold  text-[#52525B] whitespace-nowrap dark:text-white">Pre Clinical</p>
-}
+                                    }
                                     <div className="xl:flex items-center bg-white border border-gray-300 dark:border-[2px] dark:border-[#3A3A48] rounded-md px-3 py-2  hidden dark:bg-[#1E1E2A]">
                                         <div className="group">
                                             <svg
@@ -557,7 +590,7 @@ const Questioning = () => {
                                                 <circle cx="11" cy="11" r="8" />
                                                 <path d="m21 21-4.3-4.3" />
                                             </svg>
-                                        </div>                                        
+                                        </div>
                                         <input
                                             type="text"
                                             placeholder="Search for modules"
@@ -578,18 +611,18 @@ const Questioning = () => {
                                                 <option>SBA</option>
                                                 <option>SAQ</option>
                                                 <option>Mock</option>
-                                          
+
                                             </select> :
                                                 <select
                                                     className="w-full h-[40px] px-3 py-2 pr-1 border border-[#A1A1AA] rounded text-[14px] appearance-none dark:bg-[#1E1E2A]"
                                                     value={selectedPreClinicalOption} // Bind the selected value to state
                                                     onChange={preClinicalHandler} // Trigger the handler on change
                                                 >
-                                                
+
                                                     <option>QuesGen</option>
                                                 </select>
                                         }
-                                      
+
                                         <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                             <svg
                                                 className="w-4 h-4 text-gray-400"
@@ -611,7 +644,7 @@ const Questioning = () => {
                                     {/* Continue Button */}
                                     <button
                                         onClick={handleContinue}
-                                        disabled={selectedModules.length === 0 } // Disable the button if no modules are selected
+                                        disabled={selectedModules.length === 0} // Disable the button if no modules are selected
                                         className={`bg-[#3CC8A1] ${selectedModules.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-transparent hover:text-[#3CC8A1]'} text-[12px] md:text-[14px] 2xl:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}>
                                         Continue &gt;
                                     </button>
@@ -620,12 +653,12 @@ const Questioning = () => {
                             </div>
                         </div>
                         {
-                            selectedTab === "Pre-clinical" &&  <FileUpload />
-                              
+                            selectedTab === "Pre-clinical" && <FileUpload />
+
                         }
 
                         {
-                         selectedTab ==="Clinical" && (<div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
+                            selectedTab === "Clinical" && (<div className="bg-white flex rounded-[8px] items-center h-[212px]  p-5 m-4 dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
                                 <div className="w-[35%] flex items-center justify-between mr-10">
                                     <p className="font-bold text-[12px] sm:text-[16px] 2xl:text-[18px] text-[#3F3F46] text-center dark:text-white  w-full">
                                         Recent Sessions
@@ -691,99 +724,146 @@ const Questioning = () => {
 
 
                     </div>
-{
-                        isLoading? <Loader/>:
+                    {
+                        isLoading ? <Loader /> :
 
                             <div className=" bg-white rounded-[8px] px-10 py-8 ml-4 mr-4 text-[14px] md:text-[16px] dark:bg-[#1E1E2A] text-black dark:text-white dark:border-[1px] dark:border-[#3A3A48]">
 
-                        <div className="flex flex-col lg:flex-row justify-between lg:items-center font-medium text-[#3F3F46]  pb-2 w-full">
-                            <div className="flex items-center gap-x-10 dark:text-white">
-                                <div className="text-left flex items-center text-[14px] 3xl:text-[16px]">
-                                    <input
-                                        type="checkbox"
-                                        className="mr-2 custom-checkbox"
-                                        checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
-                                        onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
-                                    />
-                                    Select All
+                                <div className="flex flex-col lg:flex-row justify-between lg:items-center font-medium text-[#3F3F46]  pb-2 w-full">
+                                    <div className="flex items-center gap-x-10 dark:text-white">
+                                        <div className="text-left flex items-center text-[14px] 3xl:text-[16px]">
+                                            <input
+                                                type="checkbox"
+                                                className="mr-2 custom-checkbox"
+                                                checked={data?.data?.every((row) => selectedModules.includes(row.categoryId))} // Parent checkbox state
+                                                onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
+                                            />
+                                            Select All
+                                        </div>
+
+                                        <div className="flex items-center space-x-2 p-4">
+                                            <span className="text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]">Sort By Presentation</span>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" className="sr-only peer " onChange={handleToggle} />
+                                                <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="text-right flex items-center gap-x-5 dark:text-white text-[14px] 3xl:text-[16px]">
+                                        <div className="hidden sm:block text-center">Progress</div>
+
+                                        <div className="flex items-center gap-x-3">
+                                            <div className="h-4 w-4 bg-[#3CC8A1]"></div>
+                                            <p>Correct</p>
+
+                                        </div>
+                                        <div className="flex items-center gap-x-3">
+                                            <div className="h-4 w-4 bg-[#FF453A]"></div>
+                                            <p>Incorrect</p>
+
+                                        </div>
+                                        <div className="flex items-center gap-x-3">
+                                            <div className="h-4 w-4 bg-[#E4E4E7]"></div>
+                                            <p>Unanswered</p>
+
+                                        </div>
+
+
+                                    </div>
+
+
                                 </div>
+                                <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
 
-                                <div className="flex items-center space-x-2 p-4">
-                                    <span className="text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]">Sort By Presentation</span>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" className="sr-only peer " onChange={handleToggle} />
-                                        <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
-                                    </label>
-                                </div>
-                            </div>
-
-
-                            <div className="text-right flex items-center gap-x-5 dark:text-white text-[14px] 3xl:text-[16px]">
-                                <div className="hidden sm:block text-center">Progress</div>
-
-                                <div className="flex items-center gap-x-3">
-                                    <div className="h-4 w-4 bg-[#3CC8A1]"></div>
-                                    <p>Correct</p>
-
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                    <div className="h-4 w-4 bg-[#FF453A]"></div>
-                                    <p>Incorrect</p>
-
-                                </div>
-                                <div className="flex items-center gap-x-3">
-                                    <div className="h-4 w-4 bg-[#E4E4E7]"></div>
-                                    <p>Unanswered</p>
-
-                                </div>
-
-
-                            </div>
-
-
-                        </div>
-                        <div className="h-[1px] bg-[#A1A1AA] mb-5 mt-2 " />
-
-                        <div>
+                                <div>
                                     {
-                                        selectedTab ==='Pre-clinical' &&
-                                     (
-                                        questionGenModule?.modules?.length > 0 ? (
-                                            questionGenModule.modules
-                                                .filter((row, index, arr) => (
-                                                    // Keep only first occurrence of each module
-                                                    arr.findIndex(r => r.module === row.module) === index
-                                                )
-                                                   
-                                                
-                                            )
-                                                .map((row, id) => (
-                                                    <div key={id} className="grid md:grid-cols-2 items-center py-3">
-                                                        <div className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white">
-                                                            <label className="flex items-center cursor-pointer hover:opacity-85">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className="mr-2 custom-checkbox hover:opacity-70"
-                                                                    checked={selectedModules.includes(row.module)}
-                                                                    onChange={() => handleCheckboxChange(row.module)}
-                                                                />
-                                                                {row.module}
-                                                            </label>
+                                        selectedTab === 'Pre-clinical' &&
+                                        (
+                                            questionGenModule?.modules?.length > 0 ? (
+                                                questionGenModule.modules
+                                                    .filter((row, index, arr) => (
+                                                        // Keep only first occurrence of each module
+                                                        arr.findIndex(r => r.module === row.module) === index
+                                                    )
+
+
+                                                    )
+                                                    .map((row, id) => (
+                                                        <div key={id} className="grid md:grid-cols-2 items-center py-3">
+                                                            <div className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white">
+                                                                <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="mr-2 custom-checkbox hover:opacity-70"
+                                                                        checked={selectedModules.includes(row.module)}
+                                                                        onChange={() => handleCheckboxChange(row.module)}
+                                                                    />
+                                                                    {row.module}
+                                                                </label>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ))
-                                        ) : (
-                                            <div className="text-center py-3 text-gray-500">
-                                                No modules available.
-                                            </div>
+                                                    ))
+                                            ) : (
+                                                <div className="text-center py-3 text-gray-500">
+                                                    No modules available.
+                                                </div>
+                                            )
                                         )
-                                    )
-                                    
+
                                     }
 
-
 {
-                                        selectedTab === 'Clinical' &&   (  (type === 'SBA' ) && sortedModules?.map((row) => {
+     selectedTab === 'Clinical' && isSortedByPresentation && presentations?.map((row, id) => {
+        const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+
+                                            // Calculate widths based on total counts
+                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+        return (
+            <div key={row.presentationId} className="grid md:grid-cols-2 items-center py-3">
+                <div
+                    className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                >
+                    <label className="flex items-center cursor-pointer hover:opacity-85">
+                        <input
+                            type="checkbox"
+                            className="mr-2 custom-checkbox hover:opacity-70"
+                            checked={selectedModules.includes(row.presentationId)}
+                            onChange={() => handleCheckboxChange(row.presentationId)}
+                        />
+                        {row.presentationName}
+                    </label>
+                </div>
+
+
+                <div className="flex items-center justify-center space-x-1">
+                    {/* Green */}
+                    <div
+                        className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                        style={{ width: `${correctWidth}%` }}
+                    ></div>
+                    {/* Red */}
+                    <div
+                        className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                        style={{ width: `${incorrectWidth}%` }}
+                    ></div>
+                    {/* Gray */}
+                    <div
+                        className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                        style={{ width: `${unansweredWidth}%` }}
+                    ></div>
+                </div>
+            </div>
+        )
+     })
+}
+
+                                    {
+                                        selectedTab === 'Clinical' && !isSortedByPresentation && ((type === 'SBA') && data.data?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
@@ -829,9 +909,9 @@ const Questioning = () => {
                                                 </div>
                                             );
                                         }))
-}
+                                    }
                                     {
-                                        selectedTab === 'Clinical' &&  (  (type === 'SAQ') && saqModule?.map((row) => {
+                                        selectedTab === 'Clinical' && !isSortedByPresentation && ((type === 'SAQ') && saqModule?.map((row) => {
                                             const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
                                             const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
@@ -858,17 +938,17 @@ const Questioning = () => {
 
 
                                                     <div className="flex items-center justify-center space-x-1">
-                                                      
+
                                                         <div
                                                             className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
                                                             style={{ width: `${correctWidth}%` }}
                                                         ></div>
-                                                     
+
                                                         <div
                                                             className="h-[19px] sm:h-[27px] bg-[#FF453A]"
                                                             style={{ width: `${incorrectWidth}%` }}
                                                         ></div>
-                                                    
+
                                                         <div
                                                             className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
                                                             style={{ width: `${unansweredWidth}%` }}
@@ -879,58 +959,58 @@ const Questioning = () => {
                                         }))
                                     }
                                     {
-                                    (
-                                            selectedTab === 'Clinical' &&   (type === 'Mock' ) && modules?.map((row) => {
-                                            const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
-                                            const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
+                                        (
+                                            selectedTab === 'Clinical' && !isSortedByPresentation && (type === 'Mock') && modules?.map((row) => {
+                                                const totals = moduleTotals[row.categoryId] || { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+                                                const totalQuestions = totals.totalCorrect + totals.totalIncorrect + totals.totalUnanswered;
 
-                                            // Calculate widths based on total counts
-                                            const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
-                                            const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
-                                            const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
+                                                // Calculate widths based on total counts
+                                                const correctWidth = totalQuestions > 0 ? (totals.totalCorrect / totalQuestions) * 100 : 0;
+                                                const incorrectWidth = totalQuestions > 0 ? (totals.totalIncorrect / totalQuestions) * 100 : 0;
+                                                const unansweredWidth = totalQuestions > 0 ? (totals.totalUnanswered / totalQuestions) * 100 : 0;
 
-                                            return (
-                                                <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
-                                                    <div
-                                                        className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
-                                                    >
-                                                        <label className="flex items-center cursor-pointer hover:opacity-85">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="mr-2 custom-checkbox hover:opacity-70"
-                                                                checked={selectedModules.includes(row.categoryId)}
-                                                                onChange={() => handleCheckboxChange(row.categoryId)}
-                                                            />
-                                                            {row.categoryName}
-                                                        </label>
+                                                return (
+                                                    <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                                                        <div
+                                                            className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white"
+                                                        >
+                                                            <label className="flex items-center cursor-pointer hover:opacity-85">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="mr-2 custom-checkbox hover:opacity-70"
+                                                                    checked={selectedModules.includes(row.categoryId)}
+                                                                    onChange={() => handleCheckboxChange(row.categoryId)}
+                                                                />
+                                                                {row.categoryName}
+                                                            </label>
+                                                        </div>
+
+
+                                                        <div className="flex items-center justify-center space-x-1">
+
+                                                            <div
+                                                                className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
+                                                                style={{ width: `${correctWidth}%` }}
+                                                            ></div>
+
+                                                            <div
+                                                                className="h-[19px] sm:h-[27px] bg-[#FF453A]"
+                                                                style={{ width: `${incorrectWidth}%` }}
+                                                            ></div>
+
+                                                            <div
+                                                                className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
+                                                                style={{ width: `${unansweredWidth}%` }}
+                                                            ></div>
+                                                        </div>
                                                     </div>
-
-
-                                                    <div className="flex items-center justify-center space-x-1">
-                                                       
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md"
-                                                            style={{ width: `${correctWidth}%` }}
-                                                        ></div>
-                                                      
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#FF453A]"
-                                                            style={{ width: `${incorrectWidth}%` }}
-                                                        ></div>
-                                                        
-                                                        <div
-                                                            className="h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md"
-                                                            style={{ width: `${unansweredWidth}%` }}
-                                                        ></div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        }))
+                                                );
+                                            }))
                                     }
-                              
-                        </div>
 
-                    </div>
+                                </div>
+
+                            </div>
                     }
                 </div>
             </div>
@@ -956,7 +1036,7 @@ const Questioning = () => {
                             { name: "Dashboard", icon: "house" },
                             { name: "Practice", icon: "dumbbell" },
                             { name: "Performance", icon: "chart-line" },
-                           
+
                             { name: "OSCE", icon: "bed" },
                         ].map((item, index) => (
                             <div
