@@ -23,6 +23,7 @@ import { setActive, setAttempted } from "../../redux/features/attempts/attempts.
 import FeedbackModal from "../common/Feedback";
 import { initializeFlags, toggleFlag } from "../../redux/features/flagged/flagged.slice";
 import { initializeVisited, markVisited } from "../../redux/features/flagged/visited.slice";
+import QuestionNavigator from "../QuestionNavigator";
 
 
 
@@ -40,7 +41,7 @@ const calculateTimeForQuestions = (numQuestions) => {
 };
 const MockTestQuestion = () => {
     const mockData = useSelector((state) => state.mockModules?.mockTestData);
-     const [showFeedBackModal, setShowFeedBackModal]=useState(false)
+    const [showFeedBackModal, setShowFeedBackModal] = useState(false)
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode)
     const dispatch = useDispatch();
     const attempted = useSelector((state) => state.attempts?.attempts);
@@ -92,7 +93,7 @@ const MockTestQuestion = () => {
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
     };
-    
+
 
     // Arrays to store indices
     const unseenIndices = [];
@@ -100,19 +101,19 @@ const MockTestQuestion = () => {
     const allIndices = [];
 
     // Filter items based on the selected filter
- const filteredItems = currentItems.filter((question, index) => {
-  const displayNumber = currentPage * itemsPerPage + index;
-  
-  if (selectedFilter === 'Flagged') {
-    return flaggedQuestions[displayNumber];
-  }
-  
-  if (selectedFilter === 'Unseen') {
-    return visited[displayNumber] && attempted[displayNumber] === null;
-  }
-  
-  return true; // For 'All' filter
-});
+    const filteredItems = currentItems.filter((question, index) => {
+        const displayNumber = currentPage * itemsPerPage + index;
+
+        if (selectedFilter === 'Flagged') {
+            return flaggedQuestions[displayNumber];
+        }
+
+        if (selectedFilter === 'Unseen') {
+            return visited[displayNumber] && attempted[displayNumber] === null;
+        }
+
+        return true; // For 'All' filter
+    });
 
 
     const reportHandler = () => {
@@ -177,8 +178,8 @@ const MockTestQuestion = () => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
                 dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
-  if (mockData[currentIndex]?.conditionName!==null){
-      dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
+                if (mockData[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
                         .unwrap()
                         .then(res => {
                             setArticle(res)
@@ -188,7 +189,7 @@ const MockTestQuestion = () => {
                 return updatedAttempts;
             });
 
-        
+
 
             // Expand accordion for the correct answer
             setIsAccordionOpen((prev) => {
@@ -205,7 +206,7 @@ const MockTestQuestion = () => {
             let value = false;
             dispatch(markVisited({ currentIndex, value }));
         }
-    }; 
+    };
 
 
     // Modified flag handler
@@ -241,10 +242,10 @@ const MockTestQuestion = () => {
                             setArticle(res)
                         })
                 }
-            } 
+            }
 
-            let value=true
-            if (isAnswered === false){
+            let value = true
+            if (isAnswered === false) {
                 dispatch(markVisited({ currentIndex, value }));
             }
             setCurrentIndex((prev) => prev + 1);
@@ -271,7 +272,7 @@ const MockTestQuestion = () => {
                             setArticle(res)
                         })
                 }
-            } 
+            }
             setCurrentIndex((prev) => prev - 1);
         }
     };
@@ -339,7 +340,7 @@ const MockTestQuestion = () => {
 
     const handleBackToDashboard = () => {
         navigation('/dashboard');
-    };  
+    };
 
     const indicesToDisplay =
         selectedFilter === 'All' ? allIndices
@@ -362,7 +363,7 @@ const MockTestQuestion = () => {
 
     const attemptedQuestions = getAttemptedQuestions()
     useEffect(() => {
-    
+
         if (active) {
             setAttempts(Array(mockData.length).fill(null)); // Initialize attempts as unseen
             dispatch(setAttempted(Array(mockData.length).fill(null))); // Dispatch the updated attempts array to Redux
@@ -491,13 +492,13 @@ const MockTestQuestion = () => {
 
         if (mockData?.length > 0) {
             if (active) {
-            dispatch(initializeFlags(mockData?.length));
-            dispatch(initializeVisited(mockData?.length));
+                dispatch(initializeFlags(mockData?.length));
+                dispatch(initializeVisited(mockData?.length));
             }
         }
     }, [mockData]);
-    
- useEffect(() => {
+
+    useEffect(() => {
         function handleClickOutside(event) {
             if (beakerRef.current && !beakerRef.current.contains(event.target)) {
                 setBeakerToggle(false);
@@ -509,7 +510,7 @@ const MockTestQuestion = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-    
+
 
     return (
         <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `} >
@@ -613,7 +614,7 @@ const MockTestQuestion = () => {
                                         <path d="M8.5 2h7" />
 
                                     </svg>
-                                  
+
 
                                 </div>
 
@@ -670,7 +671,7 @@ const MockTestQuestion = () => {
 
                                             return (
                                                 <div>
-                                                    {!isAccordionVisible  && attempted[currentIndex] === null ? (
+                                                    {!isAccordionVisible && attempted[currentIndex] === null ? (
                                                         <label
                                                             key={index}
                                                             className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
@@ -774,7 +775,7 @@ const MockTestQuestion = () => {
                                                                 <>
                                                                     <hr className={`mx-5 ${borderColor}`} />
                                                                     <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
-                                                                            {mockData[currentIndex].explanationList[index]}
+                                                                        {mockData[currentIndex].explanationList[index]}
                                                                     </p>
                                                                 </>
                                                             )}
@@ -813,30 +814,30 @@ const MockTestQuestion = () => {
                                                     </span>
                                                 </button>
                                             </div>
-                                        ) : ( 
+                                        ) : (
                                             <div className="group">
-                                                    <button
-                                                        className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
-                                                        onClick={handleCheckAnswer}
-                                                        disabled={isAnswered === false}
-                                                    >
+                                                <button
+                                                    className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
+                                                    onClick={handleCheckAnswer}
+                                                    disabled={isAnswered === false}
+                                                >
                                                     Check Answer
-                                                        <span className={`bg-white rounded-[4px] px-[2px]  ${isAnswered && 'group-hover:bg-[#3CC8A1]'}  transition-all duration-300 ease-in-out`}>
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="20"
-                                                                height="24"
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className={`lucide lucide-space text-black  ${isAnswered && 'group-hover:text-white'} transition-all duration-300 ease-in-out`}
-                                                            >
-                                                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                                                            </svg>
-                                                        </span>
+                                                    <span className={`bg-white rounded-[4px] px-[2px]  ${isAnswered && 'group-hover:bg-[#3CC8A1]'}  transition-all duration-300 ease-in-out`}>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="20"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className={`lucide lucide-space text-black  ${isAnswered && 'group-hover:text-white'} transition-all duration-300 ease-in-out`}
+                                                        >
+                                                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                                        </svg>
+                                                    </span>
                                                 </button>
                                             </div>
                                         )
@@ -924,15 +925,15 @@ const MockTestQuestion = () => {
                         }
                         {
 
-                            isAccordionVisible && <Article article={article} id={mockData[currentIndex]?.conditionName}    
+                            isAccordionVisible && <Article article={article} id={mockData[currentIndex]?.conditionName}
 
-                 />
+                            />
                         }
                         {
                             showFeedBackModal && <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
                         }
 
-                        
+
                     </div>
 
                     <div
@@ -948,177 +949,101 @@ const MockTestQuestion = () => {
                         <div className={`flex flex-col items-center justify-between  bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                             <div className="w-full">
 
-                       
-                            <div className="flex items-center justify-between mt-5">
-                                <div className="flex items-center"></div>
-                                <div className="absolute left-1/2 transform -translate-x-1/2">
-                                    <Logo />
-                                </div>
-                                <div className="flex items-center mr-5 cursor-pointer" onClick={() => setToggleSidebar(!toggleSidebar)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-left dark:text-white">
-                                        <path d="m11 17-5-5 5-5" />
-                                        <path d="m18 17-5-5 5-5" />
-                                    </svg>
-                                </div>
-                            </div>
 
-                            <div className="flex flex-col items-center justify-center mt-10">
-                                {isTimerMode["mode"] === "Endless" && (
-                                    <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"} text-[#ffff] text-center`}>
-                                        <div>
-                                            <p className="text-[12px] mt-3">Accuracy</p>
-                                            <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
-                                        </div>
+                                <div className="flex items-center justify-between mt-5">
+                                    <div className="flex items-center"></div>
+                                    <div className="absolute left-1/2 transform -translate-x-1/2">
+                                        <Logo />
                                     </div>
-                                )}
-
-                                {isTimerMode["mode"] === "Exam" && (
-                                    <div className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"} text-[#ffff] text-center`}>
-                                        <div>
-                                            <p className="text-[12px] mt-3">Time:</p>
-                                            {review === true ? (
-                                                <p className="font-black text-[36px]">{'00:00'}</p>
-                                            ) : (
-                                                <p className="font-black text-[36px]">{formatTime(timer)}</p>
-                                            )}
-                                        </div>
+                                    <div className="flex items-center mr-5 cursor-pointer" onClick={() => setToggleSidebar(!toggleSidebar)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-left dark:text-white">
+                                            <path d="m11 17-5-5 5-5" />
+                                            <path d="m18 17-5-5 5-5" />
+                                        </svg>
                                     </div>
-                                )}
-                            </div>
-
-                            <div className="">
-                                <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
-                                    <span
-                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('All')}
-                                    >
-                                        All
-                                    </span>
-                                    <span
-                                        className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('Flagged')}
-                                    >
-                                        Flagged
-                                    </span>
-                                    <span
-                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('Unseen')}
-                                    >
-                                        Unseen
-                                    </span>
                                 </div>
-                            </div>
 
-                            <div className="flex justify-center items-center">
-                                <div className="grid grid-cols-5 gap-2">
-                                    {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                        // Determine the background color based on the question status
-                                        const bgColor = attempted[num] === true
-                                            ? "bg-[#3CC8A1]" // Correct answer
-                                            : attempted[num] === false
-                                                ? "bg-[#FF453A]" // Incorrect answer
-                                                : "bg-gray-300"; // Unattempted
+                                <div className="flex flex-col items-center justify-center mt-10">
+                                    {isTimerMode["mode"] === "Endless" && (
+                                        <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"} text-[#ffff] text-center`}>
+                                            <div>
+                                                <p className="text-[12px] mt-3">Accuracy</p>
+                                                <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
+                                            </div>
+                                        </div>
+                                    )}
 
-                                        // Only display questions that match the selected filter
-                                        if (
-                                               selectedFilter === 'All' &&( attempted[num]!==null || flaggedQuestions[num] === true || visited[num] === true) ||
-                                            (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true )) ||
-                                            (selectedFilter === 'Unseen' && visited[num] === true)
-                                        ) {
-                                            return (
-                                                <div key={i}>
-                                                 {
-                                                        flaggedQuestions[num] ? <div
-                                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                            onClick={() => {
-                                                                setCurrentIndex(num); // Navigate to the selected question
-                                                            }}
-                                                        >
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="16"
-                                                                height="16"
-                                                                viewBox="0 0 24 24"
-                                                                fill={flaggedQuestions[num] ? 'white' : 'none'}
-                                                                stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                                                              
-                                                            >
-                                                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                                                <line x1="4" x2="4" y1="22" y2="15" />
-                                                            </svg>
-                                                        </div> :
-                                                            <div
-                                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                                onClick={() => {
-                                                                    setCurrentIndex(num); // Navigate to the selected question
-                                                                }}
-                                                            >
-                                                                <p>{num + 1}</p>
-                                                            </div>
-                                                 }
-                                                    
-                                                </div>
-                                            );
-                                        } else {
-                                            return null; // Skip rendering if the question doesn't match the filter
-                                        }
-                                    })}
+                                    {isTimerMode["mode"] === "Exam" && (
+                                        <div className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"} text-[#ffff] text-center`}>
+                                            <div>
+                                                <p className="text-[12px] mt-3">Time:</p>
+                                                {review === true ? (
+                                                    <p className="font-black text-[36px]">{'00:00'}</p>
+                                                ) : (
+                                                    <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
 
-                            <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                                <button
-                                    className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                    onClick={currentPage > 0 ? prevPage : null}
-                                    disabled={currentPage === 0}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-move-left"
+                                <QuestionNavigator
+                                    attempted={attempted}
+                                    flaggedQuestions={flaggedQuestions}
+                                    visited={visited}
+                                    setCurrentIndex={setCurrentIndex}
+                                />
+
+
+                                <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
+                                    <button
+                                        className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={currentPage > 0 ? prevPage : null}
+                                        disabled={currentPage === 0}
                                     >
-                                        <path d="M6 8L2 12L6 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                </button>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="lucide lucide-move-left"
+                                        >
+                                            <path d="M6 8L2 12L6 16" />
+                                            <path d="M2 12H22" />
+                                        </svg>
+                                    </button>
 
-                                <button
-                                    className={`${((currentPage + 1) * itemsPerPage) >= mockData.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                    onClick={((currentPage + 1) * itemsPerPage) < mockData.length ? nextPage : null}
-                                    disabled={((currentPage + 1) * itemsPerPage) >= mockData.length}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-move-right"
+                                    <button
+                                        className={`${((currentPage + 1) * itemsPerPage) >= mockData.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        onClick={((currentPage + 1) * itemsPerPage) < mockData.length ? nextPage : null}
+                                        disabled={((currentPage + 1) * itemsPerPage) >= mockData.length}
                                     >
-                                        <path d="M18 8L22 12L18 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                </button>
-                            </div>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="lucide lucide-move-right"
+                                        >
+                                            <path d="M18 8L22 12L18 16" />
+                                            <path d="M2 12H22" />
+                                        </svg>
+                                    </button>
+                                </div>
 
-                            <div className="py-5 px-10 text-[#D4D4D8]">
-                                <hr />
-                            </div>
+                                <div className="py-5 px-10 text-[#D4D4D8]">
+                                    <hr />
+                                </div>
                             </div>
                             <div>
                                 <DeepChatAI W='200px' />
@@ -1167,7 +1092,7 @@ const MockTestQuestion = () => {
                                 </div>
                             </div>
                         </div>
- 
+
                         <div className={`absolute right-0 top-0 bg-white w-[28%] md:w-[25%] lg:w-[50px] 3A3A48 dark:border-[1px] dark:border-[#3A3A48] h-screen ${!toggleSidebar && "translate-x-full"} transition-transform duration-300 dark:bg-[#1E1E2A] text-black`}>
                             <div className="flex items-center cursor-pointer dark:bg-[#1E1E2A]" onClick={() => setToggleSidebar(!toggleSidebar)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-right mt-5 ml-3 dark:text-white">

@@ -23,6 +23,7 @@ import { setActive, setAttempted } from "../redux/features/attempts/attempts.sli
 import FeedbackModal from "./common/Feedback";
 import { initializeFlags, toggleFlag } from "../redux/features/flagged/flagged.slice";
 import { initializeVisited, markVisited } from "../redux/features/flagged/visited.slice";
+import QuestionNavigator from "./QuestionNavigator";
 
 
 
@@ -1064,132 +1065,12 @@ const QuestionCard = () => {
                                     )}
                                 </div>
 
-                                <div className="">
-                                    <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
-                                        <span
-                                            className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                            onClick={() => handleFilterChange('All')}
-                                        >
-                                            All
-                                        </span>
-                                        <span
-                                            className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                            onClick={() => handleFilterChange('Flagged')}
-                                        >
-                                            Flagged
-                                        </span>
-                                        <span
-                                            className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                            onClick={() => handleFilterChange('Unseen')}
-                                        >
-                                            Unseen
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-center items-center">
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                            const bgColor = attempted[num] === true
-                                                ? "bg-[#3CC8A1]" // Correct answer
-                                                : attempted[num] === false
-                                                    ? "bg-[#FF453A]" // Incorrect answer
-                                                    : "bg-gray-300"; // Unattempted
-                                            if (
-                                                selectedFilter === 'All' && (attempted[num] !== null || flaggedQuestions[num] === true || visited[num] === true) ||
-                                                (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
-                                                (selectedFilter === 'Unseen' && visited[num] === true)
-                                            ) {
-                                                return (
-                                                    <div key={i}>
-                                                        {
-                                                            flaggedQuestions[num] ? <div
-                                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                                onClick={() => {
-                                                                    setCurrentIndex(num); // Navigate to the selected question
-                                                                }}
-                                                            >
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    width="16"
-                                                                    height="16"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill={flaggedQuestions[num] ? 'white' : 'none'}
-                                                                    stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
-                                                                    strokeWidth="2"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    className="lucide lucide-flag cursor-pointer hover:opacity-80"
-
-                                                                >
-                                                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                                                    <line x1="4" x2="4" y1="22" y2="15" />
-                                                                </svg>
-                                                            </div> :
-                                                                <div
-                                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                                    onClick={() => {
-                                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                                    }}
-                                                                >
-                                                                    <p>{num + 1}</p>
-                                                                </div>
-                                                        }
-                                                    </div>
-                                                );
-                                            } else {
-                                                return null; // Skip rendering if the question doesn't match the filter
-                                            }
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                                    <button
-                                        className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                        onClick={currentPage > 0 ? prevPage : null}
-                                        disabled={currentPage === 0}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="lucide lucide-move-left"
-                                        >
-                                            <path d="M6 8L2 12L6 16" />
-                                            <path d="M2 12H22" />
-                                        </svg>
-                                    </button>
-
-                                    <button
-                                        className={`${((currentPage + 1) * itemsPerPage) >= data.data.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                        onClick={((currentPage + 1) * itemsPerPage) < data.data.length ? nextPage : null}
-                                        disabled={((currentPage + 1) * itemsPerPage) >= data.data.length}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="lucide lucide-move-right"
-                                        >
-                                            <path d="M18 8L22 12L18 16" />
-                                            <path d="M2 12H22" />
-                                        </svg>
-                                    </button>
-                                </div>
-
+                                <QuestionNavigator
+                                    attempted={attempted}
+                                    flaggedQuestions={flaggedQuestions}
+                                    visited={visited}
+                                    setCurrentIndex={setCurrentIndex}
+                                />
                                 <div className="py-5 px-10 text-[#D4D4D8]">
                                     <hr />
                                 </div>
