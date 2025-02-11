@@ -7,6 +7,7 @@ import DashboardModal from './common/DashboardModal';
 import { FaStar } from "react-icons/fa";
 import { setLoading } from '../redux/features/loader/loader.slice';
 import { fetchOSCEDataById } from '../redux/features/osce-static/osce-static.service';
+import FeedbackModal from './common/Feedback';
 
 const SceneriosDetail = () => {
     const [minutes, setMinutes] = useState(8); // Starting minute
@@ -405,7 +406,9 @@ const [loader,setLoader]=useState(false)
 
                         </div>
                     </div>}
-
+                    {showFeedBackModal && (
+                <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+            )}
             {showPopup && (
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}
