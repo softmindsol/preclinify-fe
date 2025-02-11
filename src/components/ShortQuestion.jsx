@@ -20,6 +20,7 @@ import FeedbackModal from "./common/Feedback";
 import { initializeVisited, markVisited } from "../redux/features/flagged/visited.slice";
 import { initializeFlags, toggleFlag } from "../redux/features/flagged/flagged.slice";
 import { initializeAnswers, setUserAnswers } from "../redux/features/SAQ/userAnswer.slice";
+import QuestionNavigator from "./QuestionNavigator";
 
 
 // Function to format the time in MM:SS format
@@ -197,9 +198,9 @@ const ShortQuestion = () => {
         dispatch(setMcqsAccuracy({ accuracy }));
         setTestCheckAnswer(false);
         setUserAnswerState('');
-            nextQuestion();
+        nextQuestion();
 
-        
+
     }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
 
@@ -259,7 +260,7 @@ const ShortQuestion = () => {
             setCurrentPage(currentPage + 1);
             setCurrentIndex(prev => prev + 10);
 
-        } 
+        }
 
     }
 
@@ -268,7 +269,7 @@ const ShortQuestion = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
             setCurrentIndex(0);
-            
+
         }
     };
 
@@ -326,7 +327,7 @@ const ShortQuestion = () => {
     }, [dispatch]);
 
 
-   
+
 
 
     const getQuestionRange = (currentIndex) => {
@@ -437,12 +438,12 @@ const ShortQuestion = () => {
             dispatch(initializeFlags(allChildren.length));
         }
 
-        if(review){
+        if (review) {
             const hasValidAnswer = userAnswers[currentIndex] !== null && userAnswers[currentIndex] !== "";
             setTestCheckAnswer(hasValidAnswer);
         }
 
-       
+
     }, [active]); // Ensure 'active' is the only dependency
 
     useEffect(() => {
@@ -549,7 +550,7 @@ const ShortQuestion = () => {
                                     sqa.reduce((total, parent) => total + parent.children.length, 0)
                                 }
                             </h2>
-                            <button  className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
+                            <button className={`text-white ${(childIndex + 1 === sqa[parentIndex]?.children?.length) &&
                                 (parentIndex === sqa.length - 1) ? 'opacity-70 disabled:cursor-not-allowed' : ''
                                 }`} onClick={nextQuestion}>
                                 <img src="/assets/whiteRightArrow.svg" alt="" />
@@ -679,21 +680,21 @@ const ShortQuestion = () => {
                                             </svg>
                                         </span>
                                     </button> :
-                                   
+
                                         <div className="sm:space-x-5 flex-wrap md:space-x-5 lg:space-x-3 flex items-center lg:justify-start justify-center w-[100%] ">
-                                        <button className="bg-[#EF4444] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
-                                            Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span>
-                                        </button>
+                                            <button className="bg-[#EF4444] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleIncorrectClick}>
+                                                Incorrect <span className="bg-[#F4F4F5] p-1.5 rounded-[4px] font-medium text-[#27272A] ml-2">1</span>
+                                            </button>
                                             <button className="bg-[#FF9741] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handlePartialClick}>
-                                            Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">2</span>
-                                        </button>
+                                                Partial <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">2</span>
+                                            </button>
                                             <button className="bg-[#3CC8A1] w-[150px] lg:w-[230px] text-[#FFFF] p-2 rounded-[8px]" onClick={handleCorrectClick}>
-                                            Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">3</span>
-                                        </button>
-                                    </div>
+                                                Correct <span className="bg-[#F4F4F5] p-1 rounded-[4px] font-medium text-[#27272A] ml-2">3</span>
+                                            </button>
+                                        </div>
 
 
-}
+                                    }
                                 </div> :
                                 <div className="group ">
                                     <button
@@ -732,7 +733,7 @@ const ShortQuestion = () => {
 
                             >
 
-                              { !review && <button
+                                {!review && <button
                                     className="mt-2 group text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]"
 
                                 >
@@ -829,118 +830,13 @@ const ShortQuestion = () => {
 
                             </div>
 
-                            <div className="">
-                                <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
-                                    <span
-                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('All')}
-                                    >
-                                        All
-                                    </span>
-                                    <span
-                                        className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('Flagged')}
-                                    >
-                                        Flagged
-                                    </span>
-                                    <span
-                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('Unseen')}
-                                    >
-                                        Unseen
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex justify-center items-center">
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                            // Determine the background color based on the question status
-                                            const bgColor = attempted[num] === true
-                                                ? "bg-[#3CC8A1]" // Correct answer
-                                                : attempted[num] === false
-                                                    ? "bg-[#FF453A]" // Incorrect answer
-                                                    : attempted[num] === 'partial' ? "bg-[#FF9741]" // No answer
-                                                        : "bg-gray-300"; // Unattempted
+                            <QuestionNavigator
+                                attempted={attempted}
+                                flaggedQuestions={flaggedQuestions}
+                                visited={visited}
+                                setCurrentIndex={setCurrentIndex}
+                            />
 
-                                            // Only display questions that match the selected filter
-                                            // if (
-                                            //     selectedFilter === 'All' ||
-                                            //     (selectedFilter === 'Flagged' && (attempted[num] === true || attempted[num] === false || attempted[num]==='partial')) ||
-                                            //     (selectedFilter === 'Unseen' && attempted[num] === null)
-                                            // )
-                                            const hasValidAnswer = userAnswers[num] !== null && userAnswers[num] !== "";    
-
-                                            if (
-                                                selectedFilter === 'All' && (userAnswers[num] !== null && userAnswers[num] !== "" || flaggedQuestions[num] === true || visited[num] === true) ||
-                                                (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
-                                                (selectedFilter === 'Unseen' && visited[num] === true)
-                                            ) {
-                                                return (
-                                                    <div key={i}>
-                                                        {
-                                                            flaggedQuestions[num] ? <div
-                                                                className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                                onClick={() => {
-                                                                    setCurrentIndex(num); // Navigate to the selected question
-                                                                }}
-                                                            >
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    width="16"
-                                                                    height="16"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill={flaggedQuestions[num] ? 'white' : 'none'}
-                                                                    stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
-                                                                    strokeWidth="2"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    className="lucide lucide-flag cursor-pointer hover:opacity-80"
-
-                                                                >
-                                                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                                                    <line x1="4" x2="4" y1="22" y2="15" />
-                                                                </svg>
-                                                            </div> :
-                                                                <div
-                                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                                    onClick={() => {
-                                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                                    }}
-                                                                >
-                                                                    <p>{num + 1}</p>
-                                                                </div>
-                                                        }
-
-                                                    </div>
-                                                );
-                                            } else {
-                                                return null; // Skip rendering if the question doesn't match the filter
-                                            }
-                                        })}
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between mx-9 mt-3 text-[#71717A]">
-                                    <button
-                                        className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                        onClick={currentPage > 0 ? prevPage : null}
-                                        disabled={currentPage === 0}
-                                    >
-                                       <img src="/assets/leftArrow.svg" alt="" />
-                                    </button>
-
-                                    <button
-                                        className={`${((currentPage + 1) * itemsPerPage) >= allChildren.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                        onClick={((currentPage + 1) * itemsPerPage) < allChildren.length ? nextPage : null}
-                                        disabled={((currentPage + 1) * itemsPerPage) >= allChildren.length}
-                                    >
-                                        <img src="/assets/rightArrow.svg" alt="" />
-                                    </button>
-                                </div>
-                                <div className="py-5 px-10 text-[#D4D4D8]">
-                                    <hr />
-                                </div>
-                            </div>
 
                         </div>
 

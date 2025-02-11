@@ -23,6 +23,7 @@ import { setActive, setAttempted } from "../redux/features/attempts/attempts.sli
 import FeedbackModal from "./common/Feedback";
 import { initializeFlags, toggleFlag } from "../redux/features/flagged/flagged.slice";
 import { initializeVisited, markVisited } from "../redux/features/flagged/visited.slice";
+import QuestionNavigator from "./QuestionNavigator";
 
 
 
@@ -49,7 +50,7 @@ const QuestionCard = () => {
     const [isAnswered, setIsAnswered] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
-    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
+    const [showFeedBackModal, setShowFeedBackModal] = useState(false)
     const beakerRef = useRef(null);
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -77,17 +78,17 @@ const QuestionCard = () => {
         const savedTime = localStorage.getItem('examTimer');
         return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
     });
-    
-      const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
-        const visited = useSelector((state) => state.visited.visitedQuestions);
-    
+
+    const flaggedQuestions = useSelector((state) => state.flagged.flaggedQuestions);
+    const visited = useSelector((state) => state.visited.visitedQuestions);
+
     const review = useSelector(state => state.questionReview.value)
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy    
     // const data = useSelector((state) => state.mcqsQuestion || []);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
     const active = useSelector((state) => state.attempts?.active);
- 
+
 
     const handleFilterChange = (filter) => {
         setSelectedFilter(filter);
@@ -98,10 +99,10 @@ const QuestionCard = () => {
     const flaggedIndices = [];
     const allIndices = [];
 
-   
 
- 
-  
+
+
+
     // Update getQuestionRange to use currentPage correctly
     const getQuestionRange = (currentPage) => {
         const start = currentPage * itemsPerPage;
@@ -143,7 +144,7 @@ const QuestionCard = () => {
         return false; // Hide items that don't match the filter
     });
 
- 
+
 
 
     const toggleAccordion = (index) => {
@@ -223,14 +224,14 @@ const QuestionCard = () => {
                 const updatedAttempts = [...prev];
                 updatedAttempts[currentIndex] = isCorrect;
                 dispatch(setAttempted(updatedAttempts));
-                if (data?.data[currentIndex]?.conditionName!==null){
+                if (data?.data[currentIndex]?.conditionName !== null) {
                     dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
                         .unwrap()
                         .then(res => {
                             setArticle(res)
                         })
                 }
-               
+
                 dispatch(setResult({ updatedAttempts }));
                 return updatedAttempts;
             });
@@ -248,16 +249,16 @@ const QuestionCard = () => {
                 return newAccordionState;
             });
 
-              let value = false;
-                        dispatch(markVisited({ currentIndex, value }));
+            let value = false;
+            dispatch(markVisited({ currentIndex, value }));
         }
     };
 
-     // Modified flag handler
-        const handleFlagQuestion = () => {
-            dispatch(toggleFlag(currentIndex));
-        };
-    
+    // Modified flag handler
+    const handleFlagQuestion = () => {
+        dispatch(toggleFlag(currentIndex));
+    };
+
     // const nextQuestion = () => {
     //     if (currentIndex < data?.data.length - 1) {
     //         setCurrentIndex((prev) => prev + 1);
@@ -279,47 +280,47 @@ const QuestionCard = () => {
     //                         dispatch(markVisited({ currentIndex, value }));
     //                     }
     //     }
-        
+
     // };
 
-      const nextQuestion = () => {
-          if (currentIndex < data?.data.length - 1) {
-                // Mark the current question as unseen if skipped
-                if (attempted[currentIndex] === null) {
-                    setAttempts((prev) => {
-                        const updatedAttempts = [...prev];
-                        updatedAttempts[currentIndex] = null; // Mark as unseen
-                        return updatedAttempts;
-                    });
-                }
-                if (attempted[currentIndex + 1] !== null) {
-                    setIsAnswered(true);
-                    setIsAccordionVisible(true);
-                } else {
-                    setIsAnswered(false);
-                    setIsAccordionVisible(false);
-                }
-    
-                if (isQuestionReview) {
-                    setIsAnswered(true);
-                    setIsAccordionVisible(true);
-                    if (data?.data[currentIndex]?.conditionName !== null) {
-                        dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
-                            .unwrap()
-                            .then(res => {
-                                setArticle(res)
-                            })
-                    }
-                } 
-    
-                let value=true
-                if (isAnswered === false){
-                    dispatch(markVisited({ currentIndex, value }));
-                }
-                setCurrentIndex((prev) => prev + 1);
+    const nextQuestion = () => {
+        if (currentIndex < data?.data.length - 1) {
+            // Mark the current question as unseen if skipped
+            if (attempted[currentIndex] === null) {
+                setAttempts((prev) => {
+                    const updatedAttempts = [...prev];
+                    updatedAttempts[currentIndex] = null; // Mark as unseen
+                    return updatedAttempts;
+                });
             }
-        };
- const getAttemptedQuestions = () => {
+            if (attempted[currentIndex + 1] !== null) {
+                setIsAnswered(true);
+                setIsAccordionVisible(true);
+            } else {
+                setIsAnswered(false);
+                setIsAccordionVisible(false);
+            }
+
+            if (isQuestionReview) {
+                setIsAnswered(true);
+                setIsAccordionVisible(true);
+                if (data?.data[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
+                        .unwrap()
+                        .then(res => {
+                            setArticle(res)
+                        })
+                }
+            }
+
+            let value = true
+            if (isAnswered === false) {
+                dispatch(markVisited({ currentIndex, value }));
+            }
+            setCurrentIndex((prev) => prev + 1);
+        }
+    };
+    const getAttemptedQuestions = () => {
         return data.data.filter((_, index) => attempted[index] !== null);
     };
 
@@ -456,15 +457,15 @@ const QuestionCard = () => {
 
 
     useEffect(() => {
-    
+
         if (data?.data?.length > 0) {
-                if (active) {
-                    dispatch(initializeFlags(data?.data?.length));
-                    dispatch(initializeVisited(data?.data?.length));
-                }
+            if (active) {
+                dispatch(initializeFlags(data?.data?.length));
+                dispatch(initializeVisited(data?.data?.length));
             }
+        }
     }, [data?.data]);
-    
+
 
     useEffect(() => {
         const correct = attempts.filter((attempt) => attempt === true).length;
@@ -586,8 +587,8 @@ const QuestionCard = () => {
         }
     }, [review])
 
-    
- useEffect(() => {
+
+    useEffect(() => {
         function handleClickOutside(event) {
             if (beakerRef.current && !beakerRef.current.contains(event.target)) {
                 setBeakerToggle(false);
@@ -704,7 +705,7 @@ const QuestionCard = () => {
                                         <path d="M8.5 2h7" />
 
                                     </svg>
-                                  
+
 
                                 </div>
 
@@ -738,141 +739,141 @@ const QuestionCard = () => {
                                 <h3 className="mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white">
                                     {data.data[currentIndex].leadQuestion}
                                 </h3>
-                                    <div className="mt-4 space-y-4">
-                                            {
-                                            data.data[currentIndex]?.answersArray.map((answer, index) => {
-                                                const isSelected = selectedAnswer === answer;
-                                                const isCorrectAnswer = index === data?.data[currentIndex]?.correctAnswerId;
+                                <div className="mt-4 space-y-4">
+                                    {
+                                        data.data[currentIndex]?.answersArray.map((answer, index) => {
+                                            const isSelected = selectedAnswer === answer;
+                                            const isCorrectAnswer = index === data?.data[currentIndex]?.correctAnswerId;
 
-                                                // Determine the border color based on whether the button has been clicked
-                                                const borderColor = isButtonClicked || attempted[currentIndex] !== null
-                                                    ? isCorrectAnswer
-                                                        ? "border-[#22C55E]"
-                                                        : "border-[#EF4444]"
-                                                    : "";
-                                                const bgColor = isButtonClicked || attempted[currentIndex] !== null
-                                                    ? isCorrectAnswer
-                                                        ? "bg-[#DCFCE7]"
-                                                        : "bg-[#FEE2E2]"
-                                                    : "";
+                                            // Determine the border color based on whether the button has been clicked
+                                            const borderColor = isButtonClicked || attempted[currentIndex] !== null
+                                                ? isCorrectAnswer
+                                                    ? "border-[#22C55E]"
+                                                    : "border-[#EF4444]"
+                                                : "";
+                                            const bgColor = isButtonClicked || attempted[currentIndex] !== null
+                                                ? isCorrectAnswer
+                                                    ? "bg-[#DCFCE7]"
+                                                    : "bg-[#FEE2E2]"
+                                                : "";
 
-                                                return (
-                                                    <div key={index}>
-                                                        {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                            return (
+                                                <div key={index}>
+                                                    {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                                        <label
+                                                            className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
+                                                            onClick={() => handleAnswerSelect(answer, index)}
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                name="answer"
+                                                                className="form-radio h-5 w-5 text-green-500 focus:ring-green-500"
+                                                                checked={isSelected}
+                                                                readOnly
+                                                            />
+                                                            <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
+                                                            <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
+                                                                {["Q", "W", "E", "R", "T"][index]}
+                                                            </span>
+                                                        </label>
+                                                    ) : (
+                                                        <div
+                                                            className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); // Prevent propagation
+                                                                toggleAccordion(index);
+                                                            }}
+                                                        >
                                                             <label
-                                                                className={`flex bg-white items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer hover:bg-gray-200 text-[14px] lg:text-[16px] border-2 ${'border-[#F4F4F5]'} dark:bg-[#1E1E2A] dark:border`}
+                                                                className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
                                                                 onClick={() => handleAnswerSelect(answer, index)}
                                                             >
-                                                                <input
-                                                                    type="radio"
-                                                                    name="answer"
-                                                                    className="form-radio h-5 w-5 text-green-500 focus:ring-green-500"
-                                                                    checked={isSelected}
-                                                                    readOnly
-                                                                />
-                                                                <span className="font-medium text-[#3F3F46] flex-1 dark:text-white">{answer}</span>
-                                                                <span className="bg-gray-200 text-[#27272A] px-2 py-1 rounded-md">
-                                                                    {["Q", "W", "E", "R", "T"][index]}
-                                                                </span>
-                                                            </label>
-                                                        ) : (
-                                                            <div
-                                                                className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation(); // Prevent propagation
-                                                                    toggleAccordion(index);
-                                                                }}
-                                                            >
-                                                                <label
-                                                                    className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
-                                                                    onClick={() => handleAnswerSelect(answer, index)}
+                                                                <div
+                                                                    className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
+                                                                        ? isCorrectAnswer
+                                                                            ? "bg-green-100 border border-green-500"
+                                                                            : "bg-red-100 border border-red-500"
+                                                                        : "bg-gray-100 border border-gray-300"
+                                                                        }`}
                                                                 >
-                                                                    <div
-                                                                        className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
-                                                                            ? isCorrectAnswer
-                                                                                ? "bg-green-100 border border-green-500"
-                                                                                : "bg-red-100 border border-red-500"
-                                                                            : "bg-gray-100 border border-gray-300"
-                                                                            }`}
-                                                                    >
-                                                                        {(isButtonClicked || attempted[currentIndex] !== null) && (
-                                                                            isCorrectAnswer ? (
-                                                                                <svg
-                                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                                    fill="none"
-                                                                                    viewBox="0 0 24 24"
-                                                                                    strokeWidth="2"
-                                                                                    stroke="green"
-                                                                                    className="w-4 h-4"
-                                                                                >
-                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                                                </svg>
-                                                                            ) : (
-                                                                                <svg
-                                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                                    fill="none"
-                                                                                    viewBox="0 0 24 24"
-                                                                                    strokeWidth="2"
-                                                                                    stroke="red"
-                                                                                    className="w-4 h-4"
-                                                                                >
-                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                                                </svg>
-                                                                            )
-                                                                        )}
-                                                                    </div>
-                                                                    <span className="text-[#27272A] flex-1">{answer}</span>
-                                                                    {isAccordionOpen[index] ? (
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            width="24"
-                                                                            height="24"
-                                                                            viewBox="0 0 24 24"
-                                                                            fill="none"
-                                                                            stroke="currentColor"
-                                                                            strokeWidth="2"
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                            className="lucide lucide-chevron-up"
-                                                                        >
-                                                                            <path d="m18 15-6-6-6 6" />
-                                                                        </svg>
-                                                                    ) : (
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            width="24"
-                                                                            height="24"
-                                                                            viewBox="0 0 24 24"
-                                                                            fill="none"
-                                                                            stroke="currentColor"
-                                                                            strokeWidth="2"
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                            className="lucide lucide-chevron-down"
-                                                                        >
-                                                                            <path d="m6 9 6 6 6-6" />
-                                                                        </svg>
+                                                                    {(isButtonClicked || attempted[currentIndex] !== null) && (
+                                                                        isCorrectAnswer ? (
+                                                                            <svg
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                strokeWidth="2"
+                                                                                stroke="green"
+                                                                                className="w-4 h-4"
+                                                                            >
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                            </svg>
+                                                                        ) : (
+                                                                            <svg
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                strokeWidth="2"
+                                                                                stroke="red"
+                                                                                className="w-4 h-4"
+                                                                            >
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                                            </svg>
+                                                                        )
                                                                     )}
-                                                                </label>
-
-                                                                {/* Conditionally render the hr and p tags */}
-                                                                {isAccordionOpen[index] && (
-                                                                    <>
-                                                                        <hr className={`mx-5 ${borderColor}`} />
-                                                                        <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
-                                                                            {data.data[currentIndex].explanationList[index]}
-                                                                        </p>
-                                                                    </>
+                                                                </div>
+                                                                <span className="text-[#27272A] flex-1">{answer}</span>
+                                                                {isAccordionOpen[index] ? (
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        className="lucide lucide-chevron-up"
+                                                                    >
+                                                                        <path d="m18 15-6-6-6 6" />
+                                                                    </svg>
+                                                                ) : (
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        className="lucide lucide-chevron-down"
+                                                                    >
+                                                                        <path d="m6 9 6 6 6-6" />
+                                                                    </svg>
                                                                 )}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })
-                                            }
-                                    </div>
-                                  
-                                
+                                                            </label>
+
+                                                            {/* Conditionally render the hr and p tags */}
+                                                            {isAccordionOpen[index] && (
+                                                                <>
+                                                                    <hr className={`mx-5 ${borderColor}`} />
+                                                                    <p className="py-2 px-5 text-[12px] text-[#3F3F46]">
+                                                                        {data.data[currentIndex].explanationList[index]}
+                                                                    </p>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })
+                                    }
+                                </div>
+
+
                                 {/* Submit Button */}
                                 {
                                     !isReviewEnabled && (
@@ -904,12 +905,12 @@ const QuestionCard = () => {
                                         ) : (
                                             <div className="group">
                                                 <button
-                                                        className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
+                                                    className={` mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#3CC8A1] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out  ${isAnswered && 'hover:bg-transparent'}  ${isAnswered && 'hover:text-[#3CC8A1]'}  border border-[#3CC8A1] ${!isAnswered && 'cursor-not-allowed'}`}
                                                     onClick={handleCheckAnswer}
-                                                        disabled={isAnswered===false}
+                                                    disabled={isAnswered === false}
                                                 >
                                                     Check Answer
-                                                        <span className={`bg-white rounded-[4px] px-[2px]  ${isAnswered && 'group-hover:bg-[#3CC8A1]'}  transition-all duration-300 ease-in-out`}>
+                                                    <span className={`bg-white rounded-[4px] px-[2px]  ${isAnswered && 'group-hover:bg-[#3CC8A1]'}  transition-all duration-300 ease-in-out`}>
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             width="20"
@@ -920,7 +921,7 @@ const QuestionCard = () => {
                                                             strokeWidth="2"
                                                             strokeLinecap="round"
                                                             strokeLinejoin="round"
-                                                                className={`lucide lucide-space text-black  ${isAnswered && 'group-hover:text-white'} transition-all duration-300 ease-in-out`}
+                                                            className={`lucide lucide-space text-black  ${isAnswered && 'group-hover:text-white'} transition-all duration-300 ease-in-out`}
                                                         >
                                                             <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
                                                         </svg>
@@ -1024,7 +1025,7 @@ const QuestionCard = () => {
                         <div className={` bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] flex flex-col items-center justify-between  h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
                             <div className="w-full">
 
-                        
+
                                 <div className="flex items-center justify-between mt-5 ">
                                     <div className="flex items-center">
                                     </div>
@@ -1032,7 +1033,7 @@ const QuestionCard = () => {
                                     <div className="absolute left-1/2 transform -translate-x-1/2">
                                         <Logo />
                                     </div>
- 
+
                                     <div className="flex items-center cursor-pointer" onClick={() => {
                                         setToggleSidebar(!toggleSidebar)
                                     }}>
@@ -1040,159 +1041,39 @@ const QuestionCard = () => {
                                     </div>
                                 </div>
 
-                            <div className="flex flex-col items-center justify-center mt-10">
-                                {isTimerMode["mode"] === "Endless" && (
-                                    <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"} text-[#ffff] text-center`}>
-                                        <div>
-                                            <p className="text-[12px] mt-3">Accuracy</p>
-                                            <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {isTimerMode["mode"] === "Exam" && (
-                                    <div className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"} text-[#ffff] text-center`}>
-                                        <div>
-                                            <p className="text-[12px] mt-3">Time:</p>
-                                            {review === true ? (
-                                                <p className="font-black text-[36px]">{'00:00'}</p>
-                                            ) : (
-                                                <p className="font-black text-[36px]">{formatTime(timer)}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="">
-                                <div className="flex items-center justify-between p-5 w-full text-[12px] dark:text-white">
-                                    <span
-                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('All')}
-                                    >
-                                        All
-                                    </span>
-                                    <span
-                                        className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('Flagged')}
-                                    >
-                                        Flagged
-                                    </span>
-                                    <span
-                                        className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen' ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]' : 'hover:text-[#3CC8A1]'}`}
-                                        onClick={() => handleFilterChange('Unseen')}
-                                    >
-                                        Unseen
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-center items-center">
-                                <div className="grid grid-cols-5 gap-2">
-                                    {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                        const bgColor = attempted[num] === true
-                                            ? "bg-[#3CC8A1]" // Correct answer
-                                            : attempted[num] === false
-                                                ? "bg-[#FF453A]" // Incorrect answer
-                                                : "bg-gray-300"; // Unattempted
-                                        if (
-                                            selectedFilter === 'All' && (attempted[num] !== null || flaggedQuestions[num] === true || visited[num] === true) ||
-                                            (selectedFilter === 'Flagged' && (flaggedQuestions[num] === true)) ||
-                                            (selectedFilter === 'Unseen' && visited[num] === true)
-                                        ) {
-                                        return (
-                                            <div key={i}>
-                                                {
-                                                    flaggedQuestions[num] ? <div
-                                                        className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                        onClick={() => {
-                                                            setCurrentIndex(num); // Navigate to the selected question
-                                                        }}
-                                                    >
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="16"
-                                                            height="16"
-                                                            viewBox="0 0 24 24"
-                                                            fill={flaggedQuestions[num] ? 'white' : 'none'}
-                                                            stroke={flaggedQuestions[num] ? 'white' : 'currentColor'}
-                                                            strokeWidth="2"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            className="lucide lucide-flag cursor-pointer hover:opacity-80"
-
-                                                        >
-                                                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                                            <line x1="4" x2="4" y1="22" y2="15" />
-                                                        </svg>
-                                                    </div> :
-                                                        <div
-                                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                            onClick={() => {
-                                                                setCurrentIndex(num); // Navigate to the selected question
-                                                            }}
-                                                        >
-                                                            <p>{num + 1}</p>
-                                                        </div>
-                                                }
+                                <div className="flex flex-col items-center justify-center mt-10">
+                                    {isTimerMode["mode"] === "Endless" && (
+                                        <div className={`w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] ${mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"} text-[#ffff] text-center`}>
+                                            <div>
+                                                <p className="text-[12px] mt-3">Accuracy</p>
+                                                <p className="font-black text-[36px]">{mcqsAccuracy}%</p>
                                             </div>
-                                        );
-                                    } else {
-                                        return null; // Skip rendering if the question doesn't match the filter
-                                    }
-                                    })}
+                                        </div>
+                                    )}
+
+                                    {isTimerMode["mode"] === "Exam" && (
+                                        <div className={`w-[90%] h-[96px] rounded-[8px] ${timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"} text-[#ffff] text-center`}>
+                                            <div>
+                                                <p className="text-[12px] mt-3">Time:</p>
+                                                {review === true ? (
+                                                    <p className="font-black text-[36px]">{'00:00'}</p>
+                                                ) : (
+                                                    <p className="font-black text-[36px]">{formatTime(timer)}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
 
-                            <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
-                                <button
-                                    className={`${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                    onClick={currentPage > 0 ? prevPage : null}
-                                    disabled={currentPage === 0}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-move-left"
-                                    >
-                                        <path d="M6 8L2 12L6 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                </button>
-
-                                <button
-                                    className={`${((currentPage + 1) * itemsPerPage) >= data.data.length ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                    onClick={((currentPage + 1) * itemsPerPage) < data.data.length ? nextPage : null}
-                                    disabled={((currentPage + 1) * itemsPerPage) >= data.data.length}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-move-right"
-                                    >
-                                        <path d="M18 8L22 12L18 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div className="py-5 px-10 text-[#D4D4D8]">
-                                <hr />
-                            </div>
+                                <QuestionNavigator
+                                    attempted={attempted}
+                                    flaggedQuestions={flaggedQuestions}
+                                    visited={visited}
+                                    setCurrentIndex={setCurrentIndex}
+                                />
+                                <div className="py-5 px-10 text-[#D4D4D8]">
+                                    <hr />
+                                </div>
                             </div>
                             <div>
                                 <DeepChatAI W='200px' />
@@ -1354,27 +1235,27 @@ const QuestionCard = () => {
 
                     <div className="flex justify-center items-center">
                         <div className="grid grid-cols-5 gap-2">
-                           {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
-                                        const bgColor = attempted[num] === true
-                                            ? "bg-[#3CC8A1]" // Correct answer
-                                            : attempted[num] === false
-                                                ? "bg-[#FF453A]" // Incorrect answer
-                                                : "bg-gray-300"; // Unattempted
+                            {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
+                                const bgColor = attempted[num] === true
+                                    ? "bg-[#3CC8A1]" // Correct answer
+                                    : attempted[num] === false
+                                        ? "bg-[#FF453A]" // Incorrect answer
+                                        : "bg-gray-300"; // Unattempted
 
 
-                                        return (
-                                            <div key={i}>
-                                                <div
-                                                    className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
-                                                    onClick={() => {
-                                                        setCurrentIndex(num); // Navigate to the selected question
-                                                    }}
-                                                >
-                                                    <p>{num + 1}</p>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                                return (
+                                    <div key={i}>
+                                        <div
+                                            className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
+                                            onClick={() => {
+                                                setCurrentIndex(num); // Navigate to the selected question
+                                            }}
+                                        >
+                                            <p>{num + 1}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                     <div className="flex items-center justify-center gap-x-28 mt-3 text-[#71717A]">
