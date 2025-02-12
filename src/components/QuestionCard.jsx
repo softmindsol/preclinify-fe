@@ -768,9 +768,7 @@ const QuestionCard = () => {
                           </label>
                         ) : (
                           <div
-                            className={`border ${
-                              isAnswered ? `${borderColor} ${bgColor}` : ''
-                            }   rounded-md`}
+                            className={`border ${borderColor} ${bgColor} rounded-md`}
                             onClick={e => {
                               e.stopPropagation();
                               toggleAccordion(index);
