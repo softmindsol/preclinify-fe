@@ -37,11 +37,12 @@ input[type='radio'] {
 input[type='radio']::before {
   content: ''; /* Required for pseudo-elements */
   position: absolute; /* Position it absolutely */
-  top: 2.5px; /* Adjust to create padding */
-  left: 2.5px; /* Adjust to create padding */
+  top: 50%; /* Adjust to create padding */
+  left: 50%; /* Adjust to create padding */
   width: 12px; /* Inner circle width */
   height: 12px; /* Inner circle height */
   border-radius: 50%; /* Make it circular */
+  transform: translate(-50%, -50%);
   background-color: transparent; /* Default background */
   transition: background-color 0.2s; /* Smooth transition */
 }
