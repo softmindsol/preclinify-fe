@@ -208,6 +208,11 @@ const Questioning = () => {
 
   // fetch Modules
 
+  console.log("selectedOption:", selectedOption);
+  console.log("selectedTab:",selectedTab);
+  
+  
+
   useEffect(() => {
     const handleSessionContinue = async sessionId => {
       // Open the setup session modal
@@ -290,13 +295,15 @@ const Questioning = () => {
     dispatch(clearUserAnswers());
     dispatch(resetVisited());
     dispatch(setActive(true));
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     dispatch(setPreclinicalType({ selectedOption }));
 
     if (selectedTab === 'Clinical') {
       if (selectedOption === 'SBA') {
+
+
         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
         dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
           .unwrap()
