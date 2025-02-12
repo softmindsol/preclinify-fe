@@ -5,7 +5,6 @@ import { FaClock, FaCalendarAlt } from 'react-icons/fa';
 import { calculateDaysRemaining } from '../../lib/utils';
 import { useDispatch } from 'react-redux';
 import { insertExamDate } from '../../redux/features/exam-countdown/service';
-
 const ExamCountdown = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [confirmedDate, setConfirmedDate] = useState(null);
@@ -16,7 +15,6 @@ const ExamCountdown = () => {
 
   const handleConfirmDate = async () => {
     if (!selectedDate) return;
-
     const formattedDate = selectedDate.toISOString().split('T')[0];
 
     await dispatch(
