@@ -20,6 +20,7 @@ import { fetchMcqsByModules } from '../redux/features/SBA/sba.service';
 import SetupSessionModal from '../components/SetupSessionModal';
 import { setResetLimit } from '../redux/features/limit/limit.slice';
 import supabase from '../config/helper';
+import { fetchExamDate } from '../redux/features/exam-countdown/service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -40,6 +41,8 @@ const Dashboard = () => {
   const [isSession, setIsSession] = useState(false);
   const [sessionId, setSessionId] = useState([]);
   const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
+  const examDuration = useSelector(state => state?.examDates);
+  console.log('🚀 ~ Dashboard ~ examDuration:', examDuration);
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -178,6 +181,10 @@ const Dashboard = () => {
     localStorage.removeItem('examTimer'); // Clear storage when timer ends
     dispatch(clearResult());
     dispatch(resetQuestionReviewValue());
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchExamDate('acb01928-efce-4f32-96df-ff179494f580'));
   }, []);
 
   return (
@@ -419,7 +426,7 @@ const Dashboard = () => {
             </div>
 
             <div className=' w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md dark:bg-[#1E1E2A] text-black dark:border-[1px] dark:border-[#3A3A48]'>
-              <div className='text-[18px] text-center text-[#52525B] p-5 font-semibold'>
+              <div className='flex items-center justify-between cursor-pointer text-[18px] text-center text-[#52525B] p-5 font-semibold'>
                 <p className=' text-[#3F3F46] dark:text-white'>Questions</p>
                 <p className='text-[16px] flex items-center  justify-center dark:text-white'>
                   <svg
