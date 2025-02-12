@@ -719,7 +719,6 @@ const QuestionCard = () => {
                     const isCorrectAnswer =
                       index === data?.data[currentIndex]?.correctAnswerId;
 
-                    // Determine the border color based on whether the button has been clicked
                     const borderColor =
                       isButtonClicked || attempted[currentIndex] !== null
                         ? isCorrectAnswer
@@ -736,10 +735,16 @@ const QuestionCard = () => {
                     return (
                       <div
                         key={index}
-                        className={`rounded-md  ${
-                          isSelected
-                            ? 'border border-[#3CC8A1]  bg-[#FAFAFA]'
-                            : 'border border-white bg-white hover:border hover:border-[#3CC8A1]'
+                        className={`rounded-md border ${
+                          attempted[currentIndex] !== null
+                            ? isCorrectAnswer
+                              ? 'border-[#22C55E] bg-[#DCFCE7]'
+                              : isSelected
+                              ? 'border-[#EF4444] bg-[#FEE2E2]'
+                              : 'border-white bg-white'
+                            : isSelected
+                            ? 'border-[#3CC8A1] bg-[#FAFAFA]'
+                            : 'border-white bg-white hover:border-[#3CC8A1]'
                         }`}
                       >
                         {!isAccordionVisible && attempted[currentIndex] === null ? (
@@ -763,9 +768,11 @@ const QuestionCard = () => {
                           </label>
                         ) : (
                           <div
-                            className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
+                            className={`border ${
+                              isAnswered ? `${borderColor} ${bgColor}` : ''
+                            }   rounded-md`}
                             onClick={e => {
-                              e.stopPropagation(); // Prevent propagation
+                              e.stopPropagation();
                               toggleAccordion(index);
                             }}
                           >
