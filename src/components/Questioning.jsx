@@ -10,7 +10,7 @@ import SetupSessionModal from './SetupSessionModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchModules } from '../redux/features/categoryModules/module.service';
 import { setLoading } from '../redux/features/loader/loader.slice';
-import { fetchMcqsByModules } from '../redux/features/SBA/sba.service';
+import { fetchMcqsByModules, fetchTotalSBAQuestion } from '../redux/features/SBA/sba.service';
 import { clearResult } from '../redux/features/result/result.slice';
 import { setResetLimit } from '../redux/features/limit/limit.slice';
 import Loader from './common/Loader';
@@ -39,6 +39,7 @@ import {
   fetchModulesById,
   fetchMockTest,
   fetchMockTestById,
+  fetchTotalMockQuestion,
 } from '../redux/features/mock-test/mock.service';
 import { clearFlags } from '../redux/features/flagged/flagged.slice';
 import { clearUserAnswers } from '../redux/features/SAQ/userAnswer.slice';
@@ -57,7 +58,7 @@ const Questioning = () => {
   const recentSession = useSelector(state => state.recentSession.recentSessions);
   const type = useSelector(state => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector(state => state?.quesGen);
-  const { mockTestIds, modules, loading, error } = useSelector(
+  const { mockTestIds, mockMcqsByModulesData, modules, loading, error } = useSelector(
     state => state.mockModules
   );
   const data = useSelector(state => state.module);
@@ -81,6 +82,8 @@ const Questioning = () => {
   const [localRecentSession, setLocalRecentSession] = useState([]);
   const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
   const [saqModule, setSAQModule] = useState([]);
+  const SBADataLength = useSelector(state => state?.mcqsQuestion?.mcqsByModulesData);
+  
   const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -99,10 +102,7 @@ const Questioning = () => {
   const presentations = useSelector(state => state.presentations.presentations);
   const handleToggle = () => {
     setIsSortedByPresentation(prev => !prev);
-  };
-
-  console.log("modules:",modules);
-  
+  };  
 
   const handleTabChange = tab => {
     setSelectedTab(tab); // Update the selected tab
@@ -208,8 +208,7 @@ const Questioning = () => {
 
   // fetch Modules
 
-  console.log("selectedOption:", selectedOption);
-  console.log("selectedTab:",selectedTab);
+
   
   
 
@@ -241,22 +240,44 @@ const Questioning = () => {
 
   // SAB and
   useEffect(() => {
-    if (type === 'SBA' || type === 'SAQ') {
+    if (type === 'SBA') {
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
         .then((res) => {
-    
-          
           setIsLoading(false);
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+        
+          dispatch(fetchTotalSBAQuestion({ids:res}))
+          .unwrap()
+          .then(res=>{
+            
+          })
+          
         })
         .catch(err => {
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
           setIsLoading(false);
         });
-    } else if (type === 'QuesGen') {
+    } 
+    else if (type === 'SAQ') {
+      dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
+      setIsLoading(true);
+      dispatch(fetchModules())
+        .unwrap()
+        .then((res) => {
+          setIsLoading(false);
+          dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+         
+
+        })
+        .catch(err => {
+          dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
+          setIsLoading(false);
+        });
+    } 
+    else if (type === 'QuesGen') {
       dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
@@ -274,7 +295,7 @@ const Questioning = () => {
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
-        .then(() => {
+        .then((res) => {
           setIsLoading(false);
           dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
         })
@@ -296,6 +317,7 @@ const Questioning = () => {
     dispatch(resetVisited());
     dispatch(setActive(true));
   }, [type]);
+
 
   useEffect(() => {
     dispatch(setPreclinicalType({ selectedOption }));
@@ -325,6 +347,7 @@ const Questioning = () => {
               setLoading({ key: 'modules/fetchShortQuestionByModules', value: false })
             );
 
+          
             dispatch(fetchModulesById({ ids: res.ids }))
               .unwrap()
               .then(res => {
@@ -379,26 +402,24 @@ const Questioning = () => {
             );
           });
       } else if (selectedOption === 'Mock') {
-        dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
-        // Fetch IDs from mockTable
-
-console.log("Mock:");
-
+        dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }))
         dispatch(fetchMockTest())
           .unwrap()
-          .then(ids => {
-
-            console.log("Ids:",ids);
-            
+          .then(ids => {            
             // Pass the fetched IDs to fetchModules
             dispatch(fetchModulesById({ ids }))
               .unwrap()
               .then(res => {
                 setIsLoading(false);
                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
-             
-             
-                
+
+                dispatch(fetchTotalSBAQuestion({ ids: res }))
+                  .unwrap()
+                  .then(res => {
+                    dispatch(fetchTotalMockQuestion({ ids: res }))
+                      .unwrap()
+                  })
+            
               })
               .catch(err => {
                 setIsLoading(false);
@@ -932,71 +953,44 @@ console.log("Mock:");
                     );
                   })}
 
-                {selectedTab === 'Clinical' &&
-                  !isSortedByPresentation &&
-                  type === 'SBA' &&
+                  {selectedTab === 'Clinical' &&
+                    !isSortedByPresentation &&
+                    type === 'SBA' &&
                     filteredSBAModules?.map(row => {
-                    const totals = moduleTotals[row.categoryId] || {
-                      totalCorrect: 0,
-                      totalIncorrect: 0,
-                      totalUnanswered: 0,
-                    };
-                    const totalQuestions =
-                      totals.totalCorrect +
-                      totals.totalIncorrect +
-                      totals.totalUnanswered;
+                      const moduleData = SBADataLength?.find(module => module.categoryId === row.categoryId);
+                      const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
-                    // Calculate widths based on total counts
-                    const correctWidth =
-                      totalQuestions > 0
-                        ? (totals.totalCorrect / totalQuestions) * 100
-                        : 0;
-                    const incorrectWidth =
-                      totalQuestions > 0
-                        ? (totals.totalIncorrect / totalQuestions) * 100
-                        : 0;
-                    const unansweredWidth =
-                      totalQuestions > 0
-                        ? (totals.totalUnanswered / totalQuestions) * 100
-                        : 0;
+                      const totals = moduleTotals[row.categoryId] || {
+                        totalCorrect: 0,
+                        totalIncorrect: 0,
+                        totalUnanswered: 0,
+                      };
+                      const correctWidth = 0;
+                      const incorrectWidth = 0;
+                      const unansweredWidth = totalQuestions > 0 ? 100 : 0;
 
-                    return (
-                      <div
-                        key={row.categoryId}
-                        className='grid md:grid-cols-2 items-center py-3'
-                      >
-                        <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
-                          <label className='flex items-center cursor-pointer hover:opacity-85'>
-                            <input
-                              type='checkbox'
-                              className='mr-2 custom-checkbox hover:opacity-70'
-                              checked={selectedModules.includes(row.categoryId)}
-                              onChange={() => handleCheckboxChange(row.categoryId)}
-                            />
-                            {row.categoryName}
-                          </label>
+                      return (
+                        <div key={row.categoryId} className='grid md:grid-cols-2 items-center py-3'>
+                          <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
+                            <label className='flex items-center cursor-pointer hover:opacity-85'>
+                              <input
+                                type='checkbox'
+                                className='mr-2 custom-checkbox hover:opacity-70'
+                                checked={selectedModules.includes(row.categoryId)}
+                                onChange={() => handleCheckboxChange(row.categoryId)}
+                              />
+                              {row.categoryName} 
+                            </label>
+                          </div>
+
+                          <div className='flex items-center justify-center space-x-1'>
+                            <div className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md' style={{ width: `${unansweredWidth}%` }}></div>
+                          </div>
                         </div>
+                      );
+                    })
+                  }
 
-                        <div className='flex items-center justify-center space-x-1'>
-                          {/* Green */}
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md'
-                            style={{ width: `${correctWidth}%` }}
-                          ></div>
-                          {/* Red */}
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#FF453A]'
-                            style={{ width: `${incorrectWidth}%` }}
-                          ></div>
-                          {/* Gray */}
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md'
-                            style={{ width: `${unansweredWidth}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
                   type === 'SAQ' &&
@@ -1065,29 +1059,17 @@ console.log("Mock:");
                   !isSortedByPresentation &&
                   type === 'Mock' &&
                   modules?.map(row => {
+                    const moduleData = mockMcqsByModulesData?.find(module => module.categoryId === row.categoryId);
+                    const totalQuestions = moduleData ? moduleData.questions.length : 0;
+
                     const totals = moduleTotals[row.categoryId] || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
                       totalUnanswered: 0,
                     };
-                    const totalQuestions =
-                      totals.totalCorrect +
-                      totals.totalIncorrect +
-                      totals.totalUnanswered;
-
-                    // Calculate widths based on total counts
-                    const correctWidth =
-                      totalQuestions > 0
-                        ? (totals.totalCorrect / totalQuestions) * 100
-                        : 0;
-                    const incorrectWidth =
-                      totalQuestions > 0
-                        ? (totals.totalIncorrect / totalQuestions) * 100
-                        : 0;
-                    const unansweredWidth =
-                      totalQuestions > 0
-                        ? (totals.totalUnanswered / totalQuestions) * 100
-                        : 0;
+                    const correctWidth = 0;
+                    const incorrectWidth = 0;
+                    const unansweredWidth = totalQuestions > 0 ? 100 : 0;
 
                     return (
                       <div
