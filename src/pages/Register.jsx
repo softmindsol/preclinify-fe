@@ -1,109 +1,140 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // For navigation after successful registration
+import React from 'react';
+import { useNavigate, Link } from 'react-router-dom'; // For navigation after successful registration
+import { useFormik } from 'formik';
+import * as Yup from 'yup'; // For validation schema
 import supabase from '../config/helper';
 import Logo from '../components/common/Logo';
-import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Register = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [phone, setPhone] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
- 
+   const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);  // Start the loader
+    // Formik setup
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+            confirmPassword: '',
+            phone: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string()
+                .email('Invalid email address')
+                .required('Required'),
+            password: Yup.string()
+                .min(6, 'Password must be at least 6 characters')
+                .required('Required'),
+            confirmPassword: Yup.string()
+                .oneOf([Yup.ref('password'), null], 'Passwords must match')
+                .required('Required'),
+            phone: Yup.string()
+                .required('Required'),
+        }),
+        onSubmit: async (values, { setSubmitting }) => {
+            try {
+                // Supabase auth register
+                const { user, error } = await supabase.auth.signUp({
+                    email: values.email,
+                    password: values.password,
+                    options: {
+                        data: {
+                            phone: values.phone, // Add phone number to user_metadata
+                        },
+                    },
+                });
 
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-        try {
-            // Supabase auth register
-            const { user, error } = await supabase.auth.signUp({
-                email,
-                password,
-            });
-
-            if (error) {
-                // Show error toast
-                console.log("error:",error);
-                
-                toast.error("Error occur while register");
-            } else {
-                // Show success toast
-                navigate('/login')
-                toast.success('Registration Successful!, Check your email and verify it.');
+                if (error) {
+                    // Show error toast
+                    console.log("error in register:", error);
+                    toast.error("Error occurred while registering");
+                } else {
+                    // Show success toast
+                    navigate('/login');
+                    toast.success('Registration Successful! Check your email and verify it.');
+                }
+            } catch (error) {
+                // Handle any unexpected error
+                console.log("error:", error);
+                toast.error('An error occurred. Please try again!');
+            } finally {
+                setSubmitting(false); // Stop the loader once API call is done
             }
-        } catch (error) {
-            // Handle any unexpected error
-            toast.error('An error occurred. Please try again!');
-        } finally {
-            setIsLoading(false);  // Stop the loader once API call is done
-        }
-    };
-
+        },
+    });
 
     return (
         <div className='flex items-center w-full overflow-hidden'>
             <div className='bg-[#FFFFFF] min-h-screen py-5 flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]'>
                 <Logo />
                 <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46] mb-5'>Sign up into Preclinify</p>
-                <form onSubmit={handleSubmit} className='mt-2 space-y-4 w-[90%] sm:w-[430px]'>
+                <form onSubmit={formik.handleSubmit} className='mt-2 space-y-4 w-[90%] sm:w-[430px]'>
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Email Address</label>
+                        <label htmlFor='email' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Email Address</label>
                         <br />
                         <input
                             type='email'
+                            id='email'
                             placeholder='Enter your Email...'
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+                        {formik.touched.email && formik.errors.email ? (
+                            <div className='text-red-500'>{formik.errors.email}</div>
+                        ) : null}
                     </div>
 
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Password</label>
+                        <label htmlFor='password' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Password</label>
                         <br />
                         <input
                             type='password'
+                            id='password'
                             placeholder='Enter your Password...'
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+                        {formik.touched.password && formik.errors.password ? (
+                            <div className='text-red-500'>{formik.errors.password}</div>
+                        ) : null}
                     </div>
 
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Confirm Password</label>
+                        <label htmlFor='confirmPassword' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Confirm Password</label>
                         <br />
                         <input
                             type='password'
+                            id='confirmPassword'
                             placeholder='Enter your Confirm Password...'
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            value={formik.values.confirmPassword}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+                        {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
+                            <div className='text-red-500'>{formik.errors.confirmPassword}</div>
+                        ) : null}
                     </div>
 
                     <div>
-                        <label htmlFor='' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Phone</label>
+                        <label htmlFor='phone' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Phone</label>
                         <br />
                         <input
                             type='text'
+                            id='phone'
                             placeholder='Enter your Phone Number...'
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            value={formik.values.phone}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+                        {formik.touched.phone && formik.errors.phone ? (
+                            <div className='text-red-500'>{formik.errors.phone}</div>
+                        ) : null}
                     </div>
-
-                    {error && <div className='text-red-500'>{error}</div>}
 
                     <div className='text-[#3F3F46] font-medium w-full space-y-3'>
                         <div className="flex items-center">
@@ -153,15 +184,10 @@ const Register = () => {
                         <div>
                             <button
                                 type='submit'
+                                disabled={formik.isSubmitting}
                                 className='w-full h-[50px] text-[14px] sm:text-[16px] rounded-[8px] bg-[#FFE9D6] text-[#FF9741] font-medium hover:bg-[#e3863a] hover:text-white transition-all duration-150'
                             >
-                                {isLoading ? (
-                                  
-                                      "Loading..."
-                                    
-                                ) : (
-                                    "Sign Up"
-                                )}
+                                {formik.isSubmitting ? "Loading..." : "Sign Up"}
                             </button>
                         </div>
                     </div>

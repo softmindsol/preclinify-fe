@@ -81,9 +81,14 @@ const Questioning = () => {
   const [localRecentSession, setLocalRecentSession] = useState([]);
   const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
   const [saqModule, setSAQModule] = useState([]);
-  const filteredModules = data.data.filter(module =>
+  const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filteredSAQModules = saqModule.filter(module =>
+    module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const [totals, setTotals] = useState({
     totalCorrect: 0,
     totalIncorrect: 0,
@@ -95,6 +100,9 @@ const Questioning = () => {
   const handleToggle = () => {
     setIsSortedByPresentation(prev => !prev);
   };
+
+  console.log("modules:",modules);
+  
 
   const handleTabChange = tab => {
     setSelectedTab(tab); // Update the selected tab
@@ -226,13 +234,16 @@ const Questioning = () => {
     }
   }, [limit, isSession]);
 
+  // SAB and
   useEffect(() => {
     if (type === 'SBA' || type === 'SAQ') {
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
-        .then(() => {
+        .then((res) => {
+    
+          
           setIsLoading(false);
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
         })
@@ -363,15 +374,24 @@ const Questioning = () => {
       } else if (selectedOption === 'Mock') {
         dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
         // Fetch IDs from mockTable
+
+console.log("Mock:");
+
         dispatch(fetchMockTest())
           .unwrap()
           .then(ids => {
+
+            console.log("Ids:",ids);
+            
             // Pass the fetched IDs to fetchModules
             dispatch(fetchModulesById({ ids }))
               .unwrap()
               .then(res => {
                 setIsLoading(false);
                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
+             
+             
+                
               })
               .catch(err => {
                 setIsLoading(false);
@@ -768,20 +788,29 @@ const Questioning = () => {
                     Select All
                   </div>
 
-                  <div className='flex items-center space-x-2 p-4'>
-                    <span className='text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]'>
-                      Sort By Presentation
-                    </span>
-                    <label className='relative inline-flex items-center cursor-pointer'>
-                      <input
-                        type='checkbox'
-                        className='sr-only peer '
-                        onChange={handleToggle}
-                      />
-                      <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
-                    </label>
-                  </div>
+                      {selectedOption !== 'SAQ' && (
+                        
+                        <div className='flex items-center space-x-2 p-4'>
+                       
+                          <span className='text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]'>
+                            Sort By Presentation
+                          </span>
+                          <label className='relative inline-flex items-center cursor-pointer'>
+                            <input
+                              type='checkbox'
+                              className='sr-only peer '
+                              onChange={handleToggle}
+                            />
+                            <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
+                          </label>
+                
+                        </div>
+                        
+                    
+                    )}
+                   
                 </div>
+                  
 
                 <div className='text-right flex items-center gap-x-5 dark:text-white text-[14px] 3xl:text-[16px]'>
                   <div className='hidden sm:block text-center'>Progress</div>
@@ -899,7 +928,7 @@ const Questioning = () => {
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
                   type === 'SBA' &&
-                  data.data?.map(row => {
+                    filteredSBAModules?.map(row => {
                     const totals = moduleTotals[row.categoryId] || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
@@ -964,7 +993,7 @@ const Questioning = () => {
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
                   type === 'SAQ' &&
-                  saqModule?.map(row => {
+                    filteredSAQModules?.map(row => {
                     const totals = moduleTotals[row.categoryId] || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
