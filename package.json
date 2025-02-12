@@ -11,6 +11,7 @@
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "deep-chat-react": "^2.0.1",
+    "formik": "^2.4.6",
     "fuse.js": "^7.0.0",
     "lucide-react": "^0.469.0",
     "mammoth": "^1.9.0",
@@ -33,7 +34,8 @@
     "slick-carousel": "^1.8.1",
     "sonner": "^1.7.1",
     "swiper": "^11.1.15",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.6.1"
   },
   "scripts": {
     "start": "react-scripts start",

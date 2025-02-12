@@ -51,8 +51,13 @@ export const fetchModules = createAsyncThunk(
                 .in('categoryId', moduleNames); // Ensure correct column name
 
             if (error) {
+                console.log("error:", error);
+                
                 return rejectWithValue(error.message);
             }
+
+            console.log("data:", data);
+            
 
             return data;
         } catch (error) {

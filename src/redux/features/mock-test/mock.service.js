@@ -7,16 +7,18 @@ export const fetchMockTest = createAsyncThunk(
         try {
             const { data, error } = await supabase
                 .from('mockTable')
-                .select('moduleId'); // Fetch only the 'id' column
+                .select('*'); // Fetch only the 'id' column
 
             // If there's an error in the response, reject it
             if (error) {
                 return rejectWithValue(error.message);
             }
 
+
             // Extract IDs from the data
             
             const ids = data.map(item => item.moduleId);
+console.log("ids:", ids);
 
             return ids; // Return the fetched IDs
         } catch (error) {

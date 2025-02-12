@@ -25,6 +25,8 @@ const Scenarios = () => {
   const [activeTab, setActiveTab] = useState('static');
   const categoryRef = useRef(null);
 
+
+  console.log("data", data);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,6 +36,7 @@ const Scenarios = () => {
         const osceData = await dispatch(fetchOSCEData()).unwrap();
         const moduleNames = osceData.map(item => item.module);
 
+        
         dispatch(fetchModules(moduleNames))
           .unwrap()
           .then(res => {
