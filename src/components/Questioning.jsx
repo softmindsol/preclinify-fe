@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from './common/Sidebar';
 import { TbBaselineDensityMedium } from 'react-icons/tb';
-
 import Drawer from 'react-modern-drawer';
-//import styles 👇
 import 'react-modern-drawer/dist/index.css';
 import { Link } from 'react-router-dom';
 import Logo from './common/Logo';
@@ -72,7 +70,7 @@ const Questioning = () => {
   const [moduleId, setModuleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('SBA');
   const [selectedPreClinicalOption, setSelectedPreClinicalOption] = useState('QuesGen');
   const [recentSessions, setRecentSessions] = useState([]);
   const [isSession, setIsSession] = useState(false);

@@ -17,8 +17,8 @@ import Score from './components/common/Score';
 import ShortQuestion from './components/ShortQuestion';
 import Scenarios from './components/Scenerio';
 import SceneriosDetail from './components/SceneriosDetail';
-import ProtectedRoute from './components/protectedRoute'; 
-import Performance from './pages/Performance';
+import ProtectedRoute from './components/protectedRoute';
+// import Performance from './pages/Performance';
 import ContactPage from './components/contact-us';
 import { useContext } from 'react';
 import ThemeContext from './lib/ThemeContext';
@@ -32,42 +32,112 @@ import CheckoutCancel from './pages/CheckoutCancel';
 import AINewVersion from './components/AI-bot-version';
 
 function App() {
-  const {theme} = useContext(ThemeContext);
-  
+  const { theme } = useContext(ThemeContext);
+
   return (
     <div className={`App`}>
       <Routes>
         {/* Public Routes */}
         <Route index element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Register />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<Register />} />
+        <Route path='/pricing' element={<Pricing />} />
+        <Route path='/forget-password' element={<ForgetPassword />} />
+        <Route path='/verify-email' element={<VerifyEmail />} />
 
         {/* Protected Routes */}
-        <Route path="/performance" element={<><Performance /></>} />
+        {/* <Route path="/performance" element={<><Performance /></>} /> */}
 
-        <Route path="/setting" element={<><Setting/></>} />
-        <Route path="/chat-history" element={<><ChatHistory /></>} />
-        <Route path="/dashboard" element={<><Dashboard /></>} />
-        <Route path="/questioning" element={<><Questioning /></>} />
-      
-        <Route path="/reset-password" element={<><ResetPassword /></>} />
-        <Route path="/question-card" element={<><QuestionCard /></>} />
-        <Route path="/score" element={<><Score /></>} />
-        <Route path="/short-question" element={<><ShortQuestion /></>} />
-        <Route path="/osce" element={<><Scenarios /></>} />
-        <Route path="/static-scenerios-detail/:id" element={<><SceneriosDetail /></>} />
-        <Route path='/contact-us' element={<ContactPage/>}/>
+        <Route
+          path='/setting'
+          element={
+            <>
+              <Setting />
+            </>
+          }
+        />
+        <Route
+          path='/chat-history'
+          element={
+            <>
+              <ChatHistory />
+            </>
+          }
+        />
+        <Route
+          path='/dashboard'
+          element={
+            <>
+              <Dashboard />
+            </>
+          }
+        />
+        <Route
+          path='/questioning'
+          element={
+            <>
+              <Questioning />
+            </>
+          }
+        />
+
+        <Route
+          path='/reset-password'
+          element={
+            <>
+              <ResetPassword />
+            </>
+          }
+        />
+        <Route
+          path='/question-card'
+          element={
+            <>
+              <QuestionCard />
+            </>
+          }
+        />
+        <Route
+          path='/score'
+          element={
+            <>
+              <Score />
+            </>
+          }
+        />
+        <Route
+          path='/short-question'
+          element={
+            <>
+              <ShortQuestion />
+            </>
+          }
+        />
+        <Route
+          path='/osce'
+          element={
+            <>
+              <Scenarios />
+            </>
+          }
+        />
+        <Route
+          path='/static-scenerios-detail/:id'
+          element={
+            <>
+              <SceneriosDetail />
+            </>
+          }
+        />
+        <Route path='/contact-us' element={<ContactPage />} />
         <Route path='/osce-ai-bot/:categoryName' element={<AINewVersion />} />
         <Route path='/question-generator' element={<QuestionGenerator />} />
         <Route path='/mock-test' element={<MockTestQuestion />} />
         <Route path='/personal-info' element={<PersonalInformation />} />
 
         {/* Checkout  */}
-        <Route path="/checkout-success" element={<CheckoutSuccess />} />
-        <Route path="/checkout-cancelled" element={<CheckoutCancel />} />
+        <Route path='/checkout-success' element={<CheckoutSuccess />} />
+        <Route path='/checkout-cancelled' element={<CheckoutCancel />} />
       </Routes>
     </div>
   );
