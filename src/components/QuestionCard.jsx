@@ -24,6 +24,7 @@ import FeedbackModal from './common/Feedback';
 import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.slice';
 import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
 import QuestionNavigator from './QuestionNavigator';
+import { insertResult } from '../redux/features/resultSBA/result.sba.service';
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -66,6 +67,7 @@ const QuestionCard = () => {
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const itemsPerPage = 10;
   const [article, setArticle] = useState({});
+  const userId=useSelector(state=>state.user.userId)  
   const isQuestionReview = useSelector(state => state?.questionReview?.value);
   // Get the items to show for the current page
   const currentItems = data.data.slice(
@@ -214,6 +216,9 @@ const QuestionCard = () => {
         data?.mcqsByModulesData[currentIndex].answersArray[data?.mcqsByModulesData[currentIndex].correctAnswerId];
       const isCorrect = selectedAnswer === correctAnswer;
 
+      
+      
+
       setAttempts(prev => {
         const updatedAttempts = [...prev];
         updatedAttempts[currentIndex] = isCorrect;
@@ -228,9 +233,14 @@ const QuestionCard = () => {
             });
         }
 
+        
+        dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });
+
+    
+      
 
       // Open the correct answer's accordion and selected if incorrect
       setIsAccordionOpen(prev => {
@@ -559,9 +569,7 @@ const QuestionCard = () => {
     }
   }, [review]);
 
-  useEffect(() => {
-    
-  })
+
 
   useEffect(() => {
     function handleClickOutside(event) {

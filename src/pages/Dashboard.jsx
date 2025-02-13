@@ -21,6 +21,7 @@ import SetupSessionModal from '../components/SetupSessionModal';
 import { setResetLimit } from '../redux/features/limit/limit.slice';
 import supabase from '../config/helper';
 import { fetchExamDate } from '../redux/features/exam-countdown/service';
+import { fetchUserId } from '../redux/features/user-id/userId.service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -185,7 +186,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(fetchExamDate('acb01928-efce-4f32-96df-ff179494f580'));
+
+    dispatch(fetchUserId())
   }, []);
+
+
+  
 
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>

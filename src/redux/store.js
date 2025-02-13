@@ -23,11 +23,13 @@ import visitedReducer from './features/flagged/visited.slice';
 import userAnswersReducer from './features/SAQ/userAnswer.slice';
 import presentationReducer from './features/sort-by-presentation/sort-by-presentation.slice';
 import examDatesReducer from './features/exam-countdown/slice';
+import userReducer from './features/user-id/userId.slice';
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: 'root',
   storage, // LocalStorage for modules and mcqsQuestion
   whitelist: [
+    "user",
     'presentations',
     'userAnswers',
     'visited',
@@ -77,6 +79,7 @@ const rootReducer = combineReducers({
   quesGen: quesGenInsertReducer,
   mockModules: mockModulesReducer,
   examDates: examDatesReducer,
+  user: userReducer,
   result: persistReducer(resultPersistConfig, resultReducer), // Apply persistReducer for result
 });
 
