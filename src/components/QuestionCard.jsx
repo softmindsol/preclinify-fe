@@ -24,7 +24,8 @@ import FeedbackModal from './common/Feedback';
 import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.slice';
 import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
 import QuestionNavigator from './QuestionNavigator';
-import { insertResult } from '../redux/features/resultSBA/result.sba.service';
+import { insertResult } from '../redux/features/all-results/result.sba.service';
+
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -171,39 +172,7 @@ const QuestionCard = () => {
     setIsAnswered(true);
   };
 
-  // const handleCheckAnswer = () => {
-  //     dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
-
-  //     if (selectedAnswer) {
-  //         setIsButtonClicked(true);
-  //         setIsAccordionVisible(true);
-  //         setBorder(false);
-
-  //         // Get the correct answer from answersArray using correctAnswerId
-  //         const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
-
-  //         // Check if the selected answer matches the correct answer
-  //         const isCorrect = selectedAnswer === correctAnswer;
-
-  //         // Update attempts
-  //         setAttempts((prev) => {
-  //             const updatedAttempts = [...prev];
-  //             updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
-  //             dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
-  //             dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
-  //             dispatch(setResult({ updatedAttempts }));
-  //             return updatedAttempts;
-  //         });
-
-  //         // Expand accordion for the correct answer
-  //         setIsAccordionOpen((prev) => {
-  //             const newAccordionState = [...prev];
-  //             newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
-  //             return newAccordionState;
-  //         });
-  //     }
-  // };
-
+ 
   const handleCheckAnswer = () => {
     dispatch(setActive(false));
 
@@ -233,7 +202,7 @@ const QuestionCard = () => {
             });
         }
 
-        
+         
         dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
