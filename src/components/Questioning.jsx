@@ -101,7 +101,6 @@ const [selectPresentation,setSelectPresentation]=useState([])
   );
 
 
-  console.log("selectPresentation:", selectPresentation);
 
 
 
@@ -173,8 +172,6 @@ const [selectPresentation,setSelectPresentation]=useState([])
       return combinedSession ? [combinedSession] : [];
     });
   };
-
-
 
 
   const handleCheckboxChangePresentation = presentationId => {
@@ -250,18 +247,11 @@ const [selectPresentation,setSelectPresentation]=useState([])
     }
   }, [limit, isSession]);
 
-
-
-  useEffect(()=>{
-    if(type==='SAQ'){
-      setIsSortedByPresentation(false)
-    }
-    
-  },[type])
   // SAB and
   useEffect(() => {
     if (type === 'SBA') {
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
+      setIsSortedByPresentation(false)
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
@@ -277,6 +267,8 @@ const [selectPresentation,setSelectPresentation]=useState([])
           setIsLoading(false);
         });
     } else if (type === 'SAQ') {
+      setIsSortedByPresentation(false)
+
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
@@ -290,6 +282,8 @@ const [selectPresentation,setSelectPresentation]=useState([])
           setIsLoading(false);
         });
     } else if (type === 'QuesGen') {
+      setIsSortedByPresentation(false)
+
       dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
@@ -303,6 +297,8 @@ const [selectPresentation,setSelectPresentation]=useState([])
           setIsLoading(false);
         });
     } else if (type === 'Mock') {
+      setIsSortedByPresentation(false)
+
       dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
@@ -448,23 +444,7 @@ const [selectPresentation,setSelectPresentation]=useState([])
           .catch(err => {
             dispatch(setLoading({ key: 'modules/fetchMockTestById', value: false }));
           });
-      } else if (isSortedByPresentation) {
-        dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
-        dispatch(
-          fetchMcqsByPresentationId({ moduleIds: selectedModules, totalLimit: limit })
-        )
-          .unwrap()
-          .then(() => {
-            dispatch(
-              setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
-            );
-          })
-          .catch(err => {
-            dispatch(
-              setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
-            );
-          });
-      }
+      } 
     }
   }, [selectedModules, limit, selectedOption, selectedTab]);
 
@@ -520,23 +500,63 @@ const [selectPresentation,setSelectPresentation]=useState([])
     }
   }, [recentSessions]);
   // Effect to retrieve recent sessions from localStorage
+// else if (isSortedByPresentation) {
+//   dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
+//   dispatch(
+//     fetchMcqsByPresentationId({ moduleIds: selectedModules, totalLimit: limit })
+//   )
+//     .unwrap()
+//     .then(() => {
+//       dispatch(
+//         setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+//       );
+//     })
+//     .catch(err => {
+//       dispatch(
+//         setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+//       );
+//     });
+// }
+
+
+  // sort By presentation
+  useEffect(() => {
+    if (isSortedByPresentation) {
+      dispatch(setLoading({ key: 'modules/fetchPresentation', value: true }));
+
+      dispatch(fetchPresentation())
+        .unwrap()
+        .then(res => {
+          dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
+        })
+        .catch(err => {
+          dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
+        });
+    }
+  }, [isSortedByPresentation]);
 
   // sort By presentation
   useEffect(() => {
     if (isSortedByPresentation) {
       dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
-      console.log("selectPresentation:", selectPresentation);
+      console.log("inside fetchMcqsByPresentationId", );
 
-      dispatch(fetchMcqsByPresentationId({ moduleIds: selectPresentation, totalLimit: limit }))
+      dispatch(
+        fetchMcqsByPresentationId({ presentationIds: selectPresentation, totalLimit: limit })
+      )
         .unwrap()
-        .then(res => {        
-          dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false }));
+        .then(() => {
+          dispatch(
+            setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+          );
         })
         .catch(err => {
-          dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false }));
+          dispatch(
+            setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+          );
         });
     }
-  }, [isSortedByPresentation, selectPresentation]);
+  }, [isSortedByPresentation, selectPresentation, limit]);
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -676,6 +696,7 @@ const [selectPresentation,setSelectPresentation]=useState([])
   }, [state]);
 
 
+  console.log("sortByPresentation:", isSortedByPresentation);
 
   return (
     <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
@@ -802,7 +823,7 @@ const [selectPresentation,setSelectPresentation]=useState([])
                   {/* Continue Button */}
                   <button
                     onClick={handleContinue}
-                    disabled={selectedModules.length === 0} // Disable the button if no modules are selected
+                    disabled={selectPresentation.length &&  selectedModules.length === 0} // Disable the button if no modules are selected
                     className={`bg-[#3CC8A1] ${selectedModules.length === 0
                         ? 'opacity-50 cursor-not-allowed'
                         : 'hover:bg-transparent hover:text-[#3CC8A1]'
