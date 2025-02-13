@@ -10,7 +10,10 @@ import SetupSessionModal from './SetupSessionModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchModules } from '../redux/features/categoryModules/module.service';
 import { setLoading } from '../redux/features/loader/loader.slice';
-import { fetchMcqsByModules, fetchTotalSBAQuestion } from '../redux/features/SBA/sba.service';
+import {
+  fetchMcqsByModules,
+  fetchTotalSBAQuestion,
+} from '../redux/features/SBA/sba.service';
 import { clearResult } from '../redux/features/result/result.slice';
 import { setResetLimit } from '../redux/features/limit/limit.slice';
 import Loader from './common/Loader';
@@ -83,7 +86,7 @@ const Questioning = () => {
   const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
   const [saqModule, setSAQModule] = useState([]);
   const SBADataLength = useSelector(state => state?.mcqsQuestion?.mcqsByModulesData);
-  
+
   const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -102,15 +105,25 @@ const Questioning = () => {
   const presentations = useSelector(state => state.presentations.presentations);
   const handleToggle = () => {
     setIsSortedByPresentation(prev => !prev);
-  };  
-
-  const handleTabChange = tab => {
-    setSelectedTab(tab); // Update the selected tab
   };
 
-  // Handler to update the selected option
+  const cleanedPresentations = presentations?.map(presentation => ({
+    ...presentation,
+    presentationName: presentation.presentationName.replace(/'/g, ''),
+  }));
+
+  const filterPresentations = searchTerm => {
+    return cleanedPresentations.filter(presentation =>
+      presentation.presentationName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const handleTabChange = tab => {
+    setSelectedTab(tab);
+  };
+
   const handleSelectChange = event => {
-    setSelectedOption(event.target.value); // Update state with the selected value
+    setSelectedOption(event.target.value);
   };
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -120,7 +133,6 @@ const Questioning = () => {
     const selectedModule = data.data.find(module => module.categoryId === categoryId); // Find the selected module
     const moduleName = selectedModule ? selectedModule.categoryName : ''; // Get the module name
 
-    // Toggle the selected module
     setSelectedModules(
       prev =>
         prev.includes(categoryId)
@@ -129,7 +141,6 @@ const Questioning = () => {
     );
 
     setRecentSessions(prev => {
-      // Find all currently selected modules
       const selectedModuleNames = data.data
         .filter(
           module =>
@@ -168,61 +179,14 @@ const Questioning = () => {
   };
 
   function handleContinue() {
-    setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+    setIsOpenSetUpSessionModal(true);
   }
-
-  // it can be use later
-
-  // function handleSessionContinue(sessionId) {
-  //     // Open the setup session modal
-  //     setIsOpenSetUpSessionModal(true); // Set to true to open the modal
-
-  //     // Find the selected modules based on the sessionId
-
-  //     // No need to split, just trim the sessionId if necessary
-  //     const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
-
-  //     // Make an API call based on the selected module IDs
-  //     if (flatModuleIds.length > 0 && !isLoading) { // Check if not already loading
-  //         setIsLoading(true); // Set loading state to true
-  //         dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: true }));
-  //         dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
-  //             .unwrap()
-  //             .then(() => {
-  //                 console.log("Limit:", limit);
-
-  //                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-  //                 console.log("Fetched questions for modules:", flatModuleIds);
-  //             })
-  //             .catch((err) => {
-  //                 dispatch(setLoading({ key: 'modules/fetchMcqsByModule', value: false }));
-  //                 console.error("Error fetching questions:", err);
-  //             })
-  //             .finally(() => {
-  //                 setIsLoading(false); // Reset loading state after API call
-  //             });
-  //     } else {
-  //         console.log("No modules selected for this session or already loading.");
-  //     }
-  // }
-
-  // fetch Modules
-
-
-  
-  
 
   useEffect(() => {
     const handleSessionContinue = async sessionId => {
-      // Open the setup session modal
       setIsOpenSetUpSessionModal(true); // Set to true to open the modal
-      // Find the selected modules based on the sessionId
 
-      // No need to split, just trim the sessionId if necessary
       const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
-
-      // Make an API call based on the selected module IDs
-
       dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
         .unwrap()
         .then(res => {})
@@ -245,39 +209,32 @@ const Questioning = () => {
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
-        .then((res) => {
+        .then(res => {
           setIsLoading(false);
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
-        
-          dispatch(fetchTotalSBAQuestion({ids:res}))
-          .unwrap()
-          .then(res=>{
-            
-          })
-          
+
+          dispatch(fetchTotalSBAQuestion({ ids: res }))
+            .unwrap()
+            .then(res => {});
         })
         .catch(err => {
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
           setIsLoading(false);
         });
-    } 
-    else if (type === 'SAQ') {
+    } else if (type === 'SAQ') {
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
-        .then((res) => {
+        .then(res => {
           setIsLoading(false);
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
-         
-
         })
         .catch(err => {
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
           setIsLoading(false);
         });
-    } 
-    else if (type === 'QuesGen') {
+    } else if (type === 'QuesGen') {
       dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
@@ -295,7 +252,7 @@ const Questioning = () => {
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
-        .then((res) => {
+        .then(res => {
           setIsLoading(false);
           dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
         })
@@ -318,14 +275,11 @@ const Questioning = () => {
     dispatch(setActive(true));
   }, [type]);
 
-
   useEffect(() => {
     dispatch(setPreclinicalType({ selectedOption }));
 
     if (selectedTab === 'Clinical') {
       if (selectedOption === 'SBA') {
-
-
         dispatch(setLoading({ key: 'modules/fetchMcqsByModules', value: true }));
         dispatch(fetchMcqsByModules({ moduleIds: selectedModules, totalLimit: limit }))
           .unwrap()
@@ -347,7 +301,6 @@ const Questioning = () => {
               setLoading({ key: 'modules/fetchShortQuestionByModules', value: false })
             );
 
-          
             dispatch(fetchModulesById({ ids: res.ids }))
               .unwrap()
               .then(res => {
@@ -402,10 +355,10 @@ const Questioning = () => {
             );
           });
       } else if (selectedOption === 'Mock') {
-        dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }))
+        dispatch(setLoading({ key: 'modules/fetchMockTest', value: true }));
         dispatch(fetchMockTest())
           .unwrap()
-          .then(ids => {            
+          .then(ids => {
             // Pass the fetched IDs to fetchModules
             dispatch(fetchModulesById({ ids }))
               .unwrap()
@@ -416,10 +369,8 @@ const Questioning = () => {
                 dispatch(fetchTotalSBAQuestion({ ids: res }))
                   .unwrap()
                   .then(res => {
-                    dispatch(fetchTotalMockQuestion({ ids: res }))
-                      .unwrap()
-                  })
-            
+                    dispatch(fetchTotalMockQuestion({ ids: res })).unwrap();
+                  });
               })
               .catch(err => {
                 setIsLoading(false);
@@ -527,15 +478,6 @@ const Questioning = () => {
         });
     }
   }, [isSortedByPresentation]);
-
-  console.log('presentations:', presentations);
-
-  // const sortedModules = isSortedByPresentation
-  //     ? [
-  //         ...filteredModules.filter(module => selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)), // Sort selected modules alphabetically
-  //         ...filteredModules.filter(module => !selectedModules.includes(module.categoryId)).sort((a, b) => a.categoryName.localeCompare(b.categoryName)) // Sort unselected modules alphabetically
-  //     ]
-  //     : filteredModules;
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -816,29 +758,22 @@ const Questioning = () => {
                     Select All
                   </div>
 
-                      {selectedOption !== 'SAQ' && (
-                        
-                        <div className='flex items-center space-x-2 p-4'>
-                       
-                          <span className='text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]'>
-                            Sort By Presentation
-                          </span>
-                          <label className='relative inline-flex items-center cursor-pointer'>
-                            <input
-                              type='checkbox'
-                              className='sr-only peer '
-                              onChange={handleToggle}
-                            />
-                            <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
-                          </label>
-                
-                        </div>
-                        
-                    
-                    )}
-                   
+                  {selectedOption !== 'SAQ' && (
+                    <div className='flex items-center space-x-2 p-4'>
+                      <span className='text-[#3F3F46] flex items-center font-medium dark:text-white text-[14px] 3xl:text-[16px]'>
+                        Sort By Presentation
+                      </span>
+                      <label className='relative inline-flex items-center cursor-pointer'>
+                        <input
+                          type='checkbox'
+                          className='sr-only peer '
+                          onChange={handleToggle}
+                        />
+                        <div className="w-10 h-6 2xl:w-11 2xl:h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3CC8A1]"></div>
+                      </label>
+                    </div>
+                  )}
                 </div>
-                  
 
                 <div className='text-right flex items-center gap-x-5 dark:text-white text-[14px] 3xl:text-[16px]'>
                   <div className='hidden sm:block text-center'>Progress</div>
@@ -891,7 +826,7 @@ const Questioning = () => {
 
                 {selectedTab === 'Clinical' &&
                   isSortedByPresentation &&
-                  presentations?.map((row, id) => {
+                  filterPresentations(searchQuery)?.map((row, id) => {
                     const totals = moduleTotals[row.categoryId] || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
@@ -953,48 +888,55 @@ const Questioning = () => {
                     );
                   })}
 
-                  {selectedTab === 'Clinical' &&
-                    !isSortedByPresentation &&
-                    type === 'SBA' &&
-                    filteredSBAModules?.map(row => {
-                      const moduleData = SBADataLength?.find(module => module.categoryId === row.categoryId);
-                      const totalQuestions = moduleData ? moduleData.questions.length : 0;
+                {selectedTab === 'Clinical' &&
+                  !isSortedByPresentation &&
+                  type === 'SBA' &&
+                  filteredSBAModules?.map(row => {
+                    const moduleData = SBADataLength?.find(
+                      module => module.categoryId === row.categoryId
+                    );
+                    const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
-                      const totals = moduleTotals[row.categoryId] || {
-                        totalCorrect: 0,
-                        totalIncorrect: 0,
-                        totalUnanswered: 0,
-                      };
-                      const correctWidth = 0;
-                      const incorrectWidth = 0;
-                      const unansweredWidth = totalQuestions > 0 ? 100 : 0;
+                    const totals = moduleTotals[row.categoryId] || {
+                      totalCorrect: 0,
+                      totalIncorrect: 0,
+                      totalUnanswered: 0,
+                    };
+                    const correctWidth = 0;
+                    const incorrectWidth = 0;
+                    const unansweredWidth = totalQuestions > 0 ? 100 : 0;
 
-                      return (
-                        <div key={row.categoryId} className='grid md:grid-cols-2 items-center py-3'>
-                          <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
-                            <label className='flex items-center cursor-pointer hover:opacity-85'>
-                              <input
-                                type='checkbox'
-                                className='mr-2 custom-checkbox hover:opacity-70'
-                                checked={selectedModules.includes(row.categoryId)}
-                                onChange={() => handleCheckboxChange(row.categoryId)}
-                              />
-                              {row.categoryName} 
-                            </label>
-                          </div>
-
-                          <div className='flex items-center justify-center space-x-1'>
-                            <div className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md' style={{ width: `${unansweredWidth}%` }}></div>
-                          </div>
+                    return (
+                      <div
+                        key={row.categoryId}
+                        className='grid md:grid-cols-2 items-center py-3'
+                      >
+                        <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
+                          <label className='flex items-center cursor-pointer hover:opacity-85'>
+                            <input
+                              type='checkbox'
+                              className='mr-2 custom-checkbox hover:opacity-70'
+                              checked={selectedModules.includes(row.categoryId)}
+                              onChange={() => handleCheckboxChange(row.categoryId)}
+                            />
+                            {row.categoryName}
+                          </label>
                         </div>
-                      );
-                    })
-                  }
+
+                        <div className='flex items-center justify-center space-x-1'>
+                          <div
+                            className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md'
+                            style={{ width: `${unansweredWidth}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  })}
 
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
                   type === 'SAQ' &&
-                    filteredSAQModules?.map(row => {
+                  filteredSAQModules?.map(row => {
                     const totals = moduleTotals[row.categoryId] || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
@@ -1059,7 +1001,9 @@ const Questioning = () => {
                   !isSortedByPresentation &&
                   type === 'Mock' &&
                   modules?.map(row => {
-                    const moduleData = mockMcqsByModulesData?.find(module => module.categoryId === row.categoryId);
+                    const moduleData = mockMcqsByModulesData?.find(
+                      module => module.categoryId === row.categoryId
+                    );
                     const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
                     const totals = moduleTotals[row.categoryId] || {
