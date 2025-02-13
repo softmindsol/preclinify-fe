@@ -88,7 +88,7 @@ const Questioning = () => {
   const SBADataLength = useSelector(state => state?.mcqsQuestion?.mcqsByModulesData);
   const userId = useSelector(state => state.user.userId)
 
-
+const [selectPresentation,setSelectPresentation]=useState([])
   const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -99,6 +99,11 @@ const Questioning = () => {
   const filteredSAQModules = saqModule.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+
+  console.log("selectPresentation:", selectPresentation);
+
+
 
   const [totals, setTotals] = useState({
     totalCorrect: 0,
@@ -163,6 +168,41 @@ const Questioning = () => {
         .map(module => module.categoryName);
       // Combine module names into a single string
       const combinedSession = selectedModuleNames.join(', ');
+
+      // Update recent sessions: keep only the last entry if a new combination is made
+      return combinedSession ? [combinedSession] : [];
+    });
+  };
+
+
+  const handleCheckboxChangePresentation = presentationId => {
+    const selectedModule = presentations.find(module => module.presentationId === presentationId); // Find the selected module
+    const moduleName = selectedModule ? selectedModule.presentationName : ''; // Get the module name
+
+    setSelectPresentation(
+      prev =>
+        prev.includes(presentationId)
+          ? prev.filter(id => id !== presentationId) // Remove if already selected
+          : [...prev, presentationId] // Add if not selected
+    );
+
+    setRecentSessions(prev => {
+      const selectedPresentationNames = presentations
+        .filter(
+          module =>
+            selectPresentation.includes(module.presentationId) ||
+            module.presentationId === presentationId
+        )
+        .map(module => module.presentationId);
+      const selectedModuleName = presentations
+        .filter(
+          module =>
+            selectedModules.includes(module.presentationId) ||
+            module.presentationId === presentationId
+        )
+        .map(module => module.presentationName);
+      // Combine module names into a single string
+      const combinedSession = selectedPresentationNames.join(', ');
 
       // Update recent sessions: keep only the last entry if a new combination is made
       return combinedSession ? [combinedSession] : [];
@@ -302,7 +342,7 @@ const Questioning = () => {
         )
           .unwrap()
           .then(res => {
-            console.log("first SBA")
+         
             dispatch(
               setLoading({ key: 'modules/fetchShortQuestionByModules', value: false })
             );
@@ -310,7 +350,7 @@ const Questioning = () => {
             dispatch(fetchModulesById({ ids: res.ids }))
               .unwrap()
               .then(res => {
-                console.log("second SBA")
+              
                 setIsLoading(false);
                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
 
@@ -475,9 +515,10 @@ const Questioning = () => {
   useEffect(() => {
     if (isSortedByPresentation) {
       dispatch(setLoading({ key: 'modules/fetchPresentation', value: true }));
+
       dispatch(fetchPresentation({ moduleIds: selectedModules, totalLimit: limit }))
         .unwrap()
-        .then(res => {
+        .then(res => {        
           dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
         })
         .catch(err => {
@@ -501,9 +542,6 @@ const Questioning = () => {
         const { data, error } = await query;
 
         if (error) throw error;
-
-        console.log("Inside resultHistory:", data);
-
         // Compute totals
         const totalsByModule = data.reduce((acc, curr) => {
           const { moduleId, isCorrect } = curr;
@@ -520,9 +558,6 @@ const Questioning = () => {
 
           return acc;
         }, {});
-
-        console.log("Totals by module:", totalsByModule);
-
         setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
       } catch (err) {
         console.error('Error fetching daily work:', err);
@@ -549,8 +584,6 @@ const Questioning = () => {
 
         if (error) throw error;
 
-        console.log("Inside :", data);
-
         // Compute totals
         const totalsByModule = data.reduce((acc, curr) => {
           const { moduleId, isCorrect } = curr;
@@ -567,9 +600,6 @@ const Questioning = () => {
 
           return acc;
         }, {});
-
-        console.log("Totals by module:", totalsByModule);
-
         setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
       } catch (err) {
         console.error('Error fetching daily work:', err);
@@ -613,9 +643,6 @@ const Questioning = () => {
 
           return acc;
         }, {});
-
-        console.log("Totals by module:", totalsByModule);
-
         setMockModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
       } catch (err) {
         console.error('Error fetching daily work:', err);
@@ -638,7 +665,7 @@ const Questioning = () => {
   }, [state]);
 
 
-  console.log("selectedModules:", selectedModules);
+  console.log("sortByPresentation:", isSortedByPresentation);
 
   return (
     <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
@@ -968,8 +995,8 @@ const Questioning = () => {
                             <input
                               type='checkbox'
                               className='mr-2 custom-checkbox hover:opacity-70'
-                              checked={selectedModules.includes(row.presentationId)}
-                              onChange={() => handleCheckboxChange(row.presentationId)}
+                              checked={selectPresentation.includes(row.presentationId)}
+                              onChange={() => handleCheckboxChangePresentation(row.presentationId)}
                             />
                             {row.presentationName}
                           </label>
@@ -1133,19 +1160,25 @@ const Questioning = () => {
                   !isSortedByPresentation &&
                   type === 'Mock' &&
                   filteredMockModules?.map(row => {
+                    
                     const moduleData = mockMcqsByModulesData?.find(
                       module => module.categoryId === row.categoryId
                     );
                     const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
-                    const totals = moduleTotals[row.categoryId] || {
-                      totalCorrect: 0,
-                      totalIncorrect: 0,
-                      totalUnanswered: 0,
-                    };
-                    const correctWidth = 0;
-                    const incorrectWidth = 0;
-                    const unansweredWidth = totalQuestions > 0 ? 100 : 0;
+                    // Ensure moduleTotals is always an array
+                    const moduleTotalsArray = Array.isArray(mockModuleTotals) ? mockModuleTotals : Object.values(mockModuleTotals || {});
+
+                    // Get the totals for correct and incorrect answers
+                    const moduleTotal = moduleTotalsArray.find(m => String(m.moduleId) === String(row.categoryId)) || { totalCorrect: 0, totalIncorrect: 0 };
+
+
+
+                    const { totalCorrect, totalIncorrect } = moduleTotal;
+
+                    // Calculate percentage for progress bar
+                    const correctPercentage = totalQuestions ? (totalCorrect / totalQuestions) * 100 : 0;
+                    const incorrectPercentage = totalQuestions ? (totalIncorrect / totalQuestions) * 100 : 0;
 
                     return (
                       <div
@@ -1163,22 +1196,29 @@ const Questioning = () => {
                             {row.categoryName}
                           </label>
                         </div>
+                        {/* Progress Bar and Total Questions */}
+                        <div className="flex items-center justify-center space-x-2 w-full">
+                          {/* Progress Bar */}
+                          <div className=" flex   w-full h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md overflow-hidden">
+                            {/* Green Section (Correct Answers) */}
+                            <span
+                              className=" bg-[#3CC8A1] text-white text-xs flex items-center justify-center"
+                              style={{ width: `${correctPercentage}%` }}
+                            >
+                              {totalCorrect > 0 && <span>{totalCorrect}</span>}
+                            </span>
 
-                        <div className='flex items-center justify-center space-x-1'>
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md'
-                            style={{ width: `${correctWidth}%` }}
-                          ></div>
+                            {/* Red Section (Incorrect Answers) */}
+                            <span
+                              className=" bg-[#FF453A] text-white text-xs flex items-center justify-center"
+                              style={{ width: `${incorrectPercentage}%` }}
+                            >
+                              {totalIncorrect > 0 && <span>{totalIncorrect}</span>}
+                            </span>
+                          </div>
 
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#FF453A]'
-                            style={{ width: `${incorrectWidth}%` }}
-                          ></div>
-
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md'
-                            style={{ width: `${unansweredWidth}%` }}
-                          ></div>
+                          {/* Total Questions */}
+                          <span className="text-gray-700 dark:text-white text-sm">{totalQuestions}</span>
                         </div>
                       </div>
                     );

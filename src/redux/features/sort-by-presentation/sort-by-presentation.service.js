@@ -14,6 +14,9 @@ export const fetchPresentation = createAsyncThunk(
                 return rejectWithValue(error.message);
             }
 
+            console.log("data:", data);
+            
+
             return data; // Return the fetched data
         } catch (error) {
             return rejectWithValue(error.message);
