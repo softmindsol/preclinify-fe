@@ -90,6 +90,9 @@ const Questioning = () => {
   const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const filteredMockModules = modules.filter(module =>
+    module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const filteredSAQModules = saqModule.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -1000,7 +1003,7 @@ const Questioning = () => {
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
                   type === 'Mock' &&
-                  modules?.map(row => {
+                  filteredMockModules?.map(row => {
                     const moduleData = mockMcqsByModulesData?.find(
                       module => module.categoryId === row.categoryId
                     );

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchExamDate, insertExamDate } from './service';
+import { upsertUserRecord } from './service';
 
 const initialState = {
   examDates: [],
@@ -7,38 +7,28 @@ const initialState = {
   error: null,
 };
 
-const examDateSlice = createSlice({
+const examDatesSlice = createSlice({
   name: 'examDates',
-  initialState,
+  initialState: {
+    record: null,
+    status: 'idle',
+    error: null,
+  },
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(fetchExamDate.pending, state => {
-        state.loading = true;
+      .addCase(upsertUserRecord.pending, state => {
+        state.status = 'loading';
         state.error = null;
       })
-      .addCase(fetchExamDate.fulfilled, (state, action) => {
-        state.loading = false;
-        state.examDates = action.payload;
+      .addCase(upsertUserRecord.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.record = action.payload;
       })
-      .addCase(fetchExamDate.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      .addCase(insertExamDate.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(insertExamDate.fulfilled, (state, action) => {
-        state.loading = false;
-        state.examDates.push(action.payload);
-      })
-      .addCase(insertExamDate.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(upsertUserRecord.rejected, (state, action) => {
+        state.status = 'failed';
         state.error = action.payload;
       });
   },
 });
-
-export default examDateSlice.reducer;
+export default examDatesSlice.reducer;
