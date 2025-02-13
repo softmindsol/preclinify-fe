@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from './common/Sidebar';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Logo from './common/Logo';
 import { RxCross2 } from 'react-icons/rx';
 import Drawer from 'react-modern-drawer';
@@ -13,7 +13,7 @@ import {
 } from '../redux/features/osce-static/osce-static.service';
 
 const Scenarios = () => {
-  const { data = [], loading, error } = useSelector(state => state.osce);
+  const { data = [], loading } = useSelector(state => state.osce);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [sortAscending, setSortAscending] = useState(true);
@@ -25,8 +25,7 @@ const Scenarios = () => {
   const [activeTab, setActiveTab] = useState('static');
   const categoryRef = useRef(null);
 
-
-  console.log("data", data);
+  console.log('data', data);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,7 +35,6 @@ const Scenarios = () => {
         const osceData = await dispatch(fetchOSCEData()).unwrap();
         const moduleNames = osceData.map(item => item.module);
 
-        
         dispatch(fetchModules(moduleNames))
           .unwrap()
           .then(res => {
@@ -82,15 +80,38 @@ const Scenarios = () => {
   };
 
   const filteredData = sortedData.filter(osce => {
-    const matchesCategory = selectedCategory ? osce.category === selectedCategory : true;
+    const lowerCaseCategory = osce.category.toLowerCase();
+    const lowerCaseStationName = osce.stationName.toLowerCase();
+    const lowerCaseId = osce.id.toString();
+
+    const matchedCategory = module.find(mod => mod.categoryId === osce.module);
+    const categoryName = matchedCategory ? matchedCategory.categoryName : '';
+    const lowerCaseCategoryName = categoryName.toLowerCase();
+
+    const matchesCategory = selectedCategory
+      ? lowerCaseCategory === selectedCategory.toLowerCase()
+      : true;
+
     const matchesFilters =
       activeFilters.length === 0 ||
-      activeFilters.some(
-        filter =>
-          osce.category.toLowerCase().includes(filter.toLowerCase()) ||
-          osce.stationName.toLowerCase().includes(filter.toLowerCase())
-      );
-    return matchesCategory && matchesFilters;
+      activeFilters.some(filter => {
+        const lowerCaseFilter = filter.toLowerCase();
+        return (
+          lowerCaseCategory.includes(lowerCaseFilter) ||
+          lowerCaseStationName.includes(lowerCaseFilter) ||
+          lowerCaseId.includes(lowerCaseFilter) ||
+          lowerCaseCategoryName.includes(lowerCaseFilter)
+        );
+      });
+
+    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+    const matchesSearchQuery =
+      lowerCaseCategory.includes(lowerCaseSearchQuery) ||
+      lowerCaseStationName.includes(lowerCaseSearchQuery) ||
+      lowerCaseId.includes(lowerCaseSearchQuery) ||
+      lowerCaseCategoryName.includes(lowerCaseSearchQuery);
+
+    return matchesCategory && matchesFilters && matchesSearchQuery;
   });
 
   return (
@@ -255,17 +276,9 @@ const Scenarios = () => {
               </div>
 
               <div className='flex flex-col xl:flex-row items-center gap-5 justify-around mt-10'>
-                <div className='flex items-center justify-end w-[73%] gap-x-5'>
-                  <div className='relative'>
-                    <input
-                      type='text'
-                      placeholder='Search for specialties, topics and symptoms'
-                      className='py-2 px-4 text-[14px] text-black bg-[#F4F4F5] w-[347px] h-[45px] placeholder:text-[12px]'
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                    />
-                    <button className='absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-400'>
+                <div className='flex items-center justify-end gap-x-5 w-full'>
+                  <div className='bg-[#F4F4F5] text-black flex gap-2 items-center px-5 w-full max-w-[347px]  h-[45px]'>
+                    <button className='text-gray-400'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         fill='none'
@@ -281,6 +294,14 @@ const Scenarios = () => {
                         />
                       </svg>
                     </button>
+                    <input
+                      type='text'
+                      placeholder='Search for specialties, topics and symptoms'
+                      className='sm:text-sm text-[9px] font-semibold bg-transparent focus:outline-none w-full'
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                    />
                   </div>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -343,58 +364,64 @@ const Scenarios = () => {
               </div>
               <div className='flex flex-col items-center justify-center mt-10 w-full '>
                 <div className='grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10 w-full'>
-                  {loading
-                    ? Array.from({ length: 10 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className='p-4 bg-[#F4F4F5] rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border w-full dark:border-[#3A3A48] animate-pulse'
-                        >
-                          <div className='h-5 w-20 bg-gray-300 dark:bg-gray-600 rounded mb-3 mx-auto'></div>
-                          <div className='h-6 w-3/4 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-2'></div>
-                          <div className='h-5 w-1/2 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-4'></div>
-                          <div className='h-10 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto'></div>
-                        </div>
-                      ))
-                    : filteredData.map((osce, i) => {
-                        const matchedCategory = module.find(
-                          mod => mod.categoryId === osce.module
-                        );
-                        const categoryName = matchedCategory
-                          ? matchedCategory.categoryName
-                          : 'Fetching...';
+                  {loading ? (
+                    [...Array(10)].map((_, i) => (
+                      <div
+                        key={i}
+                        className='p-4 bg-[#F4F4F5] rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border w-full dark:border-[#3A3A48] animate-pulse'
+                      >
+                        <div className='h-5 w-20 bg-gray-300 dark:bg-gray-600 rounded mb-3 mx-auto'></div>
+                        <div className='h-6 w-3/4 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-2'></div>
+                        <div className='h-5 w-1/2 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-4'></div>
+                        <div className='h-10 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto'></div>
+                      </div>
+                    ))
+                  ) : filteredData.length > 0 ? (
+                    filteredData.map(osce => {
+                      const matchedCategory = module.find(
+                        mod => mod.categoryId === osce.module
+                      );
+                      const categoryName = matchedCategory
+                        ? matchedCategory.categoryName
+                        : 'Fetching...';
 
-                        return (
-                          <div
-                            key={osce.id}
-                            className='p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border dark:border-[#3A3A48]'
+                      return (
+                        <div
+                          key={osce.id}
+                          className='p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border dark:border-[#3A3A48]'
+                        >
+                          <Link
+                            to={
+                              activeTab === 'static'
+                                ? `/static-scenerios-detail/${osce.id}`
+                                : `/osce-ai-bot/${categoryName.replace(/\s+/g, '-')}`
+                            }
                           >
-                            <Link
-                              to={
-                                activeTab === 'static'
-                                  ? `/static-scenerios-detail/${osce.id}`
-                                  : `/ai-patient-scenarios-detail/${osce.id}`
-                              }
-                            >
-                              <div className='flex flex-col h-full justify-between'>
-                                <div>
-                                  <p className='absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px] dark:text-white'>
-                                    {osce.category}
-                                  </p>
-                                  <div className='text-[20px] text-[#3F3F46] mt-3 font-bold dark:text-white'>
-                                    {categoryName}
-                                  </div>
-                                  <div className='text-[16px] text-[#A1A1AA] font-semibold dark:text-white'>
-                                    {osce.stationName}
-                                  </div>
+                            <div className='flex flex-col h-full justify-between'>
+                              <div>
+                                <p className='absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px] dark:text-white'>
+                                  {osce.category}
+                                </p>
+                                <div className='text-[20px] text-[#3F3F46] mt-3 font-bold dark:text-white'>
+                                  {categoryName}
                                 </div>
-                                <div className='text-[48px] text-[#52525B] font-bold dark:text-white'>
-                                  #{osce.id}
+                                <div className='text-[16px] text-[#A1A1AA] font-semibold dark:text-white'>
+                                  {osce.stationName}
                                 </div>
                               </div>
-                            </Link>
-                          </div>
-                        );
-                      })}
+                              <div className='text-[48px] text-[#52525B] font-bold dark:text-white'>
+                                #{osce.id}
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className='col-span-full text-center text-gray-500 dark:text-gray-300'>
+                      No records found
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -513,17 +540,9 @@ const Scenarios = () => {
                 </div>
 
                 <div className='flex flex-col xl:flex-row items-center gap-5 justify-around mt-10'>
-                  <div className='flex items-center justify-end w-[73%] gap-x-5'>
-                    <div className='relative'>
-                      <input
-                        type='text'
-                        placeholder='Search for specialties, topics and symptoms'
-                        className='py-2 px-4 text-[14px] text-black bg-[#F4F4F5] w-[347px] h-[45px] placeholder:text-[12px]'
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                      />
-                      <button className='absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-400'>
+                  <div className='flex items-center justify-end gap-x-5 w-full'>
+                    <div className='bg-[#F4F4F5] text-black flex gap-2 items-center px-5 w-full max-w-[347px]  h-[45px]'>
+                      <button className='text-gray-400'>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           fill='none'
@@ -539,6 +558,14 @@ const Scenarios = () => {
                           />
                         </svg>
                       </button>
+                      <input
+                        type='text'
+                        placeholder='Search for specialties, topics and symptoms'
+                        className='sm:text-sm text-[9px] font-semibold bg-transparent focus:outline-none w-full'
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                      />
                     </div>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -601,58 +628,64 @@ const Scenarios = () => {
                 </div>
                 <div className='flex flex-col items-center justify-center mt-10'>
                   <div className='grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-10 w-full'>
-                    {loading
-                      ? [...Array(10)].map((_, i) => (
-                          <div
-                            key={i}
-                            className='p-4 bg-[#F4F4F5] rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border w-full dark:border-[#3A3A48] animate-pulse'
-                          >
-                            <div className='h-5 w-20 bg-gray-300 dark:bg-gray-600 rounded mb-3 mx-auto'></div>
-                            <div className='h-6 w-3/4 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-2'></div>
-                            <div className='h-5 w-1/2 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-4'></div>
-                            <div className='h-10 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto'></div>
-                          </div>
-                        ))
-                      : filteredData.map(osce => {
-                          const matchedCategory = module.find(
-                            mod => mod.categoryId === osce.module
-                          );
-                          const categoryName = matchedCategory
-                            ? matchedCategory.categoryName
-                            : 'Unknown';
+                    {loading ? (
+                      [...Array(10)].map((_, i) => (
+                        <div
+                          key={i}
+                          className='p-4 bg-[#F4F4F5] rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border w-full dark:border-[#3A3A48] animate-pulse'
+                        >
+                          <div className='h-5 w-20 bg-gray-300 dark:bg-gray-600 rounded mb-3 mx-auto'></div>
+                          <div className='h-6 w-3/4 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-2'></div>
+                          <div className='h-5 w-1/2 bg-gray-300 dark:bg-gray-600 rounded mx-auto mb-4'></div>
+                          <div className='h-10 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto'></div>
+                        </div>
+                      ))
+                    ) : filteredData.length > 0 ? (
+                      filteredData.map(osce => {
+                        const matchedCategory = module.find(
+                          mod => mod.categoryId === osce.module
+                        );
+                        const categoryName = matchedCategory
+                          ? matchedCategory.categoryName
+                          : 'Fetching...';
 
-                          return (
-                            <div
-                              key={osce.id}
-                              className='p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border dark:border-[#3A3A48]'
+                        return (
+                          <div
+                            key={osce.id}
+                            className='p-4 bg-[#F4F4F5] hover:opacity-75 cursor-pointer relative rounded-[8px] shadow-md text-center dark:bg-[#1E1E2A] border dark:border-[#3A3A48]'
+                          >
+                            <Link
+                              to={
+                                activeTab === 'static'
+                                  ? `/static-scenerios-detail/${osce.id}`
+                                  : `/osce-ai-bot/${categoryName.replace(/\s+/g, '-')}`
+                              }
                             >
-                              <Link
-                                to={
-                                  activeTab === 'static'
-                                    ? `/static-scenerios-detail/${osce.id}`
-                                    : `/osce-ai-bot/${categoryName.replace(/\s+/g, '-')}`
-                                }
-                              >
-                                <div className='flex flex-col h-full justify-between'>
-                                  <div>
-                                    <p className='absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px] dark:text-white'>
-                                      {osce.category}
-                                    </p>
-                                    <div className='text-[20px] text-[#3F3F46] mt-3 font-bold dark:text-white'>
-                                      {categoryName}
-                                    </div>
-                                    <div className='text-[16px] text-[#A1A1AA] font-semibold dark:text-white'>
-                                      {osce.stationName}
-                                    </div>
+                              <div className='flex flex-col h-full justify-between'>
+                                <div>
+                                  <p className='absolute top-1 right-2 text-[12px] font-semibold text-[#A1A1AA] lg:text-[14px] dark:text-white'>
+                                    {osce.category}
+                                  </p>
+                                  <div className='text-[20px] text-[#3F3F46] mt-3 font-bold dark:text-white'>
+                                    {categoryName}
                                   </div>
-                                  <div className='text-[48px] text-[#52525B] font-bold dark:text-white'>
-                                    #{osce.id}
+                                  <div className='text-[16px] text-[#A1A1AA] font-semibold dark:text-white'>
+                                    {osce.stationName}
                                   </div>
                                 </div>
-                              </Link>
-                            </div>
-                          );
-                        })}
+                                <div className='text-[48px] text-[#52525B] font-bold dark:text-white'>
+                                  #{osce.id}
+                                </div>
+                              </div>
+                            </Link>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className='col-span-full text-center text-gray-500 dark:text-gray-300'>
+                        No records found
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
