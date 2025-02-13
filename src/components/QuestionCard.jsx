@@ -560,6 +560,10 @@ const QuestionCard = () => {
   }, [review]);
 
   useEffect(() => {
+    
+  })
+
+  useEffect(() => {
     function handleClickOutside(event) {
       if (beakerRef.current && !beakerRef.current.contains(event.target)) {
         setBeakerToggle(false);
