@@ -175,6 +175,8 @@ const [selectPresentation,setSelectPresentation]=useState([])
   };
 
 
+
+
   const handleCheckboxChangePresentation = presentationId => {
     const selectedModule = presentations.find(module => module.presentationId === presentationId); // Find the selected module
     const moduleName = selectedModule ? selectedModule.presentationName : ''; // Get the module name
@@ -248,6 +250,14 @@ const [selectPresentation,setSelectPresentation]=useState([])
     }
   }, [limit, isSession]);
 
+
+
+  useEffect(()=>{
+    if(type==='SAQ'){
+      setIsSortedByPresentation(false)
+    }
+    
+  },[type])
   // SAB and
   useEffect(() => {
     if (type === 'SBA') {
@@ -514,18 +524,19 @@ const [selectPresentation,setSelectPresentation]=useState([])
   // sort By presentation
   useEffect(() => {
     if (isSortedByPresentation) {
-      dispatch(setLoading({ key: 'modules/fetchPresentation', value: true }));
+      dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
+      console.log("selectPresentation:", selectPresentation);
 
-      dispatch(fetchPresentation({ moduleIds: selectedModules, totalLimit: limit }))
+      dispatch(fetchMcqsByPresentationId({ moduleIds: selectPresentation, totalLimit: limit }))
         .unwrap()
         .then(res => {        
-          dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
+          dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false }));
         })
         .catch(err => {
-          dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
+          dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false }));
         });
     }
-  }, [isSortedByPresentation]);
+  }, [isSortedByPresentation, selectPresentation]);
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -665,7 +676,6 @@ const [selectPresentation,setSelectPresentation]=useState([])
   }, [state]);
 
 
-  console.log("sortByPresentation:", isSortedByPresentation);
 
   return (
     <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
