@@ -62,19 +62,19 @@ const QuestionCard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const data = useSelector(state => state.mcqsQuestion || []);
   const result = useSelector(state => state.result);
-  const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
+  const [currentPage, setCurrentPage] = useState(0);
   const [isReviewEnabled, setIsReviewEnabled] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const itemsPerPage = 10;
   const [article, setArticle] = useState({});
-  const userId=useSelector(state=>state.user.userId)  
+  const userId = useSelector(state => state.user.userId);
   const isQuestionReview = useSelector(state => state?.questionReview?.value);
   // Get the items to show for the current page
   const currentItems = data.data.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
-  const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
+  const [selectedFilter, setSelectedFilter] = useState('All');
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
   const isTimerMode = useSelector(state => state.mode);
   const [timer, setTimer] = useState(() => {
@@ -113,37 +113,39 @@ const QuestionCard = () => {
   // Use currentPage to determine the start and end indices
   const { start, end } = getQuestionRange(currentPage);
   // Filtered items to display based on the selected filter
-  const filteredItems = data?.mcqsByModulesData?.slice(start, end).filter((question, index) => {
-    const displayNumber = start + index;
+  const filteredItems = data?.mcqsByModulesData
+    ?.slice(start, end)
+    .filter((question, index) => {
+      const displayNumber = start + index;
 
-    // All items
-    allIndices.push(displayNumber);
+      // All items
+      allIndices.push(displayNumber);
 
-    if (selectedFilter === 'All') {
-      return true; // Include all items
-    }
-
-    if (selectedFilter === 'Flagged') {
-      // Check if item is flagged (attempted)
-      const isFlagged =
-        attempted[displayNumber] === true || attempted[displayNumber] === false;
-      if (isFlagged) {
-        flaggedIndices.push(displayNumber); // Store index for flagged items
-        return true;
+      if (selectedFilter === 'All') {
+        return true; // Include all items
       }
-    }
 
-    if (selectedFilter === 'Unseen') {
-      // Check if item is unseen (unattempted)
-      const isUnseen = attempted[displayNumber] === null;
-      if (isUnseen) {
-        unseenIndices.push(displayNumber); // Store index for unseen items
-        return true;
+      if (selectedFilter === 'Flagged') {
+        // Check if item is flagged (attempted)
+        const isFlagged =
+          attempted[displayNumber] === true || attempted[displayNumber] === false;
+        if (isFlagged) {
+          flaggedIndices.push(displayNumber); // Store index for flagged items
+          return true;
+        }
       }
-    }
 
-    return false; // Hide items that don't match the filter
-  });
+      if (selectedFilter === 'Unseen') {
+        // Check if item is unseen (unattempted)
+        const isUnseen = attempted[displayNumber] === null;
+        if (isUnseen) {
+          unseenIndices.push(displayNumber); // Store index for unseen items
+          return true;
+        }
+      }
+
+      return false; // Hide items that don't match the filter
+    });
 
   const toggleAccordion = index => {
     setIsAccordionOpen(prev => {
@@ -171,39 +173,6 @@ const QuestionCard = () => {
     setIsAnswered(true);
   };
 
-  // const handleCheckAnswer = () => {
-  //     dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
-
-  //     if (selectedAnswer) {
-  //         setIsButtonClicked(true);
-  //         setIsAccordionVisible(true);
-  //         setBorder(false);
-
-  //         // Get the correct answer from answersArray using correctAnswerId
-  //         const correctAnswer = data.data[currentIndex].answersArray[data.data[currentIndex].correctAnswerId];
-
-  //         // Check if the selected answer matches the correct answer
-  //         const isCorrect = selectedAnswer === correctAnswer;
-
-  //         // Update attempts
-  //         setAttempts((prev) => {
-  //             const updatedAttempts = [...prev];
-  //             updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
-  //             dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
-  //             dispatch(fetchConditionNameById({ id: data?.data[currentIndex]?.conditionName }))
-  //             dispatch(setResult({ updatedAttempts }));
-  //             return updatedAttempts;
-  //         });
-
-  //         // Expand accordion for the correct answer
-  //         setIsAccordionOpen((prev) => {
-  //             const newAccordionState = [...prev];
-  //             newAccordionState[data.data[currentIndex].correctAnswerId] = true; // Expand the correct answer's explanation
-  //             return newAccordionState;
-  //         });
-  //     }
-  // };
-
   const handleCheckAnswer = () => {
     dispatch(setActive(false));
 
@@ -213,11 +182,10 @@ const QuestionCard = () => {
       setBorder(false);
 
       const correctAnswer =
-        data?.mcqsByModulesData[currentIndex].answersArray[data?.mcqsByModulesData[currentIndex].correctAnswerId];
+        data?.mcqsByModulesData[currentIndex].answersArray[
+          data?.mcqsByModulesData[currentIndex].correctAnswerId
+        ];
       const isCorrect = selectedAnswer === correctAnswer;
-
-      
-      
 
       setAttempts(prev => {
         const updatedAttempts = [...prev];
@@ -225,7 +193,9 @@ const QuestionCard = () => {
         dispatch(setAttempted(updatedAttempts));
         if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
           dispatch(
-            fetchConditionNameById({ id: data?.mcqsByModulesData[currentIndex]?.conditionName })
+            fetchConditionNameById({
+              id: data?.mcqsByModulesData[currentIndex]?.conditionName,
+            })
           )
             .unwrap()
             .then(res => {
@@ -233,14 +203,17 @@ const QuestionCard = () => {
             });
         }
 
-        
-        dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
+        dispatch(
+          insertResult({
+            isCorrect,
+            questionId: data?.mcqsByModulesData[currentIndex].id,
+            userId,
+            moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
+          })
+        );
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });
-
-    
-      
 
       // Open the correct answer's accordion and selected if incorrect
       setIsAccordionOpen(prev => {
@@ -313,7 +286,9 @@ const QuestionCard = () => {
         setIsAccordionVisible(true);
         if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
           dispatch(
-            fetchConditionNameById({ id: data?.mcqsByModulesData[currentIndex]?.conditionName })
+            fetchConditionNameById({
+              id: data?.mcqsByModulesData[currentIndex]?.conditionName,
+            })
           )
             .unwrap()
             .then(res => {
@@ -376,7 +351,8 @@ const QuestionCard = () => {
   };
   data?.mcqsByModulesData[currentIndex]?.explanationList?.map((explanation, index) => {
     let isSelected = selectedAnswer === explanation;
-    const isCorrectAnswer = index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
+    const isCorrectAnswer =
+      index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
   });
 
   // Update attempts based on user actions
@@ -429,10 +405,11 @@ const QuestionCard = () => {
     }
   };
 
-
   useEffect(() => {
     if (data?.mcqsByModulesData?.length) {
-      const initialAccordionState = data?.mcqsByModulesData[currentIndex].answersArray.map(() => false);
+      const initialAccordionState = data?.mcqsByModulesData[
+        currentIndex
+      ].answersArray.map(() => false);
       setIsAccordionOpen(initialAccordionState);
     }
   }, [data.mcqsByModulesData]);
@@ -543,7 +520,10 @@ const QuestionCard = () => {
       const validKeys = ['Q', 'W', 'E', 'R', 'T'];
       const keyIndex = validKeys.indexOf(key);
 
-      if (keyIndex !== -1 && keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length) {
+      if (
+        keyIndex !== -1 &&
+        keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
+      ) {
         const answer = data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
 
         handleAnswerSelect(answer);
@@ -568,8 +548,6 @@ const QuestionCard = () => {
       // setIsAccordionVisible(true)
     }
   }, [review]);
-
-
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -608,7 +586,11 @@ const QuestionCard = () => {
               <div className='absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden'>
                 <div
                   className='bg-[#60B0FA] h-full transition-all duration-300 ease-in-out'
-                  style={{ width: `${((currentIndex + 1) / data?.mcqsByModulesData?.length) * 100}%` }}
+                  style={{
+                    width: `${
+                      ((currentIndex + 1) / data?.mcqsByModulesData?.length) * 100
+                    }%`,
+                  }}
                 ></div>
               </div>
 
@@ -727,160 +709,166 @@ const QuestionCard = () => {
                   {data?.mcqsByModulesData[currentIndex].leadQuestion}
                 </h3>
                 <div className='mt-4 space-y-4'>
-                  {data?.mcqsByModulesData[currentIndex]?.answersArray.map((answer, index) => {
-                    const isSelected = selectedAnswer === answer;
-                    const isCorrectAnswer =
-                      index === data?.mcqsByModulesData[currentIndex]?.correctAnswerId;
+                  {data?.mcqsByModulesData[currentIndex]?.answersArray.map(
+                    (answer, index) => {
+                      const isSelected = selectedAnswer === answer;
+                      const isCorrectAnswer =
+                        index === data?.mcqsByModulesData[currentIndex]?.correctAnswerId;
 
-                    const borderColor =
-                      isButtonClicked || attempted[currentIndex] !== null
-                        ? isCorrectAnswer
-                          ? 'border-[#22C55E]'
-                          : 'border-[#EF4444]'
-                        : '';
-                    const bgColor =
-                      isButtonClicked || attempted[currentIndex] !== null
-                        ? isCorrectAnswer
-                          ? 'bg-[#DCFCE7]'
-                          : 'bg-[#FEE2E2]'
-                        : '';
+                      const borderColor =
+                        isButtonClicked || attempted[currentIndex] !== null
+                          ? isCorrectAnswer
+                            ? 'border-[#22C55E]'
+                            : 'border-[#EF4444]'
+                          : '';
+                      const bgColor =
+                        isButtonClicked || attempted[currentIndex] !== null
+                          ? isCorrectAnswer
+                            ? 'bg-[#DCFCE7]'
+                            : 'bg-[#FEE2E2]'
+                          : '';
 
-                    return (
-                      <div
-                        key={index}
-                        className={`rounded-md border ${
-                          attempted[currentIndex] !== null
-                            ? isCorrectAnswer
-                              ? 'border-[#22C55E] bg-[#DCFCE7]'
+                      return (
+                        <div
+                          key={index}
+                          className={`rounded-md border ${
+                            attempted[currentIndex] !== null
+                              ? isCorrectAnswer
+                                ? 'border-[#22C55E] bg-[#DCFCE7]'
+                                : isSelected
+                                ? 'border-[#EF4444] bg-[#FEE2E2]'
+                                : 'border-white bg-white'
                               : isSelected
-                              ? 'border-[#EF4444] bg-[#FEE2E2]'
-                              : 'border-white bg-white'
-                            : isSelected
-                            ? 'border-[#3CC8A1] bg-[#FAFAFA]'
-                            : 'border-white bg-white hover:border-[#3CC8A1]'
-                        }`}
-                      >
-                        {!isAccordionVisible && attempted[currentIndex] === null ? (
-                          <label
-                            className={`flex  items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer  text-[14px] lg:text-[16px]  dark:bg-[#1E1E2A] dark:border`}
-                            onClick={() => handleAnswerSelect(answer, index)}
-                          >
-                            <input
-                              type='radio'
-                              name='answer'
-                              className='form-radio h-5 w-5 text-green-500 focus:ring-green-500'
-                              checked={isSelected}
-                              readOnly
-                            />
-                            <span className='font-medium text-[#3F3F46] flex-1 dark:text-white'>
-                              {answer}
-                            </span>
-                            <span className='bg-gray-200 text-[#27272A] px-2 py-1 rounded-md'>
-                              {['Q', 'W', 'E', 'R', 'T'][index]}
-                            </span>
-                          </label>
-                        ) : (
-                          <div
-                            className={`border ${borderColor} ${bgColor} rounded-md`}
-                            onClick={e => {
-                              e.stopPropagation();
-                              toggleAccordion(index);
-                            }}
-                          >
+                              ? 'border-[#3CC8A1] bg-[#FAFAFA]'
+                              : 'border-white bg-white hover:border-[#3CC8A1]'
+                          }`}
+                        >
+                          {!isAccordionVisible && attempted[currentIndex] === null ? (
                             <label
-                              className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
+                              className={`flex  items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer  text-[14px] lg:text-[16px]  dark:bg-[#1E1E2A] dark:border`}
                               onClick={() => handleAnswerSelect(answer, index)}
                             >
-                              <div
-                                className={`h-6 w-6 flex items-center justify-center rounded-full ${
-                                  isButtonClicked || attempted[currentIndex] !== null
-                                    ? isCorrectAnswer
-                                      ? 'bg-green-100 border border-green-500'
-                                      : 'bg-red-100 border border-red-500'
-                                    : 'bg-gray-100 border border-gray-300'
-                                }`}
-                              >
-                                {(isButtonClicked || attempted[currentIndex] !== null) &&
-                                  (isCorrectAnswer ? (
-                                    <svg
-                                      xmlns='http://www.w3.org/2000/svg'
-                                      fill='none'
-                                      viewBox='0 0 24 24'
-                                      strokeWidth='2'
-                                      stroke='green'
-                                      className='w-4 h-4'
-                                    >
-                                      <path
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                        d='M5 13l4 4L19 7'
-                                      />
-                                    </svg>
-                                  ) : (
-                                    <svg
-                                      xmlns='http://www.w3.org/2000/svg'
-                                      fill='none'
-                                      viewBox='0 0 24 24'
-                                      strokeWidth='2'
-                                      stroke='red'
-                                      className='w-4 h-4'
-                                    >
-                                      <path
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                        d='M6 18L18 6M6 6l12 12'
-                                      />
-                                    </svg>
-                                  ))}
-                              </div>
-                              <span className='text-[#27272A] flex-1'>{answer}</span>
-                              {isAccordionOpen[index] ? (
-                                <svg
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  width='24'
-                                  height='24'
-                                  viewBox='0 0 24 24'
-                                  fill='none'
-                                  stroke='currentColor'
-                                  strokeWidth='2'
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  className='lucide lucide-chevron-up'
-                                >
-                                  <path d='m18 15-6-6-6 6' />
-                                </svg>
-                              ) : (
-                                <svg
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  width='24'
-                                  height='24'
-                                  viewBox='0 0 24 24'
-                                  fill='none'
-                                  stroke='currentColor'
-                                  strokeWidth='2'
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  className='lucide lucide-chevron-down'
-                                >
-                                  <path d='m6 9 6 6 6-6' />
-                                </svg>
-                              )}
+                              <input
+                                type='radio'
+                                name='answer'
+                                className='form-radio h-5 w-5 text-green-500 focus:ring-green-500'
+                                checked={isSelected}
+                                readOnly
+                              />
+                              <span className='font-medium text-[#3F3F46] flex-1 dark:text-white'>
+                                {answer}
+                              </span>
+                              <span className='bg-gray-200 text-[#27272A] px-2 py-1 rounded-md'>
+                                {['Q', 'W', 'E', 'R', 'T'][index]}
+                              </span>
                             </label>
+                          ) : (
+                            <div
+                              className={`border ${borderColor} ${bgColor} rounded-md`}
+                              onClick={e => {
+                                e.stopPropagation();
+                                toggleAccordion(index);
+                              }}
+                            >
+                              <label
+                                className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
+                                onClick={() => handleAnswerSelect(answer, index)}
+                              >
+                                <div
+                                  className={`h-6 w-6 flex items-center justify-center rounded-full ${
+                                    isButtonClicked || attempted[currentIndex] !== null
+                                      ? isCorrectAnswer
+                                        ? 'bg-green-100 border border-green-500'
+                                        : 'bg-red-100 border border-red-500'
+                                      : 'bg-gray-100 border border-gray-300'
+                                  }`}
+                                >
+                                  {(isButtonClicked ||
+                                    attempted[currentIndex] !== null) &&
+                                    (isCorrectAnswer ? (
+                                      <svg
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        fill='none'
+                                        viewBox='0 0 24 24'
+                                        strokeWidth='2'
+                                        stroke='green'
+                                        className='w-4 h-4'
+                                      >
+                                        <path
+                                          strokeLinecap='round'
+                                          strokeLinejoin='round'
+                                          d='M5 13l4 4L19 7'
+                                        />
+                                      </svg>
+                                    ) : (
+                                      <svg
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        fill='none'
+                                        viewBox='0 0 24 24'
+                                        strokeWidth='2'
+                                        stroke='red'
+                                        className='w-4 h-4'
+                                      >
+                                        <path
+                                          strokeLinecap='round'
+                                          strokeLinejoin='round'
+                                          d='M6 18L18 6M6 6l12 12'
+                                        />
+                                      </svg>
+                                    ))}
+                                </div>
+                                <span className='text-[#27272A] flex-1'>{answer}</span>
+                                {isAccordionOpen[index] ? (
+                                  <svg
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    width='24'
+                                    height='24'
+                                    viewBox='0 0 24 24'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='2'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    className='lucide lucide-chevron-up'
+                                  >
+                                    <path d='m18 15-6-6-6 6' />
+                                  </svg>
+                                ) : (
+                                  <svg
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    width='24'
+                                    height='24'
+                                    viewBox='0 0 24 24'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='2'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    className='lucide lucide-chevron-down'
+                                  >
+                                    <path d='m6 9 6 6 6-6' />
+                                  </svg>
+                                )}
+                              </label>
 
-                            {/* Conditionally render the hr and p tags */}
-                            {isAccordionOpen[index] && (
-                              <>
-                                <hr className={`mx-5 ${borderColor}`} />
-                                <p className='py-2 px-5 text-[12px] text-[#3F3F46]'>
-                                    {data?.mcqsByModulesData[currentIndex]?.explanationList[index]}
-                                </p>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                              {/* Conditionally render the hr and p tags */}
+                              {isAccordionOpen[index] && (
+                                <>
+                                  <hr className={`mx-5 ${borderColor}`} />
+                                  <p className='py-2 px-5 text-[12px] text-[#3F3F46]'>
+                                    {
+                                      data?.mcqsByModulesData[currentIndex]
+                                        ?.explanationList[index]
+                                    }
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                  )}
                 </div>
 
                 {/* Submit Button */}
@@ -1030,7 +1018,10 @@ const QuestionCard = () => {
             )}
             {isAccordionVisible && <DiscussionBoard />}
             {isAccordionVisible && (
-              <Article article={article} id={data?.mcqsByModulesData[currentIndex]?.conditionName} />
+              <Article
+                article={article}
+                id={data?.mcqsByModulesData[currentIndex]?.conditionName}
+              />
             )}
           </div>
 
@@ -1109,6 +1100,7 @@ const QuestionCard = () => {
                   attempted={attempted}
                   flaggedQuestions={flaggedQuestions}
                   visited={visited}
+                  currentIndex={currentIndex}
                   setCurrentIndex={setCurrentIndex}
                 />
                 <div className='py-5 px-10 text-[#D4D4D8]'>
@@ -1276,7 +1268,7 @@ const QuestionCard = () => {
             )}
           </div>
 
-          <div className=''>
+          <>
             <div className='flex items-center justify-between p-5 w-full text-[12px]'>
               <span
                 className={`w-[30%] text-center cursor-pointer ${
@@ -1309,24 +1301,24 @@ const QuestionCard = () => {
                 Unseen
               </span>
             </div>
-          </div>
+          </>
 
           <div className='flex justify-center items-center'>
             <div className='grid grid-cols-5 gap-2'>
               {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
                 const bgColor =
                   attempted[num] === true
-                    ? 'bg-[#3CC8A1]' // Correct answer
+                    ? 'bg-[#3CC8A1]'
                     : attempted[num] === false
-                    ? 'bg-[#FF453A]' // Incorrect answer
-                    : 'bg-gray-300'; // Unattempted
+                    ? 'bg-[#FF453A]'
+                    : 'bg-gray-300';
 
                 return (
                   <div key={i}>
                     <div
                       className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
                       onClick={() => {
-                        setCurrentIndex(num); // Navigate to the selected question
+                        setCurrentIndex(num);
                       }}
                     >
                       <p>{num + 1}</p>
