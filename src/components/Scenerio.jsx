@@ -248,9 +248,6 @@ const Scenarios = () => {
                         </svg>
                       ),
                     },
-                    // { cat: "Documentation", icon: <img src="/assets/documentation.svg" alt="" /> },
-                    // { cat: "Emergency", icon: <img src="/assets/emergency.svg" alt="" /> },
-                    // { cat: "Exam Circuits", icon: <img src="/assets/exam-circuit.svg" alt="" /> },
                   ].map(category => (
                     <button
                       key={category.cat}

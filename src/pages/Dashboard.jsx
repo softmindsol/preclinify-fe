@@ -22,6 +22,7 @@ import { setResetLimit } from '../redux/features/limit/limit.slice';
 import supabase from '../config/helper';
 // import { fetchExamDate } from '../redux/features/exam-countdown/service';
 import { fetchUserId } from '../redux/features/user-id/userId.service';
+import { fetchExamDate } from '../redux/features/exam-countdown/service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -185,7 +186,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    // dispatch(fetchExamDate('acb01928-efce-4f32-96df-ff179494f580'));
+    dispatch(fetchExamDate('acb01928-efce-4f32-96df-ff179494f580'));
 
     dispatch(fetchUserId());
   }, []);

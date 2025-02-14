@@ -1,32 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { upsertUserRecord } from './service';
-
-const initialState = {
-  examDates: [],
-  loading: false,
-  error: null,
-};
+import { fetchExamDate } from './service';
 
 const examDatesSlice = createSlice({
   name: 'examDates',
   initialState: {
-    record: null,
-    status: 'idle',
+    data: null,
+    loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(upsertUserRecord.pending, state => {
-        state.status = 'loading';
+      .addCase(fetchExamDate.pending, state => {
+        state.loading = true;
         state.error = null;
       })
-      .addCase(upsertUserRecord.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.record = action.payload;
+      .addCase(fetchExamDate.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
       })
-      .addCase(upsertUserRecord.rejected, (state, action) => {
-        state.status = 'failed';
+      .addCase(fetchExamDate.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },
