@@ -37,6 +37,12 @@ const QuestionNavigator = ({
       default:
         return Array.from(
           new Set([
+            ...validNumbers(attempted).filter(
+              key =>
+                attempted[key] === true ||
+                attempted[key] === false ||
+                attempted[key] === 'partial'
+            ),
             ...validNumbers(attempted).filter(key => attempted[key] === true),
             ...validNumbers(flaggedQuestions).filter(
               key => flaggedQuestions[key] === true
@@ -128,15 +134,17 @@ const QuestionNavigator = ({
       {/* Question Grid */}
       <div className='flex justify-center items-center'>
         <div className='grid grid-cols-5 gap-2'>
-          {paginatedQuestions.map(num => {
+          {paginatedQuestions?.map(num => {
             const isFlagged = flaggedQuestions[num] === true;
             const isAttempted = attempted[num];
-
-            const bgColor = isAttempted
-              ? 'bg-[#3CC8A1]'
-              : isAttempted === false
-              ? 'bg-[#FF453A]'
-              : 'bg-gray-300';
+            const bgColor =
+              isAttempted === 'partial'
+                ? 'bg-[#FFA500]'
+                : isAttempted === true
+                ? 'bg-[#3CC8A1]'
+                : isAttempted === false
+                ? 'bg-[#FF453A]'
+                : 'bg-gray-300';
 
             return (
               <div key={num}>
