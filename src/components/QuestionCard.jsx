@@ -66,6 +66,7 @@ const QuestionCard = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isReviewEnabled, setIsReviewEnabled] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
+  const [answerChecked, setAnswerChecked] = useState(false);
   const itemsPerPage = 10;
   const [article, setArticle] = useState({});
   const userId = useSelector(state => state.user.userId);
@@ -504,8 +505,14 @@ const QuestionCard = () => {
 
         if (isAnswered) {
           handleCheckAnswer(); // Call the check answer function
+          setAnswerChecked(true);
           console.log('spacebar pressed');
         }
+        if (answerChecked){
+            nextQuestion();
+        }
+
+
         return; // Exit the function after handling spacebar
       }
 
@@ -876,6 +883,7 @@ const QuestionCard = () => {
                         onClick={nextQuestion}
                       >
                         Next Question
+
                         <span className='bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
