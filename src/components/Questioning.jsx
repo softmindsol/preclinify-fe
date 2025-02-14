@@ -86,7 +86,9 @@ const Questioning = () => {
   const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
   const [saqModule, setSAQModule] = useState([]);
   const SBADataLength = useSelector(state => state?.mcqsQuestion?.mcqsByModulesData);
+  const userId = useSelector(state => state.user.userId)
 
+const [selectPresentation,setSelectPresentation]=useState([])
   const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -98,12 +100,17 @@ const Questioning = () => {
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
+
+
+
   const [totals, setTotals] = useState({
     totalCorrect: 0,
     totalIncorrect: 0,
     totalUnanswered: 0,
   });
   const [moduleTotals, setModuleTotals] = useState({});
+  const [mockModuleTotals, setMockModuleTotals] = useState({});
   const [selectedTab, setSelectedTab] = useState('Clinical');
   const presentations = useSelector(state => state.presentations.presentations);
   const handleToggle = () => {
@@ -166,6 +173,41 @@ const Questioning = () => {
     });
   };
 
+
+  const handleCheckboxChangePresentation = presentationId => {
+    const selectedModule = presentations.find(module => module.presentationId === presentationId); // Find the selected module
+    const moduleName = selectedModule ? selectedModule.presentationName : ''; // Get the module name
+
+    setSelectPresentation(
+      prev =>
+        prev.includes(presentationId)
+          ? prev.filter(id => id !== presentationId) // Remove if already selected
+          : [...prev, presentationId] // Add if not selected
+    );
+
+    setRecentSessions(prev => {
+      const selectedPresentationNames = presentations
+        .filter(
+          module =>
+            selectPresentation.includes(module.presentationId) ||
+            module.presentationId === presentationId
+        )
+        .map(module => module.presentationId);
+      const selectedModuleName = presentations
+        .filter(
+          module =>
+            selectedModules.includes(module.presentationId) ||
+            module.presentationId === presentationId
+        )
+        .map(module => module.presentationName);
+      // Combine module names into a single string
+      const combinedSession = selectedPresentationNames.join(', ');
+
+      // Update recent sessions: keep only the last entry if a new combination is made
+      return combinedSession ? [combinedSession] : [];
+    });
+  };
+
   const preClinicalHandler = () => {
     setSelectedPreClinicalOption('QuesGen');
   };
@@ -192,7 +234,7 @@ const Questioning = () => {
       const flatModuleIds = sessionId.split(',').map(id => parseInt(id.trim(), 10)); // Split and convert to numbers
       dispatch(fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }))
         .unwrap()
-        .then(res => {})
+        .then(res => { })
         .catch(err => {
           console.error('Error fetching questions:', err);
         })
@@ -209,6 +251,7 @@ const Questioning = () => {
   useEffect(() => {
     if (type === 'SBA') {
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
+      setIsSortedByPresentation(false)
       setIsLoading(true);
       dispatch(fetchModules())
         .unwrap()
@@ -217,14 +260,15 @@ const Questioning = () => {
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
 
           dispatch(fetchTotalSBAQuestion({ ids: res }))
-            .unwrap()
-            .then(res => {});
+
         })
         .catch(err => {
           dispatch(setLoading({ key: 'modules/fetchModules', value: false }));
           setIsLoading(false);
         });
     } else if (type === 'SAQ') {
+      setIsSortedByPresentation(false)
+
       dispatch(setLoading({ key: 'modules/fetchModules', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
@@ -238,6 +282,8 @@ const Questioning = () => {
           setIsLoading(false);
         });
     } else if (type === 'QuesGen') {
+      setIsSortedByPresentation(false)
+
       dispatch(setLoading({ key: 'modules/fetchQuesGenModules', value: true }));
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
@@ -251,6 +297,8 @@ const Questioning = () => {
           setIsLoading(false);
         });
     } else if (type === 'Mock') {
+      setIsSortedByPresentation(false)
+
       dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: true }));
       setIsLoading(true);
       dispatch(fetchModules())
@@ -300,6 +348,7 @@ const Questioning = () => {
         )
           .unwrap()
           .then(res => {
+         
             dispatch(
               setLoading({ key: 'modules/fetchShortQuestionByModules', value: false })
             );
@@ -307,6 +356,7 @@ const Questioning = () => {
             dispatch(fetchModulesById({ ids: res.ids }))
               .unwrap()
               .then(res => {
+              
                 setIsLoading(false);
                 dispatch(setLoading({ key: 'modules/fetchModulesByMock', value: false }));
 
@@ -394,23 +444,7 @@ const Questioning = () => {
           .catch(err => {
             dispatch(setLoading({ key: 'modules/fetchMockTestById', value: false }));
           });
-      } else if (isSortedByPresentation) {
-        dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
-        dispatch(
-          fetchMcqsByPresentationId({ moduleIds: selectedModules, totalLimit: limit })
-        )
-          .unwrap()
-          .then(() => {
-            dispatch(
-              setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
-            );
-          })
-          .catch(err => {
-            dispatch(
-              setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
-            );
-          });
-      }
+      } 
     }
   }, [selectedModules, limit, selectedOption, selectedTab]);
 
@@ -466,12 +500,31 @@ const Questioning = () => {
     }
   }, [recentSessions]);
   // Effect to retrieve recent sessions from localStorage
+// else if (isSortedByPresentation) {
+//   dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
+//   dispatch(
+//     fetchMcqsByPresentationId({ moduleIds: selectedModules, totalLimit: limit })
+//   )
+//     .unwrap()
+//     .then(() => {
+//       dispatch(
+//         setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+//       );
+//     })
+//     .catch(err => {
+//       dispatch(
+//         setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+//       );
+//     });
+// }
+
 
   // sort By presentation
   useEffect(() => {
     if (isSortedByPresentation) {
       dispatch(setLoading({ key: 'modules/fetchPresentation', value: true }));
-      dispatch(fetchPresentation({ moduleIds: selectedModules, totalLimit: limit }))
+
+      dispatch(fetchPresentation())
         .unwrap()
         .then(res => {
           dispatch(setLoading({ key: 'modules/fetchPresentation', value: false }));
@@ -482,43 +535,153 @@ const Questioning = () => {
     }
   }, [isSortedByPresentation]);
 
+  // sort By presentation
+  useEffect(() => {
+    if (isSortedByPresentation) {
+      dispatch(setLoading({ key: 'modules/fetchMcqsByPresentationId', value: true }));
+      console.log("inside fetchMcqsByPresentationId", );
+
+      dispatch(
+        fetchMcqsByPresentationId({ presentationIds: selectPresentation, totalLimit: limit })
+      )
+        .unwrap()
+        .then(() => {
+          dispatch(
+            setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+          );
+        })
+        .catch(err => {
+          dispatch(
+            setLoading({ key: 'modules/fetchMcqsByPresentationId', value: false })
+          );
+        });
+    }
+  }, [isSortedByPresentation, selectPresentation, limit]);
+
   useEffect(() => {
     const fetchDailyWork = async () => {
       try {
-        const { data, error } = await supabase
+        const query = supabase
           .from('resultsHistory')
-          .select('*')
-          .eq('userId', '123456543');
+          .select('moduleId, isCorrect, userId') // Yahan specify kiya ke kaun se fields chahiye
+          .eq('userId', userId);
+
+        if (selectedModules?.length) {
+          query.in('moduleId', selectedModules);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
-        // Process the data to calculate totals for each moduleId
+        // Compute totals
         const totalsByModule = data.reduce((acc, curr) => {
-          const { moduleId, correct, incorrect, unanswered } = curr;
+          const { moduleId, isCorrect } = curr;
 
-          // Initialize the accumulator for the moduleId if it doesn't exist
           if (!acc[moduleId]) {
-            acc[moduleId] = { totalCorrect: 0, totalIncorrect: 0, totalUnanswered: 0 };
+            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
           }
 
-          // Sum up the values
-          acc[moduleId].totalCorrect += correct;
-          acc[moduleId].totalIncorrect += incorrect;
-          acc[moduleId].totalUnanswered += unanswered;
+          if (Boolean(isCorrect)) {
+            acc[moduleId].totalCorrect += 1;
+          } else {
+            acc[moduleId].totalIncorrect += 1;
+          }
 
           return acc;
         }, {});
-
-        // Update state with the new totals
-        setModuleTotals(totalsByModule);
+        setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
       } catch (err) {
         console.error('Error fetching daily work:', err);
       }
     };
-    // const module = selectedModules[0] || null
-    // localStorage.setItem('module', JSON.stringify(module))
-    fetchDailyWork();
-  }, [selectedModules]);
 
+    if (userId) fetchDailyWork();
+  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+
+
+  useEffect(() => {
+    const fetchDailyWork = async () => {
+      try {
+        const query = supabase
+          .from('resultsHistory')
+          .select('moduleId, isCorrect, userId') // Yahan specify kiya ke kaun se fields chahiye
+          .eq('userId', userId);
+
+        if (selectedModules?.length) {
+          query.in('moduleId', selectedModules);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        // Compute totals
+        const totalsByModule = data.reduce((acc, curr) => {
+          const { moduleId, isCorrect } = curr;
+
+          if (!acc[moduleId]) {
+            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
+          }
+
+          if (Boolean(isCorrect)) {
+            acc[moduleId].totalCorrect += 1;
+          } else {
+            acc[moduleId].totalIncorrect += 1;
+          }
+
+          return acc;
+        }, {});
+        setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
+      } catch (err) {
+        console.error('Error fetching daily work:', err);
+      }
+    };
+
+    if (userId) fetchDailyWork();
+  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+
+  useEffect(() => {
+    const fetchDailyWork = async () => {
+      try {
+        const query = supabase
+          .from('resultHistoryMock')
+          .select('moduleId, isCorrect, userId') // Yahan specify kiya ke kaun se fields chahiye
+          .eq('userId', userId);
+
+        if (selectedModules?.length) {
+          query.in('moduleId', selectedModules);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+       
+
+        // Compute totals
+        const totalsByModule = data.reduce((acc, curr) => {
+          const { moduleId, isCorrect } = curr;
+
+          if (!acc[moduleId]) {
+            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
+          }
+
+          if (Boolean(isCorrect)) {
+            acc[moduleId].totalCorrect += 1;
+          } else {
+            acc[moduleId].totalIncorrect += 1;
+          }
+
+          return acc;
+        }, {});
+        setMockModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
+      } catch (err) {
+        console.error('Error fetching daily work:', err);
+      }
+    };
+
+    if (userId) fetchDailyWork();
+  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
@@ -531,6 +694,9 @@ const Questioning = () => {
       setSelectedPreClinicalOption(state);
     }
   }, [state]);
+
+
+  console.log("sortByPresentation:", isSortedByPresentation);
 
   return (
     <div className={` lg:flex w-full  ${darkModeRedux ? 'dark' : ''}`}>
@@ -556,21 +722,19 @@ const Questioning = () => {
               {/* Tab Section */}
               <div className='flex items-center text-[#3F3F46] justify-between space-x-2 text-[12px] md:text-[16px] font-medium'>
                 <button
-                  className={`w-[50%] px-4 py-2 ${
-                    selectedTab === 'Clinical'
+                  className={`w-[50%] px-4 py-2 ${selectedTab === 'Clinical'
                       ? 'bg-white text-black'
                       : 'bg-[#E4E4E7] text-gray-500'
-                  } rounded-[8px]`}
+                    } rounded-[8px]`}
                   onClick={() => handleTabChange('Clinical')}
                 >
                   Clinical
                 </button>
                 <button
-                  className={`w-[50%] px-4 py-2 ${
-                    selectedTab === 'Pre-clinical'
+                  className={`w-[50%] px-4 py-2 ${selectedTab === 'Pre-clinical'
                       ? 'bg-white text-black'
                       : 'bg-[#E4E4E7] text-gray-500'
-                  } rounded-[8px]`}
+                    } rounded-[8px]`}
                   onClick={() => handleTabChange('Pre-clinical')}
                 >
                   Pre-clinical
@@ -659,12 +823,11 @@ const Questioning = () => {
                   {/* Continue Button */}
                   <button
                     onClick={handleContinue}
-                    disabled={selectedModules.length === 0} // Disable the button if no modules are selected
-                    className={`bg-[#3CC8A1] ${
-                      selectedModules.length === 0
+                    disabled={selectPresentation.length &&  selectedModules.length === 0} // Disable the button if no modules are selected
+                    className={`bg-[#3CC8A1] ${selectedModules.length === 0
                         ? 'opacity-50 cursor-not-allowed'
                         : 'hover:bg-transparent hover:text-[#3CC8A1]'
-                    } text-[12px] md:text-[14px] 2xl:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}
+                      } text-[12px] md:text-[14px] 2xl:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}
                   >
                     Continue &gt;
                   </button>
@@ -863,8 +1026,8 @@ const Questioning = () => {
                             <input
                               type='checkbox'
                               className='mr-2 custom-checkbox hover:opacity-70'
-                              checked={selectedModules.includes(row.presentationId)}
-                              onChange={() => handleCheckboxChange(row.presentationId)}
+                              checked={selectPresentation.includes(row.presentationId)}
+                              onChange={() => handleCheckboxChangePresentation(row.presentationId)}
                             />
                             {row.presentationName}
                           </label>
@@ -891,34 +1054,39 @@ const Questioning = () => {
                     );
                   })}
 
+
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
                   type === 'SBA' &&
-                  filteredSBAModules?.map(row => {
+                  filteredSBAModules?.map((row) => {
                     const moduleData = SBADataLength?.find(
-                      module => module.categoryId === row.categoryId
+                      (module) => module.categoryId === row.categoryId
                     );
+
                     const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
-                    const totals = moduleTotals[row.categoryId] || {
-                      totalCorrect: 0,
-                      totalIncorrect: 0,
-                      totalUnanswered: 0,
-                    };
-                    const correctWidth = 0;
-                    const incorrectWidth = 0;
-                    const unansweredWidth = totalQuestions > 0 ? 100 : 0;
+                    // Ensure moduleTotals is always an array
+                    const moduleTotalsArray = Array.isArray(moduleTotals) ? moduleTotals : Object.values(moduleTotals || {});
+
+                    // Get the totals for correct and incorrect answers
+                    const moduleTotal = moduleTotalsArray.find(m => String(m.moduleId) === String(row.categoryId)) || { totalCorrect: 0, totalIncorrect: 0 };
+
+
+
+                    const { totalCorrect, totalIncorrect } = moduleTotal;
+
+                    // Calculate percentage for progress bar
+                    const correctPercentage = totalQuestions ? (totalCorrect / totalQuestions) * 100 : 0;
+                    const incorrectPercentage = totalQuestions ? (totalIncorrect / totalQuestions) * 100 : 0;
 
                     return (
-                      <div
-                        key={row.categoryId}
-                        className='grid md:grid-cols-2 items-center py-3'
-                      >
-                        <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
-                          <label className='flex items-center cursor-pointer hover:opacity-85'>
+                      <div key={row.categoryId} className="grid md:grid-cols-2 items-center py-3">
+                        {/* Category Name and Checkbox */}
+                        <div className="text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white">
+                          <label className="flex items-center cursor-pointer hover:opacity-85">
                             <input
-                              type='checkbox'
-                              className='mr-2 custom-checkbox hover:opacity-70'
+                              type="checkbox"
+                              className="mr-2 custom-checkbox hover:opacity-70"
                               checked={selectedModules.includes(row.categoryId)}
                               onChange={() => handleCheckboxChange(row.categoryId)}
                             />
@@ -926,15 +1094,34 @@ const Questioning = () => {
                           </label>
                         </div>
 
-                        <div className='flex items-center justify-center space-x-1'>
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md'
-                            style={{ width: `${unansweredWidth}%` }}
-                          ></div>
+                        {/* Progress Bar and Total Questions */}
+                        <div className="flex items-center justify-center space-x-2 w-full">
+                          {/* Progress Bar */}
+                          <div className=" flex   w-full h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md overflow-hidden">
+                            {/* Green Section (Correct Answers) */}
+                            <span
+                              className=" bg-[#3CC8A1] text-white text-xs flex items-center justify-center"
+                              style={{ width: `${correctPercentage}%` }}
+                            >
+                              {totalCorrect > 0 && <span>{totalCorrect}</span>}
+                            </span>
+
+                            {/* Red Section (Incorrect Answers) */}
+                            <span
+                              className=" bg-[#FF453A] text-white text-xs flex items-center justify-center"
+                              style={{ width: `${incorrectPercentage}%` }}
+                            >
+                              {totalIncorrect > 0 && <span>{totalIncorrect}</span>}
+                            </span>
+                          </div>
+
+                          {/* Total Questions */}
+                          <span className="text-gray-700 dark:text-white text-sm">{totalQuestions}</span>
                         </div>
                       </div>
                     );
                   })}
+
 
                 {selectedTab === 'Clinical' &&
                   !isSortedByPresentation &&
@@ -1004,19 +1191,25 @@ const Questioning = () => {
                   !isSortedByPresentation &&
                   type === 'Mock' &&
                   filteredMockModules?.map(row => {
+                    
                     const moduleData = mockMcqsByModulesData?.find(
                       module => module.categoryId === row.categoryId
                     );
                     const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
-                    const totals = moduleTotals[row.categoryId] || {
-                      totalCorrect: 0,
-                      totalIncorrect: 0,
-                      totalUnanswered: 0,
-                    };
-                    const correctWidth = 0;
-                    const incorrectWidth = 0;
-                    const unansweredWidth = totalQuestions > 0 ? 100 : 0;
+                    // Ensure moduleTotals is always an array
+                    const moduleTotalsArray = Array.isArray(mockModuleTotals) ? mockModuleTotals : Object.values(mockModuleTotals || {});
+
+                    // Get the totals for correct and incorrect answers
+                    const moduleTotal = moduleTotalsArray.find(m => String(m.moduleId) === String(row.categoryId)) || { totalCorrect: 0, totalIncorrect: 0 };
+
+
+
+                    const { totalCorrect, totalIncorrect } = moduleTotal;
+
+                    // Calculate percentage for progress bar
+                    const correctPercentage = totalQuestions ? (totalCorrect / totalQuestions) * 100 : 0;
+                    const incorrectPercentage = totalQuestions ? (totalIncorrect / totalQuestions) * 100 : 0;
 
                     return (
                       <div
@@ -1034,22 +1227,29 @@ const Questioning = () => {
                             {row.categoryName}
                           </label>
                         </div>
+                        {/* Progress Bar and Total Questions */}
+                        <div className="flex items-center justify-center space-x-2 w-full">
+                          {/* Progress Bar */}
+                          <div className=" flex   w-full h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md overflow-hidden">
+                            {/* Green Section (Correct Answers) */}
+                            <span
+                              className=" bg-[#3CC8A1] text-white text-xs flex items-center justify-center"
+                              style={{ width: `${correctPercentage}%` }}
+                            >
+                              {totalCorrect > 0 && <span>{totalCorrect}</span>}
+                            </span>
 
-                        <div className='flex items-center justify-center space-x-1'>
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md'
-                            style={{ width: `${correctWidth}%` }}
-                          ></div>
+                            {/* Red Section (Incorrect Answers) */}
+                            <span
+                              className=" bg-[#FF453A] text-white text-xs flex items-center justify-center"
+                              style={{ width: `${incorrectPercentage}%` }}
+                            >
+                              {totalIncorrect > 0 && <span>{totalIncorrect}</span>}
+                            </span>
+                          </div>
 
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#FF453A]'
-                            style={{ width: `${incorrectWidth}%` }}
-                          ></div>
-
-                          <div
-                            className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md'
-                            style={{ width: `${unansweredWidth}%` }}
-                          ></div>
+                          {/* Total Questions */}
+                          <span className="text-gray-700 dark:text-white text-sm">{totalQuestions}</span>
                         </div>
                       </div>
                     );

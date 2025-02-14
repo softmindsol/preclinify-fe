@@ -24,7 +24,8 @@ import FeedbackModal from './common/Feedback';
 import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.slice';
 import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
 import QuestionNavigator from './QuestionNavigator';
-import { insertResult } from '../redux/features/resultSBA/result.sba.service';
+import { insertResult } from '../redux/features/all-results/result.sba.service';
+
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -203,14 +204,9 @@ const QuestionCard = () => {
             });
         }
 
-        dispatch(
-          insertResult({
-            isCorrect,
-            questionId: data?.mcqsByModulesData[currentIndex].id,
-            userId,
-            moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
-          })
-        );
+
+         
+        dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });

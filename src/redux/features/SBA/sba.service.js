@@ -35,7 +35,7 @@ export const fetchTotalSBAQuestion = createAsyncThunk(
                 .select('*')
                 .in('moduleId', categoryIds); // Pass array of categoryIds
 
-            if (error) {
+            if (error) { 
                 console.log("error in fetchTotalSBAQuestion:", error);
                 
                 return rejectWithValue(error.message);
@@ -48,7 +48,6 @@ export const fetchTotalSBAQuestion = createAsyncThunk(
             }));
 
            
-            
             return groupedData;
         } catch (error) {
             return rejectWithValue(error.message);

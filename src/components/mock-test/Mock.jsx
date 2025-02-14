@@ -27,6 +27,7 @@ import {
   markVisited,
 } from '../../redux/features/flagged/visited.slice';
 import QuestionNavigator from '../QuestionNavigator';
+import { insertResult,insertMockResult } from '../../redux/features/all-results/result.sba.service';
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -74,6 +75,7 @@ const MockTestQuestion = () => {
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
+    const userId=useSelector(state=>state.user.userId)  
   const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
   const isTimerMode = useSelector(state => state.mode);
@@ -185,6 +187,8 @@ const MockTestQuestion = () => {
               setArticle(res);
             });
         }
+        dispatch(insertMockResult({ isCorrect, questionId: mockData[currentIndex].id, userId, moduleId: mockData[currentIndex].moduleId }))
+        
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });
