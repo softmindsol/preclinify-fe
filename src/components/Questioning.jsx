@@ -88,6 +88,11 @@ const Questioning = () => {
   const SBADataLength = useSelector(state => state?.mcqsQuestion?.mcqsByModulesData);
   const userId = useSelector(state => state.user.userId)
 
+
+
+
+
+
 const [selectPresentation,setSelectPresentation]=useState([])
   const filteredSBAModules = data.data.filter(module =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -823,14 +828,15 @@ const [selectPresentation,setSelectPresentation]=useState([])
                   {/* Continue Button */}
                   <button
                     onClick={handleContinue}
-                    disabled={selectPresentation.length &&  selectedModules.length === 0} // Disable the button if no modules are selected
-                    className={`bg-[#3CC8A1] ${selectedModules.length === 0
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'hover:bg-transparent hover:text-[#3CC8A1]'
+                    disabled={selectPresentation.length === 0 && selectedModules.length === 0} // Disable the button if both arrays are empty
+                    className={`bg-[#3CC8A1] ${selectPresentation.length === 0 && selectedModules.length === 0
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-transparent hover:text-[#3CC8A1]'
                       } text-[12px] md:text-[14px] 2xl:text-[16px] text-white font-semibold rounded-md px-6 py-2 transition-all border-[1px] border-[#3CC8A1]`}
                   >
                     Continue &gt;
                   </button>
+
                 </div>
               </div>
             </div>

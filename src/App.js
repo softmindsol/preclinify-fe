@@ -30,6 +30,7 @@ import PersonalInformation from './pages/PersonalInformation';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import CheckoutCancel from './pages/CheckoutCancel';
 import AINewVersion from './components/AI-bot-version';
+import SbaPresentation from './components/SBA-presentation/presentation-SBA';
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -53,6 +54,15 @@ function App() {
           element={
             <>
               <Setting />
+            </>
+          }
+        />
+
+        <Route
+          path='/sba-presentation'
+          element={
+            <>
+              <SbaPresentation />
             </>
           }
         />

@@ -22,7 +22,7 @@ import flaggedReducer from './features/flagged/flagged.slice';
 import visitedReducer from './features/flagged/visited.slice';
 import userAnswersReducer from './features/SAQ/userAnswer.slice';
 import presentationReducer from './features/sort-by-presentation/sort-by-presentation.slice';
-import examDatesReducer from './features/exam-countdown/slice';
+import examDatesReducer from './features/examDate/slice';
 import userReducer from './features/user-id/userId.slice';
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {

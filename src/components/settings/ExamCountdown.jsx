@@ -3,13 +3,14 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaClock, FaCalendarAlt } from 'react-icons/fa';
 import { calculateDaysRemaining } from '../../lib/utils';
-import { useDispatch } from 'react-redux';
-// import { insertExamDate } from '../../redux/features/exam-countdown/service';
+import { useDispatch, useSelector } from 'react-redux';
+import { insertExamDate } from './../../redux/features/examDate/service';
 const ExamCountdown = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [confirmedDate, setConfirmedDate] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
+  const userId = useSelector(state => state.user.userId)  
 
   const daysRemaining = confirmedDate ? calculateDaysRemaining(confirmedDate) : null;
 
@@ -17,13 +18,7 @@ const ExamCountdown = () => {
     if (!selectedDate) return;
     const formattedDate = selectedDate.toISOString().split('T')[0];
 
-    // await dispatch(
-    //   insertExamDate({
-    //     exam_date: formattedDate,
-    //     user_id: 'acb01928-efce-4f32-96df-ff179494f580',
-    //   })
-    // );
-
+    dispatch(insertExamDate({ userId, exam_date: formattedDate }))
     setConfirmedDate(selectedDate);
     setIsOpen(false);
   };

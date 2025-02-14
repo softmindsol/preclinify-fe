@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "deep-chat-react": "^2.0.1",
     "formik": "^2.4.6",
     "fuse.js": "^7.0.0",

@@ -22,6 +22,7 @@ import { setResetLimit } from '../redux/features/limit/limit.slice';
 import supabase from '../config/helper';
 // import { fetchExamDate } from '../redux/features/exam-countdown/service';
 import { fetchUserId } from '../redux/features/user-id/userId.service';
+import { fetchDaysUntilExam } from '../redux/features/examDate/service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -42,8 +43,10 @@ const Dashboard = () => {
   const [isSession, setIsSession] = useState(false);
   const [sessionId, setSessionId] = useState([]);
   const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
-  const examDuration = useSelector(state => state?.examDates);
+  const examDuration = useSelector(state => state?.examDates?.examDate);
+
   console.log('🚀 ~ Dashboard ~ examDuration:', examDuration);
+  const userId = useSelector(state => state.user.userId)  
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -185,10 +188,13 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    // dispatch(fetchExamDate('acb01928-efce-4f32-96df-ff179494f580'));
-
     dispatch(fetchUserId());
+    dispatch(fetchDaysUntilExam(userId));
   }, []);
+
+  useEffect(()=>{
+    
+  },[])
 
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
@@ -213,7 +219,7 @@ const Dashboard = () => {
           <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
             <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] dark:bg-[#1E1E2A] dark:border-[1px] dark:border-[#3A3A48]'>
               <p className='text-[#FF9741] text-[18px] sm:text-[24px] xl:text-[32px] font-black dark:text-white '>
-                20 Days
+                {examDuration || 'N/A'} Days
               </p>
               <p className='text-[10px] xl:text-[14px] text-[#52525B] font-medium dark:text-white'>
                 Until your exam

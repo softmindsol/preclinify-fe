@@ -14,7 +14,7 @@ import { NavLink } from 'react-router-dom';
 import supabase from '../config/helper';
 import { setDarkMode } from '../redux/features/dark-mode/dark-mode.slice';
 import { useDispatch, useSelector } from 'react-redux';
-import ExamCountdown from '../components/settings/exam-countdown';
+import ExamCountdown from '../components/settings/ExamCountdown';
 
 const Setting = () => {
   const [isOpen, setIsOpen] = useState(false);

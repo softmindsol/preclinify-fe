@@ -1,33 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
-import DiscussionBoard from '../Discussion';
-import { TbBaselineDensityMedium } from 'react-icons/tb';
-import { RxCross2 } from 'react-icons/rx';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchConditionNameById } from "../../redux/features/SBA/sba.service";
+import { setActive, setAttempted } from "../../redux/features/attempts/attempts.slice";
+import { setResult } from "../../redux/features/result/result.slice";
+import { initializeFlags, toggleFlag } from "../../redux/features/flagged/flagged.slice";
+import { initializeVisited, markVisited } from "../../redux/features/flagged/visited.slice";
+import { setMcqsAccuracy } from "../../redux/features/accuracy/accuracy.slice";
+import { TbBaselineDensityMedium } from "react-icons/tb";
+import DiscussionBoard from "../Discussion";
+import Article from "../Article";
+import QuestionNavigator from "../QuestionNavigator";
+import DeepChatAI from "../DeepChat";
+import DashboardModal from "../common/DashboardModal";
+import FeedbackModal from "../common/Feedback";
+import ChemistryBeaker from "../chemistry-beaker";
+import { RxCross2 } from "react-icons/rx";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Logo from '../common/Logo';
 import Drawer from 'react-modern-drawer';
 //import styles 👇
 import 'react-modern-drawer/dist/index.css';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { clearResult, setResult } from '../../redux/features/result/result.slice';
-import { useNavigate } from 'react-router-dom';
-import { setRemoveQuestionLimit } from '../../redux/features/limit/limit.slice';
-import { fetchConditionNameById } from '../../redux/features/SBA/sba.service';
-import DeepChatAI from '../DeepChat';
-import { setMcqsAccuracy } from '../../redux/features/accuracy/accuracy.slice';
-import { sessionCompleted } from '../../redux/features/recent-session/recent-session.slice';
-import ChemistryBeaker from '../chemistry-beaker';
-import DashboardModal from '../common/DashboardModal';
-import Article from '../Article';
-import { setAttemptedData } from '../../redux/features/SBA/sba.slice';
-import { setActive, setAttempted } from '../../redux/features/attempts/attempts.slice';
-import FeedbackModal from '../common/Feedback';
-import { initializeFlags, toggleFlag } from '../../redux/features/flagged/flagged.slice';
-import {
-  initializeVisited,
-  markVisited,
-} from '../../redux/features/flagged/visited.slice';
-import QuestionNavigator from '../QuestionNavigator';
-import { insertResult,insertMockResult } from '../../redux/features/all-results/result.sba.service';
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -44,12 +36,10 @@ const calculateTimeForQuestions = numQuestions => {
   const totalTimeInSeconds = numQuestions * timePerQuestionInSeconds; // Calculate total time
   return totalTimeInSeconds; // Return total time in seconds
 };
-const MockTestQuestion = () => {
-  const mockData = useSelector(state => state.mockModules?.mockTestData);
-  const [showFeedBackModal, setShowFeedBackModal] = useState(false);
-  const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
+const SbaPresentation = () => {
+  const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
   const dispatch = useDispatch();
-  const attempted = useSelector(state => state.attempts?.attempts);
+  const attempted = useSelector(state => state?.attempts?.attempts);
   const [isOpen, setIsOpen] = useState(false);
   const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
   const [isAccordionVisible, setIsAccordionVisible] = useState(false);
@@ -57,11 +47,13 @@ const MockTestQuestion = () => {
   const [isAnswered, setIsAnswered] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState('');
+  const [showFeedBackModal, setShowFeedBackModal] = useState(false);
+  const beakerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishEnabled, setIsFinishEnabled] = useState(false);
   const navigation = useNavigate();
   const [border, setBorder] = useState(true);
-  const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
+  const mcqsAccuracy = useSelector(state => state?.accuracy?.accuracy);
   const [showPopup, setShowPopup] = useState(false);
   const result = useSelector(state => state.result);
   const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
@@ -69,13 +61,10 @@ const MockTestQuestion = () => {
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const itemsPerPage = 10;
   const [article, setArticle] = useState({});
-  const isQuestionReview = useSelector(state => state.questionReview.value);
+  const userId=useSelector(state=>state.user.userId)  
+  const isQuestionReview = useSelector(state => state?.questionReview?.value);
   // Get the items to show for the current page
-  const currentItems = mockData.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-    const userId=useSelector(state=>state.user.userId)  
+
   const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
   const isTimerMode = useSelector(state => state.mode);
@@ -85,16 +74,17 @@ const MockTestQuestion = () => {
     const savedTime = localStorage.getItem('examTimer');
     return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
   });
-  const beakerRef = useRef(null);
 
-  const review = useSelector(state => state.questionReview.value);
+  const flaggedQuestions = useSelector(state => state?.flagged?.flaggedQuestions);
+  const visited = useSelector(state => state?.visited?.visitedQuestions);
+
+  const review = useSelector(state => state?.questionReview?.value);
   const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy
   // const data = useSelector((state) => state.mcqsQuestion || []);
   const [beakerToggle, setBeakerToggle] = useState(false);
   const menuRef = useRef(null);
-  const active = useSelector(state => state.attempts?.active);
-  const flaggedQuestions = useSelector(state => state.flagged.flaggedQuestions);
-  const visited = useSelector(state => state.visited.visitedQuestions);
+  const active = useSelector(state => state?.attempts?.active);
+  const presentationData = useSelector(state => state.presentations.mcqs || []);
 
   const handleFilterChange = filter => {
     setSelectedFilter(filter);
@@ -105,34 +95,47 @@ const MockTestQuestion = () => {
   const flaggedIndices = [];
   const allIndices = [];
 
-  // Filter items based on the selected filter
-  const filteredItems = currentItems.filter((question, index) => {
-    const displayNumber = currentPage * itemsPerPage + index;
-
-    if (selectedFilter === 'Flagged') {
-      return flaggedQuestions[displayNumber];
-    }
-
-    if (selectedFilter === 'Unseen') {
-      return visited[displayNumber] && attempted[displayNumber] === null;
-    }
-
-    return true; // For 'All' filter
-  });
-
-  const reportHandler = () => {
-    setShowFeedBackModal(!showFeedBackModal);
-  };
-
-  const getQuestionRange = currentIndex => {
-    const itemsPerPage = 10; // Number of items to show in the sidebar
-    const start = Math.floor(currentIndex / itemsPerPage) * itemsPerPage; // Calculate the start index
-    const end = Math.min(start + itemsPerPage, mockData.length); // Calculate the end index
+  // Update getQuestionRange to use currentPage correctly
+  const getQuestionRange = currentPage => {
+    const start = currentPage * itemsPerPage;
+    const end = Math.min(start + itemsPerPage, presentationData?.length);
     return { start, end };
   };
 
-  // Get the range of questions to display
-  const { start, end } = getQuestionRange(currentIndex);
+  // Use currentPage to determine the start and end indices
+  const { start, end } = getQuestionRange(currentPage);
+  // Filtered items to display based on the selected filter
+  const filteredItems = presentationData?.slice(start, end).filter((question, index) => {
+    const displayNumber = start + index;
+
+    // All items
+    allIndices.push(displayNumber);
+
+    if (selectedFilter === 'All') {
+      return true; // Include all items
+    }
+
+    if (selectedFilter === 'Flagged') {
+      // Check if item is flagged (attempted)
+      const isFlagged =
+        attempted[displayNumber] === true || attempted[displayNumber] === false;
+      if (isFlagged) {
+        flaggedIndices.push(displayNumber); // Store index for flagged items
+        return true;
+      }
+    }
+
+    if (selectedFilter === 'Unseen') {
+      // Check if item is unseen (unattempted)
+      const isUnseen = attempted[displayNumber] === null;
+      if (isUnseen) {
+        unseenIndices.push(displayNumber); // Store index for unseen items
+        return true;
+      }
+    }
+
+    return false; // Hide items that don't match the filter
+  });
 
   const toggleAccordion = index => {
     setIsAccordionOpen(prev => {
@@ -142,7 +145,7 @@ const MockTestQuestion = () => {
         return newAccordionState; // Return the updated array
       } else {
         // If prev is not an array, initialize it with a new array based on data length
-        return new Array(mockData.length).fill(false);
+        return new Array(presentationData?.length).fill(false);
       }
     });
   };
@@ -160,44 +163,51 @@ const MockTestQuestion = () => {
     setIsAnswered(true);
   };
 
+ 
   const handleCheckAnswer = () => {
-    dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
+    dispatch(setActive(false));
 
     if (selectedAnswer) {
       setIsButtonClicked(true);
       setIsAccordionVisible(true);
       setBorder(false);
 
-      // Get the correct answer from answersArray using correctAnswerId
       const correctAnswer =
-        mockData[currentIndex].answersArray[mockData[currentIndex].correctAnswerId];
-
-      // Check if the selected answer matches the correct answer
+        presentationData[currentIndex].answersArray[presentationData[currentIndex].correctAnswerId];
       const isCorrect = selectedAnswer === correctAnswer;
 
-      // Update attempts
+      
+      
+
       setAttempts(prev => {
         const updatedAttempts = [...prev];
-        updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
-        dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
-        if (mockData[currentIndex]?.conditionName !== null) {
-          dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
+        updatedAttempts[currentIndex] = isCorrect;
+        dispatch(setAttempted(updatedAttempts));
+        if (presentationData[currentIndex]?.conditionName !== null) {
+          dispatch(
+            fetchConditionNameById({ id: presentationData[currentIndex]?.conditionName })
+          )
             .unwrap()
             .then(res => {
               setArticle(res);
             });
         }
-        dispatch(insertMockResult({ isCorrect, questionId: mockData[currentIndex].id, userId, moduleId: mockData[currentIndex].moduleId }))
-        
+
+         
+        // dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });
 
-      // Expand accordion for the correct answer
+    
+      
+
+      // Open the correct answer's accordion and selected if incorrect
       setIsAccordionOpen(prev => {
         const newAccordionState = [...prev].fill(false); // Close all first
-        const selectedIndex = mockData[currentIndex].answersArray.indexOf(selectedAnswer);
-        const correctIndex = mockData[currentIndex].correctAnswerId;
+        const selectedIndex =
+          presentationData[currentIndex].answersArray.indexOf(selectedAnswer);
+        const correctIndex = presentationData[currentIndex].correctAnswerId;
 
         newAccordionState[correctIndex] = true; // Always open correct answer
         if (!isCorrect) {
@@ -205,6 +215,7 @@ const MockTestQuestion = () => {
         }
         return newAccordionState;
       });
+
       let value = false;
       dispatch(markVisited({ currentIndex, value }));
     }
@@ -215,8 +226,10 @@ const MockTestQuestion = () => {
     dispatch(toggleFlag(currentIndex));
   };
 
+ 
+
   const nextQuestion = () => {
-    if (currentIndex < mockData.length - 1) {
+    if (currentIndex < presentationData.length - 1) {
       // Mark the current question as unseen if skipped
       if (attempted[currentIndex] === null) {
         setAttempts(prev => {
@@ -236,8 +249,10 @@ const MockTestQuestion = () => {
       if (isQuestionReview) {
         setIsAnswered(true);
         setIsAccordionVisible(true);
-        if (mockData[currentIndex]?.conditionName !== null) {
-          dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
+        if (presentationData[currentIndex]?.conditionName !== null) {
+          dispatch(
+            fetchConditionNameById({ id: presentationData[currentIndex]?.conditionName })
+          )
             .unwrap()
             .then(res => {
               setArticle(res);
@@ -252,50 +267,54 @@ const MockTestQuestion = () => {
       setCurrentIndex(prev => prev + 1);
     }
   };
+  const getAttemptedQuestions = () => {
+    return presentationData?.filter((_, index) => attempted[index] !== null);
+  };
 
+  const attemptedQuestions = getAttemptedQuestions();
   const prevQuestion = () => {
     if (currentIndex > 0) {
-      // Mark the current question as unseen if skipped
-      if (attempted[currentIndex] === null) {
-        setAttempts(prev => {
-          const updatedAttempts = [...prev];
-          updatedAttempts[currentIndex] = null; // Mark as unseen
-          return updatedAttempts;
-        });
+      setCurrentIndex(prev => prev - 1);
+
+      // Check if the previous question has been attempted
+      if (attempted[currentIndex - 1] !== null) {
+        setIsAnswered(true);
+        setIsAccordionVisible(true);
+      } else {
+        setIsAnswered(false);
+        setIsAccordionVisible(false);
       }
       if (isQuestionReview) {
         setIsAnswered(true);
         setIsAccordionVisible(true);
-        if (mockData[currentIndex]?.conditionName !== null) {
-          dispatch(fetchConditionNameById({ id: mockData[currentIndex]?.conditionName }))
-            .unwrap()
-            .then(res => {
-              setArticle(res);
-            });
-        }
       }
-      setCurrentIndex(prev => prev - 1);
-    }
-  };
-  const nextPage = () => {
-    if ((currentPage + 1) * itemsPerPage < mockData.length) {
-      setCurrentPage(currentPage + 1);
     }
   };
 
-  // Function to go to the previous page
+  // Correct the nextPage function
+  const nextPage = () => {
+    const newPage = currentPage + 1;
+    if (newPage * itemsPerPage < presentationData?.length) {
+      setCurrentPage(newPage);
+      setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the new page
+    }
+  };
+
+  // Correct the prevPage function
   const prevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+    const newPage = currentPage - 1;
+    if (newPage >= 0) {
+      setCurrentPage(newPage);
+      setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the previous page
     }
   };
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
   };
-  mockData[currentIndex].explanationList.map((explanation, index) => {
+  presentationData[currentIndex]?.explanationList?.map((explanation, index) => {
     let isSelected = selectedAnswer === explanation;
-    const isCorrectAnswer = index === mockData[currentIndex].correctAnswerId;
+    const isCorrectAnswer = index === presentationData[currentIndex].correctAnswerId;
   });
 
   // Update attempts based on user actions
@@ -348,17 +367,37 @@ const MockTestQuestion = () => {
     }
   };
 
-  const getAttemptedQuestions = () => {
-    return mockData.filter((_, index) => attempted[index] !== null);
-  };
 
-  const attemptedQuestions = getAttemptedQuestions();
+  useEffect(() => {
+    if (presentationData?.length) {
+      const initialAccordionState = presentationData[currentIndex].answersArray.map(() => false);
+      setIsAccordionOpen(initialAccordionState);
+    }
+  }, [presentationData]);
+
+  useEffect(() => {
+    // Reset accordion state when the current question changes
+    if (presentationData[currentIndex]?.answersArray) {
+      const numAnswers = presentationData[currentIndex].answersArray.length;
+      setIsAccordionOpen(Array(numAnswers).fill(false));
+    }
+  }, [currentIndex, presentationData]);
+
   useEffect(() => {
     if (active) {
-      setAttempts(Array(mockData.length).fill(null)); // Initialize attempts as unseen
-      dispatch(setAttempted(Array(mockData.length).fill(null))); // Dispatch the updated attempts array to Redux
+      setAttempts(Array(presentationData?.length).fill(null)); // Initialize attempts as unseen
+      dispatch(setAttempted(Array(presentationData?.length).fill(null))); // Dispatch the updated attempts array to Redux
     }
-  }, [mockData]);
+  }, [presentationData]);
+
+  useEffect(() => {
+    if (presentationData?.length > 0) {
+      if (active) {
+        dispatch(initializeFlags(presentationData?.length));
+        dispatch(initializeVisited(presentationData?.length));
+      }
+    }
+  }, [presentationData]);
 
   useEffect(() => {
     const correct = attempts.filter(attempt => attempt === true).length;
@@ -413,33 +452,37 @@ const MockTestQuestion = () => {
   // Check if it's time to enable the Finish button
   useEffect(() => {
     setIsReviewEnabled(false);
-    if (mockData.length === currentIndex + 1) {
+    if (presentationData.length === currentIndex + 1) {
       setIsReviewEnabled(true); // Enable the Finish button when the condition is met
     }
-  }, [currentIndex, mockData?.length]); // Re-run whenever currentIndex changes
+  }, [currentIndex, presentationData?.length]); // Re-run whenever currentIndex changes
 
-  // Add this useEffect hook to handle keyboard events
+  const reportHandler = () => {
+    setShowFeedBackModal(!showFeedBackModal);
+  };
+
   useEffect(() => {
     const handleKeyPress = e => {
-      // Prevent spacebar from scrolling the page
+      // Prevent default action for spacebar to avoid scrolling
       if (e.key === ' ') {
         e.preventDefault();
 
         if (isAnswered) {
-          handleCheckAnswer(); // ✅ Spacebar pressed, check answer
-          console.log('Spacebar pressed - Checking answer');
+          handleCheckAnswer(); // Call the check answer function
+          console.log('spacebar pressed');
         }
-        return; // Exit function to prevent other key checks
+        return; // Exit the function after handling spacebar
       }
 
+      // Check if the current question has been attempted
       if (attempted[currentIndex] !== null) return;
 
       const key = e.key.toUpperCase();
       const validKeys = ['Q', 'W', 'E', 'R', 'T'];
       const keyIndex = validKeys.indexOf(key);
 
-      if (keyIndex !== -1 && keyIndex < mockData[currentIndex]?.answersArray.length) {
-        const answer = mockData[currentIndex].answersArray[keyIndex];
+      if (keyIndex !== -1 && keyIndex < presentationData[currentIndex]?.answersArray.length) {
+        const answer = presentationData[currentIndex].answersArray[keyIndex];
 
         handleAnswerSelect(answer);
         setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
@@ -450,7 +493,7 @@ const MockTestQuestion = () => {
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [currentIndex, attempted, mockData, isAnswered]); // ✅ Dependency array updated
+  }, [currentIndex, attempted, presentationData, isAnswered]); // ✅ Added isAnswered in dependency array
 
   useEffect(() => {
     if (review) {
@@ -464,14 +507,7 @@ const MockTestQuestion = () => {
     }
   }, [review]);
 
-  useEffect(() => {
-    if (mockData?.length > 0) {
-      if (active) {
-        dispatch(initializeFlags(mockData?.length));
-        dispatch(initializeVisited(mockData?.length));
-      }
-    }
-  }, [mockData]);
+
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -491,7 +527,7 @@ const MockTestQuestion = () => {
       <div className='dark:bg-[#1E1E2A] min-h-screen'>
         <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
           <div className=''>
-            <img src='/assets/small-logo.png' alt='' />
+            <img src='/assets/small-logo.png' alt='Logo sm' />
           </div>
 
           <div className='' onClick={toggleDrawer}>
@@ -510,7 +546,7 @@ const MockTestQuestion = () => {
               <div className='absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden'>
                 <div
                   className='bg-[#60B0FA] h-full transition-all duration-300 ease-in-out'
-                  style={{ width: `${((currentIndex + 1) / mockData.length) * 100}%` }}
+                  style={{ width: `${((currentIndex + 1) / presentationData?.length) * 100}%` }}
                 ></div>
               </div>
 
@@ -563,11 +599,11 @@ const MockTestQuestion = () => {
                   &larr;
                 </button>
                 <h2 className='font-semibold text-center'>
-                  Question {currentIndex + 1} of {mockData.length}
+                  Question {currentIndex + 1} of {presentationData?.length}
                 </h2>
                 <button
                   className={`text-white ${
-                    currentIndex + 1 === mockData.length
+                    currentIndex + 1 === presentationData?.length
                       ? 'opacity-70 cursor-not-allowed'
                       : ''
                   }`}
@@ -619,24 +655,21 @@ const MockTestQuestion = () => {
             </div>
 
             {/* Question start */}
-            {mockData?.length > 0 && (
+            {presentationData.length > 0 && (
               <div className='mt-6 p-6' key={currentIndex}>
                 <p className='text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white'>
-                  {mockData[currentIndex]?.questionStem}
+                  {presentationData[currentIndex].questionStem}
                 </p>
 
                 <h3 className='mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white'>
-                  {mockData[currentIndex].leadQuestion}
+                  {presentationData[currentIndex].leadQuestion}
                 </h3>
-
-                {/* Options Section */}
                 <div className='mt-4 space-y-4'>
-                  {mockData[currentIndex]?.answersArray?.map((answer, index) => {
+                  {presentationData[currentIndex]?.answersArray.map((answer, index) => {
                     const isSelected = selectedAnswer === answer;
                     const isCorrectAnswer =
-                      index === mockData[currentIndex]?.correctAnswerId;
+                      index === presentationData[currentIndex]?.correctAnswerId;
 
-                    // Determine the border color based on whether the button has been clicked
                     const borderColor =
                       isButtonClicked || attempted[currentIndex] !== null
                         ? isCorrectAnswer
@@ -652,22 +685,28 @@ const MockTestQuestion = () => {
 
                     return (
                       <div
-                        className={`rounded-md  ${
-                          isSelected
-                            ? 'border border-[#3CC8A1]  bg-[#FAFAFA]'
-                            : 'border border-white bg-white hover:border hover:border-[#3CC8A1]'
+                        key={index}
+                        className={`rounded-md border ${
+                          attempted[currentIndex] !== null
+                            ? isCorrectAnswer
+                              ? 'border-[#22C55E] bg-[#DCFCE7]'
+                              : isSelected
+                              ? 'border-[#EF4444] bg-[#FEE2E2]'
+                              : 'border-white bg-white'
+                            : isSelected
+                            ? 'border-[#3CC8A1] bg-[#FAFAFA]'
+                            : 'border-white bg-white hover:border-[#3CC8A1]'
                         }`}
                       >
                         {!isAccordionVisible && attempted[currentIndex] === null ? (
                           <label
-                            key={index}
-                            className={`flex  items-center space-x-3 py-[12px] p-4 cursor-pointer  text-[14px] lg:text-[16px]  dark:bg-[#1E1E2A] dark:border`}
+                            className={`flex  items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer  text-[14px] lg:text-[16px]  dark:bg-[#1E1E2A] dark:border`}
                             onClick={() => handleAnswerSelect(answer, index)}
                           >
                             <input
                               type='radio'
                               name='answer'
-                              className='form-radio h-5 w-5 text-green-500 '
+                              className='form-radio h-5 w-5 text-green-500 focus:ring-green-500'
                               checked={isSelected}
                               readOnly
                             />
@@ -680,14 +719,13 @@ const MockTestQuestion = () => {
                           </label>
                         ) : (
                           <div
-                            className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
+                            className={`border ${borderColor} ${bgColor} rounded-md`}
                             onClick={e => {
-                              e.stopPropagation(); // Prevent propagation
+                              e.stopPropagation();
                               toggleAccordion(index);
                             }}
                           >
                             <label
-                              key={index}
                               className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
                               onClick={() => handleAnswerSelect(answer, index)}
                             >
@@ -772,7 +810,7 @@ const MockTestQuestion = () => {
                               <>
                                 <hr className={`mx-5 ${borderColor}`} />
                                 <p className='py-2 px-5 text-[12px] text-[#3F3F46]'>
-                                  {mockData[currentIndex].explanationList[index]}
+                                    {presentationData[currentIndex]?.explanationList[index]}
                                 </p>
                               </>
                             )}
@@ -930,43 +968,30 @@ const MockTestQuestion = () => {
             )}
             {isAccordionVisible && <DiscussionBoard />}
             {isAccordionVisible && (
-              <Article article={article} id={mockData[currentIndex]?.conditionName} />
+              <Article article={article} id={presentationData[currentIndex]?.conditionName} />
             )}
-            {showFeedBackModal && (
-              <FeedbackModal
-                showFeedBackModal={showFeedBackModal}
-                setShowFeedBackModal={setShowFeedBackModal}
-              />
-            )}
-          </div>
-
-          <div
-            ref={beakerRef}
-            className={`absolute z-50 top-0 right-0 transition-all duration-500 ${
-              beakerToggle
-                ? 'opacity-100 visible'
-                : 'opacity-0 invisible pointer-events-none'
-            }`}
-          >
-            <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
           </div>
 
           {/* Sidebar Section */}
           <div className={`hidden lg:block fixed right-0 top-0`}>
             <div
-              className={`flex flex-col items-center justify-between  bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] h-screen dark:bg-[#1E1E2A] text-black ${
+              className={` bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] flex flex-col items-center justify-between  h-screen dark:bg-[#1E1E2A] text-black ${
                 !toggleSidebar ? 'translate-x-0' : 'translate-x-full'
               } transition-transform duration-300`}
             >
               <div className='w-full'>
-                <div className='flex items-center justify-between mt-5'>
+                <div className='flex items-center justify-between mt-5 '>
                   <div className='flex items-center'></div>
+
                   <div className='absolute left-1/2 transform -translate-x-1/2'>
                     <Logo />
                   </div>
+
                   <div
-                    className='flex items-center mr-5 cursor-pointer'
-                    onClick={() => setToggleSidebar(!toggleSidebar)}
+                    className='flex items-center cursor-pointer'
+                    onClick={() => {
+                      setToggleSidebar(!toggleSidebar);
+                    }}
                   >
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -975,10 +1000,10 @@ const MockTestQuestion = () => {
                       viewBox='0 0 24 24'
                       fill='none'
                       stroke='currentColor'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      className='lucide lucide-chevrons-left dark:text-white'
+                      stroke-width='2'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      className='lucide lucide-chevrons-left dark:text-white mr-4'
                     >
                       <path d='m11 17-5-5 5-5' />
                       <path d='m18 17-5-5 5-5' />
@@ -1024,63 +1049,6 @@ const MockTestQuestion = () => {
                   visited={visited}
                   setCurrentIndex={setCurrentIndex}
                 />
-
-                {/* <div className='flex items-center justify-center gap-x-28 mt-3 text-[#71717A]'>
-                  <button
-                    className={`${
-                      currentPage === 0
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'cursor-pointer'
-                    }`}
-                    onClick={currentPage > 0 ? prevPage : null}
-                    disabled={currentPage === 0}
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='24'
-                      height='24'
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      stroke='currentColor'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      className='lucide lucide-move-left'
-                    >
-                      <path d='M6 8L2 12L6 16' />
-                      <path d='M2 12H22' />
-                    </svg>
-                  </button>
-
-                  <button
-                    className={`${
-                      (currentPage + 1) * itemsPerPage >= mockData.length
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'cursor-pointer'
-                    }`}
-                    onClick={
-                      (currentPage + 1) * itemsPerPage < mockData.length ? nextPage : null
-                    }
-                    disabled={(currentPage + 1) * itemsPerPage >= mockData.length}
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='24'
-                      height='24'
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      stroke='currentColor'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      className='lucide lucide-move-right'
-                    >
-                      <path d='M18 8L22 12L18 16' />
-                      <path d='M2 12H22' />
-                    </svg>
-                  </button>
-                </div> */}
-
                 <div className='py-5 px-10 text-[#D4D4D8]'>
                   <hr />
                 </div>
@@ -1090,7 +1058,7 @@ const MockTestQuestion = () => {
                 <hr className='mx-5' />
               </div>
 
-              <div className='mb-5 text-[12px]'>
+              <div className='text-[12px] mb-5'>
                 <div
                   className={`flex items-center font-semibold gap-x-2 ${
                     isFinishEnabled
@@ -1175,12 +1143,22 @@ const MockTestQuestion = () => {
           setShowPopup={setShowPopup}
         />
       )}
+
       {showFeedBackModal && (
         <FeedbackModal
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
         />
       )}
+
+      <div
+        ref={beakerRef}
+        className={`absolute top-0 right-0 transition-all duration-500 ${
+          beakerToggle ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        }`}
+      >
+        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+      </div>
 
       <Drawer
         open={isOpen}
@@ -1391,4 +1369,4 @@ const MockTestQuestion = () => {
   );
 };
 
-export default MockTestQuestion;
+export default SbaPresentation;
