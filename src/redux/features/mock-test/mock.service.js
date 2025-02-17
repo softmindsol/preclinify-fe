@@ -7,15 +7,17 @@ export const fetchMockTest = createAsyncThunk(
         try {
             const { data, error } = await supabase
                 .from('mockTable')
-                .select('moduleId'); // Fetch only the 'id' column
+                .select('*'); // Fetch only the 'id' column
 
             // If there's an error in the response, reject it
             if (error) {
                 return rejectWithValue(error.message);
             }
 
+
+
             // Extract IDs from the data
-            
+
             const ids = data.map(item => item.moduleId);
 
             return ids; // Return the fetched IDs
@@ -27,8 +29,8 @@ export const fetchMockTest = createAsyncThunk(
 
 export const fetchModulesById = createAsyncThunk(
     'modules/fetchModulesByMock',
-    async ({ids}, { rejectWithValue }) => {
-            
+    async ({ ids }, { rejectWithValue }) => {
+
         try {
             // Fetch modules where the 'id' is in the provided 'ids' array
             const { data, error } = await supabase
@@ -38,10 +40,10 @@ export const fetchModulesById = createAsyncThunk(
 
             // If there's an error in the response, reject it
             if (error) {
-                console.log("error:",error);
-                
+                console.log("error:", error);
+
                 return rejectWithValue(error.message);
-            }            
+            }
 
             return data; // Return the fetched modules
         } catch (error) {
@@ -50,13 +52,53 @@ export const fetchModulesById = createAsyncThunk(
     }
 );
 
+export const fetchTotalMockQuestion = createAsyncThunk(
+    'modules/fetchTotalMockQuestion',
+    async ({ ids }, { rejectWithValue }) => {
+        try {
+
+
+            // Extract categoryId values from the array of objects
+            const categoryIds = ids.map(item => item.categoryId);
+            console.log("categoryIds:", categoryIds);
+
+            const { data, error } = await supabase
+                .from('mockTable')
+                .select('*')
+                .in('moduleId', categoryIds); // Pass array of categoryIds
+
+            if (error) {
+                console.log("error in fetchTotalMockQuestion:", error);
+
+                return rejectWithValue(error.message);
+            }
+
+     
+
+            // Group questions by categoryId
+            const groupedData = categoryIds.map(categoryId => ({
+                categoryId,
+                questions: data.filter(question => question.moduleId === categoryId)
+            }));
+
+
+            console.log("Mock Data:", groupedData);
+
+            return groupedData;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
 
 export const fetchMockTestById = createAsyncThunk(
     'modules/fetchMockTestById',
     async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
 
-       
-        
+
+
         try {
 
             if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {

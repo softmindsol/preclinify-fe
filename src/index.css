@@ -2,73 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+CU:wght@100..400&display=swap');
-body{
-    background-color: #F4F4F5;
-     font-family: "Inter", sans-serif;
-     overflow-y: auto;
+body {
+  background-color: #f4f4f5;
+  font-family: 'Inter', sans-serif;
+  overflow-y: auto;
 }
 
 :root {
-    --bg-color: #ffffff;
-    --text-color: #000000;
+  --bg-color: #ffffff;
+  --text-color: #000000;
 }
 .dark {
-    --bg-color: #000000;
-    --text-color: #ffffff;
+  --bg-color: #000000;
+  --text-color: #ffffff;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 /* Add this CSS to your styles */
-input[type="radio"] {
-    appearance: none; /* Remove default styling */
-    width: 20px; /* Set width */
-    height: 20px; /* Set height */
-    border: 2px solid #ccc; /* Border color */
-    border-radius: 50%; /* Make it circular */
-    cursor: pointer; /* Change cursor */
-    position: relative; /* Position relative for the pseudo-element */
+input[type='radio'] {
+  appearance: none; /* Remove default styling */
+  width: 20px; /* Set width */
+  height: 20px; /* Set height */
+  border: 2px solid #ccc; /* Border color */
+  border-radius: 50%; /* Make it circular */
+  cursor: pointer; /* Change cursor */
+  position: relative; /* Position relative for the pseudo-element */
 }
 
 /* Create a pseudo-element for the inner circle */
-input[type="radio"]::before {
-    content: ''; /* Required for pseudo-elements */
-    position: absolute; /* Position it absolutely */
-    top: 2px; /* Adjust to create padding */
-    left: 2px; /* Adjust to create padding */
-    width: 12px; /* Inner circle width */
-    height: 12px; /* Inner circle height */
-    border-radius: 50%; /* Make it circular */
-    background-color: transparent; /* Default background */
-    transition: background-color 0.2s; /* Smooth transition */
+input[type='radio']::before {
+  content: ''; /* Required for pseudo-elements */
+  position: absolute; /* Position it absolutely */
+  top: 50%; /* Adjust to create padding */
+  left: 50%; /* Adjust to create padding */
+  width: 12px; /* Inner circle width */
+  height: 12px; /* Inner circle height */
+  border-radius: 50%; /* Make it circular */
+  transform: translate(-50%, -50%);
+  background-color: transparent; /* Default background */
+  transition: background-color 0.2s; /* Smooth transition */
 }
 
 /* Change the background color when checked */
-input[type="radio"]:checked::before {
-    background-color: #3CC8A1; /* Change background color when checked */
+input[type='radio']:checked::before {
+  background-color: #3cc8a1; /* Change background color when checked */
 }
 
 /* Change border color when checked */
-input[type="radio"]:checked {
-    border: 2px solid #3CC8A1; /* Change border color when checked */
+input[type='radio']:checked {
+  border: 2px solid #3cc8a1; /* Change border color when checked */
 }
-
 
 .swiper {
   width: 100%;
   height: 100%;
-  
-
 }
 
 .swiper-slide {
   text-align: center;
   background: #fff;
-border-radius: 48px;
+  border-radius: 48px;
   /* Center slide text vertically */
   display: flex;
   justify-content: center;
@@ -96,86 +93,77 @@ border-radius: 48px;
   }
 }
 
-
 @media (max-width: 1280px) {
   .swiper-slide img {
     display: block;
     border-radius: 100%;
-    width:250px; 
+    width: 250px;
     height: 130px;
     object-fit: cover;
   }
 
   .swiper-slide {
-  text-align: center;
-  background: #fff;
-border-radius: 48px;
-  /* Center slide text vertically */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  padding: 25px;
-  width: 1163px;
+    text-align: center;
+    background: #fff;
+    border-radius: 48px;
+    /* Center slide text vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 25px;
+    width: 1163px;
+  }
 }
-
-}
-
 
 @media (max-width: 768px) {
   .swiper-slide img {
     display: block;
     border-radius: 100%;
-    width:250px; 
+    width: 250px;
     height: 130px;
     object-fit: cover;
   }
 
   .swiper-slide {
-  text-align: center;
-  background: #fff;
-border-radius: 48px;
-  /* Center slide text vertically */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  padding: 25px;
-  width: 1163px;
-}
-
+    text-align: center;
+    background: #fff;
+    border-radius: 48px;
+    /* Center slide text vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 25px;
+    width: 1163px;
+  }
 }
 
 .swiper-slide:nth-child(1n) {
-    margin-left: 140px;
+  margin-left: 140px;
 
   width: 60%;
 }
-
 
 @media (max-width: 768px) {
   .swiper-slide:nth-child(1n) {
     margin-left: 140px;
 
-  width: 100%;
-}
-
-
+    width: 100%;
+  }
 }
 
 /* Style for the container */
 
-
 /* Style for the DeepChat component */
 .deep-chat {
-    border: none; /* Remove all borders */
-      width: 200px;/* Full width of the container */
+  border: none; /* Remove all borders */
+  width: 200px; /* Full width of the container */
 }
 
 /* Responsive styling for smaller screens */
 @media (max-width: 768px) {
-    .deep-chat {
-        width: 180px; /* Reduce the width for smaller screens */
-    }
+  .deep-chat {
+    width: 180px; /* Reduce the width for smaller screens */
+  }
 }
-

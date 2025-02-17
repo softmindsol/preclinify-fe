@@ -21,6 +21,40 @@ export const fetchMcqsQuestion = createAsyncThunk(
     } 
 );
 
+export const fetchTotalSBAQuestion = createAsyncThunk(
+    'modules/fetchTotalSBAQuestion',
+    async ({ ids }, { rejectWithValue }) => {
+        try {
+          
+
+            // Extract categoryId values from the array of objects
+            const categoryIds = ids.map(item => item.categoryId);
+
+            const { data, error } = await supabase
+                .from('mcqQuestions')
+                .select('*')
+                .in('moduleId', categoryIds); // Pass array of categoryIds
+
+            if (error) { 
+                console.log("error in fetchTotalSBAQuestion:", error);
+                
+                return rejectWithValue(error.message);
+            }
+
+            // Group questions by categoryId
+            const groupedData = categoryIds.map(categoryId => ({
+                categoryId,
+                questions: data.filter(question => question.moduleId === categoryId)
+            }));
+
+           
+            return groupedData;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 
 // Fetch MCQs by moduleId with limit
 export const fetchMcqsByModules = createAsyncThunk(

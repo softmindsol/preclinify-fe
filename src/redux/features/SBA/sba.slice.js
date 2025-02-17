@@ -1,22 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMcqsQuestion, fetchMcqsByModules } from "./sba.service";
+import { fetchMcqsQuestion, fetchMcqsByModules, fetchTotalSBAQuestion } from "./sba.service";
 
 const mcqsSlice = createSlice({
     name: 'mcqsQuestion',
     initialState: {
-        data: [],   // To store fetched MCQs data
+        data: [],   // To store all MCQs data
+        mcqsByModulesData: [], // Store data fetched by fetchMcqsByModules
         loading: false,  // To track loading state
         error: null,    // To store error message, if any
-    },
+    }, 
     reducers: {
         // Reducer to reset the state
         resetState: (state) => {
             state.data = [];
-
+            state.mcqsByModulesData = [];
             state.loading = false;
             state.error = null;
         },
- 
     },
     extraReducers: (builder) => {
         builder
@@ -33,14 +33,28 @@ const mcqsSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload; // Save error message
             })
-            // Handle fetchMcqsByModule lifecycle
+            .addCase(fetchTotalSBAQuestion.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchTotalSBAQuestion.fulfilled, (state, action) => {
+                state.loading = false;
+                
+                state.mcqsByModulesData = action.payload;
+            })
+            .addCase(fetchTotalSBAQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Handle fetchMcqsByModules lifecycle
             .addCase(fetchMcqsByModules.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchMcqsByModules.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = action.payload; // Save fetched data
+                state.mcqsByModulesData = action.payload; // Save fetched data
             })
             .addCase(fetchMcqsByModules.rejected, (state, action) => {
                 state.loading = false;

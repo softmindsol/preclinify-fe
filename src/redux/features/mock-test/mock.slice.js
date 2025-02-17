@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMockTest, fetchMockTestById, fetchModulesById } from "./mock.service";
+import { fetchMockTest, fetchMockTestById, fetchModulesById, fetchTotalMockQuestion } from "./mock.service";
 
 const modulesSlice = createSlice({
     name: 'mockModules',
     initialState: {
-        mockTestData:[],
+        mockTestData: [],
         mockTestIds: [], // Stores IDs fetched from mockTable
+        mockMcqsByModulesData: [], // Store data fetched by fetchMcqsByModules
         modules: [], // Stores modules fetched from modulesNew
         loading: false,
         error: null,
@@ -29,7 +30,20 @@ const modulesSlice = createSlice({
                 state.error = action.payload; // Store the error message
             })
 
-            // fetchModules
+            .addCase(fetchTotalMockQuestion.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchTotalMockQuestion.fulfilled, (state, action) => {
+                state.loading = false;
+
+                state.mockMcqsByModulesData = action.payload;
+            })
+            .addCase(fetchTotalMockQuestion.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
             .addCase(fetchModulesById.pending, (state) => {
                 state.loading = true;
                 state.error = null;

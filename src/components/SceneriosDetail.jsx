@@ -7,6 +7,7 @@ import DashboardModal from './common/DashboardModal';
 import { FaStar } from "react-icons/fa";
 import { setLoading } from '../redux/features/loader/loader.slice';
 import { fetchOSCEDataById } from '../redux/features/osce-static/osce-static.service';
+import FeedbackModal from './common/Feedback';
 
 const SceneriosDetail = () => {
     const [minutes, setMinutes] = useState(8); // Starting minute
@@ -21,6 +22,7 @@ const [loader,setLoader]=useState(false)
     const { id } = useParams(); // Extract 'id' from the URL
     const [checkboxState, setCheckboxState] = useState([]);
     const [score, setScore] = useState(0);
+    const [showFeedBackModal, setShowFeedBackModal]=useState(false)
 
     const togglePanel = (panel) => {
         setOpenPanel(openPanel === panel ? null : panel);
@@ -139,10 +141,20 @@ const [loader,setLoader]=useState(false)
     }, [timerActive, minutes, seconds, navigate]);
 
     useEffect(() => {  
-            dispatch(fetchOSCEDataById(id))   
+            dispatch(fetchOSCEDataById(id))
+            .unwrap((res)=>{
+                console.log("Response:",res);
+                
+            })
+            .catch((err)=>{
+                console.log("Error:",err);
+                
+            })
     }, []);
 
-
+    const reportHandler=()=>{
+        setShowFeedBackModal(!showFeedBackModal)
+    }
 
     return (
         <div className='w-full'>
@@ -169,7 +181,7 @@ const [loader,setLoader]=useState(false)
 
 
                 <div className="flex flex-col items-center justify-center mt-10">
-                    <div className="w-[90%] h-[96px] rounded-[8px] bg-[#3CC8A1] text-[#ffff] text-center">
+                    <div className={`w-[90%] h-[96px] rounded-[8px]  ${timerActive ? 'bg-[#3CC8A1]' : 'bg-[#FF9741]'}  text-[#ffff] text-center`}>
                         <p className="text-[12px] mt-3">Timer</p>
                         <p className="font-black text-[36px]">
                             {minutes < 10 ? `0${minutes}` : minutes}:
@@ -181,7 +193,7 @@ const [loader,setLoader]=useState(false)
                 <div className="p-5 text-center">
                     <button
                         onClick={() => setTimerActive(!timerActive)}
-                        className='rounded-[6px] w-[90%] text-[#3CC8A1] border border-[#3CC8A1] h-[32px] hover:bg-[#3CC8A1] hover:text-white transition-all duration-200 text-[12px]'
+                        className={`rounded-[6px] w-[90%] ${timerActive ? 'border border-[#3CC8A1] hover:bg-[#3CC8A1] text-[#3CC8A1]' : 'border border-[#FF9741] hover:bg-[#FF9741] text-[#FF9741]'}    h-[32px]  hover:text-white transition-all duration-200 text-[12px]`}
                     >
                         {timerActive ? "Pause Timer" : "Start Timer"}
                     </button>
@@ -226,7 +238,9 @@ const [loader,setLoader]=useState(false)
                                         <span>04.10.24</span>
                                     </div>
 
-                                    <button className="bg-transparent px-2 py-1 rounded text-xs border border-white">
+                                    <button 
+                                    onClick={reportHandler}
+                                    className="bg-transparent px-2 py-1 rounded text-xs border border-white">
                                         Report a problem
                                     </button>
                                 </div>
@@ -238,17 +252,17 @@ const [loader,setLoader]=useState(false)
                                 {
                                     id: 1,
                                     title: "Candidate Brief",
-                                    content: selectedData["candidateBrief"],
+                                    content: selectedData?.candidateBrief,
                                 },
                                 {
                                     id: 2,
                                     title: "Actor Brief",
-                                    content: selectedData["actorBrief"],
+                                    content: selectedData?.actorBrief,
                                 },
                                 {
                                     id: 3,
                                     title: "Examiner Brief",
-                                    content: selectedData["examinerBrief"],
+                                    content: selectedData?.examinerBrief,
                                 },
                                 {
                                     id: 4,
@@ -392,7 +406,9 @@ const [loader,setLoader]=useState(false)
 
                         </div>
                     </div>}
-
+                    {showFeedBackModal && (
+                <FeedbackModal showFeedBackModal={showFeedBackModal} setShowFeedBackModal={setShowFeedBackModal} />
+            )}
             {showPopup && (
                 <DashboardModal handleBackToDashboard={handleBackToDashboard} setShowPopup={setShowPopup} />
             )}

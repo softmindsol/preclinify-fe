@@ -12,7 +12,7 @@ export const fetchOSCEData = createAsyncThunk(
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
         }
-    }
+    } 
 );
 
 export const fetchOSCEDataById = createAsyncThunk(
@@ -31,6 +31,37 @@ export const fetchOSCEDataById = createAsyncThunk(
             return data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
+
+
+export const fetchModules = createAsyncThunk(
+    'modules/fetchModules',
+    async (moduleNames, { rejectWithValue }) => {
+        try {
+            if (!Array.isArray(moduleNames) || moduleNames.length === 0) {
+                return rejectWithValue('Invalid module names array');
+            }
+
+            const { data, error } = await supabase
+                .from('modulesNew')
+                .select('*')
+                .in('categoryId', moduleNames); // Ensure correct column name
+
+            if (error) {
+                console.log("error:", error);
+                
+                return rejectWithValue(error.message);
+            }
+
+            console.log("data:", data);
+            
+
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
         }
     }
 );

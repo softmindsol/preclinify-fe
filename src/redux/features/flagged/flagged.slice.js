@@ -15,9 +15,12 @@ const flaggedSlice = createSlice({
         initializeFlags: (state, action) => {
             state.flaggedQuestions = new Array(action.payload).fill(false);
         },
+        clearFlags:()=>{
+            return initialState;
+        }
        
     },
 });
 
-export const { toggleFlag, initializeFlags } = flaggedSlice.actions;
+export const { toggleFlag, initializeFlags, clearFlags } = flaggedSlice.actions;
 export default flaggedSlice.reducer;
