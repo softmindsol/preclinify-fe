@@ -51,6 +51,7 @@ const QuestionCard = () => {
   const [isAccordionVisible, setIsAccordionVisible] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState([]);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [answerChecked, setAnswerChecked] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
@@ -491,7 +492,7 @@ const QuestionCard = () => {
             if (e.key === ' ') {
                 e.preventDefault();
 
-                if (isAnswered) {
+                if (isAnswered && !answerChecked) {
                     handleCheckAnswer(); // Call the check answer function
                     setAnswerChecked(true);
                     console.log('spacebar pressed');

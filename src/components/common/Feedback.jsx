@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from 'sonner';
 
 const FeedbackModal = ({ showFeedBackModal, setShowFeedBackModal, userId, questionStem, leadQuestion }) => {
+    console.log("🚀 ~ FeedbackModal ~ questionStem:", questionStem)
     const [feedback, setFeedback] = useState("");
     const [loading, setLoading] = useState(false);
 
