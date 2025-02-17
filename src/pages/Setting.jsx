@@ -27,7 +27,6 @@ const Setting = () => {
     setIsOpen(prevState => !prevState);
   };
   const profile = useSelector(state => state.personalInfo.userInfo[0]);
-  console.log('profile::', profile);
   // Logout function
   const handleLogout = async () => {
     try {
