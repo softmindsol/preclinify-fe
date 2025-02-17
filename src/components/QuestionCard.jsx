@@ -513,7 +513,7 @@ const QuestionCard = () => {
             if (e.key === ' ') {
                 e.preventDefault();
 
-                if (isAnswered) {
+                if (isAnswered && !answerChecked) {
                     handleCheckAnswer(); // Call the check answer function
                     setAnswerChecked(true);
                     console.log('spacebar pressed');
