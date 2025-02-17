@@ -351,11 +351,13 @@ const QuestionCard = () => {
 
   const handleFinishAndReview = () => {
     if (isFinishEnabled) {
-      handleCheckAnswer();
+      if (isAnswered) {
+        handleCheckAnswer();
+      }
       // dispatch(setMcqsAccuracy({ accuracy }))
 
       // handleAnswerSelect()
-      //    Add a delay (for example, 2 seconds)
+      //    Add a sdelay (for example, 2 seconds)
       setTimeout(() => {
         navigation('/score');
       }, 2000); // 2000 ms = 2 seconds

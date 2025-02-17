@@ -3,7 +3,6 @@ import Sidebar from '../components/common/Sidebar';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format } from 'date-fns';
-
 import Drawer from 'react-modern-drawer';
 //import styles 👇
 import 'react-modern-drawer/dist/index.css';
@@ -291,22 +290,26 @@ const Dashboard = () => {
 
               <div className='flex justify-between gap-x-10'>
                 <div className='grid grid-cols-7 gap-[4px] xl:gap-2 mt-4'>
-                  {days.map((day, index) => {
-                    // Calculate total result and percentage
+                  {days?.map((day, index) => {
                     const target = day.workCount * 100;
                     const workPercentage = Math.floor(
                       Math.min((day.totalResult / target) * 100, 100)
                     );
-                    // Determine background color class based on percentage
                     const bgColorClass = getColorClass(workPercentage);
 
                     return (
                       <div
                         key={index}
-                        className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white  ${
+                        className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white relative  ${
                           day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'
                         }`}
-                      ></div>
+                      >
+                        <img
+                          src='/assets/heat-icon.svg'
+                          alt='heat icon'
+                          className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-fit'
+                        />
+                      </div>
                     );
                   })}
                 </div>

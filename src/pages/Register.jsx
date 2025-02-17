@@ -77,13 +77,13 @@ const Register = () => {
               htmlFor='email'
               className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'
             >
-              Display Name
+              Full Name
             </label>
             <br />
             <input
               type='text'
               id='displayName'
-              placeholder='Enter your display name...'
+              placeholder='Enter your full name...'
               value={formik.values.displayName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
