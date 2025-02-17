@@ -27,6 +27,7 @@ import userReducer from './features/user-id/userId.slice';
 import presentationSBAReducer from './features/presentationSBA/presentationSBA.slice'
 import presentationMockReducer from './features/MockPresentation/presentationMock.slice'
 import personalInfoReducer from './features/personal-info/personal-info.slice'
+import streakReducer from './features/streak/streak.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: 'root',
@@ -65,6 +66,8 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+
+  streak:streakReducer,
   personalInfo: personalInfoReducer,
   SBAPresentation: presentationSBAReducer,
   MockPresentation: presentationMockReducer,

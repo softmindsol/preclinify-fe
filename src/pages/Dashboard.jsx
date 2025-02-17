@@ -24,6 +24,7 @@ import supabase from '../config/helper';
 import { fetchUserId } from '../redux/features/user-id/userId.service';
 import { fetchDaysUntilExam } from '../redux/features/examDate/service';
 import { fetchUserInformation } from '../redux/features/personal-info/personal-info.service';
+import { fetchUserStreak } from '../redux/features/streak/streak.service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -47,9 +48,9 @@ const Dashboard = () => {
   const examDuration = useSelector(state => state?.examDates?.examDate);
 const profile=useSelector(state=>state.personalInfo.userInfo[0])
   const userId = useSelector(state => state.user.userId)  
-
-
-  console.log("profile:", profile);
+  const streak=useSelector(state=>state.streak.streak)
+  
+  console.log("streak:", streak);
   
 
 
@@ -194,10 +195,11 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
   }, []);
 
   useEffect(() => {
-
+    
     dispatch(fetchUserId());
     dispatch(fetchDaysUntilExam(userId));
     dispatch(fetchUserInformation({userId}))
+    dispatch(fetchUserStreak({ userId }))
   }, []);
 
 
