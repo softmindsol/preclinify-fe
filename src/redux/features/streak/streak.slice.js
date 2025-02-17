@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchUserStreak } from "./streak.service";
 
 const initialState = {
-    streak: 0,
+    streak: [],
     totalRecords: 0,
     loading: false,
     error: null,

@@ -24,6 +24,7 @@ import { fetchUserId } from '../redux/features/user-id/userId.service';
 import { fetchDaysUntilExam } from '../redux/features/examDate/service';
 import { fetchUserInformation } from '../redux/features/personal-info/personal-info.service';
 import { fetchUserStreak } from '../redux/features/streak/streak.service';
+import BarChart from '../components/charts/stacked-bar';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -47,14 +48,10 @@ const Dashboard = () => {
   const examDuration = useSelector(state => state?.examDates?.examDate);
 const profile=useSelector(state=>state.personalInfo.userInfo[0])
   const userId = useSelector(state => state.user.userId)  
-  const streak=useSelector(state=>state.streak.streak)
+  const streaks=useSelector(state=>state?.streak?.streak) || []
+  
+  
   const userInfo = useSelector(state => state?.user?.userInfo);
-
-  console.log("streak:", streak);
-
-
-
-
 
 
   const toggleDrawer = () => {
@@ -204,11 +201,26 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
     dispatch(fetchUserStreak({userId}))
     .unwrap()
     .then(res=>{
-      console.log("response",res);
+     
       
     })
   }, []);
 
+
+  const selectedMonth = selectedDate.toISOString()?.split('-')[1];
+  const filteredStreaks = streaks?.filter((streak) =>
+    streak?.streakDate?.startsWith(`2025-${selectedMonth}`)
+  );
+
+  
+
+  
+  const noOfDays = filteredStreaks?.map((streak) => new Date(streak?.streakDate).getDate());
+  const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
+  const totalIncorrects = filteredStreaks?.map((streak) => streak?.totalIncorrect);
+
+  
+  
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
       <div className='fixed h-full hidden lg:block dark:bg-[#1E1E2A] text-black dark:text-white'>
@@ -297,7 +309,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                   Current Streak
                 </p>
                 <p className='font-black text-[18px]  sm:text-[24px] xl:text-[32px] text-[#FF9741] dark:text-white'>
-                  4 Days
+                  {streaks?.streak} Days
                 </p>
               </div>
 
@@ -312,13 +324,13 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
 
                     // Compare current day with streak date
                     const currentDate = new Date().toISOString().split("T")[0]; // Format as yyyy-mm-dd
-                    const isStreakDay = currentDate === streak.streakDate; // Check if this day matches streak date
+                    const isStreakDay = currentDate === streaks?.streakDate; // Check if this day matches streak date
 
                     // Ensure that day.date is in the same format as streak.streakDate
                     const dayDateFormatted = new Date(day.date).toISOString().split("T")[0];
 
                     // Check if the current day matches streak day
-                    const isCurrentDayStreak = dayDateFormatted === streak.streakDate;
+                    const isCurrentDayStreak = dayDateFormatted === streaks?.streakDate;
 
                     return (
                       <div
@@ -327,7 +339,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
         ${isCurrentDayStreak ? 'border-2 border-yellow-500' : ''}`} // Highlight streak day
                       >
                         {/* Render streak icon only for the streak day */}
-                        {isCurrentDayStreak && streak.streak === 1 && (
+                        {isCurrentDayStreak && streaks?.streak === 1 && (
                           <img
                             src='/assets/heat-icon.svg'
                             alt='heat icon'
@@ -445,12 +457,22 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
           </div>
 
           <div className='flex flex-col md:flex-row-reverse justify-center gap-x-5 items-center w-full '>
-            <div className=' p-6 w-[95%] xs:w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px]  bg-white rounded-lg shadow-md dark:bg-[#1E1E2A] text-black dark:border-[1px] dark:border-[#3A3A48]'>
-              <h2 className='font-bold text-[20px] text-center py-3 dark:text-white'>
+            <div className='w-[95%] xs:w-[420px] md:w-[435px] xl:w-[665px] 2xl:w-[800px] h-[430px] md:h-[500px] rounded-lg shadow-md dark:bg-[#1E1E2A] text-black dark:border-[1px] dark:border-[#3A3A48]'>
+              {/* <h2 className='font-bold text-[20px] text-center py-3 dark:text-white'>
                 Monthly Progress
-              </h2>
-              <StackedBar days={days} />
+              </h2> */}
+              {/* <StackedBar days={days} streak={streak} /> */}
+              <BarChart
+                heading={"Daily Progress"}
+                series={[
+                  { name: "Correct", data: totalCorrects },
+                  { name: "Incorrect", data: totalIncorrects },
+                ]}
+                colors={["#3CC8A1", "#FF9741"]} // Green = Correct, Orange = Incorrect
+                categories={noOfDays} // Days extracted from streakDate
+              />
 
+{/* 
               <div className='flex items-center justify-center gap-x-[75px] mt-7  md:mt-5'>
                 <p className='text-[#52525B] font-medium dark:text-white'>
                   Correct Questions
@@ -462,7 +484,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                   Incorrect Questions
                 </p>
                 <div className='w-[16px] h-[16px] rounded-[2px] bg-[#FF9741]' />
-              </div>
+              </div> */}
             </div>
 
             <div className=' w-[95%] xs:w-[420px] mt-2 md:mt-0 md:w-[261px] h-[400px] md:h-[500px] bg-white rounded-lg shadow-md dark:bg-[#1E1E2A] text-black dark:border-[1px] dark:border-[#3A3A48]'>
