@@ -27,8 +27,9 @@ const Register = () => {
                 .oneOf([Yup.ref('password'), null], 'Passwords must match')
                 .required('Required'),
             phone: Yup.string()
-                .matches(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
+                // .matches(/^\+[1-9]\d{1,14}$/, 'Phone number must be in E.164 format (e.g., +1234567890)')
                 .required('Required'),
+
             displayName: Yup.string().required('Name is Required'),
         }),
         onSubmit: async (values, { setSubmitting }) => {
@@ -41,6 +42,7 @@ const Register = () => {
                         data: {
                             displayName: values.displayName,
                             phone: values.phone,
+                           
                         },
                     },
                 });
@@ -175,10 +177,17 @@ const Register = () => {
                             id='phone'
                             placeholder='Enter your Phone Number...'
                             value={formik.values.phone}
-                            onChange={formik.handleChange}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                if (!value.startsWith('+')) {
+                                    value = '+' + value.replace(/\D/g, ''); // Non-numeric characters remove kardo
+                                }
+                                formik.setFieldValue('phone', value);
+                            }}
                             onBlur={formik.handleBlur}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+
                         {formik.touched.phone && formik.errors.phone ? (
                             <div className='text-red-500'>{formik.errors.phone}</div>
                         ) : null}

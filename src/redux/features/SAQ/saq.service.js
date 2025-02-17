@@ -85,10 +85,11 @@ export const fetchShortQuestionByModulesById = createAsyncThunk(
     }
 );
 
+;
 export const fetchSqaChild = createAsyncThunk(
     'modules/fetchSqaChild',
     async ({ parentIds, limit }, { rejectWithValue }) => {
-        console.log("parentIds:", parentIds);
+       
 
         try {
             if (!parentIds) return rejectWithValue('Invalid moduleId');
@@ -111,10 +112,72 @@ export const fetchSqaChild = createAsyncThunk(
                 return rejectWithValue(error.message || 'Failed to fetch module questions');
             }
 
-            console.log("data:", data);
             
 
             return data;
+        } catch (error) {
+            return rejectWithValue(error?.message || 'An unexpected error occurred');
+        }
+    }
+)
+
+
+export const fetchShortQuestionGroupByModulesById = createAsyncThunk(
+    'modules/fetchShortQuestionGroupByModulesById',
+    async (moduleIds, { rejectWithValue }) => {
+        try {
+            // Extract categoryId from the array of objects
+            const categoryIds = moduleIds.map(module => module.categoryId);
+console.log("categoryIds:", categoryIds);
+
+            if (!Array.isArray(categoryIds) || categoryIds.length === 0) {
+                throw new Error("No valid categoryId found in moduleIds.");
+            }
+
+            const { data, error } = await supabase
+                .from('saqParent')
+                .select('*')
+                .in('categoryId', categoryIds); // Using extracted categoryIds array
+
+            if (error) {
+                throw new Error(`Error fetching data for moduleId: ${error.message}`);
+            }
+
+            console.log("Fetched Data:", data);
+
+            return data;
+        } catch (error) {
+            return rejectWithValue({
+                message: error?.message || 'An unexpected error occurred',
+                stack: error?.stack,
+            });
+        }
+    }
+);
+
+export const fetchChildrenSaq = createAsyncThunk(
+    'saq/fetchChildrenSaq',
+
+    async (_, { rejectWithValue }) => {
+        try {
+            const { data, error } = await supabase
+                .from('saqChild')
+                .select('parentQuestionId'); // Sirf parentQuestionId fetch karein
+
+            if (error) {
+                return rejectWithValue(error.message || 'Failed to fetch module questions');
+            }
+
+            // ✅ Count questions for each parentQuestionId
+            const questionCountByParent = data.reduce((acc, { parentQuestionId }) => {
+                acc[parentQuestionId] = (acc[parentQuestionId] || 0) + 1;
+                return acc;
+            }, {});
+
+            console.log("questionCountByParent:", questionCountByParent);
+            
+
+            return questionCountByParent; // Object return kar raha hai `{ parentQuestionId: count }`
         } catch (error) {
             return rejectWithValue(error?.message || 'An unexpected error occurred');
         }

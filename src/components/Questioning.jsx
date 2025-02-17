@@ -19,8 +19,11 @@
   import Loader from './common/Loader';
   import { resetQuestionReviewValue } from '../redux/features/question-review/question-review.slice';
   import {
+    fetchChildrenSaq,
+    fetchModuleWithChildCounts,
     fetchShortQuestionByModules,
     fetchShortQuestionByModulesById,
+    fetchShortQuestionGroupByModulesById,
     fetchSqaChild,
   } from '../redux/features/SAQ/saq.service';
 
@@ -104,15 +107,8 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
 
     const filteredSAQModules = saqModule.filter(module =>
       module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    );    
 
-
-    // console.log("sqa:", sqa);
-    
-
-
-
-    
     const [totals, setTotals] = useState({
       totalCorrect: 0,
       totalIncorrect: 0,
@@ -120,6 +116,7 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
     });
     const [moduleTotals, setModuleTotals] = useState({});
     const [mockModuleTotals, setMockModuleTotals] = useState({});
+    const [saqModuleTotals, setSaqModuleTotals] = useState({});
     const [selectedTab, setSelectedTab] = useState('Clinical');
     const presentations = useSelector(state => state.presentations.presentations);
     const handleToggle = () => {
@@ -347,7 +344,7 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
       dispatch(clearUserAnswers());
       dispatch(resetVisited());
       dispatch(setActive(true));
-    }, [type]);
+    }, [type,selectedOption]);
 
     useEffect(() => {
       dispatch(setPreclinicalType({ selectedOption }));
@@ -407,6 +404,7 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
               if (res && res.length > 0) {
                 // Extracting all parentIds
                 const parentIds = res.map(item => item.id);
+ 
 
                 // Dispatch fetchSqaChild with all parentIds
                 dispatch(fetchSqaChild({ parentIds, limit }))
@@ -419,8 +417,6 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
                         child => child.parentQuestionId === parent.id
                       ),
                     }));
-
-                    console.log("organizedData:", organizedData);
                     
                   })
                   .catch(err => {
@@ -473,6 +469,9 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
         } 
       }
     }, [selectedModules, limit, selectedOption, selectedTab]);
+
+
+
 
     useEffect(() => {
       if (selectedTab === 'Pre-clinical') {
@@ -617,7 +616,10 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
       }
     }, [isSortedByPresentation, selectPresentation, limit]);
 
-
+// result SAQ
+useEffect(()=>{
+  dispatch(fetchChildrenSaq())
+},[])
     
     useEffect(() => {
       const fetchDailyWork = async () => {
@@ -743,6 +745,57 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
 
       if (userId) fetchDailyWork();
     }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+
+    useEffect(() => {
+      const fetchDailyWork = async () => {
+        try {
+          const query = supabase
+            .from('resultHistorySaq')
+            .select('moduleId, isCorrect, isIncorrect, isPartial, userId') // Required columns
+            .eq('userId', userId);
+
+          if (selectedModules?.length) {
+            query.in('moduleId', selectedModules);
+          }
+
+          const { data, error } = await query;
+
+          if (error) throw error;
+
+          // Compute totals
+          const totalsByModule = data.reduce((acc, curr) => {
+            const { moduleId, isCorrect, isIncorrect, isPartial } = curr;
+
+            if (!acc[moduleId]) {
+              acc[moduleId] = {
+                moduleId,
+                totalCorrect: 0,
+                totalIncorrect: 0,
+                totalPartial: 0
+              };
+            }
+
+            // Count only `true` values
+            if (isCorrect) acc[moduleId].totalCorrect += 1;
+            if (isIncorrect) acc[moduleId].totalIncorrect += 1;
+            if (isPartial) acc[moduleId].totalPartial += 1;
+
+            return acc;
+          }, {});
+
+          setSaqModuleTotals(Object.values(totalsByModule)); // Convert object to array
+        } catch (err) {
+          console.error('Error fetching daily work:', err);
+        }
+      };
+
+      if (userId) fetchDailyWork();
+    }, [JSON.stringify(selectedModules), userId]);
+ // Handle selectedModules properly
+
+
+    console.log("saqModuleTotals:", saqModuleTotals);
+
     useEffect(() => {
       if (state) {
         setSelectedOption(state);
@@ -1199,6 +1252,8 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
 
 
                       const { totalCorrect, totalIncorrect } = moduleTotal;
+                      console.log("moduleTotal:", moduleTotal);
+                      
 
                       // Calculate percentage for progress bar
                       const correctPercentage = totalQuestions ? (totalCorrect / totalQuestions) * 100 : 0;
@@ -1248,70 +1303,79 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
                     })}
 
 
-                  {selectedTab === 'Clinical' &&
-                    !isSortedByPresentation &&
-                    type === 'SAQ' &&
-                    filteredSAQModules?.map(row => {
-                      const totals = moduleTotals[row.categoryId] || {
-                        totalCorrect: 0,
-                        totalIncorrect: 0,
-                        totalUnanswered: 0,
-                      };
-                      const totalQuestions =
-                        totals.totalCorrect +
-                        totals.totalIncorrect +
-                        totals.totalUnanswered;
+                    {selectedTab === 'Clinical' &&
+                      !isSortedByPresentation &&
+                      type === 'SAQ' &&
+                      filteredSAQModules?.map(row => {
+                        const moduleData = SBADataLength?.find(
+                          (module) => module.categoryId === row.categoryId
+                        );
 
-                      // Calculate widths based on total counts
-                      const correctWidth =
-                        totalQuestions > 0
-                          ? (totals.totalCorrect / totalQuestions) * 100
-                          : 0;
-                      const incorrectWidth =
-                        totalQuestions > 0
-                          ? (totals.totalIncorrect / totalQuestions) * 100
-                          : 0;
-                      const unansweredWidth =
-                        totalQuestions > 0
-                          ? (totals.totalUnanswered / totalQuestions) * 100
-                          : 0;
+                        const totalQuestions = moduleData ? moduleData.questions.length : 0;
 
-                      return (
-                        <div
-                          key={row.categoryId}
-                          className='grid md:grid-cols-2 items-center py-3'
-                        >
-                          <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
-                            <label className='flex items-center cursor-pointer hover:opacity-85'>
-                              <input
-                                type='checkbox'
-                                className='mr-2 custom-checkbox hover:opacity-70'
-                                checked={selectedModules.includes(row.categoryId)}
-                                onChange={() => handleCheckboxChange(row.categoryId)}
-                              />
-                              {row.categoryName}
-                            </label>
+                        // Ensure moduleTotals is always an array
+                        const moduleTotalsArray = Array.isArray(moduleTotals) ? moduleTotals : Object.values(moduleTotals || {});
+
+                        // Get the totals for correct, incorrect, and partial answers
+                        const moduleTotal = moduleTotalsArray.find(m => String(m.moduleId) === String(row.categoryId)) || { totalCorrect: 0, totalIncorrect: 0, totalPartial: 0 };
+
+                        const { totalCorrect, totalIncorrect, totalPartial } = moduleTotal;
+
+                        // Calculate percentage for progress bar
+                        const correctPercentage = totalQuestions ? (totalCorrect / totalQuestions) * 100 : 0;
+                        const incorrectPercentage = totalQuestions ? (totalIncorrect / totalQuestions) * 100 : 0;
+                        const partialPercentage = totalQuestions ? (totalPartial / totalQuestions) * 100 : 0;
+
+                        return (
+                          <div
+                            key={row.categoryId}
+                            className='grid md:grid-cols-2 items-center py-3'
+                          >
+                            <div className='text-left text-[14px] 2xl:text-[16px] cursor-pointer font-medium text-[#3F3F46] dark:text-white'>
+                              <label className='flex items-center cursor-pointer hover:opacity-85'>
+                                <input
+                                  type='checkbox'
+                                  className='mr-2 custom-checkbox hover:opacity-70'
+                                  checked={selectedModules.includes(row.categoryId)}
+                                  onChange={() => handleCheckboxChange(row.categoryId)}
+                                />
+                                {row.categoryName}
+                              </label>
+                            </div>
+
+                            {/* Progress Bar and Total Questions */}
+                            <div className="flex items-center justify-center space-x-2 w-full">
+                              {/* Progress Bar */}
+                              <div className="flex w-full h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-md overflow-hidden">
+                                {/* Green Section (Correct Answers) */}
+                                <span
+                                  className="bg-[#3CC8A1] text-white text-xs flex items-center justify-center"
+                                  style={{ width: `${correctPercentage}%` }}
+                                >
+                                  {totalCorrect > 0 && <span>{totalCorrect}</span>}
+                                </span>
+
+                                {/* Orange Section (Partial Answers) */}
+                                <span
+                                  className="bg-[#FFA500] text-white text-xs flex items-center justify-center"
+                                  style={{ width: `${partialPercentage}%` }}
+                                >
+                                  {totalPartial > 0 && <span>{totalPartial}</span>}
+                                </span>
+
+                                {/* Red Section (Incorrect Answers) */}
+                                <span
+                                  className="bg-[#FF453A] text-white text-xs flex items-center justify-center"
+                                  style={{ width: `${incorrectPercentage}%` }}
+                                >
+                                 
+                                </span>
+                              </div>
+                            </div>
                           </div>
+                        );
+                      })}
 
-                          <div className='flex items-center justify-center space-x-1'>
-                            <div
-                              className='h-[19px] sm:h-[27px] bg-[#3CC8A1] rounded-l-md'
-                              style={{ width: `${correctWidth}%` }}
-                            ></div>
-
-                            <div
-                              className='h-[19px] sm:h-[27px] bg-[#FF453A]'
-                              style={{ width: `${incorrectWidth}%` }}
-                            ></div>
-
-                            <div
-                              className='h-[19px] sm:h-[27px] bg-[#E4E4E7] rounded-r-md'
-                              style={{ width: `${unansweredWidth}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
                   {selectedTab === 'Clinical' &&
                     !isSortedByPresentation &&
                     type === 'Mock' &&

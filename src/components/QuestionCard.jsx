@@ -88,7 +88,7 @@ const QuestionCard = () => {
 
     const flaggedQuestions = useSelector(state => state?.flagged?.flaggedQuestions);
     const visited = useSelector(state => state?.visited?.visitedQuestions);
-
+const [answerChecked, setAnswerChecked] = useState(false);
     const review = useSelector(state => state?.questionReview?.value);
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy
     // const data = useSelector((state) => state.mcqsQuestion || []);
@@ -204,7 +204,7 @@ const QuestionCard = () => {
                             setArticle(res);
                         });
                 }
-
+ 
 
 
                 dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
