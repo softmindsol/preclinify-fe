@@ -20,7 +20,7 @@ const streakSlice = createSlice({
             })
             .addCase(fetchUserStreak.fulfilled, (state, action) => {
                 state.loading = false;
-                state.streak = action.payload.streak;
+                state.streak = action.payload;
                 state.totalRecords = action.payload.totalRecords;
                 state.error = null;
             })

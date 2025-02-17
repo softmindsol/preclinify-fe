@@ -25,7 +25,7 @@ import {
 } from '../redux/features/SAQ/userAnswer.slice';
 import QuestionNavigator from './QuestionNavigator';
 import { insertSAQResult } from '../redux/features/all-results/result.sba.service';
-
+import Chatbot from './chatbot';
 // Function to format the time in MM:SS format
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
