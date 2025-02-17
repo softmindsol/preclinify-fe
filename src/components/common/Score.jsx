@@ -165,7 +165,7 @@ const Score = () => {
             <div className='flex flex-col-reverse md:flex-col mb-5 '>
               <div className='space-y-3 flex flex-col-reverse md:flex-col'>
                 <div className=' mt-2 md:mt-5'>
-                  {type == 'SAQ' ? (
+                  {type === 'SAQ' ? (
                     <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>
                       Total Attempted: {saqTotalAttempted}
                     </p>
@@ -175,7 +175,7 @@ const Score = () => {
                     </p>
                   )}
                 </div>
-                {type == 'SAQ' ? (
+                {type === 'SAQ' ? (
                   <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-between gap-x-12'>
                     <p className='whitespace-nowrap'>
                       Correct:<span>{sqacorrect || 0}</span>
@@ -198,8 +198,8 @@ const Score = () => {
                   </div>
                 )}
               </div>
-              {type == 'SAQ' ? (
-                <div className='flex justify-center mt-5 items-center'>
+              {type === 'SAQ' ? (
+                <div className='flex  mt-5 items-center'>
                   <div className='flex justify-center mt-5 items-center space-x-1 w-[80%]'>
                     <div
                       className='p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]'
@@ -247,7 +247,7 @@ const Score = () => {
                 </div>
               ) : (
                 <div className='flex justify-center mt-5 items-center'>
-                  <div className='flex justify-center mt-5 items-center space-x-1 w-[80%]'>
+                  <div className='flex  mt-5 items-center space-x-1 w-[80%]'>
                     <div
                       className='p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]'
                       style={{

@@ -113,7 +113,8 @@ export const fetchMcqsByModules = createAsyncThunk(
             console.log("results:", results);
 
             // Combine all fetched data into a single array
-            const combinedData = results.flat(); // Flatten the array of arrays into a single array
+            const combinedQuestion = results.flat(); // Flatten the array of arrays into a single array
+            const combinedData = combinedQuestion.sort(() => Math.random() - 0.5); // Randomly shuffles the array
             console.log("combinedData:", combinedData);
 
             return combinedData; // Return the combined data

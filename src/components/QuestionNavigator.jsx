@@ -13,6 +13,7 @@ const QuestionNavigator = ({
     Flagged: 0,
     Unseen: 0,
   });
+  const [isManualNavigation, setIsManualNavigation] = useState(false);
 
   const pageSize = 10;
 
@@ -36,6 +37,12 @@ const QuestionNavigator = ({
       default:
         return Array.from(
           new Set([
+            ...validNumbers(attempted).filter(
+              key =>
+                attempted[key] === true ||
+                attempted[key] === false ||
+                attempted[key] === 'partial'
+            ),
             ...validNumbers(attempted).filter(key => attempted[key] === true),
             ...validNumbers(flaggedQuestions).filter(
               key => flaggedQuestions[key] === true
@@ -49,7 +56,7 @@ const QuestionNavigator = ({
   }, [selectedFilter, attempted, flaggedQuestions, visited]);
 
   useEffect(() => {
-    if (filteredQuestions.length > 0) {
+    if (filteredQuestions.length > 0 && !isManualNavigation) {
       const indexInFilteredList = filteredQuestions.indexOf(currentIndex - 1);
       if (indexInFilteredList !== -1) {
         const currentPage = Math.floor(indexInFilteredList / pageSize);
@@ -64,23 +71,28 @@ const QuestionNavigator = ({
         }
       }
     }
-  }, [currentIndex, filteredQuestions, selectedFilter, pagination]);
+  }, [currentIndex, filteredQuestions, selectedFilter, pagination, isManualNavigation]);
 
+  // Paginated questions based on selected filter
   const paginatedQuestions = useMemo(() => {
     const start = pagination[selectedFilter] * pageSize;
     const end = start + pageSize;
     return filteredQuestions.slice(start, end);
   }, [pagination, selectedFilter, filteredQuestions]);
 
+  // Function to change filter and reset pagination for the new filter
   const handleFilterChange = filter => {
     setSelectedFilter(filter);
     setPagination(prev => ({
       ...prev,
       [filter]: 0,
     }));
+    setIsManualNavigation(false); // Reset manual navigation state
   };
 
+  // Pagination handlers
   const handleNextPage = () => {
+    setIsManualNavigation(true); // Set manual navigation state
     setPagination(prev => ({
       ...prev,
       [selectedFilter]: prev[selectedFilter] + 1,
@@ -88,14 +100,21 @@ const QuestionNavigator = ({
   };
 
   const handlePrevPage = () => {
+    setIsManualNavigation(true); // Set manual navigation state
     setPagination(prev => ({
       ...prev,
       [selectedFilter]: Math.max(0, prev[selectedFilter] - 1),
     }));
   };
 
+  // Reset manual navigation state when currentIndex changes
+  useEffect(() => {
+    setIsManualNavigation(false);
+  }, [currentIndex]);
+
   return (
     <div>
+      {/* Filter Tabs */}
       <div className='flex items-center justify-between p-5 w-full text-[12px] dark:text-white'>
         {['All', 'Flagged', 'Unseen'].map(filter => (
           <span
@@ -115,15 +134,17 @@ const QuestionNavigator = ({
       {/* Question Grid */}
       <div className='flex justify-center items-center'>
         <div className='grid grid-cols-5 gap-2'>
-          {paginatedQuestions.map(num => {
+          {paginatedQuestions?.map(num => {
             const isFlagged = flaggedQuestions[num] === true;
             const isAttempted = attempted[num];
-
-            const bgColor = isAttempted
-              ? 'bg-[#3CC8A1]'
-              : isAttempted === false
-              ? 'bg-[#FF453A]'
-              : 'bg-gray-300';
+            const bgColor =
+              isAttempted === 'partial'
+                ? 'bg-[#FFA500]'
+                : isAttempted === true
+                ? 'bg-[#3CC8A1]'
+                : isAttempted === false
+                ? 'bg-[#FF453A]'
+                : 'bg-gray-300';
 
             return (
               <div key={num}>
