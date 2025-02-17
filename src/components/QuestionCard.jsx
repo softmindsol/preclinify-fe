@@ -499,6 +499,16 @@ const QuestionCard = () => {
 
     useEffect(() => {
         const handleKeyPress = e => {
+            // Check if the current question has been attempted
+                if (e.key === 'ArrowRight') {
+                    nextQuestion();
+                    return;
+                }
+                // Check if the current question has been attempted
+                if (e.key === 'ArrowLeft') {
+                    prevQuestion();
+                    return;
+                }
             // Prevent default action for spacebar to avoid scrolling
             if (e.key === ' ') {
                 e.preventDefault();
