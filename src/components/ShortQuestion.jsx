@@ -24,6 +24,7 @@ import {
   setUserAnswers,
 } from '../redux/features/SAQ/userAnswer.slice';
 import QuestionNavigator from './QuestionNavigator';
+import Chatbot from './chatbot';
 
 // Function to format the time in MM:SS format
 const formatTime = seconds => {
@@ -881,21 +882,19 @@ const ShortQuestion = () => {
               />
             </div>
 
-            <div className='  '>
-              <div>
-                <DeepChatAI W='200px' />
-                <hr className='mx-5' />
-              </div>
-            </div>
+            <>
+              <hr className='mx-5' />
+            </>
             <div className='mb-2'>
-              <div className='  text-[12px]'>
-                <div
-                  className={`flex items-center font-semibold gap-x-2 ${
+              <div className='text-xs'>
+                <button
+                  className={`w-full flex items-center font-semibold gap-x-2 ${
                     isFinishEnabled
                       ? 'text-[#3CC8A1] cursor-pointer'
                       : 'text-[#D4D4D8] cursor-not-allowed'
                   } justify-center`}
                   onClick={handleFinishAndReview}
+                  disabled={isFinishEnabled}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -912,7 +911,7 @@ const ShortQuestion = () => {
                     <path d='M20 6 9 17l-5-5' />
                   </svg>
                   <p>Finish and Review</p>
-                </div>
+                </button>
                 <hr className='w-[200px] my-2' />
 
                 <div
@@ -1161,13 +1160,14 @@ const ShortQuestion = () => {
 
           <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
             {/* Finish and Review Button */}
-            <div
-              className={`flex items-center font-semibold gap-x-2 ${
+            <button
+              className={`w-full flex items-center font-semibold gap-x-2 ${
                 isFinishEnabled
                   ? 'text-[#3CC8A1] cursor-pointer'
                   : 'text-[#D4D4D8] cursor-not-allowed'
               } justify-center`}
               // onClick={handleFinishAndReview}
+              disabled={!isFinishEnabled}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -1184,7 +1184,7 @@ const ShortQuestion = () => {
                 <path d='M20 6 9 17l-5-5' />
               </svg>
               <p>Finish and Review</p>
-            </div>
+            </button>
             <hr className='w-[200px] my-2' />
             {/* Back to Dashboard Button */}
             <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
@@ -1207,6 +1207,8 @@ const ShortQuestion = () => {
           </div>
         </div>
       </Drawer>
+
+      <Chatbot />
     </div>
   );
 };

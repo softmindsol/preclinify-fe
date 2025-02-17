@@ -26,8 +26,8 @@ const Setting = () => {
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
   };
-  const profile=useSelector(state=>state.personalInfo.userInfo[0])
-  console.log("profile::", profile)
+  const profile = useSelector(state => state.personalInfo.userInfo[0]);
+  console.log('profile::', profile);
   // Logout function
   const handleLogout = async () => {
     try {
@@ -37,7 +37,6 @@ const Setting = () => {
       window.location.href = '/login';
     } catch (error) {
       toast.error('Something went wrong while Logout!');
-
     }
   };
 
@@ -197,7 +196,7 @@ const Setting = () => {
               type='text'
               className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
               placeholder='Sainavi Mahajan'
-              value={profile?.firstName+' '+profile?.lastName}
+              value={profile?.firstName + ' ' + profile?.lastName}
             />
           </div>
           <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
@@ -208,7 +207,7 @@ const Setting = () => {
               type='text'
               className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
               placeholder='Sainavi'
-              value={profile?.firstName }
+              value={profile?.firstName}
             />
           </div>
           <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
@@ -217,7 +216,7 @@ const Setting = () => {
               type='text'
               className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
               placeholder='Mahajan'
-              value={ profile?.lastName}
+              value={profile?.lastName}
             />
           </div>
           <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
@@ -226,28 +225,27 @@ const Setting = () => {
               type='text'
               className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
               placeholder='University of Leicester'
-              value={ profile?.university}
+              value={profile?.university}
             />
           </div>
 
           <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
             <label className='block font-medium mb-1'>Year of Study</label>
             <select
-              name="year"
-              id="year"
-              className="w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]"
-              value={profile?.year || ""}
-              onChange={(e) => console.log(e.target.value)} // Debugging ke liye
+              name='year'
+              id='year'
+              className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
+              value={profile?.year || ''}
+              onChange={e => console.log(e.target.value)} // Debugging ke liye
             >
-              <option value="" disabled>
+              <option value='' disabled>
                 Select Year of Study
               </option>
-              <option value="Year 1">Year 1</option>
-              <option value="Year 2">Year 2</option>
-              <option value="Year 3">Year 3</option>
-              <option value="Year 4">Year 4</option>
+              <option value='Year 1'>Year 1</option>
+              <option value='Year 2'>Year 2</option>
+              <option value='Year 3'>Year 3</option>
+              <option value='Year 4'>Year 4</option>
             </select>
-
           </div>
           <div className='flex justify-end'>
             <button className='bg-[#3CC8A1] px-2 py-1 text-white rounded-[8px] font-semibold'>
