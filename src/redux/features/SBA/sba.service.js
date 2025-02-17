@@ -110,12 +110,10 @@ export const fetchMcqsByModules = createAsyncThunk(
             });
 
             const results = await Promise.all(promises); // Wait for all requests to complete
-            console.log("results:", results);
 
             // Combine all fetched data into a single array
             const combinedQuestion = results.flat(); // Flatten the array of arrays into a single array
             const combinedData = combinedQuestion.sort(() => Math.random() - 0.5); // Randomly shuffles the array
-            console.log("combinedData:", combinedData);
 
             return combinedData; // Return the combined data
         } catch (error) {
