@@ -25,7 +25,7 @@ import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.s
 import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
 import QuestionNavigator from './QuestionNavigator';
 import { insertResult } from '../redux/features/all-results/result.sba.service';
-
+import Chatbot from './chatbot';
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -204,9 +204,14 @@ const QuestionCard = () => {
             });
         }
 
-
-         
-        dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
+        dispatch(
+          insertResult({
+            isCorrect,
+            questionId: data?.mcqsByModulesData[currentIndex].id,
+            userId,
+            moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
+          })
+        );
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });
@@ -338,7 +343,7 @@ const QuestionCard = () => {
     const newPage = currentPage - 1;
     if (newPage >= 0) {
       setCurrentPage(newPage);
-      setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the previous page
+      setCurrentIndex(newPage * itemsPerPage);
     }
   };
 
@@ -351,7 +356,6 @@ const QuestionCard = () => {
       index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
   });
 
-  // Update attempts based on user actions
   const markQuestion = (index, status) => {
     setAttempts(prev => {
       const updatedAttempts = [...prev];
@@ -362,11 +366,11 @@ const QuestionCard = () => {
 
   const toggleMenu = event => {
     event.stopPropagation();
-    setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
+    setIsSubMenuOpen(!isSubMenuOpen);
   };
 
   const handleFinishAndReview = () => {
-    if (true) {
+    if (isFinishEnabled) {
       handleCheckAnswer();
       // dispatch(setMcqsAccuracy({ accuracy }))
 
@@ -374,7 +378,7 @@ const QuestionCard = () => {
       //    Add a delay (for example, 2 seconds)
       setTimeout(() => {
         navigation('/score');
-      }, 3000); // 2000 ms = 2 seconds
+      }, 2000); // 2000 ms = 2 seconds
     }
   };
 
@@ -1104,7 +1108,6 @@ const QuestionCard = () => {
                 </div>
               </div>
               <div>
-                <DeepChatAI W='200px' />
                 <hr className='mx-5' />
               </div>
 
@@ -1369,13 +1372,14 @@ const QuestionCard = () => {
 
           <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
             {/* Finish and Review Button */}
-            <div
-              className={`flex items-center font-semibold gap-x-2 ${
+            <button
+              className={`w-full flex items-center font-semibold gap-x-2 ${
                 isFinishEnabled
                   ? 'text-[#3CC8A1] cursor-pointer'
                   : 'text-[#D4D4D8] cursor-not-allowed'
               } justify-center`}
               onClick={handleFinishAndReview}
+              disabled={!isFinishEnabled}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -1392,7 +1396,7 @@ const QuestionCard = () => {
                 <path d='M20 6 9 17l-5-5' />
               </svg>
               <p>Finish and Review</p>
-            </div>
+            </button>
             <hr className='w-[200px] my-2' />
             {/* Back to Dashboard Button */}
             <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
@@ -1415,6 +1419,8 @@ const QuestionCard = () => {
           </div>
         </div>
       </Drawer>
+
+      <Chatbot />
     </div>
   );
 };
