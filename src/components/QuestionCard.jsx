@@ -25,7 +25,7 @@ import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.s
 import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
 import QuestionNavigator from './QuestionNavigator';
 import { insertResult } from '../redux/features/all-results/result.sba.service';
-
+import Chatbot from './chatbot';
 
 const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
@@ -206,12 +206,17 @@ const QuestionCard = () => {
                         });
                 }
 
-
-
-                dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
-                dispatch(setResult({ updatedAttempts }));
-                return updatedAttempts;
-            });
+        dispatch(
+          insertResult({
+            isCorrect,
+            questionId: data?.mcqsByModulesData[currentIndex].id,
+            userId,
+            moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
+          })
+        );
+        dispatch(setResult({ updatedAttempts }));
+        return updatedAttempts;
+      });
 
             // Open the correct answer's accordion and selected if incorrect
             setIsAccordionOpen(prev => {
@@ -313,14 +318,14 @@ const QuestionCard = () => {
         }
     };
 
-    // Correct the prevPage function
-    const prevPage = () => {
-        const newPage = currentPage - 1;
-        if (newPage >= 0) {
-            setCurrentPage(newPage);
-            setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the previous page
-        }
-    };
+  // Correct the prevPage function
+  const prevPage = () => {
+    const newPage = currentPage - 1;
+    if (newPage >= 0) {
+      setCurrentPage(newPage);
+      setCurrentIndex(newPage * itemsPerPage);
+    }
+  };
 
     const toggleDrawer = () => {
         setIsOpen(prevState => !prevState);
@@ -331,32 +336,33 @@ const QuestionCard = () => {
             index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
     });
 
-    // Update attempts based on user actions
-    const markQuestion = (index, status) => {
-        setAttempts(prev => {
-            const updatedAttempts = [...prev];
-            updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
-            return updatedAttempts;
-        });
-    };
+  const markQuestion = (index, status) => {
+    setAttempts(prev => {
+      const updatedAttempts = [...prev];
+      updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
+      return updatedAttempts;
+    });
+  };
 
-    const toggleMenu = event => {
-        event.stopPropagation();
-        setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
-    };
+  const toggleMenu = event => {
+    event.stopPropagation();
+    setIsSubMenuOpen(!isSubMenuOpen);
+  };
 
-    const handleFinishAndReview = () => {
-        if (true) {
-            handleCheckAnswer();
-            // dispatch(setMcqsAccuracy({ accuracy }))
+  const handleFinishAndReview = () => {
+    if (isFinishEnabled) {
+      if (isAnswered) {
+        handleCheckAnswer();
+      }
+      // dispatch(setMcqsAccuracy({ accuracy }))
 
-            // handleAnswerSelect()
-            //    Add a delay (for example, 2 seconds)
-            setTimeout(() => {
-                navigation('/score');
-            }, 3000); // 2000 ms = 2 seconds
-        }
-    };
+      // handleAnswerSelect()
+      //    Add a sdelay (for example, 2 seconds)
+      setTimeout(() => {
+        navigation('/score');
+      }, 2000); // 2000 ms = 2 seconds
+    }
+  };
 
     function handleShowPopup() {
         setShowPopup(true); // Close the popup
@@ -1077,21 +1083,20 @@ const QuestionCard = () => {
                                     )}
                                 </div>
 
-                                <QuestionNavigator
-                                    attempted={attempted}
-                                    flaggedQuestions={flaggedQuestions}
-                                    visited={visited}
-                                    currentIndex={currentIndex}
-                                    setCurrentIndex={setCurrentIndex}
-                                />
-                                <div className='py-5 px-10 text-[#D4D4D8]'>
-                                    <hr />
-                                </div>
-                            </div>
-                            <div>
-                                <DeepChatAI W='200px' />
-                                <hr className='mx-5' />
-                            </div>
+                <QuestionNavigator
+                  attempted={attempted}
+                  flaggedQuestions={flaggedQuestions}
+                  visited={visited}
+                  currentIndex={currentIndex}
+                  setCurrentIndex={setCurrentIndex}
+                />
+                <div className='py-5 px-10 text-[#D4D4D8]'>
+                  <hr />
+                </div>
+              </div>
+              <div>
+                <hr className='mx-5' />
+              </div>
 
                             <div className='text-[12px] mb-5'>
                                 <div
@@ -1349,55 +1354,59 @@ const QuestionCard = () => {
                         <hr className='mx-5' />
                     </div>
 
-                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
-                        {/* Finish and Review Button */}
-                        <div
-                            className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled
-                                    ? 'text-[#3CC8A1] cursor-pointer'
-                                    : 'text-[#D4D4D8] cursor-not-allowed'
-                                } justify-center`}
-                            onClick={handleFinishAndReview}
-                        >
-                            <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                width='24'
-                                height='24'
-                                viewBox='0 0 24 24'
-                                fill='none'
-                                stroke='currentColor'
-                                strokeWidth='2'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                className='lucide lucide-check'
-                            >
-                                <path d='M20 6 9 17l-5-5' />
-                            </svg>
-                            <p>Finish and Review</p>
-                        </div>
-                        <hr className='w-[200px] my-2' />
-                        {/* Back to Dashboard Button */}
-                        <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
-                            <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                width='24'
-                                height='24'
-                                viewBox='0 0 24 24'
-                                fill='none'
-                                stroke='currentColor'
-                                strokeWidth='2'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                className='lucide lucide-chevron-left'
-                            >
-                                <path d='m15 18-6-6 6-6' />
-                            </svg>
-                            <p>Back to Dashboard</p>
-                        </div>
-                    </div>
-                </div>
-            </Drawer>
+          <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
+            {/* Finish and Review Button */}
+            <button
+              className={`w-full flex items-center font-semibold gap-x-2 ${
+                isFinishEnabled
+                  ? 'text-[#3CC8A1] cursor-pointer'
+                  : 'text-[#D4D4D8] cursor-not-allowed'
+              } justify-center`}
+              onClick={handleFinishAndReview}
+              disabled={!isFinishEnabled}
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width='24'
+                height='24'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='lucide lucide-check'
+              >
+                <path d='M20 6 9 17l-5-5' />
+              </svg>
+              <p>Finish and Review</p>
+            </button>
+            <hr className='w-[200px] my-2' />
+            {/* Back to Dashboard Button */}
+            <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width='24'
+                height='24'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='lucide lucide-chevron-left'
+              >
+                <path d='m15 18-6-6 6-6' />
+              </svg>
+              <p>Back to Dashboard</p>
+            </div>
+          </div>
         </div>
-    );
+      </Drawer>
+
+      <Chatbot />
+    </div>
+  );
 };
 
 export default QuestionCard;
