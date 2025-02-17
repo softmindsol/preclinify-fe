@@ -1,31 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Logo from './common/Logo';
-import DiscussionBoard from './Discussion';
+import DiscussionBoard from '../Discussion';
 import { TbBaselineDensityMedium } from 'react-icons/tb';
 import { RxCross2 } from 'react-icons/rx';
+import Logo from '../common/Logo';
 import Drawer from 'react-modern-drawer';
 //import styles 👇
 import 'react-modern-drawer/dist/index.css';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { clearResult, setResult } from '../redux/features/result/result.slice';
+import { clearResult, setResult } from '../../redux/features/result/result.slice';
 import { useNavigate } from 'react-router-dom';
-import { setRemoveQuestionLimit } from '../redux/features/limit/limit.slice';
-import { fetchConditionNameById } from '../redux/features/SBA/sba.service';
-import DeepChatAI from './DeepChat';
-import { setMcqsAccuracy } from '../redux/features/accuracy/accuracy.slice';
-import { sessionCompleted } from '../redux/features/recent-session/recent-session.slice';
-import ChemistryBeaker from './chemistry-beaker';
-import DashboardModal from './common/DashboardModal';
-import Article from './Article';
-import { setAttemptedData } from '../redux/features/SBA/sba.slice';
-import { setActive, setAttempted } from '../redux/features/attempts/attempts.slice';
-import FeedbackModal from './common/Feedback';
-import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.slice';
-import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
-import QuestionNavigator from './QuestionNavigator';
-import { insertResult } from '../redux/features/all-results/result.sba.service';
-import Chatbot from './chatbot';
+import { setRemoveQuestionLimit } from '../../redux/features/limit/limit.slice';
+import { fetchConditionNameById } from '../../redux/features/SBA/sba.service';
+import DeepChatAI from '../DeepChat';
+import { setMcqsAccuracy } from '../../redux/features/accuracy/accuracy.slice';
+import { sessionCompleted } from '../../redux/features/recent-session/recent-session.slice';
+import ChemistryBeaker from '../chemistry-beaker';
+import DashboardModal from '../common/DashboardModal';
+import Article from '../Article';
+import { setAttemptedData } from '../../redux/features/SBA/sba.slice';
+import { setActive, setAttempted } from '../../redux/features/attempts/attempts.slice';
+import FeedbackModal from '../common/Feedback';
+import { initializeFlags, toggleFlag } from '../../redux/features/flagged/flagged.slice';
+import {
+    initializeVisited,
+    markVisited,
+} from '../../redux/features/flagged/visited.slice';
+import QuestionNavigator from '../QuestionNavigator';
+import { insertResult, insertMockResult } from '../../redux/features/all-results/result.sba.service';
 
 const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
@@ -42,60 +44,63 @@ const calculateTimeForQuestions = numQuestions => {
     const totalTimeInSeconds = numQuestions * timePerQuestionInSeconds; // Calculate total time
     return totalTimeInSeconds; // Return total time in seconds
 };
-const QuestionCard = () => {
-  const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
-  const dispatch = useDispatch();
-  const attempted = useSelector(state => state?.attempts?.attempts);
-  const [isOpen, setIsOpen] = useState(false);
-  const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
-  const [isAccordionVisible, setIsAccordionVisible] = useState(false);
-  const [isAccordionOpen, setIsAccordionOpen] = useState([]);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [answerChecked, setAnswerChecked] = useState(false);
-  const [isButtonClicked, setIsButtonClicked] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState('');
-  const [showFeedBackModal, setShowFeedBackModal] = useState(false);
-  const beakerRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFinishEnabled, setIsFinishEnabled] = useState(false);
-  const navigation = useNavigate();
-  const [border, setBorder] = useState(true);
-  const mcqsAccuracy = useSelector(state => state?.accuracy?.accuracy);
-  const [showPopup, setShowPopup] = useState(false);
-  const data = useSelector(state => state.mcqsQuestion || []);
-  const result = useSelector(state => state.result);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isReviewEnabled, setIsReviewEnabled] = useState(false);
-  const [toggleSidebar, setToggleSidebar] = useState(false);
-  const itemsPerPage = 10;
-  const [article, setArticle] = useState({});
-  const userId = useSelector(state => state.user.userId);
-  const isQuestionReview = useSelector(state => state?.questionReview?.value);
-  const [feedback, setFeedback] = useState('');
-  // Get the items to show for the current page
-  const currentItems = data.data.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-  const [selectedFilter, setSelectedFilter] = useState('All');
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
-  const isTimerMode = useSelector(state => state.mode);
-  const [timer, setTimer] = useState(() => {
-    // Calculate the initial timer value based on the number of questions
-    const initialTime = calculateTimeForQuestions(isTimerMode.time);
-    const savedTime = localStorage.getItem('examTimer');
-    return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
-  });
+const MockPresentation = () => {
+    
+const { mockTestIds, mockMcqsByModulesData, presentationMcqs, modules, loading, error } = useSelector(
+          state => state.mockModules
+        );
 
-    const flaggedQuestions = useSelector(state => state?.flagged?.flaggedQuestions);
-    const visited = useSelector(state => state?.visited?.visitedQuestions);
+    console.log("presentationMcqs:", presentationMcqs);
+        
+    const [showFeedBackModal, setShowFeedBackModal] = useState(false);
+    const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
+    const dispatch = useDispatch();
+    const attempted = useSelector(state => state.attempts?.attempts);
+    const [isOpen, setIsOpen] = useState(false);
+    const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
+    const [isAccordionVisible, setIsAccordionVisible] = useState(false);
+    const [isAccordionOpen, setIsAccordionOpen] = useState([]);
+    const [isAnswered, setIsAnswered] = useState(false);
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const [selectedAnswer, setSelectedAnswer] = useState('');
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
+    const navigation = useNavigate();
+    const [border, setBorder] = useState(true);
+    const mcqsAccuracy = useSelector(state => state.accuracy.accuracy);
+    const [showPopup, setShowPopup] = useState(false);
+    const result = useSelector(state => state.result);
+    const [currentPage, setCurrentPage] = useState(0); // Track current page (each page has 20 items)
+    const [isReviewEnabled, setIsReviewEnabled] = useState(false);
+    const [toggleSidebar, setToggleSidebar] = useState(false);
+    const itemsPerPage = 10;
+    const [article, setArticle] = useState({});
+    const isQuestionReview = useSelector(state => state.questionReview.value);
+    // Get the items to show for the current page
+    const currentItems = presentationMcqs.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
+    );
+    const userId = useSelector(state => state.user.userId)
+    const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
+    const isTimerMode = useSelector(state => state.mode);
+    const [timer, setTimer] = useState(() => {
+        // Calculate the initial timer value based on the number of questions
+        const initialTime = calculateTimeForQuestions(isTimerMode.time);
+        const savedTime = localStorage.getItem('examTimer');
+        return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
+    });
+    const beakerRef = useRef(null);
 
-    const review = useSelector(state => state?.questionReview?.value);
+    const review = useSelector(state => state.questionReview.value);
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy
     // const data = useSelector((state) => state.mcqsQuestion || []);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
-    const active = useSelector(state => state?.attempts?.active);
+    const active = useSelector(state => state.attempts?.active);
+    const flaggedQuestions = useSelector(state => state.flagged.flaggedQuestions);
+    const visited = useSelector(state => state.visited.visitedQuestions);
 
     const handleFilterChange = filter => {
         setSelectedFilter(filter);
@@ -106,49 +111,34 @@ const QuestionCard = () => {
     const flaggedIndices = [];
     const allIndices = [];
 
-    // Update getQuestionRange to use currentPage correctly
-    const getQuestionRange = currentPage => {
-        const start = currentPage * itemsPerPage;
-        const end = Math.min(start + itemsPerPage, data?.mcqsByModulesData?.length);
+    // Filter items based on the selected filter
+    const filteredItems = currentItems.filter((question, index) => {
+        const displayNumber = currentPage * itemsPerPage + index;
+
+        if (selectedFilter === 'Flagged') {
+            return flaggedQuestions[displayNumber];
+        }
+
+        if (selectedFilter === 'Unseen') {
+            return visited[displayNumber] && attempted[displayNumber] === null;
+        }
+
+        return true; // For 'All' filter
+    });
+
+    const reportHandler = () => {
+        setShowFeedBackModal(!showFeedBackModal);
+    };
+
+    const getQuestionRange = currentIndex => {
+        const itemsPerPage = 10; // Number of items to show in the sidebar
+        const start = Math.floor(currentIndex / itemsPerPage) * itemsPerPage; // Calculate the start index
+        const end = Math.min(start + itemsPerPage, presentationMcqs.length); // Calculate the end index
         return { start, end };
     };
 
-    // Use currentPage to determine the start and end indices
-    const { start, end } = getQuestionRange(currentPage);
-    // Filtered items to display based on the selected filter
-    const filteredItems = data?.mcqsByModulesData
-        ?.slice(start, end)
-        .filter((question, index) => {
-            const displayNumber = start + index;
-
-            // All items
-            allIndices.push(displayNumber);
-
-            if (selectedFilter === 'All') {
-                return true; // Include all items
-            }
-
-            if (selectedFilter === 'Flagged') {
-                // Check if item is flagged (attempted)
-                const isFlagged =
-                    attempted[displayNumber] === true || attempted[displayNumber] === false;
-                if (isFlagged) {
-                    flaggedIndices.push(displayNumber); // Store index for flagged items
-                    return true;
-                }
-            }
-
-            if (selectedFilter === 'Unseen') {
-                // Check if item is unseen (unattempted)
-                const isUnseen = attempted[displayNumber] === null;
-                if (isUnseen) {
-                    unseenIndices.push(displayNumber); // Store index for unseen items
-                    return true;
-                }
-            }
-
-            return false; // Hide items that don't match the filter
-        });
+    // Get the range of questions to display
+    const { start, end } = getQuestionRange(currentIndex);
 
     const toggleAccordion = index => {
         setIsAccordionOpen(prev => {
@@ -158,7 +148,7 @@ const QuestionCard = () => {
                 return newAccordionState; // Return the updated array
             } else {
                 // If prev is not an array, initialize it with a new array based on data length
-                return new Array(data?.mcqsByModulesData?.length).fill(false);
+                return new Array(presentationMcqs.length).fill(false);
             }
         });
     };
@@ -177,53 +167,43 @@ const QuestionCard = () => {
     };
 
     const handleCheckAnswer = () => {
-        dispatch(setActive(false));
+        dispatch(setActive(false)); // Dispatch the updated attempts array to Redux
 
         if (selectedAnswer) {
             setIsButtonClicked(true);
             setIsAccordionVisible(true);
             setBorder(false);
 
+            // Get the correct answer from answersArray using correctAnswerId
             const correctAnswer =
-                data?.mcqsByModulesData[currentIndex].answersArray[
-                data?.mcqsByModulesData[currentIndex].correctAnswerId
-                ];
+                presentationMcqs[currentIndex].answersArray[presentationMcqs[currentIndex].correctAnswerId];
+
+            // Check if the selected answer matches the correct answer
             const isCorrect = selectedAnswer === correctAnswer;
 
+            // Update attempts
             setAttempts(prev => {
                 const updatedAttempts = [...prev];
-                updatedAttempts[currentIndex] = isCorrect;
-                dispatch(setAttempted(updatedAttempts));
-                if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
-                    dispatch(
-                        fetchConditionNameById({
-                            id: data?.mcqsByModulesData[currentIndex]?.conditionName,
-                        })
-                    )
+                updatedAttempts[currentIndex] = isCorrect; // Mark as correct (true) or incorrect (false)
+                dispatch(setAttempted(updatedAttempts)); // Dispatch the updated attempts array to Redux
+                if (presentationMcqs[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: presentationMcqs[currentIndex]?.conditionName }))
                         .unwrap()
                         .then(res => {
                             setArticle(res);
                         });
                 }
+                dispatch(insertMockResult({ isCorrect, questionId: presentationMcqs[currentIndex].id, userId, moduleId: presentationMcqs[currentIndex].moduleId }))
 
-        dispatch(
-          insertResult({
-            isCorrect,
-            questionId: data?.mcqsByModulesData[currentIndex].id,
-            userId,
-            moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
-          })
-        );
-        dispatch(setResult({ updatedAttempts }));
-        return updatedAttempts;
-      });
+                dispatch(setResult({ updatedAttempts }));
+                return updatedAttempts;
+            });
 
-            // Open the correct answer's accordion and selected if incorrect
+            // Expand accordion for the correct answer
             setIsAccordionOpen(prev => {
                 const newAccordionState = [...prev].fill(false); // Close all first
-                const selectedIndex =
-                    data?.mcqsByModulesData[currentIndex].answersArray.indexOf(selectedAnswer);
-                const correctIndex = data?.mcqsByModulesData[currentIndex].correctAnswerId;
+                const selectedIndex = presentationMcqs[currentIndex].answersArray.indexOf(selectedAnswer);
+                const correctIndex = presentationMcqs[currentIndex].correctAnswerId;
 
                 newAccordionState[correctIndex] = true; // Always open correct answer
                 if (!isCorrect) {
@@ -231,7 +211,6 @@ const QuestionCard = () => {
                 }
                 return newAccordionState;
             });
-
             let value = false;
             dispatch(markVisited({ currentIndex, value }));
         }
@@ -242,10 +221,8 @@ const QuestionCard = () => {
         dispatch(toggleFlag(currentIndex));
     };
 
- 
-
     const nextQuestion = () => {
-        if (currentIndex < data?.mcqsByModulesData.length - 1) {
+        if (currentIndex < presentationMcqs.length - 1) {
             // Mark the current question as unseen if skipped
             if (attempted[currentIndex] === null) {
                 setAttempts(prev => {
@@ -265,12 +242,8 @@ const QuestionCard = () => {
             if (isQuestionReview) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
-                if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
-                    dispatch(
-                        fetchConditionNameById({
-                            id: data?.mcqsByModulesData[currentIndex]?.conditionName,
-                        })
-                    )
+                if (presentationMcqs[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: presentationMcqs[currentIndex]?.conditionName }))
                         .unwrap()
                         .then(res => {
                             setArticle(res);
@@ -285,82 +258,78 @@ const QuestionCard = () => {
             setCurrentIndex(prev => prev + 1);
         }
     };
-    const getAttemptedQuestions = () => {
-        return data?.mcqsByModulesData?.filter((_, index) => attempted[index] !== null);
-    };
 
-    const attemptedQuestions = getAttemptedQuestions();
     const prevQuestion = () => {
         if (currentIndex > 0) {
-            setCurrentIndex(prev => prev - 1);
-
-            // Check if the previous question has been attempted
-            if (attempted[currentIndex - 1] !== null) {
-                setIsAnswered(true);
-                setIsAccordionVisible(true);
-            } else {
-                setIsAnswered(false);
-                setIsAccordionVisible(false);
+            // Mark the current question as unseen if skipped
+            if (attempted[currentIndex] === null) {
+                setAttempts(prev => {
+                    const updatedAttempts = [...prev];
+                    updatedAttempts[currentIndex] = null; // Mark as unseen
+                    return updatedAttempts;
+                });
             }
             if (isQuestionReview) {
                 setIsAnswered(true);
                 setIsAccordionVisible(true);
+                if (presentationMcqs[currentIndex]?.conditionName !== null) {
+                    dispatch(fetchConditionNameById({ id: presentationMcqs[currentIndex]?.conditionName }))
+                        .unwrap()
+                        .then(res => {
+                            setArticle(res);
+                        });
+                }
             }
+            setCurrentIndex(prev => prev - 1);
         }
     };
-
-    // Correct the nextPage function
     const nextPage = () => {
-        const newPage = currentPage + 1;
-        if (newPage * itemsPerPage < data?.mcqsByModulesData?.length) {
-            setCurrentPage(newPage);
-            setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the new page
+        if ((currentPage + 1) * itemsPerPage < presentationMcqs.length) {
+            setCurrentPage(currentPage + 1);
         }
     };
 
-  // Correct the prevPage function
-  const prevPage = () => {
-    const newPage = currentPage - 1;
-    if (newPage >= 0) {
-      setCurrentPage(newPage);
-      setCurrentIndex(newPage * itemsPerPage);
-    }
-  };
+    // Function to go to the previous page
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
 
     const toggleDrawer = () => {
         setIsOpen(prevState => !prevState);
     };
-    data?.mcqsByModulesData[currentIndex]?.explanationList?.map((explanation, index) => {
+    presentationMcqs[currentIndex].explanationList.map((explanation, index) => {
         let isSelected = selectedAnswer === explanation;
-        const isCorrectAnswer =
-            index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
+        const isCorrectAnswer = index === presentationMcqs[currentIndex].correctAnswerId;
     });
 
-  const markQuestion = (index, status) => {
-    setAttempts(prev => {
-      const updatedAttempts = [...prev];
-      updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
-      return updatedAttempts;
-    });
-  };
+    // Update attempts based on user actions
+    const markQuestion = (index, status) => {
+        setAttempts(prev => {
+            const updatedAttempts = [...prev];
+            updatedAttempts[index] = status; // Update specific question as correct (true) or incorrect (false)
+            return updatedAttempts;
+        });
+    };
 
-  const toggleMenu = event => {
-    event.stopPropagation();
-    setIsSubMenuOpen(!isSubMenuOpen);
-  };
+    const toggleMenu = event => {
+        event.stopPropagation();
+        setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
+    };
 
-  const handleFinishAndReview = () => {
-    if (isFinishEnabled) {
-      handleCheckAnswer();
-      // dispatch(setMcqsAccuracy({ accuracy }))
+    const handleFinishAndReview = () => {
+        if (true) {
+            handleCheckAnswer();
+            // dispatch(setMcqsAccuracy({ accuracy }))
 
-      // handleAnswerSelect()
-      //    Add a delay (for example, 2 seconds)
-      setTimeout(() => {
-        navigation('/score');
-      }, 2000); // 2000 ms = 2 seconds
-    }
-  };
+            // handleAnswerSelect()
+            //    Add a delay (for example, 2 seconds)
+            setTimeout(() => {
+                navigation('/score');
+            }, 3000); // 2000 ms = 2 seconds
+        }
+    };
 
     function handleShowPopup() {
         setShowPopup(true); // Close the popup
@@ -385,38 +354,17 @@ const QuestionCard = () => {
         }
     };
 
-    useEffect(() => {
-        if (data?.mcqsByModulesData?.length) {
-            const initialAccordionState = data?.mcqsByModulesData[
-                currentIndex
-            ].answersArray.map(() => false);
-            setIsAccordionOpen(initialAccordionState);
-        }
-    }, [data.mcqsByModulesData]);
+    const getAttemptedQuestions = () => {
+        return presentationMcqs.filter((_, index) => attempted[index] !== null);
+    };
 
-    useEffect(() => {
-        // Reset accordion state when the current question changes
-        if (data?.mcqsByModulesData[currentIndex]?.answersArray) {
-            const numAnswers = data?.mcqsByModulesData[currentIndex].answersArray.length;
-            setIsAccordionOpen(Array(numAnswers).fill(false));
-        }
-    }, [currentIndex, data?.mcqsByModulesData]);
-
+    const attemptedQuestions = getAttemptedQuestions();
     useEffect(() => {
         if (active) {
-            setAttempts(Array(data?.mcqsByModulesData?.length).fill(null)); // Initialize attempts as unseen
-            dispatch(setAttempted(Array(data?.mcqsByModulesData?.length).fill(null))); // Dispatch the updated attempts array to Redux
+            setAttempts(Array(presentationMcqs.length).fill(null)); // Initialize attempts as unseen
+            dispatch(setAttempted(Array(presentationMcqs.length).fill(null))); // Dispatch the updated attempts array to Redux
         }
-    }, [data?.mcqsByModulesData]);
-
-    useEffect(() => {
-        if (data?.mcqsByModulesData?.length > 0) {
-            if (active) {
-                dispatch(initializeFlags(data?.mcqsByModulesData?.length));
-                dispatch(initializeVisited(data?.mcqsByModulesData?.length));
-            }
-        }
-    }, [data?.mcqsByModulesData]);
+    }, [presentationMcqs]);
 
     useEffect(() => {
         const correct = attempts.filter(attempt => attempt === true).length;
@@ -471,58 +419,33 @@ const QuestionCard = () => {
     // Check if it's time to enable the Finish button
     useEffect(() => {
         setIsReviewEnabled(false);
-        if (data?.mcqsByModulesData.length === currentIndex + 1) {
+        if (presentationMcqs.length === currentIndex + 1) {
             setIsReviewEnabled(true); // Enable the Finish button when the condition is met
         }
-    }, [currentIndex, data?.mcqsByModulesData?.length]); // Re-run whenever currentIndex changes
+    }, [currentIndex, presentationMcqs?.length]); // Re-run whenever currentIndex changes
 
-    const reportHandler = () => {
-        setShowFeedBackModal(!showFeedBackModal);
-    };
-
+    // Add this useEffect hook to handle keyboard events
     useEffect(() => {
         const handleKeyPress = e => {
-            // Check if the current question has been attempted
-                if (e.key === 'ArrowRight') {
-                    nextQuestion();
-                    return;
-                }
-                // Check if the current question has been attempted
-                if (e.key === 'ArrowLeft') {
-                    prevQuestion();
-                    return;
-                }
-            // Prevent default action for spacebar to avoid scrolling
+            // Prevent spacebar from scrolling the page
             if (e.key === ' ') {
                 e.preventDefault();
 
-                if (isAnswered && !answerChecked) {
-                    handleCheckAnswer(); // Call the check answer function
-                    setAnswerChecked(true);
-                    console.log('spacebar pressed');
+                if (isAnswered) {
+                    handleCheckAnswer(); // ✅ Spacebar pressed, check answer
+                    console.log('Spacebar pressed - Checking answer');
                 }
-                if (answerChecked) {
-                    nextQuestion();
-                    setAnswerChecked(false);
-
-                }
-
-
-                return; // Exit the function after handling spacebar
+                return; // Exit function to prevent other key checks
             }
 
-            // Check if the current question has been attempted
             if (attempted[currentIndex] !== null) return;
 
             const key = e.key.toUpperCase();
             const validKeys = ['Q', 'W', 'E', 'R', 'T'];
             const keyIndex = validKeys.indexOf(key);
 
-            if (
-                keyIndex !== -1 &&
-                keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
-            ) {
-                const answer = data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
+            if (keyIndex !== -1 && keyIndex < presentationMcqs[currentIndex]?.answersArray.length) {
+                const answer = presentationMcqs[currentIndex].answersArray[keyIndex];
 
                 handleAnswerSelect(answer);
                 setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
@@ -533,7 +456,7 @@ const QuestionCard = () => {
 
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered]); // ✅ Added isAnswered in dependency array
+    }, [currentIndex, attempted, presentationMcqs, isAnswered]); // ✅ Dependency array updated
 
     useEffect(() => {
         if (review) {
@@ -546,6 +469,15 @@ const QuestionCard = () => {
             // setIsAccordionVisible(true)
         }
     }, [review]);
+
+    useEffect(() => {
+        if (presentationMcqs?.length > 0) {
+            if (active) {
+                dispatch(initializeFlags(presentationMcqs?.length));
+                dispatch(initializeVisited(presentationMcqs?.length));
+            }
+        }
+    }, [presentationMcqs]);
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -565,7 +497,7 @@ const QuestionCard = () => {
             <div className='dark:bg-[#1E1E2A] min-h-screen'>
                 <div className='flex items-center  justify-between p-5 bg-white lg:hidden w-full '>
                     <div className=''>
-                        <img src='/assets/small-logo.png' alt='Logo sm' />
+                        <img src='/assets/small-logo.png' alt='' />
                     </div>
 
                     <div className='' onClick={toggleDrawer}>
@@ -583,10 +515,7 @@ const QuestionCard = () => {
                             <div className='absolute bottom-0 left-0 w-full h-[4px]  bg-[#D4D4D8] rounded-md overflow-hidden'>
                                 <div
                                     className='bg-[#60B0FA] h-full transition-all duration-300 ease-in-out'
-                                    style={{
-                                        width: `${((currentIndex + 1) / data?.mcqsByModulesData?.length) * 100
-                                            }%`,
-                                    }}
+                                    style={{ width: `${((currentIndex + 1) / presentationMcqs.length) * 100}%` }}
                                 ></div>
                             </div>
 
@@ -638,10 +567,10 @@ const QuestionCard = () => {
                                     &larr;
                                 </button>
                                 <h2 className='font-semibold text-center'>
-                                    Question {currentIndex + 1} of {data?.mcqsByModulesData?.length}
+                                    Question {currentIndex + 1} of {presentationMcqs.length}
                                 </h2>
                                 <button
-                                    className={`text-white ${currentIndex + 1 === data?.mcqsByModulesData?.length
+                                    className={`text-white ${currentIndex + 1 === presentationMcqs.length
                                             ? 'opacity-70 cursor-not-allowed'
                                             : ''
                                         }`}
@@ -692,176 +621,167 @@ const QuestionCard = () => {
                             </div>
                         </div>
 
-            {/* Question start */}
-            {data?.mcqsByModulesData.length > 0 && (
-              <div className='mt-6 p-6' key={currentIndex}>
-                <p className='text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white'>
-                  {data?.mcqsByModulesData[currentIndex].questionStem}
-                </p>
-               
+                        {/* Question start */}
+                        {presentationMcqs?.length > 0 && (
+                            <div className='mt-6 p-6' key={currentIndex}>
+                                <p className='text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white'>
+                                    {presentationMcqs[currentIndex]?.questionStem}
+                                </p>
 
                                 <h3 className='mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white'>
-                                    {data?.mcqsByModulesData[currentIndex].leadQuestion}
+                                    {presentationMcqs[currentIndex].leadQuestion}
                                 </h3>
+
+                                {/* Options Section */}
                                 <div className='mt-4 space-y-4'>
-                                    {data?.mcqsByModulesData[currentIndex]?.answersArray.map(
-                                        (answer, index) => {
-                                            const isSelected = selectedAnswer === answer;
-                                            const isCorrectAnswer =
-                                                index === data?.mcqsByModulesData[currentIndex]?.correctAnswerId;
+                                    {presentationMcqs[currentIndex]?.answersArray?.map((answer, index) => {
+                                        const isSelected = selectedAnswer === answer;
+                                        const isCorrectAnswer =
+                                            index === presentationMcqs[currentIndex]?.correctAnswerId;
 
-                                            const borderColor =
-                                                isButtonClicked || attempted[currentIndex] !== null
-                                                    ? isCorrectAnswer
-                                                        ? 'border-[#22C55E]'
-                                                        : 'border-[#EF4444]'
-                                                    : '';
-                                            const bgColor =
-                                                isButtonClicked || attempted[currentIndex] !== null
-                                                    ? isCorrectAnswer
-                                                        ? 'bg-[#DCFCE7]'
-                                                        : 'bg-[#FEE2E2]'
-                                                    : '';
+                                        // Determine the border color based on whether the button has been clicked
+                                        const borderColor =
+                                            isButtonClicked || attempted[currentIndex] !== null
+                                                ? isCorrectAnswer
+                                                    ? 'border-[#22C55E]'
+                                                    : 'border-[#EF4444]'
+                                                : '';
+                                        const bgColor =
+                                            isButtonClicked || attempted[currentIndex] !== null
+                                                ? isCorrectAnswer
+                                                    ? 'bg-[#DCFCE7]'
+                                                    : 'bg-[#FEE2E2]'
+                                                : '';
 
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className={`rounded-md border ${attempted[currentIndex] !== null
-                                                            ? isCorrectAnswer
-                                                                ? 'border-[#22C55E] bg-[#DCFCE7]'
-                                                                : isSelected
-                                                                    ? 'border-[#EF4444] bg-[#FEE2E2]'
-                                                                    : 'border-white bg-white'
-                                                            : isSelected
-                                                                ? 'border-[#3CC8A1] bg-[#FAFAFA]'
-                                                                : 'border-white bg-white hover:border-[#3CC8A1]'
-                                                        }`}
-                                                >
-                                                    {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                        return (
+                                            <div
+                                                className={`rounded-md  ${isSelected
+                                                        ? 'border border-[#3CC8A1]  bg-[#FAFAFA]'
+                                                        : 'border border-white bg-white hover:border hover:border-[#3CC8A1]'
+                                                    }`}
+                                            >
+                                                {!isAccordionVisible && attempted[currentIndex] === null ? (
+                                                    <label
+                                                        key={index}
+                                                        className={`flex  items-center space-x-3 py-[12px] p-4 cursor-pointer  text-[14px] lg:text-[16px]  dark:bg-[#1E1E2A] dark:border`}
+                                                        onClick={() => handleAnswerSelect(answer, index)}
+                                                    >
+                                                        <input
+                                                            type='radio'
+                                                            name='answer'
+                                                            className='form-radio h-5 w-5 text-green-500 '
+                                                            checked={isSelected}
+                                                            readOnly
+                                                        />
+                                                        <span className='font-medium text-[#3F3F46] flex-1 dark:text-white'>
+                                                            {answer}
+                                                        </span>
+                                                        <span className='bg-gray-200 text-[#27272A] px-2 py-1 rounded-md'>
+                                                            {['Q', 'W', 'E', 'R', 'T'][index]}
+                                                        </span>
+                                                    </label>
+                                                ) : (
+                                                    <div
+                                                        className={`border-[1px] ${borderColor} ${bgColor} rounded-[6px]`}
+                                                        onClick={e => {
+                                                            e.stopPropagation(); // Prevent propagation
+                                                            toggleAccordion(index);
+                                                        }}
+                                                    >
                                                         <label
-                                                            className={`flex  items-center space-x-3 py-[12px] p-4 rounded-md cursor-pointer  text-[14px] lg:text-[16px]  dark:bg-[#1E1E2A] dark:border`}
+                                                            key={index}
+                                                            className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
                                                             onClick={() => handleAnswerSelect(answer, index)}
                                                         >
-                                                            <input
-                                                                type='radio'
-                                                                name='answer'
-                                                                className='form-radio h-5 w-5 text-green-500 focus:ring-green-500'
-                                                                checked={isSelected}
-                                                                readOnly
-                                                            />
-                                                            <span className='font-medium text-[#3F3F46] flex-1 dark:text-white'>
-                                                                {answer}
-                                                            </span>
-                                                            <span className='bg-gray-200 text-[#27272A] px-2 py-1 rounded-md'>
-                                                                {['Q', 'W', 'E', 'R', 'T'][index]}
-                                                            </span>
-                                                        </label>
-                                                    ) : (
-                                                        <div
-                                                            className={`border ${borderColor} ${bgColor} rounded-md`}
-                                                            onClick={e => {
-                                                                e.stopPropagation();
-                                                                toggleAccordion(index);
-                                                            }}
-                                                        >
-                                                            <label
-                                                                className={`flex items-center space-x-3 p-4 rounded-md cursor-pointer text-[14px] lg:text-[16px]`}
-                                                                onClick={() => handleAnswerSelect(answer, index)}
+                                                            <div
+                                                                className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
+                                                                        ? isCorrectAnswer
+                                                                            ? 'bg-green-100 border border-green-500'
+                                                                            : 'bg-red-100 border border-red-500'
+                                                                        : 'bg-gray-100 border border-gray-300'
+                                                                    }`}
                                                             >
-                                                                <div
-                                                                    className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
-                                                                            ? isCorrectAnswer
-                                                                                ? 'bg-green-100 border border-green-500'
-                                                                                : 'bg-red-100 border border-red-500'
-                                                                            : 'bg-gray-100 border border-gray-300'
-                                                                        }`}
+                                                                {(isButtonClicked || attempted[currentIndex] !== null) &&
+                                                                    (isCorrectAnswer ? (
+                                                                        <svg
+                                                                            xmlns='http://www.w3.org/2000/svg'
+                                                                            fill='none'
+                                                                            viewBox='0 0 24 24'
+                                                                            strokeWidth='2'
+                                                                            stroke='green'
+                                                                            className='w-4 h-4'
+                                                                        >
+                                                                            <path
+                                                                                strokeLinecap='round'
+                                                                                strokeLinejoin='round'
+                                                                                d='M5 13l4 4L19 7'
+                                                                            />
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <svg
+                                                                            xmlns='http://www.w3.org/2000/svg'
+                                                                            fill='none'
+                                                                            viewBox='0 0 24 24'
+                                                                            strokeWidth='2'
+                                                                            stroke='red'
+                                                                            className='w-4 h-4'
+                                                                        >
+                                                                            <path
+                                                                                strokeLinecap='round'
+                                                                                strokeLinejoin='round'
+                                                                                d='M6 18L18 6M6 6l12 12'
+                                                                            />
+                                                                        </svg>
+                                                                    ))}
+                                                            </div>
+                                                            <span className='text-[#27272A] flex-1'>{answer}</span>
+                                                            {isAccordionOpen[index] ? (
+                                                                <svg
+                                                                    xmlns='http://www.w3.org/2000/svg'
+                                                                    width='24'
+                                                                    height='24'
+                                                                    viewBox='0 0 24 24'
+                                                                    fill='none'
+                                                                    stroke='currentColor'
+                                                                    strokeWidth='2'
+                                                                    strokeLinecap='round'
+                                                                    strokeLinejoin='round'
+                                                                    className='lucide lucide-chevron-up'
                                                                 >
-                                                                    {(isButtonClicked ||
-                                                                        attempted[currentIndex] !== null) &&
-                                                                        (isCorrectAnswer ? (
-                                                                            <svg
-                                                                                xmlns='http://www.w3.org/2000/svg'
-                                                                                fill='none'
-                                                                                viewBox='0 0 24 24'
-                                                                                strokeWidth='2'
-                                                                                stroke='green'
-                                                                                className='w-4 h-4'
-                                                                            >
-                                                                                <path
-                                                                                    strokeLinecap='round'
-                                                                                    strokeLinejoin='round'
-                                                                                    d='M5 13l4 4L19 7'
-                                                                                />
-                                                                            </svg>
-                                                                        ) : (
-                                                                            <svg
-                                                                                xmlns='http://www.w3.org/2000/svg'
-                                                                                fill='none'
-                                                                                viewBox='0 0 24 24'
-                                                                                strokeWidth='2'
-                                                                                stroke='red'
-                                                                                className='w-4 h-4'
-                                                                            >
-                                                                                <path
-                                                                                    strokeLinecap='round'
-                                                                                    strokeLinejoin='round'
-                                                                                    d='M6 18L18 6M6 6l12 12'
-                                                                                />
-                                                                            </svg>
-                                                                        ))}
-                                                                </div>
-                                                                <span className='text-[#27272A] flex-1'>{answer}</span>
-                                                                {isAccordionOpen[index] ? (
-                                                                    <svg
-                                                                        xmlns='http://www.w3.org/2000/svg'
-                                                                        width='24'
-                                                                        height='24'
-                                                                        viewBox='0 0 24 24'
-                                                                        fill='none'
-                                                                        stroke='currentColor'
-                                                                        strokeWidth='2'
-                                                                        strokeLinecap='round'
-                                                                        strokeLinejoin='round'
-                                                                        className='lucide lucide-chevron-up'
-                                                                    >
-                                                                        <path d='m18 15-6-6-6 6' />
-                                                                    </svg>
-                                                                ) : (
-                                                                    <svg
-                                                                        xmlns='http://www.w3.org/2000/svg'
-                                                                        width='24'
-                                                                        height='24'
-                                                                        viewBox='0 0 24 24'
-                                                                        fill='none'
-                                                                        stroke='currentColor'
-                                                                        strokeWidth='2'
-                                                                        strokeLinecap='round'
-                                                                        strokeLinejoin='round'
-                                                                        className='lucide lucide-chevron-down'
-                                                                    >
-                                                                        <path d='m6 9 6 6 6-6' />
-                                                                    </svg>
-                                                                )}
-                                                            </label>
-
-                                                            {/* Conditionally render the hr and p tags */}
-                                                            {isAccordionOpen[index] && (
-                                                                <>
-                                                                    <hr className={`mx-5 ${borderColor}`} />
-                                                                    <p className='py-2 px-5 text-[12px] text-[#3F3F46]'>
-                                                                        {
-                                                                            data?.mcqsByModulesData[currentIndex]
-                                                                                ?.explanationList[index]
-                                                                        }
-                                                                    </p>
-                                                                </>
+                                                                    <path d='m18 15-6-6-6 6' />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    xmlns='http://www.w3.org/2000/svg'
+                                                                    width='24'
+                                                                    height='24'
+                                                                    viewBox='0 0 24 24'
+                                                                    fill='none'
+                                                                    stroke='currentColor'
+                                                                    strokeWidth='2'
+                                                                    strokeLinecap='round'
+                                                                    strokeLinejoin='round'
+                                                                    className='lucide lucide-chevron-down'
+                                                                >
+                                                                    <path d='m6 9 6 6 6-6' />
+                                                                </svg>
                                                             )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        }
-                                    )}
+                                                        </label>
+
+                                                        {/* Conditionally render the hr and p tags */}
+                                                        {isAccordionOpen[index] && (
+                                                            <>
+                                                                <hr className={`mx-5 ${borderColor}`} />
+                                                                <p className='py-2 px-5 text-[12px] text-[#3F3F46]'>
+                                                                    {presentationMcqs[currentIndex].explanationList[index]}
+                                                                </p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
                                 {/* Submit Button */}
@@ -873,7 +793,6 @@ const QuestionCard = () => {
                                                 onClick={nextQuestion}
                                             >
                                                 Next Question
-
                                                 <span className='bg-white rounded-[4px] px-[2px] group-hover:bg-[#3CC8A1] transition-all duration-300 ease-in-out'>
                                                     <svg
                                                         xmlns='http://www.w3.org/2000/svg'
@@ -1006,32 +925,41 @@ const QuestionCard = () => {
                         )}
                         {isAccordionVisible && <DiscussionBoard />}
                         {isAccordionVisible && (
-                            <Article
-                                article={article}
-                                id={data?.mcqsByModulesData[currentIndex]?.conditionName}
+                            <Article article={article} id={presentationMcqs[currentIndex]?.conditionName} />
+                        )}
+                        {showFeedBackModal && (
+                            <FeedbackModal
+                                showFeedBackModal={showFeedBackModal}
+                                setShowFeedBackModal={setShowFeedBackModal}
                             />
                         )}
+                    </div>
+
+                    <div
+                        ref={beakerRef}
+                        className={`absolute z-50 top-0 right-0 transition-all duration-500 ${beakerToggle
+                                ? 'opacity-100 visible'
+                                : 'opacity-0 invisible pointer-events-none'
+                            }`}
+                    >
+                        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
                     </div>
 
                     {/* Sidebar Section */}
                     <div className={`hidden lg:block fixed right-0 top-0`}>
                         <div
-                            className={` bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] flex flex-col items-center justify-between  h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? 'translate-x-0' : 'translate-x-full'
+                            className={`flex flex-col items-center justify-between  bg-white w-[28%] md:w-[25%] lg:w-[240px] dark:border-[1px] dark:border-[#3A3A48] h-screen dark:bg-[#1E1E2A] text-black ${!toggleSidebar ? 'translate-x-0' : 'translate-x-full'
                                 } transition-transform duration-300`}
                         >
                             <div className='w-full'>
-                                <div className='flex items-center justify-between mt-5 '>
+                                <div className='flex items-center justify-between mt-5'>
                                     <div className='flex items-center'></div>
-
                                     <div className='absolute left-1/2 transform -translate-x-1/2'>
                                         <Logo />
                                     </div>
-
                                     <div
-                                        className='flex items-center cursor-pointer'
-                                        onClick={() => {
-                                            setToggleSidebar(!toggleSidebar);
-                                        }}
+                                        className='flex items-center mr-5 cursor-pointer'
+                                        onClick={() => setToggleSidebar(!toggleSidebar)}
                                     >
                                         <svg
                                             xmlns='http://www.w3.org/2000/svg'
@@ -1040,10 +968,10 @@ const QuestionCard = () => {
                                             viewBox='0 0 24 24'
                                             fill='none'
                                             stroke='currentColor'
-                                            stroke-width='2'
-                                            stroke-linecap='round'
-                                            stroke-linejoin='round'
-                                            className='lucide lucide-chevrons-left dark:text-white mr-4'
+                                            strokeWidth='2'
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                            className='lucide lucide-chevrons-left dark:text-white'
                                         >
                                             <path d='m11 17-5-5 5-5' />
                                             <path d='m18 17-5-5 5-5' />
@@ -1081,22 +1009,79 @@ const QuestionCard = () => {
                                     )}
                                 </div>
 
-                <QuestionNavigator
-                  attempted={attempted}
-                  flaggedQuestions={flaggedQuestions}
-                  visited={visited}
-                  currentIndex={currentIndex}
-                  setCurrentIndex={setCurrentIndex}
-                />
-                <div className='py-5 px-10 text-[#D4D4D8]'>
-                  <hr />
-                </div>
-              </div>
-              <div>
-                <hr className='mx-5' />
-              </div>
+                                <QuestionNavigator
+                                    attempted={attempted}
+                                    flaggedQuestions={flaggedQuestions}
+                                    visited={visited}
+                                    setCurrentIndex={setCurrentIndex}
+                                />
 
-                            <div className='text-[12px] mb-5'>
+                                {/* <div className='flex items-center justify-center gap-x-28 mt-3 text-[#71717A]'>
+                  <button
+                    className={`${
+                      currentPage === 0
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'cursor-pointer'
+                    }`}
+                    onClick={currentPage > 0 ? prevPage : null}
+                    disabled={currentPage === 0}
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      width='24'
+                      height='24'
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      className='lucide lucide-move-left'
+                    >
+                      <path d='M6 8L2 12L6 16' />
+                      <path d='M2 12H22' />
+                    </svg>
+                  </button>
+
+                  <button
+                    className={`${
+                      (currentPage + 1) * itemsPerPage >= presentationMcqs.length
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'cursor-pointer'
+                    }`}
+                    onClick={
+                      (currentPage + 1) * itemsPerPage < presentationMcqs.length ? nextPage : null
+                    }
+                    disabled={(currentPage + 1) * itemsPerPage >= presentationMcqs.length}
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      width='24'
+                      height='24'
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      className='lucide lucide-move-right'
+                    >
+                      <path d='M18 8L22 12L18 16' />
+                      <path d='M2 12H22' />
+                    </svg>
+                  </button>
+                </div> */}
+
+                                <div className='py-5 px-10 text-[#D4D4D8]'>
+                                    <hr />
+                                </div>
+                            </div>
+                            <div>
+                                <DeepChatAI W='200px' />
+                                <hr className='mx-5' />
+                            </div>
+
+                            <div className='mb-5 text-[12px]'>
                                 <div
                                     className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled
                                             ? 'text-[#3CC8A1] cursor-pointer'
@@ -1179,26 +1164,12 @@ const QuestionCard = () => {
                     setShowPopup={setShowPopup}
                 />
             )}
-
-      {showFeedBackModal && (
-        <FeedbackModal
-
-          showFeedBackModal={showFeedBackModal}
-          setShowFeedBackModal={setShowFeedBackModal}
-          userId={userId}
-          questionStem={data?.mcqsByModulesData[currentIndex].questionStem}
-          leadQuestion={data?.mcqsByModulesData[currentIndex].leadQuestion}
-        />
-      )}
-     
-      <div
-        ref={beakerRef}
-        className={`absolute top-0 right-0 transition-all duration-500 ${
-          beakerToggle ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-        }`}
-      >
-        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-      </div>
+            {showFeedBackModal && (
+                <FeedbackModal
+                    showFeedBackModal={showFeedBackModal}
+                    setShowFeedBackModal={setShowFeedBackModal}
+                />
+            )}
 
             <Drawer
                 open={isOpen}
@@ -1252,7 +1223,7 @@ const QuestionCard = () => {
                         )}
                     </div>
 
-                    <>
+                    <div className=''>
                         <div className='flex items-center justify-between p-5 w-full text-[12px]'>
                             <span
                                 className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All'
@@ -1282,24 +1253,24 @@ const QuestionCard = () => {
                                 Unseen
                             </span>
                         </div>
-                    </>
+                    </div>
 
                     <div className='flex justify-center items-center'>
                         <div className='grid grid-cols-5 gap-2'>
                             {Array.from({ length: end - start }, (_, i) => start + i).map((num, i) => {
                                 const bgColor =
                                     attempted[num] === true
-                                        ? 'bg-[#3CC8A1]'
+                                        ? 'bg-[#3CC8A1]' // Correct answer
                                         : attempted[num] === false
-                                            ? 'bg-[#FF453A]'
-                                            : 'bg-gray-300';
+                                            ? 'bg-[#FF453A]' // Incorrect answer
+                                            : 'bg-gray-300'; // Unattempted
 
                                 return (
                                     <div key={i}>
                                         <div
                                             className={`${bgColor} flex items-center justify-center text-[14px] font-bold text-white w-[26px] h-[26px] rounded-[2px] cursor-pointer`}
                                             onClick={() => {
-                                                setCurrentIndex(num);
+                                                setCurrentIndex(num); // Navigate to the selected question
                                             }}
                                         >
                                             <p>{num + 1}</p>
@@ -1352,59 +1323,55 @@ const QuestionCard = () => {
                         <hr className='mx-5' />
                     </div>
 
-          <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
-            {/* Finish and Review Button */}
-            <button
-              className={`w-full flex items-center font-semibold gap-x-2 ${
-                isFinishEnabled
-                  ? 'text-[#3CC8A1] cursor-pointer'
-                  : 'text-[#D4D4D8] cursor-not-allowed'
-              } justify-center`}
-              onClick={handleFinishAndReview}
-              disabled={!isFinishEnabled}
-            >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='24'
-                height='24'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                className='lucide lucide-check'
-              >
-                <path d='M20 6 9 17l-5-5' />
-              </svg>
-              <p>Finish and Review</p>
-            </button>
-            <hr className='w-[200px] my-2' />
-            {/* Back to Dashboard Button */}
-            <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='24'
-                height='24'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                className='lucide lucide-chevron-left'
-              >
-                <path d='m15 18-6-6 6-6' />
-              </svg>
-              <p>Back to Dashboard</p>
-            </div>
-          </div>
+                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
+                        {/* Finish and Review Button */}
+                        <div
+                            className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled
+                                    ? 'text-[#3CC8A1] cursor-pointer'
+                                    : 'text-[#D4D4D8] cursor-not-allowed'
+                                } justify-center`}
+                            onClick={handleFinishAndReview}
+                        >
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                width='24'
+                                height='24'
+                                viewBox='0 0 24 24'
+                                fill='none'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                className='lucide lucide-check'
+                            >
+                                <path d='M20 6 9 17l-5-5' />
+                            </svg>
+                            <p>Finish and Review</p>
+                        </div>
+                        <hr className='w-[200px] my-2' />
+                        {/* Back to Dashboard Button */}
+                        <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
+                            <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                width='24'
+                                height='24'
+                                viewBox='0 0 24 24'
+                                fill='none'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                className='lucide lucide-chevron-left'
+                            >
+                                <path d='m15 18-6-6 6-6' />
+                            </svg>
+                            <p>Back to Dashboard</p>
+                        </div>
+                    </div>
+                </div>
+            </Drawer>
         </div>
-      </Drawer>
-
-      <Chatbot />
-    </div>
-  );
+    );
 };
 
-export default QuestionCard;
+export default MockPresentation;

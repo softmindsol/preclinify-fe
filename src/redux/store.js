@@ -24,12 +24,17 @@ import userAnswersReducer from './features/SAQ/userAnswer.slice';
 import presentationReducer from './features/sort-by-presentation/sort-by-presentation.slice';
 import examDatesReducer from './features/examDate/slice';
 import userReducer from './features/user-id/userId.slice';
+import presentationSBAReducer from './features/presentationSBA/presentationSBA.slice'
+import presentationMockReducer from './features/MockPresentation/presentationMock.slice'
+import personalInfoReducer from './features/personal-info/personal-info.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: 'root',
   storage, // LocalStorage for modules and mcqsQuestion
   whitelist: [
     "user",
+    "personalInfo",
+    "Mockpresentation",
     'presentations',
     'userAnswers',
     'visited',
@@ -48,6 +53,7 @@ const persistConfig = {
     'mode',
     'limit',
     'mockModules',
+    'SBApresentation'
   ], // Persist these in localStorage
 };
 
@@ -59,6 +65,9 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  personalInfo: personalInfoReducer,
+  SBAPresentation: presentationSBAReducer,
+  MockPresentation: presentationMockReducer,
   presentations: presentationReducer,
   userAnswers: userAnswersReducer,
   visited: visitedReducer,

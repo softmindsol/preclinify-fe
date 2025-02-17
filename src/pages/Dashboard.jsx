@@ -23,6 +23,7 @@ import supabase from '../config/helper';
 // import { fetchExamDate } from '../redux/features/exam-countdown/service';
 import { fetchUserId } from '../redux/features/user-id/userId.service';
 import { fetchDaysUntilExam } from '../redux/features/examDate/service';
+import { fetchUserInformation } from '../redux/features/personal-info/personal-info.service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -46,7 +47,8 @@ const Dashboard = () => {
   const examDuration = useSelector(state => state?.examDates?.examDate);
 
   const userId = useSelector(state => state?.user?.userId);
-  const userInfo = useSelector(state => state?.user?.userInfo);
+  const userInfo = useSelector(state => state?.user?.userInfo);  
+
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -188,11 +190,12 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+
     dispatch(fetchUserId());
     dispatch(fetchDaysUntilExam(userId));
+    dispatch(fetchUserInformation({userId}))
   }, []);
 
-  useEffect(() => {}, []);
 
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>

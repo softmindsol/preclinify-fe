@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMockTest, fetchMockTestById, fetchModulesById, fetchTotalMockQuestion } from "./mock.service";
+import { fetchMockMcqsByPresentationId, fetchMockTest, fetchMockTestById, fetchModulesById, fetchPresentationMock, fetchTotalMockQuestion } from "./mock.service";
 
 const modulesSlice = createSlice({
     name: 'mockModules',
@@ -7,7 +7,9 @@ const modulesSlice = createSlice({
         mockTestData: [],
         mockTestIds: [], // Stores IDs fetched from mockTable
         mockMcqsByModulesData: [], // Store data fetched by fetchMcqsByModules
+        presentationData: [],
         modules: [], // Stores modules fetched from modulesNew
+        presentationMcqs: [],
         loading: false,
         error: null,
     },
@@ -69,7 +71,31 @@ const modulesSlice = createSlice({
             .addCase(fetchMockTestById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload; // Store the error message
-            });
+            })
+            .addCase(fetchPresentationMock.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchPresentationMock.fulfilled, (state, action) => {
+                state.loading = false;
+                state.presentationData = action.payload; // Store fetched presentation data
+            })
+            .addCase(fetchPresentationMock.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload; // Store the error message
+            })
+            .addCase(fetchMockMcqsByPresentationId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMockMcqsByPresentationId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.presentationMcqs = action.payload;
+            })
+            .addCase(fetchMockMcqsByPresentationId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     },
 });
 

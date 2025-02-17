@@ -12,17 +12,17 @@ import { ThemeProvider } from './lib/ThemeContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <>
-    <BrowserRouter>
       <Toaster richColors />
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ThemeProvider>
+    <BrowserRouter>
             <App />
+      </BrowserRouter>
           </ThemeProvider>
         </PersistGate>
       </Provider>
   
-      </BrowserRouter>
   
   </>
 );
