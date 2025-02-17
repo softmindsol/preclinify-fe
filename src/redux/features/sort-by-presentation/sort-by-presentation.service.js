@@ -70,11 +70,10 @@ export const fetchMcqsByPresentationId = createAsyncThunk(
 
             // Wait for all promises to resolve
             const results = await Promise.all(promises);
-            console.log("results:", results);
 
-            // Combine all results into a single array
-            const combinedData = results.flat();
-            console.log("combinedData:", combinedData);
+            // Combine all fetched data into a single array
+            const combinedQuestion = results.flat(); // Flatten the array of arrays into a single array
+            const combinedData = combinedQuestion.sort(() => Math.random() - 0.5); // Randomly shuffles the array
 
             return combinedData; // Return the combined data
         } catch (error) {

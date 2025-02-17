@@ -25,7 +25,7 @@ import { initializeFlags, toggleFlag } from '../redux/features/flagged/flagged.s
 import { initializeVisited, markVisited } from '../redux/features/flagged/visited.slice';
 import QuestionNavigator from './QuestionNavigator';
 import { insertResult } from '../redux/features/all-results/result.sba.service';
-
+import Chatbot from './chatbot';
 
 const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
@@ -43,48 +43,49 @@ const calculateTimeForQuestions = numQuestions => {
     return totalTimeInSeconds; // Return total time in seconds
 };
 const QuestionCard = () => {
-  const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
-  const dispatch = useDispatch();
-  const attempted = useSelector(state => state?.attempts?.attempts);
-  const [isOpen, setIsOpen] = useState(false);
-  const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
-  const [isAccordionVisible, setIsAccordionVisible] = useState(false);
-  const [isAccordionOpen, setIsAccordionOpen] = useState([]);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [isButtonClicked, setIsButtonClicked] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState('');
-  const [showFeedBackModal, setShowFeedBackModal] = useState(false);
-  const beakerRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFinishEnabled, setIsFinishEnabled] = useState(false);
-  const navigation = useNavigate();
-  const [border, setBorder] = useState(true);
-  const mcqsAccuracy = useSelector(state => state?.accuracy?.accuracy);
-  const [showPopup, setShowPopup] = useState(false);
-  const data = useSelector(state => state.mcqsQuestion || []);
-  const result = useSelector(state => state.result);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isReviewEnabled, setIsReviewEnabled] = useState(false);
-  const [toggleSidebar, setToggleSidebar] = useState(false);
-  const itemsPerPage = 10;
-  const [article, setArticle] = useState({});
-  const userId = useSelector(state => state.user.userId);
-  const isQuestionReview = useSelector(state => state?.questionReview?.value);
-  const [feedback, setFeedback] = useState('');
-  // Get the items to show for the current page
-  const currentItems = data.data.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-  const [selectedFilter, setSelectedFilter] = useState('All');
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
-  const isTimerMode = useSelector(state => state.mode);
-  const [timer, setTimer] = useState(() => {
-    // Calculate the initial timer value based on the number of questions
-    const initialTime = calculateTimeForQuestions(isTimerMode.time);
-    const savedTime = localStorage.getItem('examTimer');
-    return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
-  });
+    const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
+    const dispatch = useDispatch();
+    const attempted = useSelector(state => state?.attempts?.attempts);
+    const [isOpen, setIsOpen] = useState(false);
+    const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
+    const [isAccordionVisible, setIsAccordionVisible] = useState(false);
+    const [isAccordionOpen, setIsAccordionOpen] = useState([]);
+    const [isAnswered, setIsAnswered] = useState(false);
+    const [answerChecked, setAnswerChecked] = useState(false);
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const [selectedAnswer, setSelectedAnswer] = useState('');
+    const [showFeedBackModal, setShowFeedBackModal] = useState(false);
+    const beakerRef = useRef(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isFinishEnabled, setIsFinishEnabled] = useState(false);
+    const navigation = useNavigate();
+    const [border, setBorder] = useState(true);
+    const mcqsAccuracy = useSelector(state => state?.accuracy?.accuracy);
+    const [showPopup, setShowPopup] = useState(false);
+    const data = useSelector(state => state.mcqsQuestion || []);
+    const result = useSelector(state => state.result);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [isReviewEnabled, setIsReviewEnabled] = useState(false);
+    const [toggleSidebar, setToggleSidebar] = useState(false);
+    const itemsPerPage = 10;
+    const [article, setArticle] = useState({});
+    const userId = useSelector(state => state.user.userId);
+    const isQuestionReview = useSelector(state => state?.questionReview?.value);
+    const [feedback, setFeedback] = useState('');
+    // Get the items to show for the current page
+    const currentItems = data.data.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
+    );
+    const [selectedFilter, setSelectedFilter] = useState('All');
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
+    const isTimerMode = useSelector(state => state.mode);
+    const [timer, setTimer] = useState(() => {
+        // Calculate the initial timer value based on the number of questions
+        const initialTime = calculateTimeForQuestions(isTimerMode.time);
+        const savedTime = localStorage.getItem('examTimer');
+        return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
+    });
 
     const flaggedQuestions = useSelector(state => state?.flagged?.flaggedQuestions);
     const visited = useSelector(state => state?.visited?.visitedQuestions);
@@ -236,7 +237,7 @@ const [answerChecked, setAnswerChecked] = useState(false);
         dispatch(toggleFlag(currentIndex));
     };
 
- 
+
 
     const nextQuestion = () => {
         if (currentIndex < data?.mcqsByModulesData.length - 1) {
@@ -317,7 +318,7 @@ const [answerChecked, setAnswerChecked] = useState(false);
         const newPage = currentPage - 1;
         if (newPage >= 0) {
             setCurrentPage(newPage);
-            setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the previous page
+            setCurrentIndex(newPage * itemsPerPage);
         }
     };
 
@@ -330,7 +331,6 @@ const [answerChecked, setAnswerChecked] = useState(false);
             index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
     });
 
-    // Update attempts based on user actions
     const markQuestion = (index, status) => {
         setAttempts(prev => {
             const updatedAttempts = [...prev];
@@ -341,19 +341,21 @@ const [answerChecked, setAnswerChecked] = useState(false);
 
     const toggleMenu = event => {
         event.stopPropagation();
-        setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
+        setIsSubMenuOpen(!isSubMenuOpen);
     };
 
     const handleFinishAndReview = () => {
-        if (true) {
-            handleCheckAnswer();
+        if (isFinishEnabled) {
+            if (isAnswered) {
+                handleCheckAnswer();
+            }
             // dispatch(setMcqsAccuracy({ accuracy }))
 
             // handleAnswerSelect()
-            //    Add a delay (for example, 2 seconds)
+            //    Add a sdelay (for example, 2 seconds)
             setTimeout(() => {
                 navigation('/score');
-            }, 3000); // 2000 ms = 2 seconds
+            }, 2000); // 2000 ms = 2 seconds
         }
     };
 
@@ -478,20 +480,20 @@ const [answerChecked, setAnswerChecked] = useState(false);
     useEffect(() => {
         const handleKeyPress = e => {
             // Check if the current question has been attempted
-                if (e.key === 'ArrowRight') {
-                    nextQuestion();
-                    return;
-                }
-                // Check if the current question has been attempted
-                if (e.key === 'ArrowLeft') {
-                    prevQuestion();
-                    return;
-                }
+            if (e.key === 'ArrowRight') {
+                nextQuestion();
+                return;
+            }
+            // Check if the current question has been attempted
+            if (e.key === 'ArrowLeft') {
+                prevQuestion();
+                return;
+            }
             // Prevent default action for spacebar to avoid scrolling
             if (e.key === ' ') {
                 e.preventDefault();
 
-                if (isAnswered) {
+                if (isAnswered && !answerChecked) {
                     handleCheckAnswer(); // Call the check answer function
                     setAnswerChecked(true);
                     console.log('spacebar pressed');
@@ -554,6 +556,17 @@ const [answerChecked, setAnswerChecked] = useState(false);
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter' && review === true) {
+                navigation('/dashboard');
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [navigation]);
 
     return (
         <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `}>
@@ -637,8 +650,8 @@ const [answerChecked, setAnswerChecked] = useState(false);
                                 </h2>
                                 <button
                                     className={`text-white ${currentIndex + 1 === data?.mcqsByModulesData?.length
-                                            ? 'opacity-70 cursor-not-allowed'
-                                            : ''
+                                        ? 'opacity-70 cursor-not-allowed'
+                                        : ''
                                         }`}
                                     onClick={nextQuestion}
                                 >
@@ -687,13 +700,13 @@ const [answerChecked, setAnswerChecked] = useState(false);
                             </div>
                         </div>
 
-            {/* Question start */}
-            {data?.mcqsByModulesData.length > 0 && (
-              <div className='mt-6 p-6' key={currentIndex}>
-                <p className='text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white'>
-                  {data?.mcqsByModulesData[currentIndex].questionStem}
-                </p>
-               
+                        {/* Question start */}
+                        {data?.mcqsByModulesData.length > 0 && (
+                            <div className='mt-6 p-6' key={currentIndex}>
+                                <p className='text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white'>
+                                    {data?.mcqsByModulesData[currentIndex].questionStem}
+                                </p>
+
 
                                 <h3 className='mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white'>
                                     {data?.mcqsByModulesData[currentIndex].leadQuestion}
@@ -722,14 +735,14 @@ const [answerChecked, setAnswerChecked] = useState(false);
                                                 <div
                                                     key={index}
                                                     className={`rounded-md border ${attempted[currentIndex] !== null
-                                                            ? isCorrectAnswer
-                                                                ? 'border-[#22C55E] bg-[#DCFCE7]'
-                                                                : isSelected
-                                                                    ? 'border-[#EF4444] bg-[#FEE2E2]'
-                                                                    : 'border-white bg-white'
+                                                        ? isCorrectAnswer
+                                                            ? 'border-[#22C55E] bg-[#DCFCE7]'
                                                             : isSelected
-                                                                ? 'border-[#3CC8A1] bg-[#FAFAFA]'
-                                                                : 'border-white bg-white hover:border-[#3CC8A1]'
+                                                                ? 'border-[#EF4444] bg-[#FEE2E2]'
+                                                                : 'border-white bg-white'
+                                                        : isSelected
+                                                            ? 'border-[#3CC8A1] bg-[#FAFAFA]'
+                                                            : 'border-white bg-white hover:border-[#3CC8A1]'
                                                         }`}
                                                 >
                                                     {!isAccordionVisible && attempted[currentIndex] === null ? (
@@ -765,10 +778,10 @@ const [answerChecked, setAnswerChecked] = useState(false);
                                                             >
                                                                 <div
                                                                     className={`h-6 w-6 flex items-center justify-center rounded-full ${isButtonClicked || attempted[currentIndex] !== null
-                                                                            ? isCorrectAnswer
-                                                                                ? 'bg-green-100 border border-green-500'
-                                                                                : 'bg-red-100 border border-red-500'
-                                                                            : 'bg-gray-100 border border-gray-300'
+                                                                        ? isCorrectAnswer
+                                                                            ? 'bg-green-100 border border-green-500'
+                                                                            : 'bg-red-100 border border-red-500'
+                                                                        : 'bg-gray-100 border border-gray-300'
                                                                         }`}
                                                                 >
                                                                     {(isButtonClicked ||
@@ -924,8 +937,8 @@ const [answerChecked, setAnswerChecked] = useState(false);
                                 {isReviewEnabled && (
                                     <div
                                         className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled
-                                                ? 'text-[#3CC8A1] cursor-pointer'
-                                                : 'text-[#D4D4D8] cursor-not-allowed'
+                                            ? 'text-[#3CC8A1] cursor-pointer'
+                                            : 'text-[#D4D4D8] cursor-not-allowed'
                                             } justify-center`}
                                         onClick={handleFinishAndReview}
                                     >
@@ -957,30 +970,33 @@ const [answerChecked, setAnswerChecked] = useState(false);
 
                                 {review === true && (
                                     <div className='group w-full'>
-                                        <button
-                                            className='mt-2  text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]'
-                                            onClick={() => {
-                                                navigation('/dashboard');
-                                            }}
-                                        >
-                                            Back to Dashboard
-                                            <span className='bg-white rounded-[4px] px-[2px] group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out'>
-                                                <svg
-                                                    xmlns='http://www.w3.org/2000/svg'
-                                                    width='20'
-                                                    height='24'
-                                                    viewBox='0 0 24 24'
-                                                    fill='none'
-                                                    stroke='currentColor'
-                                                    strokeWidth='2'
-                                                    strokeLinecap='round'
-                                                    strokeLinejoin='round'
-                                                    className='lucide lucide-space text-black group-hover:text-white transition-all duration-300 ease-in-out'
-                                                >
-                                                    <path d='M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1' />
-                                                </svg>
-                                            </span>
-                                        </button>
+                                        <div tabIndex="0"> {/* Ensure the div is focusable */}
+                                            <button
+                                                className='mt-2 text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]'
+                                                onClick={() => navigation('/dashboard')}
+                                            >
+                                                Back to Dashboard
+                                                <span className='bg-white rounded-[4px] px-[4px] py-[2px] flex items-center gap-1 group-hover:bg-[#60B0FA] transition-all duration-300 ease-in-out'>
+                                                    <svg
+                                                        xmlns='http://www.w3.org/2000/svg'
+                                                        width='20'
+                                                        height='20'
+                                                        viewBox='0 0 24 24'
+                                                        fill='none'
+                                                        stroke='currentColor'
+                                                        strokeWidth='2'
+                                                        strokeLinecap='round'
+                                                        strokeLinejoin='round'
+                                                        className='lucide lucide-corner-down-left text-black group-hover:text-white transition-all duration-300 ease-in-out'
+                                                    >
+                                                        <polyline points="9 10 4 15 9 20" />
+                                                        <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+                                                    </svg>
+                                                    <span className="text-black text-[12px] font-semibold group-hover:text-white">Enter</span>
+                                                </span>
+                                            </button>
+                                        </div>
+
                                     </div>
                                 )}
                             </div>
@@ -1088,15 +1104,14 @@ const [answerChecked, setAnswerChecked] = useState(false);
                                 </div>
                             </div>
                             <div>
-                                <DeepChatAI W='200px' />
                                 <hr className='mx-5' />
                             </div>
 
                             <div className='text-[12px] mb-5'>
                                 <div
                                     className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled
-                                            ? 'text-[#3CC8A1] cursor-pointer'
-                                            : 'text-[#D4D4D8] cursor-not-allowed'
+                                        ? 'text-[#3CC8A1] cursor-pointer'
+                                        : 'text-[#D4D4D8] cursor-not-allowed'
                                         } justify-center`}
                                     onClick={handleFinishAndReview}
                                 >
@@ -1176,25 +1191,24 @@ const [answerChecked, setAnswerChecked] = useState(false);
                 />
             )}
 
-      {showFeedBackModal && (
-        <FeedbackModal
+            {showFeedBackModal && (
+                <FeedbackModal
 
-          showFeedBackModal={showFeedBackModal}
-          setShowFeedBackModal={setShowFeedBackModal}
-          userId={userId}
-          questionStem={data?.mcqsByModulesData[currentIndex].questionStem}
-          leadQuestion={data?.mcqsByModulesData[currentIndex].leadQuestion}
-        />
-      )}
-     
-      <div
-        ref={beakerRef}
-        className={`absolute top-0 right-0 transition-all duration-500 ${
-          beakerToggle ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-        }`}
-      >
-        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-      </div>
+                    showFeedBackModal={showFeedBackModal}
+                    setShowFeedBackModal={setShowFeedBackModal}
+                    userId={userId}
+                    questionStem={data?.mcqsByModulesData[currentIndex]}
+                    leadQuestion={data?.mcqsByModulesData[currentIndex].leadQuestion}
+                />
+            )}
+
+            <div
+                ref={beakerRef}
+                className={`absolute top-0 right-0 transition-all duration-500 ${beakerToggle ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+                    }`}
+            >
+                <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+            </div>
 
             <Drawer
                 open={isOpen}
@@ -1252,8 +1266,8 @@ const [answerChecked, setAnswerChecked] = useState(false);
                         <div className='flex items-center justify-between p-5 w-full text-[12px]'>
                             <span
                                 className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'All'
-                                        ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]'
-                                        : 'hover:text-[#3CC8A1]'
+                                    ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]'
+                                    : 'hover:text-[#3CC8A1]'
                                     }`}
                                 onClick={() => handleFilterChange('All')}
                             >
@@ -1261,8 +1275,8 @@ const [answerChecked, setAnswerChecked] = useState(false);
                             </span>
                             <span
                                 className={`w-[36%] text-center cursor-pointer ${selectedFilter === 'Flagged'
-                                        ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]'
-                                        : 'hover:text-[#3CC8A1]'
+                                    ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]'
+                                    : 'hover:text-[#3CC8A1]'
                                     }`}
                                 onClick={() => handleFilterChange('Flagged')}
                             >
@@ -1270,8 +1284,8 @@ const [answerChecked, setAnswerChecked] = useState(false);
                             </span>
                             <span
                                 className={`w-[30%] text-center cursor-pointer ${selectedFilter === 'Unseen'
-                                        ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]'
-                                        : 'hover:text-[#3CC8A1]'
+                                    ? 'text-[#3CC8A1] border-b-[1px] border-[#3CC8A1]'
+                                    : 'hover:text-[#3CC8A1]'
                                     }`}
                                 onClick={() => handleFilterChange('Unseen')}
                             >
@@ -1350,12 +1364,13 @@ const [answerChecked, setAnswerChecked] = useState(false);
 
                     <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[12px]'>
                         {/* Finish and Review Button */}
-                        <div
-                            className={`flex items-center font-semibold gap-x-2 ${isFinishEnabled
+                        <button
+                            className={`w-full flex items-center font-semibold gap-x-2 ${isFinishEnabled
                                     ? 'text-[#3CC8A1] cursor-pointer'
                                     : 'text-[#D4D4D8] cursor-not-allowed'
                                 } justify-center`}
                             onClick={handleFinishAndReview}
+                            disabled={!isFinishEnabled}
                         >
                             <svg
                                 xmlns='http://www.w3.org/2000/svg'
@@ -1372,7 +1387,7 @@ const [answerChecked, setAnswerChecked] = useState(false);
                                 <path d='M20 6 9 17l-5-5' />
                             </svg>
                             <p>Finish and Review</p>
-                        </div>
+                        </button>
                         <hr className='w-[200px] my-2' />
                         {/* Back to Dashboard Button */}
                         <div className='flex items-center gap-x-2 text-[#FF453A] font-semibold justify-center whitespace-nowrap'>
@@ -1395,6 +1410,8 @@ const [answerChecked, setAnswerChecked] = useState(false);
                     </div>
                 </div>
             </Drawer>
+
+            <Chatbot />
         </div>
     );
 };

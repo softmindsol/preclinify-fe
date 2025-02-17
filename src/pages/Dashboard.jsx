@@ -3,7 +3,6 @@ import Sidebar from '../components/common/Sidebar';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format } from 'date-fns';
-
 import Drawer from 'react-modern-drawer';
 //import styles 👇
 import 'react-modern-drawer/dist/index.css';
@@ -11,7 +10,7 @@ import StackedBar from '../components/charts/stacked-bar';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearResult } from '../redux/features/result/result.slice';
 import { resetQuestionReviewValue } from '../redux/features/question-review/question-review.slice';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { RxCross2 } from 'react-icons/rx';
 import Logo from '../components/common/Logo';
 import { TbBaselineDensityMedium } from 'react-icons/tb';
@@ -180,7 +179,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
     // Check if recentSessions are available in localStorage
     const storedSessions = localStorage.getItem('recentSessions');
     if (storedSessions) {
-      setLocalRecentSession(JSON.parse(storedSessions)); // Parse and set to state
+      setLocalRecentSession(JSON.parse(storedSessions));
     }
     localStorage.removeItem('minutes');
     localStorage.removeItem('seconds');
@@ -189,7 +188,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
     dispatch(clearRecentSessions());
   }, []);
   useEffect(() => {
-    localStorage.removeItem('examTimer'); // Clear storage when timer ends
+    localStorage.removeItem('examTimer');
     dispatch(clearResult());
     dispatch(resetQuestionReviewValue());
   }, []);
@@ -201,8 +200,6 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
     dispatch(fetchUserInformation({userId}))
     dispatch(fetchUserStreak({ userId }))
   }, []);
-
-
 
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
@@ -222,7 +219,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
       <div className='flex-grow  lg:ml-[250px] py-2 md:py-10 overflow-y-auto   dark:bg-[#1E1E2A] text-black '>
         <div className='flex flex-row   items-center  h-[150px] justify-center  sm:justify-evenly w-full gap-x-3 xs:gap-x-16 sm:gap-x-36 xl:gap-x-36 2xl:gap-x-20 py-5'>
           <p className='text-[18px] sm:text-[24px] xl:text-[32px] text-[#52525B] font-extrabold dark:text-white'>
-            Hello {profile?.firstName},
+            Hello, {userInfo?.user_metadata?.displayName?.split(' ')[0] || 'unknown'}
           </p>
           <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
             <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] dark:bg-[#1E1E2A] dark:border-[1px] dark:border-[#3A3A48]'>
@@ -242,7 +239,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                 />
                 <div className=''>
                   <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold dark:text-white'>
-                    {profile?.firstName} {profile?.lastName}
+                    {userInfo?.user_metadata?.displayName || 'unknown'}
                   </p>
                 </div>
               </div>
@@ -298,22 +295,26 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
 
               <div className='flex justify-between gap-x-10'>
                 <div className='grid grid-cols-7 gap-[4px] xl:gap-2 mt-4'>
-                  {days.map((day, index) => {
-                    // Calculate total result and percentage
+                  {days?.map((day, index) => {
                     const target = day.workCount * 100;
                     const workPercentage = Math.floor(
                       Math.min((day.totalResult / target) * 100, 100)
                     );
-                    // Determine background color class based on percentage
                     const bgColorClass = getColorClass(workPercentage);
 
                     return (
                       <div
                         key={index}
-                        className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white  ${
+                        className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white relative  ${
                           day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'
                         }`}
-                      ></div>
+                      >
+                        <img
+                          src='/assets/heat-icon.svg'
+                          alt='heat icon'
+                          className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-fit'
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -414,7 +415,7 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                   })
                 ) : (
                   <div className='flex items-center justify-center'>
-                    <p>No Session</p>
+                    <p>No Session.</p>
                   </div>
                 )}
               </div>

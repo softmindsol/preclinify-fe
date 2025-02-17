@@ -6,14 +6,9 @@ const FeedbackModal = ({ showFeedBackModal, setShowFeedBackModal, userId, questi
     const [feedback, setFeedback] = useState("");
     const [loading, setLoading] = useState(false);
 
-    console.log("feedback:", feedback);
-
     const feedbackHandler = (e) => {
         // Only update the feedback, keeping the top part unchanged
-        const lines = e.target.value.split("\n");
-        if (lines.length > 3) {
-            setFeedback(lines.slice(3).join("\n"));
-        }
+        setFeedback(e.target.value);
     };
 
     const handleFeedBack = async () => {
@@ -21,13 +16,19 @@ const FeedbackModal = ({ showFeedBackModal, setShowFeedBackModal, userId, questi
             toast.error("Please provide feedback before submitting.");
             return;
         }
-
+        
+        if (!questionStem?.id) {
+            toast.error("Invalid question ID.");
+            return;
+        }
+    
         try {
             setLoading(true);
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/submit-feedback`, {
-                feedback,
+                feedback, 
+                questionId: questionStem.id, // Ensure ID is valid
             });
-
+    
             if (response.status === 200) {
                 toast.success("Feedback submitted successfully!");
                 setShowFeedBackModal(false);
@@ -38,11 +39,11 @@ const FeedbackModal = ({ showFeedBackModal, setShowFeedBackModal, userId, questi
             setLoading(false);
         }
     };
-
+    
     // Pre-fill textarea with user info and question details
     const prefilledText = `User ID: ${userId || "N/A"}
-Question: ${questionStem || "N/A"}
-Lead Question: ${leadQuestion || "N/A"}
+    Question: ${questionStem || "N/A"}
+    Lead Question: ${leadQuestion || "N/A"}
 
 `; // Extra newline to separate feedback area
 
@@ -53,7 +54,9 @@ Lead Question: ${leadQuestion || "N/A"}
                 <textarea
                     className="w-[750px] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3CC8A1] placeholder:text-start"
                     rows="6"
-                    value={prefilledText + feedback} // Show prefilled + user feedback
+                    name="feedback"
+                    placeholder="Write your feedback here..."
+                    value={feedback}
                     onChange={feedbackHandler}
                     style={{ textAlign: 'start' }}
                 />
