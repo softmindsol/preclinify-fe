@@ -46,8 +46,7 @@ const Dashboard = () => {
   const examDuration = useSelector(state => state?.examDates?.examDate);
 
   const userId = useSelector(state => state?.user?.userId);
-  const userInfo = useSelector(state => state?.user?.userInfo);  
-
+  const userInfo = useSelector(state => state?.user?.userInfo);
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -189,12 +188,10 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-
     dispatch(fetchUserId());
     dispatch(fetchDaysUntilExam(userId));
-    dispatch(fetchUserInformation({userId}))
+    dispatch(fetchUserInformation({ userId }));
   }, []);
-
 
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
@@ -410,7 +407,7 @@ const Dashboard = () => {
                   })
                 ) : (
                   <div className='flex items-center justify-center'>
-                    <p>No Session</p>
+                    <p>No Session.</p>
                   </div>
                 )}
               </div>
