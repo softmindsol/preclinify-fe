@@ -13,34 +13,26 @@ import {
 import { fetchShortQuestionByModules } from '../redux/features/SAQ/saq.service';
 
 const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal }) => {
-  const dispatch = useDispatch();
-  const type = useSelector(state => state.mode?.questionMode?.selectedOption);
-  const typeQues = useSelector(
-    state => state.mode?.questionMode?.selectedPreClinicalOption
-  );
-
-  const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
-  const isLoading = useSelector(state => state?.loading?.[fetchMcqsByModules.typePrefix]);
-  const isLoadingShortQuestion = useSelector(
-    state => state?.loading?.[fetchShortQuestionByModules.typePrefix]
-  );
-
-  const isQuesGenLoading = useSelector(
-    state => state?.loading?.[fetchQuesGenModules.typePrefix]
-  );
-  const isMockLoading = useSelector(
-    state => state?.loading?.[fetchMockTestById.typePrefix]
-  );
-  const modalRef = useRef(null); // Reference for modal container
-  const navigation = useNavigate();
-  const [numQuestions, setNumQuestions] = useState();
-  const [timer, setTimer] = useState(5);
-  const [modeType, setModeType] = useState('Endless');
-  const [questionTypes, setQuestionTypes] = useState({
-    notAnswered: true,
-    incorrect: true,
-    correct: true,
-  });
+    const dispatch = useDispatch();
+    const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
+    const typeQues = useSelector((state) => state.mode?.questionMode?.selectedPreClinicalOption);
+    const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
+    const isLoading = useSelector(state => state?.loading?.[fetchMcqsByModules.typePrefix]);
+    const isLoadingShortQuestion = useSelector(state => state?.loading?.[fetchShortQuestionByModules.typePrefix]);
+    const presentationSBA = useSelector(state => state?.SBAPresentation?.isSBAPresentation)
+    const presentationMock = useSelector(state => state?.MockPresentation?.isMockPresentation);
+    const isQuesGenLoading = useSelector(state => state?.loading?.[fetchQuesGenModules.typePrefix]);
+    const isMockLoading = useSelector(state => state?.loading?.[fetchMockTestById.typePrefix]);
+    const modalRef = useRef(null); // Reference for modal container
+    const navigation = useNavigate();
+    const [numQuestions, setNumQuestions] = useState();
+    const [timer, setTimer] = useState(5);
+    const [modeType, setModeType] = useState('Endless');
+    const [questionTypes, setQuestionTypes] = useState({
+        notAnswered: true,
+        incorrect: true,
+        correct: true,
+    });
 
   const toggleQuestionType = type => {
     setQuestionTypes(prev => ({
@@ -83,19 +75,27 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     }
   };
 
-  console.log('typeQues:', typeQues);
+    
 
-  const handleQuestion = () => {
-    if (type === 'SAQ' && !isLoadingShortQuestion) {
-      navigation('/short-question');
-    } else if (type === 'SBA' && !isLoading) {
-      navigation('/question-card');
-    } else if (typeQues === 'QuesGen' && !isQuesGenLoading) {
-      navigation('/question-generator');
-    } else if (type === 'Mock' && !isMockLoading) {
-      navigation('/mock-test');
-    }
-  };
+    const handleQuestion = () => {
+        if (type === 'SAQ' && !isLoadingShortQuestion) {
+            navigation('/short-question');
+        } else if (type === 'SBA' && presentationSBA) {
+            navigation("/sba-presentation");
+        } 
+        else if (type === 'SBA' && !isLoading) {
+            navigation("/question-card");
+        }
+        else if (type === 'Mock' && presentationMock) {
+            navigation("/mock-presentation");
+        } 
+        
+        else if (typeQues === 'QuesGen' && !isQuesGenLoading) {
+            navigation("/question-generator");
+        } else if (type === 'Mock' && !isMockLoading) {
+            navigation("/mock-test");
+        }
+    };
 
   useEffect(() => {
     if (isOpenSetUpSessionModal) {

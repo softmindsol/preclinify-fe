@@ -111,6 +111,9 @@ export const fetchSqaChild = createAsyncThunk(
                 return rejectWithValue(error.message || 'Failed to fetch module questions');
             }
 
+            console.log("data:", data);
+            
+
             return data;
         } catch (error) {
             return rejectWithValue(error?.message || 'An unexpected error occurred');

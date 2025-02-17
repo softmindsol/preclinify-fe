@@ -9,7 +9,12 @@ const userSlice = createSlice({
         loading: false,
         error: null,
     },
-    reducers: {}, // You can add other reducers here if needed
+    reducers: {
+
+    clearUserId: (state) => {
+        state.userId = null;
+    }
+    }, // You can add other reducers here if needed
     extraReducers: (builder) => {
         builder
             // Handle pending state
@@ -29,5 +34,7 @@ const userSlice = createSlice({
             });
     },
 });
+
+export const { clearUserId } = userSlice.actions;
 
 export default userSlice.reducer;

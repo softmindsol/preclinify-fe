@@ -6,6 +6,9 @@ export const fetchUserId = createAsyncThunk(
   'user/fetchUserId',
   async () => {
     const { data: { user } } = await supabase.auth.getUser();
+
+    console.log("user:", user);
+    
     if (user) {
       return user.id; // Return the user ID
     }
