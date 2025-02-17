@@ -9,7 +9,11 @@ const userSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearUserId: state => {
+      state.userId = null;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(fetchUserId.pending, state => {
@@ -28,4 +32,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { clearUserId } = userSlice.actions;
 export default userSlice.reducer;
