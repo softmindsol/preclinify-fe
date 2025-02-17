@@ -45,6 +45,7 @@ const SbaPresentation = () => {
   const [isAccordionVisible, setIsAccordionVisible] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState([]);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [answerChecked, setAnswerChecked] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
@@ -463,14 +464,30 @@ const SbaPresentation = () => {
 
   useEffect(() => {
     const handleKeyPress = e => {
+      // Check if the current question has been attempted
+      if (e.key === 'ArrowRight') {
+        nextQuestion();
+        return;
+    }
+    // Check if the current question has been attempted
+    if (e.key === 'ArrowLeft') {
+        prevQuestion();
+        return;
+    }
       // Prevent default action for spacebar to avoid scrolling
       if (e.key === ' ') {
         e.preventDefault();
 
-        if (isAnswered) {
+        if (isAnswered && !answerChecked) {
           handleCheckAnswer(); // Call the check answer function
+          setAnswerChecked(true);
           console.log('spacebar pressed');
-        }
+      }
+      if (answerChecked) {
+          nextQuestion();
+          setAnswerChecked(false);
+
+      }
         return; // Exit the function after handling spacebar
       }
 
@@ -1148,6 +1165,10 @@ const SbaPresentation = () => {
         <FeedbackModal
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
+
+          questionStem={presentationData[currentIndex]}
+          leadQuestion={presentationData[currentIndex].leadQuestion}
+          
         />
       )}
 
