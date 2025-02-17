@@ -1183,7 +1183,7 @@ const QuestionCard = () => {
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
           userId={userId}
-          questionStem={data?.mcqsByModulesData[currentIndex].questionStem}
+          questionStem={data?.mcqsByModulesData[currentIndex]}
           leadQuestion={data?.mcqsByModulesData[currentIndex].leadQuestion}
         />
       )}
