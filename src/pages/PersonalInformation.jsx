@@ -1,132 +1,177 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // For navigation after successful registration
+import React, { useEffect, useState } from 'react';
 import supabase from '../config/helper';
 import Logo from '../components/common/Logo';
-import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useDispatch, useSelector } from 'react-redux';
+import { insertUserInformation } from '../redux/features/personal-info/personal-info.service';
+import { useNavigate } from 'react-router-dom';
+import { fetchUserId } from '../redux/features/user-id/userId.service';
 
 const PersonalInformation = () => {
-    // State variables for input fields
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [university, setUniversity] = useState('');
-    const [yearGroup, setYearGroup] = useState('');
-    const [error, setError] = useState('');
+    const dispatch=useDispatch()
+    const userId = useSelector(state => state.user);
+const navigate=useNavigate()
+    const [formData, setFormData] = useState({
+        // ✅ Add userId in the initial state
+        firstName: '',
+        lastName: '',
+        university: '',
+        year: '',
+    });
+
+    console.log("userId:",userId);
+
+    const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
-    // Handlers for input changes
-    const handleFirstNameChange = (e) => {
-        setFirstName(e.target.value);
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.firstName.trim()) {
+            newErrors.firstName = "First Name is required.";
+        } else if (!/^[A-Za-z]{2,}$/.test(formData.firstName)) {
+            newErrors.firstName = "First Name must be at least 2 letters.";
+        }
+
+        if (!formData.lastName.trim()) {
+            newErrors.lastName = "Last Name is required.";
+        } else if (!/^[A-Za-z]{2,}$/.test(formData.lastName)) {
+            newErrors.lastName = "Last Name must be at least 2 letters.";
+        }
+
+        if (!formData.university) {
+            newErrors.university = "Please select a university.";
+        }
+
+        if (!formData.year) {
+            newErrors.year = "Please select a year group.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
-    const handleLastNameChange = (e) => {
-        setLastName(e.target.value);
-    };
-
-    const handleUniversityChange = (e) => {
-        setUniversity(e.target.value);
-    };
-
-    const handleYearGroupChange = (e) => {
-        setYearGroup(e.target.value);
+    const handleChange = (e) => {
+        setFormData({
+            user_id: userId, 
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log({ firstName, lastName, university, yearGroup });
-    };
+        if (!validateForm()) {
+            toast.error("Please fix the errors before submitting.");
+            return;
+        }
 
+        setIsLoading(true);
+
+        dispatch(insertUserInformation(formData))
+        .unwrap()
+        .then(res=>{
+            navigate('/login')
+        })
+        setTimeout(() => {
+            setIsLoading(false);
+            toast.success("Personal information successfully!");
+        }, 2000);
+    };
+useEffect(()=>{
+    dispatch(fetchUserId())
+    .then((res)=>{
+        console.log("res:",res);
+    })
+    .catch((err)=>{{}})
+console.log("hello");
+
+},[])
     return (
         <div className='flex items-center w-full overflow-hidden'>
             <div className='bg-[#FFFFFF] min-h-screen py-5 flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]'>
                 <Logo />
                 <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46] mb-5'>Almost there</p>
                 <form onSubmit={handleSubmit} className='mt-2 space-y-4 w-[90%] sm:w-[430px]'>
+
+                    {/* First Name */}
                     <div>
                         <label htmlFor='firstName' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>First Name</label>
-                        <br />
                         <input
                             type='text'
+                            name='firstName'
                             placeholder='Enter your First Name...'
-                            value={firstName}
-                            onChange={handleFirstNameChange}
-                            required
+                            value={formData.firstName}
+                            onChange={handleChange}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+                        {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
                     </div>
 
+                    {/* Last Name */}
                     <div>
                         <label htmlFor='lastName' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Last Name</label>
-                        <br />
                         <input
                             type='text'
+                            name='lastName'
                             placeholder='Enter your Last Name...'
-                            value={lastName}
-                            onChange={handleLastNameChange}
-                            required
+                            value={formData.lastName}
+                            onChange={handleChange}
                             className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
                         />
+                        {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
                     </div>
 
+                    {/* University */}
                     <div className="relative">
                         <label htmlFor='university' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>University</label>
-                        <br />
                         <select
-                            id='university'
-                            value={university}
-                            onChange={handleUniversityChange}
-                            className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px] appearance-none pr-10'
+                            name='university'
+                            value={formData.university}
+                            onChange={handleChange}
+                            className='rounded-[8px] mt-2 border-[2px] border-black px-5 py-2 w-full h-[50px] appearance-none pr-10'
                         >
                             <option value="">--Select University--</option>
-                            <option value="Goverment College University">Goverment College University</option>
-                            {/* Add more options as needed */}
+                            <option value="Government College University">Government College University</option>
                         </select>
-                        <div className="absolute top-12 right-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06-.02L10 10.586l3.71-3.4a.75.75 0 111.06 1.06l-4.24 4.242a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-                            </svg>
-                        </div>
+                        {errors.university && <p className="text-red-500 text-sm">{errors.university}</p>}
                     </div>
 
+                    {/* Year Group */}
                     <div className="relative">
-                        <label htmlFor='yearGroup' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Year Group</label>
-                        <br />
+                        <label htmlFor='year' className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>Year Group</label>
                         <select
-                            id='yearGroup'
-                            value={yearGroup}
-                            onChange={handleYearGroupChange}
-                            className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px] appearance-none pr-10'
+                            name='year'
+                            value={formData.year}
+                            onChange={handleChange}
+                            className='rounded-[8px] mt-2 border-[2px] border-black px-5 py-2 w-full h-[50px] appearance-none pr-10'
                         >
                             <option value="">--Select Year--</option>
-                            <option value="2015">2015</option>
-                            <option value="2016">2016</option>
-                            <option value="2017">2017</option>
-                            <option value="2018">2018</option>
-                            <option value="2019">2019</option>
+                            <option value="Year 1">Year 1</option>
+                            <option value="Year 2">Year 2</option>
+                            <option value="Year 3">Year 3</option>
+                            <option value="Year 4">Year 4</option>
                         </select>
-                        <div className="absolute top-12 right-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06-.02L10 10.586l3.71-3.4a.75.75 0 111.06 1.06l-4.24 4.242a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-                            </svg>
-                        </div>
+                        {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
                     </div>
 
-                    {error && <div className='text-red-500'>{error}</div>}
-
+                    {/* Submit Button */}
                     <div>
                         <button
                             type='submit'
-                            className='w-full h-[50px] text-[14px] sm:text-[16px] rounded-[8px] bg-[#FFE9D6] text-[#FF9741] font-medium hover:bg-[#e3863a] hover:text-white transition-all duration-150'
+                            className={`w-full h-[50px] text-[14px] sm:text-[16px] rounded-[8px] font-medium transition-all duration-150 
+                                ${isLoading ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-[#FFE9D6] text-[#FF9741] hover:bg-[#e3863a] hover:text-white"}`}
+                            disabled={isLoading}
                         >
-                            {isLoading ? "Loading..." : "Continue"}
+                            {isLoading ? "Submitting..." : "Continue"}
                         </button>
                     </div>
                 </form>
             </div>
 
+            {/* Side Image */}
             <div className='bg-[#F4F4F5] hidden lg:flex h-screen items-center justify-center w-[50%]'>
-                <img src='/assets/AI_hosptial-removebg-preview.png' alt='' />
+                <img src='/assets/AI_hosptial-removebg-preview.png' alt='Side Illustration' />
             </div>
         </div>
     );

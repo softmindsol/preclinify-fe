@@ -70,6 +70,7 @@ const QuestionCard = () => {
   const [article, setArticle] = useState({});
   const userId = useSelector(state => state.user.userId);
   const isQuestionReview = useSelector(state => state?.questionReview?.value);
+  const [feedback, setFeedback] = useState('');
   // Get the items to show for the current page
   const currentItems = data.data.slice(
     currentPage * itemsPerPage,
@@ -98,7 +99,7 @@ const QuestionCard = () => {
   const handleFilterChange = filter => {
     setSelectedFilter(filter);
   };
-
+  
   // Arrays to store indices
   const unseenIndices = [];
   const flaggedIndices = [];
@@ -235,29 +236,7 @@ const QuestionCard = () => {
     dispatch(toggleFlag(currentIndex));
   };
 
-  // const nextQuestion = () => {
-  //     if (currentIndex < data?.data.length - 1) {
-  //         setCurrentIndex((prev) => prev + 1);
-
-  //         // Check if the next question has been attempted
-  //         if (attempted[currentIndex + 1] !== null) {
-  //             setIsAnswered(true);
-  //             setIsAccordionVisible(true);
-  //         } else {
-  //             setIsAnswered(false);
-  //             setIsAccordionVisible(false);
-  //         }
-  //         if (isQuestionReview) {
-  //             setIsAnswered(true);
-  //             setIsAccordionVisible(true);
-  //         }
-  //          let value=true
-  //                     if (isAnswered === false){
-  //                         dispatch(markVisited({ currentIndex, value }));
-  //                     }
-  //     }
-
-  // };
+ 
 
   const nextQuestion = () => {
     if (currentIndex < data?.mcqsByModulesData.length - 1) {
@@ -700,6 +679,7 @@ const QuestionCard = () => {
                 <p className='text-[#000000] text-[14px] text-justify lg:text-[16px] dark:text-white'>
                   {data?.mcqsByModulesData[currentIndex].questionStem}
                 </p>
+               
 
                 <h3 className='mt-4 text-[12px] lg:text-[14px] text-[#3F3F46] font-bold dark:text-white'>
                   {data?.mcqsByModulesData[currentIndex].leadQuestion}
@@ -1196,11 +1176,15 @@ const QuestionCard = () => {
 
       {showFeedBackModal && (
         <FeedbackModal
+
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
+          userId={userId}
+          questionStem={data?.mcqsByModulesData[currentIndex].questionStem}
+          leadQuestion={data?.mcqsByModulesData[currentIndex].leadQuestion}
         />
       )}
-
+     
       <div
         ref={beakerRef}
         className={`absolute top-0 right-0 transition-all duration-500 ${

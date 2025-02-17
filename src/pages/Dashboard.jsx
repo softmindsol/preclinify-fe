@@ -23,6 +23,7 @@ import supabase from '../config/helper';
 // import { fetchExamDate } from '../redux/features/exam-countdown/service';
 import { fetchUserId } from '../redux/features/user-id/userId.service';
 import { fetchDaysUntilExam } from '../redux/features/examDate/service';
+import { fetchUserInformation } from '../redux/features/personal-info/personal-info.service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -44,9 +45,14 @@ const Dashboard = () => {
   const [sessionId, setSessionId] = useState([]);
   const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
   const examDuration = useSelector(state => state?.examDates?.examDate);
-
-  console.log('🚀 ~ Dashboard ~ examDuration:', examDuration);
+const profile=useSelector(state=>state.personalInfo.userInfo[0])
   const userId = useSelector(state => state.user.userId)  
+
+
+  console.log("profile:", profile);
+  
+
+
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -188,13 +194,13 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+
     dispatch(fetchUserId());
     dispatch(fetchDaysUntilExam(userId));
+    dispatch(fetchUserInformation({userId}))
   }, []);
 
-  useEffect(()=>{
-    
-  },[])
+
 
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
@@ -214,7 +220,7 @@ const Dashboard = () => {
       <div className='flex-grow  lg:ml-[250px] py-2 md:py-10 overflow-y-auto   dark:bg-[#1E1E2A] text-black '>
         <div className='flex flex-row   items-center  h-[150px] justify-center  sm:justify-evenly w-full gap-x-3 xs:gap-x-16 sm:gap-x-36 xl:gap-x-36 2xl:gap-x-20 py-5'>
           <p className='text-[18px] sm:text-[24px] xl:text-[32px] text-[#52525B] font-extrabold dark:text-white'>
-            Hello Sainavi,
+            Hello {profile?.firstName},
           </p>
           <div className='flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:gap-x-5 '>
             <div className='bg-[#FFFFFF] rounded-[6px] flex items-center flex-col justify-center w-[160px] xl:w-[250px] h-[85px] dark:bg-[#1E1E2A] dark:border-[1px] dark:border-[#3A3A48]'>
@@ -234,7 +240,7 @@ const Dashboard = () => {
                 />
                 <div className=''>
                   <p className='text-[14px] xl:text-[18px] text-[#52525B] font-semibold dark:text-white'>
-                    Sainavi Mahajan
+                    {profile?.firstName} {profile?.lastName}
                   </p>
                 </div>
               </div>

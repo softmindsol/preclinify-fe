@@ -13,11 +13,11 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
     const dispatch = useDispatch();
     const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
     const typeQues = useSelector((state) => state.mode?.questionMode?.selectedPreClinicalOption);
-
     const darkModeRedux = useSelector(state => state?.darkMode?.isDarkMode);
     const isLoading = useSelector(state => state?.loading?.[fetchMcqsByModules.typePrefix]);
     const isLoadingShortQuestion = useSelector(state => state?.loading?.[fetchShortQuestionByModules.typePrefix]);
-
+    const presentationSBA = useSelector(state => state?.SBAPresentation?.isSBAPresentation)
+    const presentationMock = useSelector(state => state?.MockPresentation?.isMockPresentation);
     const isQuesGenLoading = useSelector(state => state?.loading?.[fetchQuesGenModules.typePrefix]);
     const isMockLoading = useSelector(state => state?.loading?.[fetchMockTestById.typePrefix]);
     const modalRef = useRef(null); // Reference for modal container
@@ -72,15 +72,22 @@ const SetupSessionModal = ({ isOpenSetUpSessionModal, setIsOpenSetUpSessionModal
         }
     };
 
-    console.log("typeQues:", typeQues);
     
 
     const handleQuestion = () => {
         if (type === 'SAQ' && !isLoadingShortQuestion) {
             navigation('/short-question');
-        } else if (type === 'SBA' && !isLoading) {
+        } else if (type === 'SBA' && presentationSBA) {
+            navigation("/sba-presentation");
+        } 
+        else if (type === 'SBA' && !isLoading) {
             navigation("/question-card");
-        } else if (typeQues === 'QuesGen' && !isQuesGenLoading) {
+        }
+        else if (type === 'Mock' && presentationMock) {
+            navigation("/mock-presentation");
+        } 
+        
+        else if (typeQues === 'QuesGen' && !isQuesGenLoading) {
             navigation("/question-generator");
         } else if (type === 'Mock' && !isMockLoading) {
             navigation("/mock-test");

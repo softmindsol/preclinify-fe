@@ -32,16 +32,25 @@ const Login = () => {
                     password: values.password,
                 });
 
-                if (error) {
-                    toast.error(error.message);
-                    await resendVerificationEmail(values.email);
-                    setErrors({ email: error.message }); // Set error message for email field
-                } else {
-                    // On success, store the session (if needed)
-                    localStorage.setItem('authToken', data.session.access_token); // Store token if needed
+                localStorage.setItem('authToken', data.session.access_token); // Store token if needed
+                    
+                if (data?.session) {
+                    // console.log("Navigating to Dashboard...");
+                    navigate('/dashboard');
                     toast.success('Logged in successfully!'); // Show success toast
-                    navigate('/dashboard'); // Redirect to the dashboard or another page
                 }
+
+                // navigate('/dashboard'); // Redirect to the dashboard or another page
+                // if (error) {
+                //     toast.error(error.message);
+                //     await resendVerificationEmail(values.email);
+                //     setErrors({ email: error.message }); // Set error message for email field
+                // } else {
+                //     // On success, store the session (if needed)
+                //     localStorage.setItem('authToken', data.session.access_token); // Store token if needed
+                //     toast.success('Logged in successfully!'); // Show success toast
+                //     navigate('/dashboard'); // Redirect to the dashboard or another page
+                // }
             } catch (error) {
                 setErrors({ email: 'An error occurred. Please try again.' });
             } finally {
