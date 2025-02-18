@@ -87,7 +87,7 @@ const Setting = () => {
           <img src='/assets/small-logo.png' alt='' />
         </div>
 
-        <div className='' onClick={toggleDrawer}>
+        <div onClick={toggleDrawer}>
           <TbBaselineDensityMedium />
         </div>
       </div>

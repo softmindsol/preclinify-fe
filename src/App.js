@@ -9,7 +9,6 @@ import Setting from './pages/Setting';
 import Dashboard from './pages/Dashboard';
 import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
-
 import Questioning from './components/Questioning';
 import QuestionCard from './components/QuestionCard';
 import Score from './components/common/Score';
