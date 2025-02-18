@@ -27,6 +27,7 @@ const MEDICAL_SCENARIOS = {
 };
 
 const AINewVersion = () => {
+    const userInfo = useSelector(state => state?.user?.userInfo);
     const recognitionRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState([]);
@@ -57,7 +58,7 @@ const AINewVersion = () => {
 
     const scenario = MEDICAL_SCENARIOS[categoryName] || {
         symptoms: [categoryName],
-        patientProfile: "Rohan Sahu, a standard patient",
+        patientProfile: `${userInfo?.user_metadata?.displayName?.split(' ')[0] || 'unknown'}, a standard patient`,
         initialComplaint: "Hi Doctor"
     };
 
@@ -128,7 +129,7 @@ const AINewVersion = () => {
                     messages: [
                         {
                             role: "system",
-                            content: `You are Rohan Sahu, a patient with ${categoryName}. ${scenario.patientProfile}. 
+                            content: `You are ${userInfo?.user_metadata?.displayName || 'unknown'}, a patient with ${categoryName}. ${scenario.patientProfile}. 
                             Main symptoms: ${scenario.symptoms.join(", ")}. Respond naturally to the doctor's questions.`
                         },
                         { role: "user", content: userText }
