@@ -213,7 +213,6 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
 
   
 
-  console.log();
   
   const noOfDays = filteredStreaks?.map((streak) => new Date(streak?.streakDate).getDate());
   const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
