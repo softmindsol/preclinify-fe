@@ -8,7 +8,7 @@ export const insertExamDate = createAsyncThunk(
     try {
       console.log("Checking for existing userId:", userId);
 
-      // Insert or update (ensure unique user_id)
+      // Insert or update (ensure unique user_id and exam_date)
       const { data: newRecord, error: upsertError } = await supabase
         .from('examDates')
         .upsert([{ user_id: userId, exam_date }], { onConflict: ['user_id'] })
@@ -25,7 +25,6 @@ export const insertExamDate = createAsyncThunk(
     }
   }
 );
-
 
 export const fetchDaysUntilExam = createAsyncThunk(
   'examDates/daysUntilExam',

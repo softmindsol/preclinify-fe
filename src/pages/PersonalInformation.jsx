@@ -3,7 +3,6 @@ import supabase from '../config/helper';
 import Logo from '../components/common/Logo';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
-import { insertUserInformation } from '../redux/features/personal-info/personal-info.service';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserId } from '../redux/features/user-id/userId.service';
 
@@ -19,7 +18,6 @@ const navigate=useNavigate()
         year: '',
     });
 
-    console.log("userId:",userId);
 
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -68,15 +66,15 @@ const navigate=useNavigate()
 
         setIsLoading(true);
 
-        dispatch(insertUserInformation(formData))
-        .unwrap()
-        .then(res=>{
-            navigate('/login')
-        })
-        setTimeout(() => {
-            setIsLoading(false);
-            toast.success("Personal information successfully!");
-        }, 2000);
+        // dispatch(insertUserInformation(formData))
+        // .unwrap()
+        // .then(res=>{
+        //     navigate('/login')
+        // })
+        // setTimeout(() => {
+        //     setIsLoading(false);
+        //     toast.success("Personal information successfully!");
+        // }, 2000);
     };
 useEffect(()=>{
     dispatch(fetchUserId())
@@ -84,7 +82,6 @@ useEffect(()=>{
         console.log("res:",res);
     })
     .catch((err)=>{{}})
-console.log("hello");
 
 },[])
     return (

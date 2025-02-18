@@ -19,11 +19,10 @@
   import Loader from './common/Loader';
   import { resetQuestionReviewValue } from '../redux/features/question-review/question-review.slice';
   import {
-    fetchChildrenSaq,
-    fetchModuleWithChildCounts,
+  
+    fetchQuestionCounts,
     fetchShortQuestionByModules,
     fetchShortQuestionByModulesById,
-    fetchShortQuestionGroupByModulesById,
     fetchSqaChild,
   } from '../redux/features/SAQ/saq.service';
 
@@ -109,6 +108,8 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
       module.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
     );    
 
+    console.log("Sqa count:", sqa.counts);
+    
     const [totals, setTotals] = useState({
       totalCorrect: 0,
       totalIncorrect: 0,
@@ -362,7 +363,7 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
             });
         } else if (selectedOption === 'SAQ') {
           dispatch(setLoading({ key: 'modules/fetchShortQuestionByModules', value: true }));
-
+          dispatch(fetchQuestionCounts())
           dispatch(
             fetchShortQuestionByModules({ moduleIds: selectedModules, totalLimit: limit })
           )
@@ -617,9 +618,9 @@ import { setMockPresentationValue } from '../redux/features/MockPresentation/pre
     }, [isSortedByPresentation, selectPresentation, limit]);
 
 // result SAQ
-useEffect(()=>{
-  dispatch(fetchChildrenSaq())
-},[])
+// useEffect(()=>{
+//   dispatch(fetchChildrenSaq())
+// },[type])
     
     useEffect(() => {
       const fetchDailyWork = async () => {
@@ -794,7 +795,6 @@ useEffect(()=>{
  // Handle selectedModules properly
 
 
-    console.log("saqModuleTotals:", saqModuleTotals);
 
     useEffect(() => {
       if (state) {
@@ -1252,7 +1252,6 @@ useEffect(()=>{
 
 
                       const { totalCorrect, totalIncorrect } = moduleTotal;
-                      console.log("moduleTotal:", moduleTotal);
                       
 
                       // Calculate percentage for progress bar
@@ -1302,16 +1301,16 @@ useEffect(()=>{
                       );
                     })}
 
-
                     {selectedTab === 'Clinical' &&
                       !isSortedByPresentation &&
                       type === 'SAQ' &&
                       filteredSAQModules?.map(row => {
-                        const moduleData = SBADataLength?.find(
-                          (module) => module.categoryId === row.categoryId
-                        );
+                        // Find the count of questions for the current categoryId
+                        const moduleData = sqa?.counts?.[row.categoryId] || 0; // Get the count directly from sqa.counts
 
-                        const totalQuestions = moduleData ? moduleData.questions.length : 0;
+                        console.log("moduleData:", moduleData);
+
+                        const totalQuestions = moduleData; // Directly use the count from sqa.counts
 
                         // Ensure moduleTotals is always an array
                         const moduleTotalsArray = Array.isArray(moduleTotals) ? moduleTotals : Object.values(moduleTotals || {});
@@ -1368,9 +1367,11 @@ useEffect(()=>{
                                   className="bg-[#FF453A] text-white text-xs flex items-center justify-center"
                                   style={{ width: `${incorrectPercentage}%` }}
                                 >
-                                 
+                                  {totalIncorrect > 0 && <span>{totalIncorrect}</span>}
                                 </span>
                               </div>
+                              {/* Display total questions next to the progress bar */}
+                              {/* <span className="ml-2 text-sm text-gray-600">{totalQuestions} Questions</span> */}
                             </div>
                           </div>
                         );

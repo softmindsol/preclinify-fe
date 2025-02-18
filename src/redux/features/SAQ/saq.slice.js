@@ -3,14 +3,15 @@ import {
     fetchShortQuestionByModules,
     fetchModulesById,
     fetchShortQuestionByModulesById,
-    fetchSqaChild
+    fetchSqaChild,
+    fetchQuestionCounts
 } from "./saq.service";
 
 const initialState = {
     shortQuestions: [],
     modules: [],
     attempts: [],
-
+    counts: {},
     sqaChildren: [],
     organizedData: [],
     userAnswers: [],
@@ -77,6 +78,18 @@ const shortQuestionSlice = createSlice({
             .addCase(fetchShortQuestionByModulesById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(fetchQuestionCounts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchQuestionCounts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.counts = action.payload;
+            })
+            .addCase(fetchQuestionCounts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
             })
 
             // Fetch SQA Child Questions

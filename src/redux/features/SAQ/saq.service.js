@@ -155,31 +155,28 @@ console.log("categoryIds:", categoryIds);
     }
 );
 
-export const fetchChildrenSaq = createAsyncThunk(
-    'saq/fetchChildrenSaq',
+export const fetchQuestionCounts = createAsyncThunk(
+    'questions/fetchQuestionCounts',
+    async () => {
+        const { data, error } = await supabase
+            .from('saqChild')
+            .select('categoryId, questionLead');
 
-    async (_, { rejectWithValue }) => {
-        try {
-            const { data, error } = await supabase
-                .from('saqChild')
-                .select('parentQuestionId'); // Sirf parentQuestionId fetch karein
-
-            if (error) {
-                return rejectWithValue(error.message || 'Failed to fetch module questions');
-            }
-
-            // ✅ Count questions for each parentQuestionId
-            const questionCountByParent = data.reduce((acc, { parentQuestionId }) => {
-                acc[parentQuestionId] = (acc[parentQuestionId] || 0) + 1;
-                return acc;
-            }, {});
-
-            console.log("questionCountByParent:", questionCountByParent);
-            
-
-            return questionCountByParent; // Object return kar raha hai `{ parentQuestionId: count }`
-        } catch (error) {
-            return rejectWithValue(error?.message || 'An unexpected error occurred');
+        if (error) {
+            throw new Error(error.message);
         }
+
+        // Count questionLead by categoryId
+        const counts = data.reduce((acc, item) => {
+            const { categoryId } = item;
+            if (!acc[categoryId]) {
+                acc[categoryId] = 0;
+            }
+            acc[categoryId] += 1; // Increment count for each questionLead
+            return acc;
+        }, {});
+
+        return counts;
     }
 );
+

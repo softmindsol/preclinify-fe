@@ -463,54 +463,55 @@ const SbaPresentation = () => {
   };
 
   useEffect(() => {
-    const handleKeyPress = e => {
-      // Check if the current question has been attempted
-      if (e.key === 'ArrowRight') {
-        nextQuestion();
-        return;
-    }
-    // Check if the current question has been attempted
-    if (e.key === 'ArrowLeft') {
-        prevQuestion();
-        return;
-    }
-      // Prevent default action for spacebar to avoid scrolling
-      if (e.key === ' ') {
-        e.preventDefault();
+    if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
 
-        if (isAnswered && !answerChecked) {
-          handleCheckAnswer(); // Call the check answer function
-          setAnswerChecked(true);
-          console.log('spacebar pressed');
-      }
-      if (answerChecked) {
-          nextQuestion();
-          setAnswerChecked(false);
+    const handleKeyPress = (e) => {
+        if (e.key === "ArrowRight") {
+            nextQuestion();
+            return;
+        }
 
-      }
-        return; // Exit the function after handling spacebar
-      }
+        if (e.key === "ArrowLeft") {
+            prevQuestion();
+            return;
+        }
 
-      // Check if the current question has been attempted
-      if (attempted[currentIndex] !== null) return;
+        if (e.key === " ") {
+            e.preventDefault();
 
-      const key = e.key.toUpperCase();
-      const validKeys = ['Q', 'W', 'E', 'R', 'T'];
-      const keyIndex = validKeys.indexOf(key);
+            if (isAnswered && !answerChecked) {
+                handleCheckAnswer();
+                setAnswerChecked(true);
+                console.log("spacebar pressed");
+            } else if (answerChecked) {
+                nextQuestion();
+                setAnswerChecked(false);
+            }
 
-      if (keyIndex !== -1 && keyIndex < presentationData[currentIndex]?.answersArray.length) {
-        const answer = presentationData[currentIndex].answersArray[keyIndex];
+            return;
+        }
 
-        handleAnswerSelect(answer);
-        setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
+        if (attempted[currentIndex] !== null) return;
 
-        dispatch(setResult({ attempted }));
-      }
+        const key = e.key.toUpperCase();
+        const validKeys = ["Q", "W", "E", "R", "T"];
+        const keyIndex = validKeys.indexOf(key);
+
+        if (
+            keyIndex !== -1 &&
+            keyIndex < presentationData[currentIndex]?.answersArray.length
+        ) {
+            const answer = presentationData[currentIndex].answersArray[keyIndex];
+
+            handleAnswerSelect(answer);
+            setIsAnswered(true);
+            dispatch(setResult({ attempted }));
+        }
     };
 
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [currentIndex, attempted, presentationData, isAnswered]); // ✅ Added isAnswered in dependency array
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+}, [currentIndex, attempted, presentationData, isAnswered, showFeedBackModal]); // ✅ showFeedBackModal added
 
   useEffect(() => {
     if (review) {

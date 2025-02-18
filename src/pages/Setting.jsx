@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Siderbar from '../components/common/Sidebar';
 import { FaClock, FaRobot } from 'react-icons/fa';
 import { PiCircleHalfFill } from 'react-icons/pi';
@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ExamCountdown from '../components/settings/ExamCountdown';
 import { toast } from 'sonner';
 import { clearUserId } from '../redux/features/user-id/userId.slice';
+import { fetchUserInformation, insertOrUpdateUserInformation, } from '../redux/features/personal-info/personal-info.service';
 
 const Setting = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,16 @@ const Setting = () => {
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
   };
-  const profile = useSelector(state => state.personalInfo.userInfo[0]);
+  const [formData,setFormData]=useState({
+    firstName:'',
+    lastName:'',
+    university:'',
+    year:''
+  })
+  const userId = useSelector(state => state.user.userId)  
+  const profile=useSelector(state=>state.personalInfo.userInfo[0])
+
+  
   // Logout function
   const handleLogout = async () => {
     try {
@@ -44,6 +54,29 @@ const Setting = () => {
     dispatch(setDarkMode(!darkMode));
   };
 
+    // Pehle data fetch karo jab component mount ho
+  useEffect(() => {
+    dispatch(fetchUserInformation({ user_id: userId }));
+  }, [dispatch, userId]);
+
+  // Jab profile ka data aaye to useEffect ke zariye formData me set karo
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        university: profile.university || '',
+        year: profile.year || '',
+      });
+    }
+  }, [profile]);
+
+  // Save handler jo data update karega
+  const handleSave = () => {
+    dispatch(insertOrUpdateUserInformation({ user_id: userId, formData }));
+  };
+
+  
   return (
     <div className={`lg:flex min-h-screen w-full ${darkModeRedux ? 'dark' : ''} `}>
       <div className='h-full hidden lg:block fixed'>
@@ -187,67 +220,72 @@ const Setting = () => {
           <h2 className='text-[16px] sm:text-[18px] font-semibold mb-4 text-[#3F3F46] dark:text-white'>
             Account
           </h2>
-          <div className='mb-4 flex flex-col   sm:flex-row sm:items-center sm:justify-between  '>
-            <label className='block font-medium mb-1 text-[14px] sm:text-[16px]'>
-              Display Name
-            </label>
-            <input
-              type='text'
-              className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
-              placeholder='Sainavi Mahajan'
-              value={profile?.firstName + ' ' + profile?.lastName}
-            />
-          </div>
-          <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
-            <label className='block font-medium mb-1 text-[14px] sm:text-[16px]'>
-              First Name
-            </label>
-            <input
-              type='text'
-              className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
-              placeholder='Sainavi'
-              value={profile?.firstName}
-            />
-          </div>
-          <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
-            <label className='block font-medium mb-1'>Last Name</label>
-            <input
-              type='text'
-              className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
-              placeholder='Mahajan'
-              value={profile?.lastName}
-            />
-          </div>
-          <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
-            <label className='block font-medium mb-1'>University</label>
-            <input
-              type='text'
-              className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
-              placeholder='University of Leicester'
-              value={profile?.university}
-            />
-          </div>
+          <div>
+            <div className='mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+              <label className='block font-medium mb-1 text-[14px] sm:text-[16px]'>Display Name</label>
+              <input
+                type='text'
+                className='w-[320px] p-2 border rounded-[8px] dark:bg-[#1E1E2A]'
+                placeholder='Full Name'
+                value={formData.firstName + ' ' + formData.lastName}
+                readOnly
+              />
+            </div>
 
-          <div className='mb-4 flex flex-col  sm:flex-row sm:items-center sm:justify-between'>
-            <label className='block font-medium mb-1'>Year of Study</label>
-            <select
-              name='year'
-              id='year'
-              className='w-[320px] p-2 border rounded-[8px] placeholder:text-[14px] md:placeholder:text-[16px] dark:bg-[#1E1E2A]'
-              value={profile?.year || ''}
-              onChange={e => console.log(e.target.value)} // Debugging ke liye
-            >
-              <option value='' disabled>
-                Select Year of Study
-              </option>
-              <option value='Year 1'>Year 1</option>
-              <option value='Year 2'>Year 2</option>
-              <option value='Year 3'>Year 3</option>
-              <option value='Year 4'>Year 4</option>
-            </select>
+            <div className='mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+              <label className='block font-medium mb-1 text-[14px] sm:text-[16px]'>First Name</label>
+              <input
+                type='text'
+                className='w-[320px] p-2 border rounded-[8px] dark:bg-[#1E1E2A]'
+                placeholder='First Name'
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              />
+            </div>
+
+            <div className='mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+              <label className='block font-medium mb-1'>Last Name</label>
+              <input
+                type='text'
+                className='w-[320px] p-2 border rounded-[8px] dark:bg-[#1E1E2A]'
+                placeholder='Last Name'
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              />
+            </div>
+
+            <div className='mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+              <label className='block font-medium mb-1'>University</label>
+              <input
+                type='text'
+                className='w-[320px] p-2 border rounded-[8px] dark:bg-[#1E1E2A]'
+                placeholder='University'
+                value={formData.university}
+                onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+              />
+            </div>
+
+            <div className='mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+              <label className='block font-medium mb-1'>Year of Study</label>
+              <select
+                name='year'
+                id='year'
+                className='w-[320px] p-2 border rounded-[8px] dark:bg-[#1E1E2A]'
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+              >
+                <option value='' disabled>Select Year of Study</option>
+                <option value='Year 1'>Year 1</option>
+                <option value='Year 2'>Year 2</option>
+                <option value='Year 3'>Year 3</option>
+                <option value='Year 4'>Year 4</option>
+              </select>
+            </div>
+
+           
           </div>
-          <div className='flex justify-end'>
-            <button className='bg-[#3CC8A1] px-2 py-1 text-white rounded-[8px] font-semibold'>
+          <div className='flex justify-end' >
+            <button className='bg-[#3CC8A1] px-2 py-1 text-white rounded-[8px] font-semibold' onClick={handleSave}>
               Save
             </button>
           </div>

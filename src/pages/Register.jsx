@@ -53,7 +53,7 @@ const Register = () => {
           toast.error('Error occurred while registering');
         } else {
           // Show success toast
-          navigate('/login');
+          navigate('/verify-email');
           toast.success('Registration Successful! Check your email and verify it.');
         }
       } catch (error) {
