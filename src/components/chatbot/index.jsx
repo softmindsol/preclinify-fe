@@ -11,7 +11,7 @@ const Chatbot = () => {
 
   return (
     <div
-      className={`fixed bottom-0 right-[280px] w-[300px] shadow-xl rounded-t-2xl overflow-hidden bg-white transition-all duration-300 ease-in-out ${
+      className={`fixed bottom-0 right-10 md:right-[280px] w-[300px] shadow-xl rounded-t-2xl overflow-hidden bg-white transition-all duration-300 ease-in-out ${
         isExpanded ? 'h-[500px]' : 'h-[60px]'
       }`}
     >

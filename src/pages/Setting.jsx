@@ -26,7 +26,7 @@ const Setting = () => {
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
   };
-  const profile=useSelector(state=>state.personalInfo.userInfo[0])
+  const profile = useSelector(state => state.personalInfo.userInfo[0]);
   // Logout function
   const handleLogout = async () => {
     try {
@@ -54,7 +54,7 @@ const Setting = () => {
           <img src='/assets/small-logo.png' alt='' />
         </div>
 
-        <div className='' onClick={toggleDrawer}>
+        <div onClick={toggleDrawer}>
           <TbBaselineDensityMedium />
         </div>
       </div>

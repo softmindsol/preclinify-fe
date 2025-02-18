@@ -46,13 +46,11 @@ const Dashboard = () => {
   const [sessionId, setSessionId] = useState([]);
   const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
   const examDuration = useSelector(state => state?.examDates?.examDate);
-const profile=useSelector(state=>state.personalInfo.userInfo[0])
-  const userId = useSelector(state => state.user.userId)  
-  const streaks=useSelector(state=>state?.streak?.streak) || []
-  
-  
-  const userInfo = useSelector(state => state?.user?.userInfo);
+  const profile = useSelector(state => state.personalInfo.userInfo[0]);
+  const userId = useSelector(state => state.user.userId);
+  const streaks = useSelector(state => state?.streak?.streak) || [];
 
+  const userInfo = useSelector(state => state?.user?.userInfo);
 
   const toggleDrawer = () => {
     setIsOpen(prevState => !prevState);
@@ -194,33 +192,23 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
   }, []);
 
   useEffect(() => {
-    
     dispatch(fetchUserId());
     dispatch(fetchDaysUntilExam(userId));
-    dispatch(fetchUserInformation({userId}))
-    dispatch(fetchUserStreak({userId}))
-    .unwrap()
-    .then(res=>{
-     
-      
-    })
+    dispatch(fetchUserInformation({ userId }));
+    dispatch(fetchUserStreak({ userId }))
+      .unwrap()
+      .then(res => {});
   }, []);
 
-
   const selectedMonth = selectedDate.toISOString()?.split('-')[1];
-  const filteredStreaks = streaks?.filter((streak) =>
+  const filteredStreaks = streaks?.filter(streak =>
     streak?.streakDate?.startsWith(`2025-${selectedMonth}`)
   );
 
-  
+  const noOfDays = filteredStreaks?.map(streak => new Date(streak?.streakDate).getDate());
+  const totalCorrects = filteredStreaks?.map(streak => streak?.totalCorrect);
+  const totalIncorrects = filteredStreaks?.map(streak => streak?.totalIncorrect);
 
-  
-  const noOfDays = filteredStreaks?.map((streak) => new Date(streak?.streakDate).getDate());
-  const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
-  const totalIncorrects = filteredStreaks?.map((streak) => streak?.totalIncorrect);
-
-  
-  
   return (
     <div className={`lg:flex w-full ${darkModeRedux ? 'dark' : ''}`}>
       <div className='fixed h-full hidden lg:block dark:bg-[#1E1E2A] text-black dark:text-white'>
@@ -323,11 +311,13 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                     const bgColorClass = getColorClass(workPercentage);
 
                     // Compare current day with streak date
-                    const currentDate = new Date().toISOString().split("T")[0]; // Format as yyyy-mm-dd
+                    const currentDate = new Date().toISOString().split('T')[0]; // Format as yyyy-mm-dd
                     const isStreakDay = currentDate === streaks?.streakDate; // Check if this day matches streak date
 
                     // Ensure that day.date is in the same format as streak.streakDate
-                    const dayDateFormatted = new Date(day.date).toISOString().split("T")[0];
+                    const dayDateFormatted = new Date(day.date)
+                      .toISOString()
+                      .split('T')[0];
 
                     // Check if the current day matches streak day
                     const isCurrentDayStreak = dayDateFormatted === streaks?.streakDate;
@@ -335,7 +325,9 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                     return (
                       <div
                         key={index}
-                        className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white relative ${day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'}
+                        className={`w-6 h-6 xs:w-8 xs:h-8 xl:h-12 xl:w-12 rounded-md flex items-center justify-center text-white relative ${
+                          day.workCount > 0 ? bgColorClass : 'bg-[#E4E4E7]'
+                        }
         ${isCurrentDayStreak ? 'border-2 border-yellow-500' : ''}`} // Highlight streak day
                       >
                         {/* Render streak icon only for the streak day */}
@@ -350,8 +342,6 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
                     );
                   })}
                 </div>
-
-
 
                 <div className='flex flex-col mt-4 space-y-2 dark:text-white'>
                   <div className='flex items-center'>
@@ -463,16 +453,16 @@ const profile=useSelector(state=>state.personalInfo.userInfo[0])
               </h2> */}
               {/* <StackedBar days={days} streak={streak} /> */}
               <BarChart
-                heading={"Daily Progress"}
+                heading={'Daily Progress'}
                 series={[
-                  { name: "Correct", data: totalCorrects },
-                  { name: "Incorrect", data: totalIncorrects },
+                  { name: 'Correct', data: totalCorrects },
+                  { name: 'Incorrect', data: totalIncorrects },
                 ]}
-                colors={["#3CC8A1", "#FF9741"]} // Green = Correct, Orange = Incorrect
+                colors={['#3CC8A1', '#FF9741']} // Green = Correct, Orange = Incorrect
                 categories={noOfDays} // Days extracted from streakDate
               />
 
-{/* 
+              {/* 
               <div className='flex items-center justify-center gap-x-[75px] mt-7  md:mt-5'>
                 <p className='text-[#52525B] font-medium dark:text-white'>
                   Correct Questions
