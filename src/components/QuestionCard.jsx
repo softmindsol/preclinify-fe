@@ -89,10 +89,8 @@ const QuestionCard = () => {
 
     const flaggedQuestions = useSelector(state => state?.flagged?.flaggedQuestions);
     const visited = useSelector(state => state?.visited?.visitedQuestions);
-
     const review = useSelector(state => state?.questionReview?.value);
     const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy
-    // const data = useSelector((state) => state.mcqsQuestion || []);
     const [beakerToggle, setBeakerToggle] = useState(false);
     const menuRef = useRef(null);
     const active = useSelector(state => state?.attempts?.active);
@@ -205,15 +203,10 @@ const QuestionCard = () => {
                             setArticle(res);
                         });
                 }
+ 
 
-                dispatch(
-                    insertResult({
-                        isCorrect,
-                        questionId: data?.mcqsByModulesData[currentIndex].id,
-                        userId,
-                        moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
-                    })
-                );
+
+                dispatch(insertResult({ isCorrect, questionId: data?.mcqsByModulesData[currentIndex].id, userId, moduleId: data?.mcqsByModulesData[currentIndex].moduleId }))
                 dispatch(setResult({ updatedAttempts }));
                 return updatedAttempts;
             });

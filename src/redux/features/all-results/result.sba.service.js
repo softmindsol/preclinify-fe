@@ -59,3 +59,34 @@ export const insertMockResult = createAsyncThunk(
         }
     }
 );
+
+
+// Define the async thunk
+export const insertSAQResult = createAsyncThunk(
+    'resultsHistory/insertSAQResult',
+    async({  
+        isCorrect, isIncorrect, isPartial, questionId, userId, moduleId
+     }, thunkAPI) => {
+        try {
+            const { data, error } = await supabase
+                .from('resultHistorySaq')
+                .insert([
+                    {
+                        isCorrect, isIncorrect, isPartial, questionId, userId, moduleId
+                    },
+                ]);
+
+
+
+            if (error) {
+                console.log("error:", error);
+
+                return thunkAPI.rejectWithValue(error.message);
+            }
+
+            return data; // Return the inserted data
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);

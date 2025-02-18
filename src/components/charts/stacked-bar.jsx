@@ -1,40 +1,82 @@
-"use client";
-import {
-    CartesianGrid,
-    XAxis,
-    YAxis,
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    Tooltip,
-} from "recharts";
-import CustomTooltip from "./custom-Tooltip";
+import { useState, useEffect } from 'react';
+import ReactApexChart from 'react-apexcharts';
 
-const StackedBar = ({ days, height = 300 }) => {
-    // Create a mapping of day indices to friendly names
-    const friendlyNames = days.map((day, index) => `Day ${index + 1}`);
+const StackedBarChart = ({ heading, series, colors, categories }) => {
+    const [chartData, setChartData] = useState({
+        series: [],
+        options: {
+            chart: {
+                type: 'bar',
+                height: 350,
+                stacked: true, 
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    endingShape: 'rounded',
+                    stacked: true, 
+                },
+            },
+            colors: [],
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent'],
+            },
+            xaxis: {
+                categories: [],
+            },
+            yaxis: {
+                title: {
+                    text: 'Progress',
+                },
+            },
+            fill: {
+                opacity: 1,
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val;
+                    },
+                },
+            },
+            legend: {
+                position: 'bottom', // Position legend at the top
+                horizontalAlign: 'center', // Align legend to the center
+                offsetX: 0, // Adjust legend position if needed
+            },
+        },
+    });
 
-    // Transform the days data into the format required for the chart
-    const chartData = days.map((day, index) => ({
-        name: friendlyNames[index], // Use friendly names instead of dates
-        correct: day.correct, // Correct answers
-        incorrect: day.incorrect, // Incorrect answers
-    }));
+    useEffect(() => {
+        setChartData((prevData) => ({
+            series: series,
+            options: {
+                ...prevData.options,
+                colors: colors,
+                xaxis: {
+                    categories: categories,
+                },
+            },
+        }));
+    }, [series, colors, categories]);
 
     return (
-        <div className="mt-8 text-[#D4D4D8]">
-            <ResponsiveContainer width="95%" height={height}>
-                <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" tickLine={false} axisLine={false} stroke="#D4D4D8" />
-                    <YAxis className="font-semibold" style={{ color: "#D4D4D8" } } stroke="#D4D4D8" />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="correct" stackId="a" fill="#3CC8A1" />
-                    <Bar dataKey="incorrect" stackId="a" fill="#FF9741" />
-                </BarChart>
-            </ResponsiveContainer>
+        <div className='bg-white dark:bg-[#1E1E2A] dark:text-white shadow-lg rounded-lg p-4'>
+            <h2 className='text-xl font-bold text-[#52525B] dark:text-white mb-4 text-center'>{heading}</h2>
+            <ReactApexChart
+                options={chartData.options}
+                series={chartData.series}
+                type='bar'
+                height={410}
+            />
         </div>
     );
 };
 
-export default StackedBar;
+export default StackedBarChart;

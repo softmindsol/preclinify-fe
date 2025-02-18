@@ -24,8 +24,8 @@ import {
   setUserAnswers,
 } from '../redux/features/SAQ/userAnswer.slice';
 import QuestionNavigator from './QuestionNavigator';
+import { insertSAQResult } from '../redux/features/all-results/result.sba.service';
 import Chatbot from './chatbot';
-
 // Function to format the time in MM:SS format
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -89,6 +89,8 @@ const ShortQuestion = () => {
     (total, parent) => total + parent?.children?.length,
     0
   );
+    const userId = useSelector(state => state.user.userId);
+  
   const [checkedAnswers, setCheckedAnswers] = useState(Array(totalQuestions).fill(false));
   // Initialize attempts with null values
   // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
@@ -189,6 +191,8 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState('');
     nextQuestion();
+    dispatch(insertSAQResult({ isCorrect: false, isIncorrect: true, isPartial: false, questionId: sqa[parentIndex]?.id, userId, moduleId: sqa[parentIndex]?.categoryId }))
+
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
   const handlePartialClick = useCallback(() => {
@@ -200,6 +204,8 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState('');
     nextQuestion();
+    dispatch(insertSAQResult({ isCorrect: false, isIncorrect: false, isPartial: true, questionId: sqa[parentIndex]?.id, userId, moduleId: sqa[parentIndex]?.categoryId }))
+
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
   const handleCorrectClick = useCallback(() => {
@@ -211,6 +217,8 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState('');
     nextQuestion();
+    dispatch(insertSAQResult({ isCorrect: true, isIncorrect: false, isPartial: false, questionId: sqa[parentIndex]?.id, userId, moduleId: sqa[parentIndex]?.categoryId }))
+    
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
   const handleFilterChange = filter => {

@@ -9,38 +9,43 @@ import { toast } from 'sonner';
 const Register = () => {
   const navigate = useNavigate();
 
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      phone: '',
-      displayName: '',
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().email('Invalid email address').required('Required'),
-      password: Yup.string()
-        .min(6, 'Password must be at least 6 characters')
-        .required('Required'),
-      confirmPassword: Yup.string()
-        .oneOf([Yup.ref('password'), null], 'Passwords must match')
-        .required('Required'),
-      phone: Yup.string().required('Required'),
-      displayName: Yup.string().required('Name is Required'),
-    }),
-    onSubmit: async (values, { setSubmitting }) => {
-      try {
-        // Supabase auth register
-        const { user, error } = await supabase.auth.signUp({
-          email: values.email,
-          password: values.password,
-          options: {
-            data: {
-              displayName: values.displayName,
-              phone: values.phone,
-            },
-          },
-        });
+    // Formik setup
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '', 
+            confirmPassword: '',
+            phone: '',
+            displayName: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string().email('Invalid email address').required('Required'),
+            password: Yup.string()
+                .min(6, 'Password must be at least 6 characters')
+                .required('Required'),
+            confirmPassword: Yup.string()
+                .oneOf([Yup.ref('password'), null], 'Passwords must match')
+                .required('Required'),
+            phone: Yup.string()
+                // .matches(/^\+[1-9]\d{1,14}$/, 'Phone number must be in E.164 format (e.g., +1234567890)')
+                .required('Required'),
+
+            displayName: Yup.string().required('Name is Required'),
+        }),
+        onSubmit: async (values, { setSubmitting }) => {
+            try {
+                // Supabase auth register
+                const { user, error } = await supabase.auth.signUp({
+                    email: values.email,
+                    password: values.password,
+                    options: {
+                        data: {
+                            displayName: values.displayName,
+                            phone: values.phone,
+                           
+                        },
+                    },
+                });
 
         if (error) {
           // Show error toast
@@ -159,27 +164,34 @@ const Register = () => {
             ) : null}
           </div>
 
-          <div>
-            <label
-              htmlFor='phone'
-              className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'
-            >
-              Phone
-            </label>
-            <br />
-            <input
-              type='text'
-              id='phone'
-              placeholder='Enter your Phone Number...'
-              value={formik.values.phone}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
-            />
-            {formik.touched.phone && formik.errors.phone ? (
-              <div className='text-red-500'>{formik.errors.phone}</div>
-            ) : null}
-          </div>
+                    <div>
+                        <label
+                            htmlFor='phone'
+                            className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'
+                        >
+                            Phone
+                        </label>
+                        <br />
+                        <input
+                            type='text'
+                            id='phone'
+                            placeholder='Enter your Phone Number...'
+                            value={formik.values.phone}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                if (!value.startsWith('+')) {
+                                    value = '+' + value.replace(/\D/g, ''); // Non-numeric characters remove kardo
+                                }
+                                formik.setFieldValue('phone', value);
+                            }}
+                            onBlur={formik.handleBlur}
+                            className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
+                        />
+
+                        {formik.touched.phone && formik.errors.phone ? (
+                            <div className='text-red-500'>{formik.errors.phone}</div>
+                        ) : null}
+                    </div>
 
           <div className='text-[#3F3F46] font-medium w-full space-y-3'>
             <div className='flex items-center'>

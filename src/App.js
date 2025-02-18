@@ -1,5 +1,4 @@
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import logo from './logo.svg';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -17,7 +16,6 @@ import Score from './components/common/Score';
 import ShortQuestion from './components/ShortQuestion';
 import Scenarios from './components/Scenerio';
 import SceneriosDetail from './components/SceneriosDetail';
-// import Performance from './pages/Performance';
 import ContactPage from './components/contact-us';
 import { useContext, useEffect } from 'react';
 import ThemeContext from './lib/ThemeContext';
@@ -58,8 +56,6 @@ function App() {
     }
   }, [location]);
 
-
-
   return (
     <div className={`App`}>
       <Routes>
@@ -73,8 +69,8 @@ function App() {
         <Route path='/contact-us' element={<ContactPage />} />
         <Route path='/checkout-success' element={<CheckoutSuccess />} />
         <Route path='/checkout-cancelled' element={<CheckoutCancel />} />
+        <Route path='/personal-info' element={<PersonalInformation />} />
 
-        {/* Protected Routes (Only Logged-in Users) */}
         <Route
           path='/setting'
           element={
@@ -110,9 +106,9 @@ function App() {
         <Route
           path='/dashboard'
           element={
-            // <ProtectedRoute>
+            <ProtectedRoute>
               <Dashboard />
-            // </ProtectedRoute>
+           </ProtectedRoute>
           }
         />
         <Route
@@ -123,14 +119,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path='/reset-password'
-          element={
-            <ProtectedRoute>
-              <ResetPassword />
-            </ProtectedRoute>
-          }
-        />
+        <Route path='/reset-password' element={<ResetPassword />} />
         <Route
           path='/question-card'
           element={
@@ -195,16 +184,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path='/personal-info'
-          element={
-            // <ProtectedRoute>
-              <PersonalInformation />
-            // </ProtectedRoute>
-          }
-        />
       </Routes>
-
     </div>
   );
 }
