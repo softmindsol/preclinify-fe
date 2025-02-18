@@ -9,7 +9,6 @@ import Setting from './pages/Setting';
 import Dashboard from './pages/Dashboard';
 import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
-
 import Questioning from './components/Questioning';
 import QuestionCard from './components/QuestionCard';
 import Score from './components/common/Score';
@@ -34,27 +33,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 
 function App() {
   const { theme } = useContext(ThemeContext);
-  const location = useLocation();
-
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-  //     if (event === 'SIGNED_IN') {
-  //       navigate('/personal-info'); // Redirect after email confirmation
-  //     }
-  //   });
-
-  //   return () => {
-  //     listener?.subscription?.unsubscribe();
-  //   };
-  // }, [navigate]);
-
-  useEffect(() => {
-    if (window.location.hash) {
-      window.history.replaceState(null, '', location.pathname + location.search);
-    }
-  }, [location]);
+ 
 
   return (
     <div className={`App`}>
@@ -69,7 +48,7 @@ function App() {
         <Route path='/contact-us' element={<ContactPage />} />
         <Route path='/checkout-success' element={<CheckoutSuccess />} />
         <Route path='/checkout-cancelled' element={<CheckoutCancel />} />
-        <Route path='/personal-info' element={<PersonalInformation />} />
+        {/* <Route path='/personal-info' element={<PersonalInformation />} /> */}
 
         <Route
           path='/setting'

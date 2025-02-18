@@ -10,3 +10,5 @@ export const fetchUserId = createAsyncThunk('user/fetchUserId', async () => {
   }
   return null;
 });
+
+

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUserInformation, insertUserInformation } from "./personal-info.service";
+import { fetchUserInformation, insertOrUpdateUserInformation } from "./personal-info.service";
 
 const personalInfoSlice = createSlice({
     name: 'personalInfo',
@@ -13,15 +13,15 @@ const personalInfoSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Insert User Information
-            .addCase(insertUserInformation.pending, (state) => {
+            .addCase(insertOrUpdateUserInformation.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(insertUserInformation.fulfilled, (state, action) => {
+            .addCase(insertOrUpdateUserInformation.fulfilled, (state, action) => {
                 state.loading = false;
                 state.userInfo.push(action.payload);
             })
-            .addCase(insertUserInformation.rejected, (state, action) => {
+            .addCase(insertOrUpdateUserInformation.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

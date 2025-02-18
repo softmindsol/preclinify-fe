@@ -26,6 +26,7 @@ import {
 import QuestionNavigator from './QuestionNavigator';
 import { insertSAQResult } from '../redux/features/all-results/result.sba.service';
 import Chatbot from './chatbot';
+import Loader from './common/Loader';
 // Function to format the time in MM:SS format
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -67,7 +68,7 @@ const ShortQuestion = () => {
   const itemsPerPage = 10;
   // Get the items to show for the current page
   const active = useSelector(state => state.attempts?.active);
-
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('All'); // Default is 'All'
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
   const isTimerMode = useSelector(state => state.mode);
@@ -89,8 +90,8 @@ const ShortQuestion = () => {
     (total, parent) => total + parent?.children?.length,
     0
   );
-    const userId = useSelector(state => state.user.userId);
-  
+  const userId = useSelector(state => state.user.userId);
+
   const [checkedAnswers, setCheckedAnswers] = useState(Array(totalQuestions).fill(false));
   // Initialize attempts with null values
   // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
@@ -176,7 +177,7 @@ const ShortQuestion = () => {
   };
 
   function handleShowPopup() {
-    setShowPopup(true); // Close the popup
+    setShowPopup(true);
   }
 
   const handleBackToDashboard = () => {
@@ -191,8 +192,16 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState('');
     nextQuestion();
-    dispatch(insertSAQResult({ isCorrect: false, isIncorrect: true, isPartial: false, questionId: sqa[parentIndex]?.id, userId, moduleId: sqa[parentIndex]?.categoryId }))
-
+    dispatch(
+      insertSAQResult({
+        isCorrect: false,
+        isIncorrect: true,
+        isPartial: false,
+        questionId: sqa[parentIndex]?.id,
+        userId,
+        moduleId: sqa[parentIndex]?.categoryId,
+      })
+    );
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
   const handlePartialClick = useCallback(() => {
@@ -204,8 +213,16 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState('');
     nextQuestion();
-    dispatch(insertSAQResult({ isCorrect: false, isIncorrect: false, isPartial: true, questionId: sqa[parentIndex]?.id, userId, moduleId: sqa[parentIndex]?.categoryId }))
-
+    dispatch(
+      insertSAQResult({
+        isCorrect: false,
+        isIncorrect: false,
+        isPartial: true,
+        questionId: sqa[parentIndex]?.id,
+        userId,
+        moduleId: sqa[parentIndex]?.categoryId,
+      })
+    );
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
   const handleCorrectClick = useCallback(() => {
@@ -217,8 +234,16 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState('');
     nextQuestion();
-    dispatch(insertSAQResult({ isCorrect: true, isIncorrect: false, isPartial: false, questionId: sqa[parentIndex]?.id, userId, moduleId: sqa[parentIndex]?.categoryId }))
-    
+    dispatch(
+      insertSAQResult({
+        isCorrect: true,
+        isIncorrect: false,
+        isPartial: false,
+        questionId: sqa[parentIndex]?.id,
+        userId,
+        moduleId: sqa[parentIndex]?.categoryId,
+      })
+    );
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
 
   const handleFilterChange = filter => {
@@ -351,16 +376,36 @@ const ShortQuestion = () => {
   const { start, end } = getQuestionRange(currentIndex);
 
   const handleFinishAndReview = () => {
-    if (isReviewEnabled) {
+    if (isFinishEnabled) {
+      setReviewLoading(true);
       dispatch(setMcqsAccuracy({ accuracy }));
 
-      // handleAnswerSelect()
-      //    Add a delay (for example, 2 seconds)
       setTimeout(() => {
         navigation('/score');
-      }, 3000); // 2000 ms = 2 seconds
+        setReviewLoading(false);
+      }, 2000);
     }
   };
+
+  const handleFinishAndReviewAtLast = () => {
+    if (isReviewEnabled) {
+      setReviewLoading(true);
+      dispatch(setMcqsAccuracy({ accuracy }));
+
+      setTimeout(() => {
+        navigation('/score');
+        setReviewLoading(false);
+      }, 2000);
+    }
+  };
+
+  useEffect(() => {
+    const validAttempts = attempted?.filter(item => item !== null);
+
+    if (validAttempts.length > 0) {
+      setIsFinishEnabled(true);
+    }
+  }, [attempted]);
 
   useEffect(() => {
     if (sqa.length > 0) {
@@ -421,7 +466,6 @@ const ShortQuestion = () => {
     }
   }, [totalScore, totalAttempts]);
 
-  // Check if it's time to enable the Finish button
   useEffect(() => {
     setIsReviewEnabled(false);
     if (sqa[parentIndex]?.children.length === childIndex + 1) {
@@ -465,6 +509,10 @@ const ShortQuestion = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  if (reviewLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className={`min-h-screen  ${darkModeRedux ? 'dark' : ''} `}>
@@ -763,7 +811,7 @@ const ShortQuestion = () => {
                     ? 'text-[#3CC8A1] cursor-pointer'
                     : 'text-[#D4D4D8] cursor-not-allowed'
                 } justify-center`}
-                onClick={handleFinishAndReview}
+                onClick={handleFinishAndReviewAtLast}
               >
                 {!review && (
                   <button className='mt-2 group text-[14px] flex items-center justify-center gap-x-3 w-full lg:text-[16px] bg-[#60B0FA] text-white px-6 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] border border-[#60B0FA]'>
@@ -902,7 +950,7 @@ const ShortQuestion = () => {
                       : 'text-[#D4D4D8] cursor-not-allowed'
                   } justify-center`}
                   onClick={handleFinishAndReview}
-                  disabled={isFinishEnabled}
+                  disabled={!isFinishEnabled}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -1174,7 +1222,7 @@ const ShortQuestion = () => {
                   ? 'text-[#3CC8A1] cursor-pointer'
                   : 'text-[#D4D4D8] cursor-not-allowed'
               } justify-center`}
-              // onClick={handleFinishAndReview}
+              onClick={handleFinishAndReview}
               disabled={!isFinishEnabled}
             >
               <svg
