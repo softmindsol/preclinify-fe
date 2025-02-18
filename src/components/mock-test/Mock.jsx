@@ -32,6 +32,7 @@ import {
   insertMockResult,
 } from '../../redux/features/all-results/result.sba.service';
 import Chatbot from '../chatbot';
+import Loader from '../common/Loader';
 
 const formatTime = seconds => {
   const minutes = Math.floor(seconds / 60);
@@ -59,6 +60,7 @@ const MockTestQuestion = () => {
   const [isAccordionVisible, setIsAccordionVisible] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState([]);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -324,16 +326,18 @@ const MockTestQuestion = () => {
   };
 
   const handleFinishAndReview = () => {
-    if (true) {
-      handleCheckAnswer();
-      // dispatch(setMcqsAccuracy({ accuracy }))
+    if (!isFinishEnabled) return;
 
-      // handleAnswerSelect()
-      //    Add a delay (for example, 2 seconds)
-      setTimeout(() => {
-        navigation('/score');
-      }, 3000); // 2000 ms = 2 seconds
+    setReviewLoading(true);
+
+    if (isAnswered) {
+      handleCheckAnswer();
     }
+
+    setTimeout(() => {
+      navigation('/score');
+      setReviewLoading(false);
+    }, 2000);
   };
 
   function handleShowPopup() {
@@ -496,6 +500,10 @@ const MockTestQuestion = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  if (reviewLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className={` min-h-screen  ${darkModeRedux ? 'dark' : ''}   `}>
@@ -1101,13 +1109,14 @@ const MockTestQuestion = () => {
               </div>
 
               <div className='mb-5 text-[12px]'>
-                <div
-                  className={`flex items-center font-semibold gap-x-2 ${
+                <button
+                  className={`w-full flex items-center font-semibold gap-x-2 ${
                     isFinishEnabled
                       ? 'text-[#3CC8A1] cursor-pointer'
                       : 'text-[#D4D4D8] cursor-not-allowed'
                   } justify-center`}
                   onClick={handleFinishAndReview}
+                  disabled={!isFinishEnabled}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -1124,7 +1133,7 @@ const MockTestQuestion = () => {
                     <path d='M20 6 9 17l-5-5' />
                   </svg>
                   <p>Finish and Review</p>
-                </div>
+                </button>
                 <hr className='w-[200px] my-2' />
 
                 <div

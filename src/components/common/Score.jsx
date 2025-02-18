@@ -134,29 +134,29 @@ const Score = () => {
         </div>
         <div className='w-full lg:ml-[150px] dark:bg-black'>
           <div className='max-w-[690px] mx-auto w-full'>
-            <div className='flex items-center justify-center flex-col mt-5'>
+            <div className='flex items-center justify-center flex-col mt-2'>
               <div>
                 <img
                   src='/assets/score.png'
                   alt='score ballon'
-                  className='w-[350px] max-h-[309px] object-contain'
+                  className='w-[350px] h-[150px]  lg:h-[250px] object-contain'
                 />
               </div>
               <div className='text-center'>
-                <p className='text-[#3F3F46] font-extrabold text-[18px] md:text-[24px] lg:text-[30px] dark:text-white leading-none mb-6'>
+                <p className='text-[#3F3F46] font-extrabold text-lg  lg:text-2xl dark:text-white leading-none mb-6'>
                   Final Score:
                 </p>
-                <p className='text-[#3CC8A1] font-black text-[72px] md:text-[96px] lg:text-[128px] leading- mb-2'>
+                <p className='text-[#3CC8A1] font-black text-5xl md:text-6xl lg:text-8xl mb-2'>
                   {accuracy}%
                 </p>
-                <p className='text-[#A1A1AA] font-bold text-[14px] md:text-[20px] lg:text-[24px] mb-5 dark:text-white leading-none'>
+                <p className='text-[#A1A1AA] font-bold text-xs md:text-sm lg:text-base mb-5 dark:text-white leading-none'>
                   {feedback}
                 </p>
               </div>
               <div>
                 <button
                   onClick={handleQuestionReview}
-                  className='text-[#FF9741] text-[12px] md:text-[16px] font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'
+                  className='text-[#FF9741] text-xs md:text-base font-semibold border-[1px] border-[#FF9741] bg-[#FFE9D6] p-2 rounded-[8px] w-[250px] md:w-[321px] h-[38px] md:h-[47px] hover:bg-[#FF9741] hover:text-white duration-200 transition-all'
                 >
                   REVIEW QUESTIONS
                 </button>
@@ -166,17 +166,17 @@ const Score = () => {
               <div className='space-y-3 flex flex-col-reverse md:flex-col'>
                 <div className=' mt-2 md:mt-5'>
                   {type === 'SAQ' ? (
-                    <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>
+                    <p className='font-semibold text-base lg:text-lg text-[#3F3F46] dark:text-white'>
                       Total Attempted: {saqTotalAttempted}
                     </p>
                   ) : (
-                    <p className='font-semibold text-[20px] lg:text-[24px] text-[#3F3F46] dark:text-white'>
+                    <p className='font-semibold text-base lg:text-lg text-[#3F3F46] dark:text-white'>
                       Total Attempted: {totalAttemped}
                     </p>
                   )}
                 </div>
                 {type === 'SAQ' ? (
-                  <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-between gap-x-12'>
+                  <div className='text-[#3F3F46] dark:text-white font-medium text-base lg:text-lg flex  flex-col md:flex-row items-center justify-between gap-x-12'>
                     <p className='whitespace-nowrap'>
                       Correct:<span>{sqacorrect || 0}</span>
                     </p>
@@ -191,7 +191,7 @@ const Score = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className='text-[#3F3F46] dark:text-white font-medium text-[20px] lg:text-[24px] flex  flex-col md:flex-row items-center justify-center gap-x-16'>
+                  <div className='text-[#3F3F46] dark:text-white font-medium text-base lg:text-lg flex  flex-col md:flex-row items-center  gap-x-16'>
                     <p>Correct:{correct || 0}</p>
                     <p>Incorrect: {incorrect || 0}</p>
                     <p>Not Attempted: {unseen || 0}</p>
@@ -199,8 +199,8 @@ const Score = () => {
                 )}
               </div>
               {type === 'SAQ' ? (
-                <div className='flex  mt-5 items-center'>
-                  <div className='flex justify-center mt-5 items-center space-x-1 w-[80%]'>
+                <div className='flex mt-2.5 items-center'>
+                  <div className='flex  items-center space-x-1 w-[80%]'>
                     <div
                       className='p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]'
                       style={{
@@ -211,7 +211,7 @@ const Score = () => {
                         }%`, // Set width to 2% if correct is 0
                       }}
                     >
-                      <span className='text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden'>
+                      <span className='text-base lg:text-lg font-extrabold text-white items-center md:block hidden'>
                         {sqacorrect}
                       </span>
                     </div>
@@ -225,7 +225,7 @@ const Score = () => {
                         }%`, // Set width to 2% if incorrect is 0
                       }}
                     >
-                      <span className='text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden'>
+                      <span className='text-base lg:text-lg font-extrabold text-white md:block hidden'>
                         {sqaincorrect}
                       </span>
                     </div>
@@ -239,15 +239,15 @@ const Score = () => {
                         }%`, // Set width to 2% if incorrect is 0
                       }}
                     >
-                      <span className='text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden'>
+                      <span className='text-base lg:text-lg font-extrabold text-white md:block hidden'>
                         {sqaPartial}
                       </span>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className='flex justify-center mt-5 items-center'>
-                  <div className='flex  mt-5 items-center space-x-1 w-[80%]'>
+                <div className='flex justify-center mt-2.5 items-center'>
+                  <div className='flex  items-center space-x-1 w-[80%]'>
                     <div
                       className='p-1.5 ml-5 md:ml-0 rounded-[6px] bg-[#3CC8A1]'
                       style={{
@@ -256,7 +256,7 @@ const Score = () => {
                         }%`, // Set width to 2% if correct is 0
                       }}
                     >
-                      <span className='text-[20px] lg:text-[24px] font-extrabold text-white items-center md:block hidden'>
+                      <span className='text-base lg:text-lg font-extrabold text-white items-center md:block hidden'>
                         {correct}
                       </span>
                     </div>
@@ -268,7 +268,7 @@ const Score = () => {
                         }%`, // Set width to 2% if incorrect is 0
                       }}
                     >
-                      <span className='text-[20px] lg:text-[24px] font-extrabold text-white md:block hidden'>
+                      <span className='text-base lg:text-lg font-extrabold text-white md:block hidden'>
                         {incorrect}
                       </span>
                     </div>
