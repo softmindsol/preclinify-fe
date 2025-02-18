@@ -123,6 +123,7 @@ const Questioning = () => {
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+
   const [totals, setTotals] = useState({
     totalCorrect: 0,
     totalIncorrect: 0,
@@ -408,7 +409,7 @@ const Questioning = () => {
             value: true,
           }),
         );
-        dispatch(fetchQuestionCounts());
+        // dispatch(fetchQuestionCounts());
         dispatch(
           fetchShortQuestionByModules({
             moduleIds: selectedModules,
@@ -917,10 +918,6 @@ const Questioning = () => {
 
     if (userId) fetchDailyWork();
   }, [JSON.stringify(selectedModules), userId]);
-  // Handle selectedModules properly
-
-  console.log(saqModuleTotals);
-
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
@@ -1473,14 +1470,12 @@ const Questioning = () => {
 
                     // Get the totals for correct, incorrect, and partial answers
                     const moduleTotal = moduleTotalsArray.find(
-                      (m) => String(m.moduleId) === String(row.moduleId),
+                      (m) => String(m.moduleId) === String(row.categoryId),
                     ) || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
                       totalPartial: 0,
                     };
-
-                    console.log("moduleTotalsArray:", moduleTotalsArray);
 
                     const { totalCorrect, totalIncorrect, totalPartial } =
                       moduleTotal;
@@ -1498,7 +1493,7 @@ const Questioning = () => {
 
                     return (
                       <div
-                        key={row.moduleId} // Use moduleId as the key
+                        key={row.categoryId} // Use moduleId as the key
                         className="grid items-center py-3 md:grid-cols-2"
                       >
                         <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
@@ -1506,9 +1501,9 @@ const Questioning = () => {
                             <input
                               type="checkbox"
                               className="custom-checkbox mr-2 hover:opacity-70"
-                              checked={selectedModules.includes(row.moduleId)}
+                              checked={selectedModules.includes(row.categoryId)}
                               onChange={() =>
-                                handleCheckboxChange(row.moduleId)
+                                handleCheckboxChange(row.categoryId)
                               }
                             />
                             {row.categoryName}
