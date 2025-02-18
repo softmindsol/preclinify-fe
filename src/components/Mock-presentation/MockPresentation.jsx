@@ -1190,6 +1190,8 @@ const { mockTestIds, mockMcqsByModulesData, presentationMcqs, modules, loading, 
                 <FeedbackModal
                     showFeedBackModal={showFeedBackModal}
                     setShowFeedBackModal={setShowFeedBackModal}
+                    userId={userId}
+                    questionStem={presentationMcqs[currentIndex]}
                 />
             )}
 
