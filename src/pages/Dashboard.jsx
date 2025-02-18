@@ -51,6 +51,12 @@ const Dashboard = () => {
   const streaks = useSelector((state) => state?.streak?.streak) || [];
   const userInfo = useSelector((state) => state?.user?.userInfo);
 
+  const [filteredData, setFilteredData] = useState({
+    correct: [],
+    incorrect: [],
+    days: [],
+  });
+
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -85,33 +91,27 @@ const Dashboard = () => {
     const start = startOfMonth(selectedDate);
     const end = endOfMonth(selectedDate);
 
-    // Create an object to hold aggregated results
     const aggregatedResults = {};
 
-    // Iterate through workEntries to aggregate results by date
     workEntries.forEach((entry) => {
-      const date = entry.date; // Assuming entry.date is already formatted as "yyyy-MM-dd"
+      const date = entry.date;
 
-      // Initialize the date entry if it doesn't exist
       if (!aggregatedResults[date]) {
         aggregatedResults[date] = {
           workCount: 0,
           correct: 0,
           incorrect: 0,
-          totalResult: 0, // To accumulate the result values
+          totalResult: 0,
         };
       }
 
-      // Increment the work count
       aggregatedResults[date].workCount += 1;
 
-      // Increment correct and incorrect counts based on entry values
-      aggregatedResults[date].correct += entry.correct || 0; // Ensure to handle undefined
-      aggregatedResults[date].incorrect += entry.incorrect || 0; // Ensure to handle undefined
-      aggregatedResults[date].totalResult += entry.result || 0; // Ensure to handle undefined
+      aggregatedResults[date].correct += entry.correct || 0;
+      aggregatedResults[date].incorrect += entry.incorrect || 0;
+      aggregatedResults[date].totalResult += entry.result || 0;
     });
 
-    // Create an array of days with aggregated results
     const allDays = eachDayOfInterval({ start, end }).map((day) => {
       const formattedDate = format(day, "yyyy-MM-dd");
       const workEntry = aggregatedResults[formattedDate] || {
@@ -144,13 +144,13 @@ const Dashboard = () => {
   };
 
   function handleContinue() {
-    setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+    setIsOpenSetUpSessionModal(true);
   }
 
   useEffect(() => {
     const handleSessionContinue = async (sessionId) => {
       // Open the setup session modal
-      setIsOpenSetUpSessionModal(true); // Set to true to open the modal
+      setIsOpenSetUpSessionModal(true);
       // Find the selected modules based on the sessionId
 
       // No need to split, just trim the sessionId if necessary
@@ -202,14 +202,25 @@ const Dashboard = () => {
     dispatch(fetchUserInformation({ user_id: userId }));
   }, []);
 
-  const selectedMonth = selectedDate.toISOString()?.split("-")[1];
-  const filteredStreaks = streaks?.filter((streak) =>
-    streak?.streakDate?.startsWith(`2025-${selectedMonth}`),
-  );
+  const getWeekRange = (date) => {
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - date.getDay() + 1);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    return { startOfWeek, endOfWeek };
+  };
+
+  const { startOfWeek, endOfWeek } = getWeekRange(selectedDate);
+
+  const filteredStreaks = streaks?.filter((streak) => {
+    const streakDate = new Date(streak?.streakDate);
+    return streakDate >= startOfWeek && streakDate <= endOfWeek;
+  });
 
   const noOfDays = filteredStreaks?.map((streak) =>
     new Date(streak?.streakDate).getDate(),
   );
+
   const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
   const totalIncorrects = filteredStreaks?.map(
     (streak) => streak?.totalIncorrect,
@@ -292,10 +303,10 @@ const Dashboard = () => {
                   <DatePicker
                     selected={selectedDate}
                     onChange={(date) => setSelectedDate(date)}
-                    onCalendarOpen={() => setIsCalendarOpen(true)}
-                    onCalendarClose={() => setIsCalendarOpen(false)}
-                    dateFormat="MMMM yyyy"
-                    showMonthYearPicker
+                    dateFormat="I/R"
+                    locale="en-GB"
+                    showWeekNumbers
+                    showWeekPicker
                     className="relative w-[150px] cursor-pointer rounded border p-2 text-[12px] dark:bg-[#1E1E2A] dark:text-white sm:w-[180px] sm:text-[14px]" // Added cursor-pointer class
                   />
                   <span
@@ -489,13 +500,13 @@ const Dashboard = () => {
               </h2> */}
               {/* <StackedBar days={days} streak={streak} /> */}
               <BarChart
-                heading={"Daily Progress"}
+                heading="Weekly Progress"
                 series={[
                   { name: "Correct", data: totalCorrects },
                   { name: "Incorrect", data: totalIncorrects },
                 ]}
-                colors={["#3CC8A1", "#FF9741"]} // Green = Correct, Orange = Incorrect
-                categories={noOfDays} // Days extracted from streakDate
+                colors={["#3CC8A1", "#FF9741"]}
+                categories={noOfDays}
               />
 
               {/* 
