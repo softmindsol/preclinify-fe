@@ -123,7 +123,6 @@ const Questioning = () => {
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-
   const [totals, setTotals] = useState({
     totalCorrect: 0,
     totalIncorrect: 0,
@@ -746,11 +745,6 @@ const Questioning = () => {
     }
   }, [isSortedByPresentation, selectPresentation, limit]);
 
-  // result SAQ
-  // useEffect(()=>{
-  //   dispatch(fetchChildrenSaq())
-  // },[type])
-
   useEffect(() => {
     const fetchDailyWork = async () => {
       try {
@@ -789,7 +783,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+  }, [selectedOption]); // Handle selectedModules properly
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -830,7 +824,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+  }, [selectedOption]); // Handle selectedModules properly
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -871,7 +865,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+  }, [selectedOption]); // Handle selectedModules properly
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -917,7 +911,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]);
+  }, [selectedOption]);
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
