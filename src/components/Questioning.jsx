@@ -1480,6 +1480,8 @@ const Questioning = () => {
                       totalPartial: 0,
                     };
 
+                    console.log("moduleTotalsArray:", moduleTotalsArray);
+
                     const { totalCorrect, totalIncorrect, totalPartial } =
                       moduleTotal;
 
@@ -1544,9 +1546,9 @@ const Questioning = () => {
                             </span>
                           </div>
                           {/* Display total questions next to the progress bar */}
-                          <span className="ml-2 text-sm text-gray-600">
+                          {/* <span className="ml-2 text-sm text-gray-600">
                             {totalQuestions} Questions
-                          </span>
+                          </span> */}
                         </div>
                       </div>
                     );
