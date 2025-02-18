@@ -61,6 +61,7 @@ const { mockTestIds, mockMcqsByModulesData, presentationMcqs, modules, loading, 
     const [isAccordionVisible, setIsAccordionVisible] = useState(false);
     const [isAccordionOpen, setIsAccordionOpen] = useState([]);
     const [isAnswered, setIsAnswered] = useState(false);
+    const [answerChecked, setAnswerChecked] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -426,37 +427,58 @@ const { mockTestIds, mockMcqsByModulesData, presentationMcqs, modules, loading, 
 
     // Add this useEffect hook to handle keyboard events
     useEffect(() => {
-        const handleKeyPress = e => {
-            // Prevent spacebar from scrolling the page
-            if (e.key === ' ') {
-                e.preventDefault();
-
-                if (isAnswered) {
-                    handleCheckAnswer(); // ✅ Spacebar pressed, check answer
-                    console.log('Spacebar pressed - Checking answer');
-                }
-                return; // Exit function to prevent other key checks
+        const handleKeyPress = (e) => {
+            if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
+    
+            if (e.key === "ArrowRight") {
+                nextQuestion();
+                return;
             }
-
+    
+            if (e.key === "ArrowLeft") {
+                prevQuestion();
+                return;
+            }
+    
+            if (e.key === " ") {
+                e.preventDefault();
+    
+                if (isAnswered && !answerChecked) {
+                    handleCheckAnswer();
+                    setAnswerChecked(true);
+                    console.log("spacebar pressed");
+                } else if (answerChecked) {
+                    nextQuestion();
+                    setAnswerChecked(false);
+                }
+    
+                return;
+            }
+    
             if (attempted[currentIndex] !== null) return;
-
+    
             const key = e.key.toUpperCase();
-            const validKeys = ['Q', 'W', 'E', 'R', 'T'];
+            const validKeys = ["Q", "W", "E", "R", "T"];
             const keyIndex = validKeys.indexOf(key);
-
-            if (keyIndex !== -1 && keyIndex < presentationMcqs[currentIndex]?.answersArray.length) {
+    
+            if (
+                keyIndex !== -1 &&
+                keyIndex < presentationMcqs[currentIndex]?.answersArray.length
+            ) {
                 const answer = presentationMcqs[currentIndex].answersArray[keyIndex];
-
+    
                 handleAnswerSelect(answer);
-                setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
-
+                setIsAnswered(true);
                 dispatch(setResult({ attempted }));
             }
         };
+    
+        document.addEventListener("keydown", handleKeyPress);
+        return () => document.removeEventListener("keydown", handleKeyPress);
+    }, [currentIndex, attempted, presentationMcqs, isAnswered, showFeedBackModal]);
+     // ✅ Dependency array updated
+// }, [currentIndex, attempted, presentationData, isAnswered, showFeedBackModal]); // ✅ showFeedBackModal added
 
-        document.addEventListener('keydown', handleKeyPress);
-        return () => document.removeEventListener('keydown', handleKeyPress);
-    }, [currentIndex, attempted, presentationMcqs, isAnswered]); // ✅ Dependency array updated
 
     useEffect(() => {
         if (review) {
