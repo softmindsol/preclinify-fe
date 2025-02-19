@@ -83,6 +83,8 @@ const Questioning = () => {
   } = useSelector((state) => state.mockModules);
   const data = useSelector((state) => state.module);
 
+  console.log("data:", data.data);
+
   const { limit } = useSelector((state) => state.limit);
   const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
   const [storedSession, setStoredSession] = useState([]);
@@ -305,7 +307,7 @@ const Questioning = () => {
           setIsLoading(false);
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
 
-          dispatch(fetchTotalSBAQuestion({ ids: res }));
+          // dispatch(fetchTotalSBAQuestion({ ids: res }));
         })
         .catch((err) => {
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
@@ -408,7 +410,7 @@ const Questioning = () => {
             value: true,
           }),
         );
-        dispatch(fetchQuestionCounts());
+
         dispatch(
           fetchShortQuestionByModules({
             moduleIds: selectedModules,
@@ -745,62 +747,35 @@ const Questioning = () => {
     }
   }, [isSortedByPresentation, selectPresentation, limit]);
 
-  // result SAQ
-  // useEffect(()=>{
-  //   dispatch(fetchChildrenSaq())
-  // },[type])
+  useEffect(() => {
+    if (selectedOption !== "SBA") return;
+
+    setIsLoading(true);
+
+    dispatch(fetchTotalSBAQuestion({ ids: data.data }))
+      .unwrap()
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+  }, [selectedModules]); // Runs only once when the component mounts
 
   useEffect(() => {
+    if (selectedOption !== "SBA") return; // Run only if selectedOption is "SBA"
     const fetchDailyWork = async () => {
       try {
         const query = supabase
           .from("resultsHistory")
-          .select("moduleId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
+          .select("moduleId, isCorrect, userId")
           .eq("userId", userId);
 
         if (selectedModules?.length) {
           query.in("moduleId", selectedModules);
         }
 
-        const { data, error } = await query;
-
-        if (error) throw error;
-        // Compute totals
-        const totalsByModule = data.reduce((acc, curr) => {
-          const { moduleId, isCorrect } = curr;
-
-          if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
-          }
-
-          if (Boolean(isCorrect)) {
-            acc[moduleId].totalCorrect += 1;
-          } else {
-            acc[moduleId].totalIncorrect += 1;
-          }
-
-          return acc;
-        }, {});
-        setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
-      } catch (err) {
-        console.error("Error fetching daily work:", err);
-      }
-    };
-
-    if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
-
-  useEffect(() => {
-    const fetchDailyWork = async () => {
-      try {
-        const query = supabase
-          .from("resultsHistory")
-          .select("moduleId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
-          .eq("userId", userId);
-
-        if (selectedModules?.length) {
-          query.in("moduleId", selectedModules);
-        }
+        console.log("🚀 ~ fetchDailyWork ~ selectedModules:", selectedModules);
 
         const { data, error } = await query;
 
@@ -811,7 +786,7 @@ const Questioning = () => {
           const { moduleId, isCorrect } = curr;
 
           if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
+            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
           }
 
           if (Boolean(isCorrect)) {
@@ -822,14 +797,17 @@ const Questioning = () => {
 
           return acc;
         }, {});
-        setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
+
+        setModuleTotals(Object.values(totalsByModule));
       } catch (err) {
         console.error("Error fetching daily work:", err);
       }
     };
 
-    if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+    if (userId) {
+      fetchDailyWork();
+    }
+  }, []); // Run only once
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -870,7 +848,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]); // Handle selectedModules properly
+  }, [selectedOption]); // Handle selectedModules properly
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -916,11 +894,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [JSON.stringify(selectedModules), userId]);
-  // Handle selectedModules properly
-
-  console.log(saqModuleTotals);
-
+  }, [selectedOption]);
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
@@ -1452,7 +1426,9 @@ const Questioning = () => {
                           </div>
 
                           {/* Total Questions */}
-                          {/* <span className="text-gray-700 dark:text-white text-sm">{totalQuestions}</span> */}
+                          {/* <span className="text-sm text-gray-700 dark:text-white">
+                            {totalQuestions}
+                          </span> */}
                         </div>
                       </div>
                     );
@@ -1473,14 +1449,12 @@ const Questioning = () => {
 
                     // Get the totals for correct, incorrect, and partial answers
                     const moduleTotal = moduleTotalsArray.find(
-                      (m) => String(m.moduleId) === String(row.moduleId),
+                      (m) => String(m.moduleId) === String(row.categoryId),
                     ) || {
                       totalCorrect: 0,
                       totalIncorrect: 0,
                       totalPartial: 0,
                     };
-
-                    console.log("moduleTotalsArray:", moduleTotalsArray);
 
                     const { totalCorrect, totalIncorrect, totalPartial } =
                       moduleTotal;
@@ -1498,7 +1472,7 @@ const Questioning = () => {
 
                     return (
                       <div
-                        key={row.moduleId} // Use moduleId as the key
+                        key={row.categoryId} // Use moduleId as the key
                         className="grid items-center py-3 md:grid-cols-2"
                       >
                         <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
@@ -1506,9 +1480,9 @@ const Questioning = () => {
                             <input
                               type="checkbox"
                               className="custom-checkbox mr-2 hover:opacity-70"
-                              checked={selectedModules.includes(row.moduleId)}
+                              checked={selectedModules.includes(row.categoryId)}
                               onChange={() =>
-                                handleCheckboxChange(row.moduleId)
+                                handleCheckboxChange(row.categoryId)
                               }
                             />
                             {row.categoryName}

@@ -33,7 +33,7 @@ export const fetchMockTestByPresentationId = createAsyncThunk(
         try {
 
             console.log("fetchMockTestByPresentationId:");
-            
+
             const { data, error } = await supabase
                 .from('mockTable')
                 .select('*'); // Fetch only the 'id' column
@@ -89,7 +89,7 @@ export const fetchTotalMockQuestion = createAsyncThunk(
 
             // Extract categoryId values from the array of objects
             const categoryIds = ids.map(item => item.categoryId);
-        
+
             const { data, error } = await supabase
                 .from('mockTable')
                 .select('*')
@@ -101,7 +101,7 @@ export const fetchTotalMockQuestion = createAsyncThunk(
                 return rejectWithValue(error.message);
             }
 
-     
+
 
             // Group questions by categoryId
             const groupedData = categoryIds.map(categoryId => ({
@@ -109,6 +109,7 @@ export const fetchTotalMockQuestion = createAsyncThunk(
                 questions: data.filter(question => question.moduleId === categoryId)
             }));
 
+            console.log("Mock groupedData:", groupedData);
 
 
             return groupedData;
@@ -120,11 +121,11 @@ export const fetchTotalMockQuestion = createAsyncThunk(
 
 export const fetchPresentationMock = createAsyncThunk(
     'modules/fetchPresentationMock',
-    async ({ids}, { rejectWithValue }) => {
+    async ({ ids }, { rejectWithValue }) => {
         try {
 
             console.log("fetchPresentationMockids:", ids);
-            
+
             const { data, error } = await supabase
                 .from('presentations')
                 .select('*')
@@ -211,68 +212,68 @@ export const fetchMockTestById = createAsyncThunk(
     }
 );
 
-    export const fetchMockMcqsByPresentationId = createAsyncThunk(
-        'modules/fetchMockMcqsByPresentationId',
-        async ({ presentationIds, totalLimit }, { rejectWithValue }) => {
-            try {
-                console.log("fetchMockMcqsByPresentationId");
+export const fetchMockMcqsByPresentationId = createAsyncThunk(
+    'modules/fetchMockMcqsByPresentationId',
+    async ({ presentationIds, totalLimit }, { rejectWithValue }) => {
+        try {
+            console.log("fetchMockMcqsByPresentationId");
 
-                // Validate presentationIds
-                if (!presentationIds || !Array.isArray(presentationIds) || presentationIds.length === 0) {
-                    return rejectWithValue('Invalid presentationIds');
+            // Validate presentationIds
+            if (!presentationIds || !Array.isArray(presentationIds) || presentationIds.length === 0) {
+                return rejectWithValue('Invalid presentationIds');
+            }
+
+            // Calculate limits for each module
+            const moduleLimits = presentationIds.map((pId, index) => {
+                if (totalLimit === 0) {
+                    // Fetch all questions if totalLimit is 0
+                    return { pId, limit: null };
+                } else {
+                    // Distribute totalLimit among modules
+                    const baseLimit = Math.floor(totalLimit / presentationIds.length);
+                    const remainder = totalLimit % presentationIds.length;
+                    return {
+                        pId,
+                        limit: baseLimit + (index < remainder ? 1 : 0),
+                    };
+                }
+            });
+
+            // Fetch data for each presentationId in parallel
+            const promises = moduleLimits.map(async ({ pId, limit }) => {
+                let query = supabase
+                    .from('mockTable')
+                    .select('*')
+                    .eq('presentationId', pId);
+
+                // Apply limit if specified
+                if (limit !== null) {
+                    query = query.limit(limit);
                 }
 
-                // Calculate limits for each module
-                const moduleLimits = presentationIds.map((pId, index) => {
-                    if (totalLimit === 0) {
-                        // Fetch all questions if totalLimit is 0
-                        return { pId, limit: null };
-                    } else {
-                        // Distribute totalLimit among modules
-                        const baseLimit = Math.floor(totalLimit / presentationIds.length);
-                        const remainder = totalLimit % presentationIds.length;
-                        return {
-                            pId,
-                            limit: baseLimit + (index < remainder ? 1 : 0),
-                        };
-                    }
-                });
+                const { data, error } = await query;
+                if (error) {
+                    throw new Error(`Error fetching data for presentationId ${pId}: ${error.message}`);
+                }
 
-                // Fetch data for each presentationId in parallel
-                const promises = moduleLimits.map(async ({ pId, limit }) => {
-                    let query = supabase
-                        .from('mockTable')
-                        .select('*')
-                        .eq('presentationId', pId);
+                return data; // Return fetched data for this presentationId
+            });
 
-                    // Apply limit if specified
-                    if (limit !== null) {
-                        query = query.limit(limit);
-                    }
+            // Wait for all promises to resolve
+            const results = await Promise.all(promises);
+            console.log("results:", results);
 
-                    const { data, error } = await query;
-                    if (error) {
-                        throw new Error(`Error fetching data for presentationId ${pId}: ${error.message}`);
-                    }
+            // Combine all results into a single array
+            const combinedData = results.flat();
+            console.log("combinedData:", combinedData);
 
-                    return data; // Return fetched data for this presentationId
-                });
-
-                // Wait for all promises to resolve
-                const results = await Promise.all(promises);
-                console.log("results:", results);
-
-                // Combine all results into a single array
-                const combinedData = results.flat();
-                console.log("combinedData:", combinedData);
-
-                return combinedData; // Return the combined data
-            } catch (error) {
-                return rejectWithValue({
-                    message: error?.message || 'An unexpected error occurred',
-                    stack: error?.stack,
-                });
-            }
+            return combinedData; // Return the combined data
+        } catch (error) {
+            return rejectWithValue({
+                message: error?.message || 'An unexpected error occurred',
+                stack: error?.stack,
+            });
         }
-    );
+    }
+);
 
