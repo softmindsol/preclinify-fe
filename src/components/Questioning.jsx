@@ -758,7 +758,7 @@ const Questioning = () => {
       .catch(() => {
         setIsLoading(false);
       });
-  }, []); // Runs only once when the component mounts
+  }, [selectedModules, selectedOption]); // Runs only once when the component mounts
 
   useEffect(() => {
     if (selectedOption !== "SBA") return;

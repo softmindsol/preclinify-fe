@@ -689,17 +689,6 @@ const AINewVersion = () => {
         </div>
       </div>
 
-      <div className="ml-[250px] mt-5 rounded-[8px] bg-white p-5">
-        <h2 className="text-lg font-bold">Consultation Summary</h2>
-        <p className="mt-2 text-sm text-gray-700">{summary}</p>
-
-        <h2 className="mt-5 text-lg font-bold">Feedback</h2>
-        <p className="mt-2 text-sm text-gray-700">{feedback}</p>
-
-        <h2 className="mt-5 text-lg font-bold">Score</h2>
-        <p className="mt-2 text-sm text-gray-700">{score}/10</p>
-      </div>
-
       {isDashboardModalOpen && (
         <DashboardModal
           setShowPopup={setIsDashboardModalOpen}
