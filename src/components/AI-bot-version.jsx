@@ -295,47 +295,47 @@ even if you're asked about them.`,
     playAIResponse(aiResponse);
   };
 
-  //  useEffect(() => {
-  //         const savedMinutes = localStorage.getItem('minutes');
-  //         const savedSeconds = localStorage.getItem('seconds');
-  //         if (savedMinutes !== null && savedSeconds !== null) {
-  //             setMinutes(parseInt(savedMinutes, 10));
-  //             setSeconds(parseInt(savedSeconds, 10));
-  //         }
+  useEffect(() => {
+    const savedMinutes = localStorage.getItem("minutes");
+    const savedSeconds = localStorage.getItem("seconds");
+    if (savedMinutes !== null && savedSeconds !== null) {
+      setMinutes(parseInt(savedMinutes, 10));
+      setSeconds(parseInt(savedSeconds, 10));
+    }
 
-  //         return () => {
-  //             localStorage.removeItem('minutes');
-  //             localStorage.removeItem('seconds');
-  //         };
-  //     }, []);
+    return () => {
+      localStorage.removeItem("minutes");
+      localStorage.removeItem("seconds");
+    };
+  }, []);
 
-  //     useEffect(() => {
-  //         let timerInterval;
+  useEffect(() => {
+    let timerInterval;
 
-  //         if (timerActive) {
-  //             timerInterval = setInterval(() => {
-  //                 if (seconds === 0 && minutes === 0) {
-  //                     clearInterval(timerInterval);
-  //                     setTimerActive(false);
-  //                     navigate('/dashboard');
-  //                 } else {
-  //                     if (seconds === 0) {
-  //                         setMinutes((prev) => prev - 1);
-  //                         setSeconds(59);
-  //                     } else {
-  //                         setSeconds((prev) => prev - 1);
-  //                     }
-  //                 }
+    if (timerActive) {
+      timerInterval = setInterval(() => {
+        if (seconds === 0 && minutes === 0) {
+          clearInterval(timerInterval);
+          setTimerActive(false);
+          navigate("/dashboard");
+        } else {
+          if (seconds === 0) {
+            setMinutes((prev) => prev - 1);
+            setSeconds(59);
+          } else {
+            setSeconds((prev) => prev - 1);
+          }
+        }
 
-  //                 localStorage.setItem('minutes', minutes);
-  //                 localStorage.setItem('seconds', seconds);
-  //             }, 1000);
-  //         } else if (!timerActive && minutes === 8 && seconds === 0) {
-  //             setTimerActive(true);
-  //         }
+        localStorage.setItem("minutes", minutes);
+        localStorage.setItem("seconds", seconds);
+      }, 1000);
+    } else if (!timerActive && minutes === 8 && seconds === 0) {
+      setTimerActive(true);
+    }
 
-  //         return () => clearInterval(timerInterval);
-  //     }, [timerActive, minutes, seconds, navigate]);
+    return () => clearInterval(timerInterval);
+  }, [timerActive, minutes, seconds, navigate]);
 
   useEffect(() => {
     if (isAISpeaking && recognitionRef.current) {
@@ -354,8 +354,6 @@ even if you're asked about them.`,
         transcriptContainerRef.current.scrollHeight;
     }
   }, [transcript]);
-
-  console.log("isPatientOn:", isPatientOn);
 
   return (
     <div className="w-full">
