@@ -83,8 +83,6 @@ const Questioning = () => {
   } = useSelector((state) => state.mockModules);
   const data = useSelector((state) => state.module);
 
-  console.log("data:", data.data);
-
   const { limit } = useSelector((state) => state.limit);
   const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
   const [storedSession, setStoredSession] = useState([]);
@@ -760,7 +758,7 @@ const Questioning = () => {
       .catch(() => {
         setIsLoading(false);
       });
-  }, [selectedModules]); // Runs only once when the component mounts
+  }, []); // Runs only once when the component mounts
 
   useEffect(() => {
     if (selectedOption !== "SBA") return; // Run only if selectedOption is "SBA"
@@ -774,8 +772,6 @@ const Questioning = () => {
         if (selectedModules?.length) {
           query.in("moduleId", selectedModules);
         }
-
-        console.log("🚀 ~ fetchDailyWork ~ selectedModules:", selectedModules);
 
         const { data, error } = await query;
 

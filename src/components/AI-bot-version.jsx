@@ -65,17 +65,16 @@ const AINewVersion = () => {
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(0);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-  const userId = useSelector((state) => state?.user?.userId);
+  const userId = localStorage.getItem("userId");
 
   const [chatFeedBack, setChatFeedBack] = useState({
-    transcript: "",
+    feedback: "",
     summary: "",
     category: categoryName,
     score: 0,
     user_id: userId,
   });
 
-  console.log(categoryName);
   const scenario = MEDICAL_SCENARIOS[categoryName] || {
     symptoms: [categoryName],
     patientProfile: `${userInfo?.user_metadata?.displayName?.split(" ")[0] || "unknown"}, a standard patient`,
@@ -238,18 +237,24 @@ const AINewVersion = () => {
             messages: [
               {
                 role: "system",
-                content: `You are a medical examiner. Analyze the following consultation transcript and provide:
-                      1. A concise summary of the conversation.
-                      2. Constructive feedback on the consultation based on UK guidelines.
-                      3. A score out of 10 based on the quality of the consultation.
-                      Feedback should focus on:
-                      - Introduction and empathy
-                      - Safety-netting
-                      - Red flag symptoms
-                      - Past medical and surgical history
-                      - Ideas, concerns, and expectations
-                      - Family and social history
-                      - Overall consultation style`,
+                content: `You are a medical examiner. Analyze the following consultation transcript and return a structured JSON response with the following format:
+            
+            {
+              "summary": "Concise summary of the conversation",
+              "feedback": "Detailed constructive feedback",
+              "score": 7
+            }
+            
+            Follow UK consultation guidelines and focus on:
+            - Introduction and empathy
+            - Safety-netting
+            - Red flag symptoms
+            - Past medical and surgical history
+            - Ideas, concerns, and expectations
+            - Family and social history
+            - Overall consultation style.
+            
+            Ensure the response is strictly formatted as JSON without additional text.`,
               },
               {
                 role: "user",
@@ -266,28 +271,20 @@ const AINewVersion = () => {
       );
 
       const data = await response.json();
-      const result = data.choices[0].message.content;
-      const summaryMatch = result.match(/Summary:\s*(.*?)(?=\n\n|Feedback:)/s);
-      const feedbackMatch = result.match(/Feedback:\s*(.*?)(?=\n\n|Score:)/s);
-      const scoreMatch = result.match(/Score:\s*(\d+)\/10/);
-      console.log(summaryMatch, scoreMatch, feedbackMatch);
 
-      console.log(
-        "Summary:",
-        summaryMatch ? summaryMatch[1].trim() : "No summary found",
-      );
-      console.log(
-        "Feedback:",
-        feedbackMatch ? feedbackMatch[1].trim() : "No feedback found",
-      );
-      console.log("Score:", scoreMatch ? scoreMatch[1] : "No score found");
-      console.log("result:", result);
+      // Parse the JSON content from OpenAI response
+      const result = JSON.parse(data.choices[0].message.content);
+      setChatFeedBack((prevState) => ({
+        ...prevState,
+        feedback: result.feedback,
+        summary: result.summary,
+        score: result.score,
+      }));
 
-      setSummary(summaryMatch ? summaryMatch[1].trim() : "");
-      setFeedback(feedbackMatch ? feedbackMatch[1].trim() : "");
-      setScore(scoreMatch ? parseInt(scoreMatch[1], 10) : 0);
+      return result;
     } catch (error) {
       console.error("Error generating summary and feedback:", error);
+      return null;
     }
   };
 
@@ -400,15 +397,20 @@ const AINewVersion = () => {
     playAIResponse(aiResponse);
   };
 
-  //   const finishReview = () => {
-  //     dispatch(insertOSCEBotData());
-  //   };
-
-  const finishReview = () => {
-    generateSummaryAndFeedback(); // Generate final summary and feedback
-    setIsDashboardModalOpen(true); // Open the dashboard modal
+  const finishReviewHandler = () => {
+    dispatch(insertOSCEBotData({ chatFeedBack }))
+      .unwrap()
+      .then(() => {
+        navigate("/chat-history");
+      })
+      .catch(() => {});
   };
-  //   console.log("chatFeedBack:", chatFeedBack);
+
+  // const finishReview = () => {
+  //   generateSummaryAndFeedback(); // Generate final summary and feedback
+  //   setIsDashboardModalOpen(true); // Open the dashboard modal
+  // };
+  // //   console.log("chatFeedBack:", chatFeedBack);
 
   useEffect(() => {
     const savedMinutes = localStorage.getItem("minutes");
@@ -549,7 +551,10 @@ const AINewVersion = () => {
             </div>
 
             <div className="mt-5">
-              <div className="mb-4 flex cursor-pointer items-center justify-center gap-x-2 font-semibold text-[#3CC8A1]">
+              <div
+                onClick={finishReviewHandler}
+                className="mb-4 flex cursor-pointer items-center justify-center gap-x-2 font-semibold text-[#3CC8A1]"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"

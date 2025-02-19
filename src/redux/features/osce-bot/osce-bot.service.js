@@ -1,12 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../../../config/helper";
 
-// Thunk to fetch data from staticOSCE table
 export const fetchOSCEBotData = createAsyncThunk(
     'osce/fetchOSCEBotData',
-    async (_, thunkAPI) => {
+    async ({ user_id }, thunkAPI) => {
         try {
-            const { data, error } = await supabase.from('AI_OSCE').select('*');
+            const { data, error } = await supabase
+                .from('AI_OSCE')
+                .select('*')
+                .eq('user_id', user_id); // Filter results by user_id
+
             if (error) throw error;
             return data;
         } catch (err) {
@@ -18,9 +21,15 @@ export const fetchOSCEBotData = createAsyncThunk(
 
 export const insertOSCEBotData = createAsyncThunk(
     'osce/insertOSCEBotData',
-    async (_, thunkAPI) => {
+    async ({ chatFeedBack }, thunkAPI) => {
         try {
-            const { data, error } = await supabase.from('AI_OSCE').select('*');
+
+            console.log("chatFeedBack:", chatFeedBack);
+
+            const { data, error } = await supabase
+                .from('AI_OSCE')
+                .insert([chatFeedBack]); // Insert the chatFeedBack object into the table
+
             if (error) throw error;
             return data;
         } catch (err) {
@@ -28,4 +37,5 @@ export const insertOSCEBotData = createAsyncThunk(
         }
     }
 );
+
 

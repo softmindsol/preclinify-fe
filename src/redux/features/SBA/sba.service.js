@@ -46,7 +46,7 @@ export const fetchTotalSBAQuestion = createAsyncThunk(
                 categoryId,
                 questions: data.filter(question => question.moduleId === categoryId)
             }));
-            console.log("groupedData:", groupedData);
+
 
 
             return groupedData;
@@ -143,7 +143,6 @@ export const fetchConditionNameById = createAsyncThunk(
 
 
             const { data, error } = await query;
-            console.log("service:", data);
 
 
             if (error) {

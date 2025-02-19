@@ -16,7 +16,6 @@ const SceneriosDetail = () => {
   const [timerActive, setTimerActive] = useState(false); // Timer active state
   const navigate = useNavigate(); // Initialize useNavigate hook
   const { selectedData, loading, error } = useSelector(state => state.osce);
-  console.log('🚀 ~ SceneriosDetail ~ selectedData:', selectedData);
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -31,7 +30,6 @@ const SceneriosDetail = () => {
   };
 
   const extractHeadings = markdown => {
-    console.log('🚀 ~ SceneriosDetail ~ markdown:', markdown);
     const headingRegex = /^(#{1,6})\s(.+)$/gm; // Match all headings (# to ######)
     const listItemRegex = /^\s*[-*+]\s(.+)$/gm; // Match list items under headings (bullets: -, *, +)
 
