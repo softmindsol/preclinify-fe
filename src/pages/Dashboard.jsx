@@ -154,7 +154,7 @@ const Dashboard = () => {
     return acc;
   }, {});
 
-  const result = Object.values(aggregatedData).map(({ date, count }) => ({
+  const result = Object.values(aggregatedData)?.map(({ date, count }) => ({
     date,
     count,
     colorClass: getColorClass(count),
@@ -170,9 +170,7 @@ const Dashboard = () => {
 
       const flatModuleIds = sessionId
         .split(",")
-        .map((id) => parseInt(id.trim(), 10)); // Split and convert to numbers
-
-      // Make an API call based on the selected module IDs
+        .map((id) => parseInt(id.trim(), 10));
 
       dispatch(
         fetchMcqsByModules({ moduleIds: flatModuleIds, totalLimit: limit }),
@@ -244,15 +242,12 @@ const Dashboard = () => {
 
   const noOfDays = filteredStreaks
     ?.map((streak) => new Date(streak?.streakDate).getDate())
-    .sort((a, b) => a - b)
-    ?.slice(0, -1);
+    .sort((a, b) => a - b);
 
-  const totalCorrects = filteredStreaks
-    ?.map((streak) => streak?.totalCorrect)
-    ?.slice(0, -1);
-  const totalIncorrects = filteredStreaks
-    ?.map((streak) => streak?.totalIncorrect)
-    ?.slice(0, -1);
+  const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
+  const totalIncorrects = filteredStreaks?.map(
+    (streak) => streak?.totalIncorrect,
+  );
 
   return (
     <div className={`w-full lg:flex ${darkModeRedux ? "dark" : ""}`}>
@@ -341,6 +336,7 @@ const Dashboard = () => {
                     dateFormat="I/R"
                     locale="en-GB"
                     showWeekPicker
+                    maxDate={new Date()}
                     className="relative w-[150px] cursor-pointer rounded border p-2 text-[12px] dark:bg-[#1E1E2A] dark:text-white sm:w-[180px] sm:text-[14px]" // Added cursor-pointer class
                   />
                   <span
@@ -371,7 +367,7 @@ const Dashboard = () => {
                   Current Streak
                 </p>
                 <p className="text-[18px] font-black text-[#FF9741] dark:text-white sm:text-[24px] xl:text-[32px]">
-                  {streaks?.streak} Days
+                  {streaks?.streak || 0} Days
                 </p>
               </div>
 
