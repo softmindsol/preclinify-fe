@@ -410,7 +410,7 @@ const QuestionCard = () => {
     if (data?.mcqsByModulesData?.length) {
       const initialAccordionState = data?.mcqsByModulesData[
         currentIndex
-      ].answersArray.map(() => false);
+      ]?.answersArray?.map(() => false);
       setIsAccordionOpen(initialAccordionState);
     }
   }, [data.mcqsByModulesData]);
@@ -759,7 +759,7 @@ const QuestionCard = () => {
                   {data?.mcqsByModulesData[currentIndex].leadQuestion}
                 </h3>
                 <div className="mt-4 space-y-4">
-                  {data?.mcqsByModulesData[currentIndex]?.answersArray.map(
+                  {data?.mcqsByModulesData[currentIndex]?.answersArray?.map(
                     (answer, index) => {
                       const isSelected = selectedAnswer === answer;
                       const isCorrectAnswer =
