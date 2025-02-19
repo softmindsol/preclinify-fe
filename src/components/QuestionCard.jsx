@@ -409,7 +409,7 @@ const QuestionCard = () => {
     if (data?.mcqsByModulesData?.length) {
       const initialAccordionState = data?.mcqsByModulesData[
         currentIndex
-      ].answersArray.map(() => false);
+      ]?.answersArray?.map(() => false);
       setIsAccordionOpen(initialAccordionState);
     }
   }, [data.mcqsByModulesData]);
@@ -507,56 +507,63 @@ const QuestionCard = () => {
     setShowFeedBackModal(!showFeedBackModal);
   };
 
-useEffect(() => {
+  useEffect(() => {
     if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
 
     const handleKeyPress = (e) => {
-        if (e.key === "ArrowRight") {
-            nextQuestion();
-            return;
+      if (e.key === "ArrowRight") {
+        nextQuestion();
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
+        prevQuestion();
+        return;
+      }
+
+      if (e.key === " ") {
+        e.preventDefault();
+
+        if (isAnswered && !answerChecked) {
+          handleCheckAnswer();
+          setAnswerChecked(true);
+          console.log("spacebar pressed");
+        } else if (answerChecked) {
+          nextQuestion();
+          setAnswerChecked(false);
         }
 
-        if (e.key === "ArrowLeft") {
-            prevQuestion();
-            return;
-        }
+        return;
+      }
 
-        if (e.key === " ") {
-            e.preventDefault();
+      if (attempted[currentIndex] !== null) return;
 
-            if (isAnswered && !answerChecked) {
-                handleCheckAnswer();
-                setAnswerChecked(true);
-                console.log("spacebar pressed");
-            } else if (answerChecked) {
-                nextQuestion();
-                setAnswerChecked(false);
-            }
+      const key = e.key.toUpperCase();
+      const validKeys = ["Q", "W", "E", "R", "T"];
+      const keyIndex = validKeys.indexOf(key);
 
-            return;
-        }
+      if (
+        keyIndex !== -1 &&
+        keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
+      ) {
+        const answer =
+          data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
 
-        if (attempted[currentIndex] !== null) return;
-
-        const key = e.key.toUpperCase();
-        const validKeys = ["Q", "W", "E", "R", "T"];
-        const keyIndex = validKeys.indexOf(key);
-
-        if (
-            keyIndex !== -1 &&
-            keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
-        ) {
-            const answer = data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
-
-            handleAnswerSelect(answer);
-            setIsAnswered(true);
-            dispatch(setResult({ attempted }));
-        }
+        handleAnswerSelect(answer);
+        setIsAnswered(true);
+        dispatch(setResult({ attempted }));
+      }
     };
 
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
-}, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered, showFeedBackModal]); // ✅ showFeedBackModal added
+  }, [
+    currentIndex,
+    attempted,
+    data?.mcqsByModulesData,
+    isAnswered,
+    showFeedBackModal,
+  ]); // ✅ showFeedBackModal added
 
   useEffect(() => {
     if (review) {
@@ -749,7 +756,7 @@ useEffect(() => {
                   {data?.mcqsByModulesData[currentIndex].leadQuestion}
                 </h3>
                 <div className="mt-4 space-y-4">
-                  {data?.mcqsByModulesData[currentIndex]?.answersArray.map(
+                  {data?.mcqsByModulesData[currentIndex]?.answersArray?.map(
                     (answer, index) => {
                       const isSelected = selectedAnswer === answer;
                       const isCorrectAnswer =
