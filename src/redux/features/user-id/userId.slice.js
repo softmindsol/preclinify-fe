@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchUserId } from './userId.service';
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchUserId } from "./userId.service";
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: {
     userId: null,
     userInfo: {},
@@ -10,14 +10,16 @@ const userSlice = createSlice({
     error: null,
   },
   reducers: {
-    clearUserId: state => {
+    clearUserId: (state) => {
       state.userId = null;
-      
+      state.userInfo = {};
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("persist:root");
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchUserId.pending, state => {
+      .addCase(fetchUserId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -25,6 +27,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.userId = action.payload?.id;
         state.userInfo = action.payload;
+        localStorage.setItem("userId", action.payload?.id);
       })
       .addCase(fetchUserId.rejected, (state, action) => {
         state.loading = false;
