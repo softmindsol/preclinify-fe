@@ -18,14 +18,14 @@ export const fetchMcqsQuestion = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error.message);
         }
-    } 
+    }
 );
 
 export const fetchTotalSBAQuestion = createAsyncThunk(
     'modules/fetchTotalSBAQuestion',
     async ({ ids }, { rejectWithValue }) => {
         try {
-          
+
 
             // Extract categoryId values from the array of objects
             const categoryIds = ids.map(item => item.categoryId);
@@ -35,9 +35,9 @@ export const fetchTotalSBAQuestion = createAsyncThunk(
                 .select('*')
                 .in('moduleId', categoryIds); // Pass array of categoryIds
 
-            if (error) { 
+            if (error) {
                 console.log("error in fetchTotalSBAQuestion:", error);
-                
+
                 return rejectWithValue(error.message);
             }
 
@@ -46,8 +46,9 @@ export const fetchTotalSBAQuestion = createAsyncThunk(
                 categoryId,
                 questions: data.filter(question => question.moduleId === categoryId)
             }));
+            console.log("groupedData:", groupedData);
 
-           
+
             return groupedData;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -126,11 +127,11 @@ export const fetchMcqsByModules = createAsyncThunk(
 );
 
 // Fetch MCQs by moduleId with limit
-export const fetchConditionNameById= createAsyncThunk(
+export const fetchConditionNameById = createAsyncThunk(
     'mcqs/fetchConditionNameById',
     async ({ id }, { rejectWithValue }) => {
-      
-        
+
+
         try {
             if (!id) return rejectWithValue(' conditionNames ID is not defined for this question.');
 
@@ -139,11 +140,11 @@ export const fetchConditionNameById= createAsyncThunk(
                 .select('*')
                 .eq('id', id);
 
-       
+
 
             const { data, error } = await query;
             console.log("service:", data);
-     
+
 
             if (error) {
                 return rejectWithValue(error.message || 'Failed to fetch module questions');

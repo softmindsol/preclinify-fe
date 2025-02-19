@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/common/Sidebar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { startOfMonth, endOfMonth, eachDayOfInterval, format } from "date-fns";
+import {
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  format,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns";
 import Drawer from "react-modern-drawer";
 //import styles 👇
 import "react-modern-drawer/dist/index.css";
@@ -56,6 +63,10 @@ const Dashboard = () => {
     incorrect: [],
     days: [],
   });
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
@@ -134,14 +145,28 @@ const Dashboard = () => {
     setDays(allDays);
   }, [selectedDate, workEntries]);
 
-  const getColorClass = (workCount) => {
-    if (workCount > 99) return "bg-[#047857]"; // > 99
-    if (workCount > 75) return "bg-[#059669]"; // > 75
-    if (workCount > 50) return "bg-[#34D399]"; // > 50
-    if (workCount > 25) return "bg-[#6EE7B7]"; // > 25
-    if (workCount > 0) return "bg-[#A7F3D0]"; // > 0
-    return "bg-[#E4E4E7]"; // Default background for days with no workCount
+  const getColorClass = (count) => {
+    if (count > 99) return "bg-[#047857]"; // > 99
+    if (count > 75) return "bg-[#059669]"; // > 75
+    if (count > 50) return "bg-[#34D399]"; // > 50
+    if (count > 25) return "bg-[#6EE7B7]"; // > 25
+    if (count > 0) return "bg-[#A7F3D0]"; // > 0
+    return "bg-[#E4E4E7]";
   };
+
+  const aggregatedData = streaks?.reduce((acc, curr) => {
+    if (!acc[curr.streakDate]) {
+      acc[curr.streakDate] = { date: curr.streakDate, count: 0 };
+    }
+    acc[curr.streakDate].count += curr.totalCorrect + curr.totalIncorrect;
+    return acc;
+  }, {});
+
+  const result = Object.values(aggregatedData).map(({ date, count }) => ({
+    date,
+    count,
+    colorClass: getColorClass(count),
+  }));
 
   function handleContinue() {
     setIsOpenSetUpSessionModal(true);
@@ -149,11 +174,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const handleSessionContinue = async (sessionId) => {
-      // Open the setup session modal
       setIsOpenSetUpSessionModal(true);
-      // Find the selected modules based on the sessionId
 
-      // No need to split, just trim the sessionId if necessary
       const flatModuleIds = sessionId
         .split(",")
         .map((id) => parseInt(id.trim(), 10)); // Split and convert to numbers
@@ -204,9 +226,15 @@ const Dashboard = () => {
 
   const getWeekRange = (date) => {
     const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - date.getDay() + 1);
+    const dayOfWeek = date.getDay();
+
+    startOfWeek.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    startOfWeek.setHours(0, 0, 0, 0); // Normalize to start of the day
+
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999); // Normalize to end of the day
+
     return { startOfWeek, endOfWeek };
   };
 
@@ -214,13 +242,16 @@ const Dashboard = () => {
 
   const filteredStreaks = streaks?.filter((streak) => {
     const streakDate = new Date(streak?.streakDate);
+    streakDate.setHours(0, 0, 0, 0); // Normalize to start of the day
     return streakDate >= startOfWeek && streakDate <= endOfWeek;
   });
 
-  const noOfDays = filteredStreaks?.map((streak) =>
-    new Date(streak?.streakDate).getDate(),
-  );
+  const noOfDays = filteredStreaks
+    ?.map((streak) => new Date(streak?.streakDate).getDate())
+    .sort((a, b) => a - b)
+    ?.slice(0, -1);
 
+  console.log("🚀 ~ Dashboard ~ noOfDays:", noOfDays);
   const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
   const totalIncorrects = filteredStreaks?.map(
     (streak) => streak?.totalIncorrect,
@@ -302,10 +333,9 @@ const Dashboard = () => {
                 <div className="relative mb-5 w-[180px]">
                   <DatePicker
                     selected={selectedDate}
-                    onChange={(date) => setSelectedDate(date)}
+                    onChange={handleDateChange}
                     dateFormat="I/R"
                     locale="en-GB"
-                    showWeekNumbers
                     showWeekPicker
                     className="relative w-[150px] cursor-pointer rounded border p-2 text-[12px] dark:bg-[#1E1E2A] dark:text-white sm:w-[180px] sm:text-[14px]" // Added cursor-pointer class
                   />
@@ -348,29 +378,29 @@ const Dashboard = () => {
                     const workPercentage = Math.floor(
                       Math.min((day.totalResult / target) * 100, 100),
                     );
-                    const bgColorClass = getColorClass(workPercentage);
 
-                    // Compare current day with streak date
-                    const currentDate = new Date().toISOString().split("T")[0]; // Format as yyyy-mm-dd
-                    const isStreakDay = currentDate === streaks?.streakDate; // Check if this day matches streak date
+                    // Find the matching result dynamically
+                    const matchingResult = result.find(
+                      (res) => res.date === day.date,
+                    );
+                    const bgColorClass = matchingResult
+                      ? matchingResult.colorClass
+                      : "bg-[#E4E4E7]";
 
-                    // Ensure that day.date is in the same format as streak.streakDate
+                    const currentDate = new Date().toISOString().split("T")[0];
+                    const isStreakDay = currentDate === streaks?.streakDate;
+
                     const dayDateFormatted = new Date(day.date)
                       .toISOString()
                       .split("T")[0];
-
-                    // Check if the current day matches streak day
                     const isCurrentDayStreak =
                       dayDateFormatted === streaks?.streakDate;
 
                     return (
                       <div
                         key={index}
-                        className={`xs:w-8 xs:h-8 relative flex h-6 w-6 items-center justify-center rounded-md text-white xl:h-12 xl:w-12 ${
-                          day.workCount > 0 ? bgColorClass : "bg-[#E4E4E7]"
-                        } ${isCurrentDayStreak ? "border-2 border-yellow-500" : ""}`} // Highlight streak day
+                        className={`xs:w-8 xs:h-8 relative flex h-6 w-6 items-center justify-center rounded-md text-white xl:h-12 xl:w-12 ${bgColorClass} ${isCurrentDayStreak ? "border-2 border-yellow-500" : ""}`}
                       >
-                        {/* Render streak icon only for the streak day */}
                         {isCurrentDayStreak && streaks?.streak === 1 && (
                           <img
                             src="/assets/heat-icon.svg"
@@ -498,7 +528,6 @@ const Dashboard = () => {
               {/* <h2 className='font-bold text-[20px] text-center py-3 dark:text-white'>
                 Monthly Progress
               </h2> */}
-              {/* <StackedBar days={days} streak={streak} /> */}
               <BarChart
                 heading="Weekly Progress"
                 series={[

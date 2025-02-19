@@ -83,6 +83,8 @@ const Questioning = () => {
   } = useSelector((state) => state.mockModules);
   const data = useSelector((state) => state.module);
 
+  console.log("data:", data.data);
+
   const { limit } = useSelector((state) => state.limit);
   const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
   const [storedSession, setStoredSession] = useState([]);
@@ -305,7 +307,7 @@ const Questioning = () => {
           setIsLoading(false);
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
 
-          dispatch(fetchTotalSBAQuestion({ ids: res }));
+          // dispatch(fetchTotalSBAQuestion({ ids: res }));
         })
         .catch((err) => {
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
@@ -408,7 +410,7 @@ const Questioning = () => {
             value: true,
           }),
         );
-        // dispatch(fetchQuestionCounts());
+
         dispatch(
           fetchShortQuestionByModules({
             moduleIds: selectedModules,
@@ -556,6 +558,10 @@ const Questioning = () => {
       }
     }
   }, [selectedModules, limit, selectedOption, selectedTab]);
+
+  useEffect(() => {
+    dispatch(fetchTotalSBAQuestion({ ids: data.data }));
+  }, [selectedModules]);
 
   useEffect(() => {
     if (selectedTab === "Pre-clinical") {
@@ -760,46 +766,6 @@ const Questioning = () => {
         const { data, error } = await query;
 
         if (error) throw error;
-        // Compute totals
-        const totalsByModule = data.reduce((acc, curr) => {
-          const { moduleId, isCorrect } = curr;
-
-          if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
-          }
-
-          if (Boolean(isCorrect)) {
-            acc[moduleId].totalCorrect += 1;
-          } else {
-            acc[moduleId].totalIncorrect += 1;
-          }
-
-          return acc;
-        }, {});
-        setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
-      } catch (err) {
-        console.error("Error fetching daily work:", err);
-      }
-    };
-
-    if (userId) fetchDailyWork();
-  }, [selectedOption]); // Handle selectedModules properly
-
-  useEffect(() => {
-    const fetchDailyWork = async () => {
-      try {
-        const query = supabase
-          .from("resultsHistory")
-          .select("moduleId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
-          .eq("userId", userId);
-
-        if (selectedModules?.length) {
-          query.in("moduleId", selectedModules);
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
 
         // Compute totals
         const totalsByModule = data.reduce((acc, curr) => {
@@ -824,7 +790,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [selectedOption]); // Handle selectedModules properly
+  }, [selectedOption, selectedModules]); // Handle selectedModules properly
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -1443,7 +1409,9 @@ const Questioning = () => {
                           </div>
 
                           {/* Total Questions */}
-                          {/* <span className="text-gray-700 dark:text-white text-sm">{totalQuestions}</span> */}
+                          {/* <span className="text-sm text-gray-700 dark:text-white">
+                            {totalQuestions}
+                          </span> */}
                         </div>
                       </div>
                     );
