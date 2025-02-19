@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import Logo from './common/Logo';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import Loader from './common/Loader';
-import DashboardModal from './common/DashboardModal';
-import { FaStar } from 'react-icons/fa';
-import { setLoading } from '../redux/features/loader/loader.slice';
-import { fetchOSCEDataById } from '../redux/features/osce-static/osce-static.service';
-import FeedbackModal from './common/Feedback';
-import MarkdownRender from './markdown-render';
+import React, { useEffect, useState } from "react";
+import Logo from "./common/Logo";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import Loader from "./common/Loader";
+import DashboardModal from "./common/DashboardModal";
+import { FaStar } from "react-icons/fa";
+import { setLoading } from "../redux/features/loader/loader.slice";
+import { fetchOSCEDataById } from "../redux/features/osce-static/osce-static.service";
+import FeedbackModal from "./common/Feedback";
+import MarkdownRender from "./markdown-render";
 
 const SceneriosDetail = () => {
   const [minutes, setMinutes] = useState(8); // Starting minute
   const [seconds, setSeconds] = useState(0); // Starting second
   const [timerActive, setTimerActive] = useState(false); // Timer active state
   const navigate = useNavigate(); // Initialize useNavigate hook
-  const { selectedData, loading, error } = useSelector(state => state.osce);
-  console.log('🚀 ~ SceneriosDetail ~ selectedData:', selectedData);
+  const { selectedData, loading, error } = useSelector((state) => state.osce);
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -26,12 +25,11 @@ const SceneriosDetail = () => {
   const [score, setScore] = useState(0);
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
 
-  const togglePanel = panel => {
+  const togglePanel = (panel) => {
     setOpenPanel(openPanel === panel ? null : panel);
   };
 
-  const extractHeadings = markdown => {
-    console.log('🚀 ~ SceneriosDetail ~ markdown:', markdown);
+  const extractHeadings = (markdown) => {
     const headingRegex = /^(#{1,6})\s(.+)$/gm; // Match all headings (# to ######)
     const listItemRegex = /^\s*[-*+]\s(.+)$/gm; // Match list items under headings (bullets: -, *, +)
 
@@ -52,7 +50,9 @@ const SceneriosDetail = () => {
 
       listMatches = [];
       let listMatch;
-      while ((listMatch = listItemRegex.exec(markdown.slice(matches.index))) !== null) {
+      while (
+        (listMatch = listItemRegex.exec(markdown.slice(matches.index))) !== null
+      ) {
         listMatches.push(listMatch[1]);
       }
 
@@ -87,10 +87,13 @@ const SceneriosDetail = () => {
 
   // Function to calculate progress
   const calculateProgress = () => {
-    const totalItems = headings.reduce((total, item) => total + item.listItems.length, 0);
+    const totalItems = headings.reduce(
+      (total, item) => total + item.listItems.length,
+      0,
+    );
     const completedItems = checkboxState.reduce(
       (total, itemList) => total + (itemList?.filter(Boolean).length || 0),
-      0
+      0,
     );
     return (completedItems / totalItems) * 100;
   };
@@ -100,20 +103,20 @@ const SceneriosDetail = () => {
   };
 
   const handleBackToDashboard = () => {
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
 
   useEffect(() => {
-    const savedMinutes = localStorage.getItem('minutes');
-    const savedSeconds = localStorage.getItem('seconds');
+    const savedMinutes = localStorage.getItem("minutes");
+    const savedSeconds = localStorage.getItem("seconds");
     if (savedMinutes !== null && savedSeconds !== null) {
       setMinutes(parseInt(savedMinutes, 10));
       setSeconds(parseInt(savedSeconds, 10));
     }
 
     return () => {
-      localStorage.removeItem('minutes');
-      localStorage.removeItem('seconds');
+      localStorage.removeItem("minutes");
+      localStorage.removeItem("seconds");
     };
   }, []);
 
@@ -125,18 +128,18 @@ const SceneriosDetail = () => {
         if (seconds === 0 && minutes === 0) {
           clearInterval(timerInterval);
           setTimerActive(false);
-          navigate('/dashboard');
+          navigate("/dashboard");
         } else {
           if (seconds === 0) {
-            setMinutes(prev => prev - 1);
+            setMinutes((prev) => prev - 1);
             setSeconds(59);
           } else {
-            setSeconds(prev => prev - 1);
+            setSeconds((prev) => prev - 1);
           }
         }
 
-        localStorage.setItem('minutes', minutes);
-        localStorage.setItem('seconds', seconds);
+        localStorage.setItem("minutes", minutes);
+        localStorage.setItem("seconds", seconds);
       }, 1000);
     } else if (!timerActive && minutes === 8 && seconds === 0) {
       setTimerActive(true);
@@ -147,11 +150,9 @@ const SceneriosDetail = () => {
 
   useEffect(() => {
     dispatch(fetchOSCEDataById(id))
-      .unwrap(res => {
-        console.log('Response:', res);
-      })
-      .catch(err => {
-        console.log('Error:', err);
+      .unwrap((res) => {})
+      .catch((err) => {
+        console.error("Error:", err);
       });
   }, []);
 
@@ -160,117 +161,117 @@ const SceneriosDetail = () => {
   };
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       {/* Sidebar */}
-      <div className='absolute left-0 top-0 bg-white w-[240px]   h-screen'>
-        <div className='flex items-center justify-between mt-5'>
-          <div className='flex items-center'></div>
+      <div className="absolute left-0 top-0 h-screen w-[240px] bg-white">
+        <div className="mt-5 flex items-center justify-between">
+          <div className="flex items-center"></div>
 
-          <div className='absolute left-1/2 transform -translate-x-1/2'>
+          <div className="absolute left-1/2 -translate-x-1/2 transform">
             <Logo />
           </div>
         </div>
 
-        <div className='text-[#3F3F46] text-[12px] font-semibold px-6 mt-5 '>
+        <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
           <p>Set timer</p>
-          <div className='flex items-center justify-between p-2 border border-[#D4D4D8] rounded-[6px]  w-[208px] 2xl:w-[99%] h-[32px] mt-2'>
-            <p className='text-[#A1A1AA] text-[12px] font-bold'>Minutes</p>
-            <p className='text-[#A1A1AA] text-[12px] font-bold'>8</p>
+          <div className="mt-2 flex h-[32px] w-[208px] items-center justify-between rounded-[6px] border border-[#D4D4D8] p-2 2xl:w-[99%]">
+            <p className="text-[12px] font-bold text-[#A1A1AA]">Minutes</p>
+            <p className="text-[12px] font-bold text-[#A1A1AA]">8</p>
           </div>
         </div>
 
-        <div className='flex flex-col items-center justify-center mt-10'>
+        <div className="mt-10 flex flex-col items-center justify-center">
           <div
-            className={`w-[90%] h-[96px] rounded-[8px]  ${
-              timerActive ? 'bg-[#3CC8A1]' : 'bg-[#FF9741]'
-            }  text-[#ffff] text-center`}
+            className={`h-[96px] w-[90%] rounded-[8px] ${
+              timerActive ? "bg-[#3CC8A1]" : "bg-[#FF9741]"
+            } text-center text-[#ffff]`}
           >
-            <p className='text-[12px] mt-3'>Timer</p>
-            <p className='font-black text-[36px]'>
+            <p className="mt-3 text-[12px]">Timer</p>
+            <p className="text-[36px] font-black">
               {minutes < 10 ? `0${minutes}` : minutes}:
               {seconds < 10 ? `0${seconds}` : seconds}
             </p>
           </div>
         </div>
 
-        <div className='p-5 text-center'>
+        <div className="p-5 text-center">
           <button
             onClick={() => setTimerActive(!timerActive)}
-            className={`rounded-[6px] w-[90%] ${
+            className={`w-[90%] rounded-[6px] ${
               timerActive
-                ? 'border border-[#3CC8A1] hover:bg-[#3CC8A1] text-[#3CC8A1]'
-                : 'border border-[#FF9741] hover:bg-[#FF9741] text-[#FF9741]'
-            }    h-[32px]  hover:text-white transition-all duration-200 text-[12px]`}
+                ? "border border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1]"
+                : "border border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741]"
+            } h-[32px] text-[12px] transition-all duration-200 hover:text-white`}
           >
-            {timerActive ? 'Pause Timer' : 'Start Timer'}
+            {timerActive ? "Pause Timer" : "Start Timer"}
           </button>
         </div>
 
-        <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-          <div className='flex items-center font-semibold gap-x-2 text-[#D4D4D8] justify-center mb-4'>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+          <div className="mb-4 flex items-center justify-center gap-x-2 font-semibold text-[#D4D4D8]">
             <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='24'
-              height='24'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeWidth='2'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              className='lucide lucide-check'
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-check"
             >
-              <path d='M20 6 9 17l-5-5' />
+              <path d="M20 6 9 17l-5-5" />
             </svg>
             <p>Finish and Review</p>
           </div>
-          <hr className=' 2xl:w-[300px]' />
+          <hr className="2xl:w-[300px]" />
           <div
             onClick={handleShowPopup}
-            className='flex items-center gap-x-2 mt-3 text-[#FF453A] font-semibold justify-center  whitespace-nowrap hover:opacity-70 cursor-pointer'
+            className="mt-3 flex cursor-pointer items-center justify-center gap-x-2 whitespace-nowrap font-semibold text-[#FF453A] hover:opacity-70"
           >
             <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='24'
-              height='24'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeWidth='2'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              className='lucide lucide-chevron-left'
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-chevron-left"
             >
-              <path d='m15 18-6-6 6-6' />
+              <path d="m15 18-6-6 6-6" />
             </svg>
-            <p className='text-[12px] '>Back to Dashboard</p>
+            <p className="text-[12px]">Back to Dashboard</p>
           </div>
         </div>
       </div>
       {/* Content */}
 
       {loading ? (
-        <div className='ml-40 mt-20'>
-          <Loader />{' '}
+        <div className="ml-40 mt-20">
+          <Loader />{" "}
         </div>
       ) : (
-        <div className='flex items-center justify-center  ml-60'>
-          <div className='w-[991px] mt-20   rounded-tl-[4px] rounded-tr-[4px] '>
+        <div className="ml-60 flex items-center justify-center">
+          <div className="mt-20 w-[991px] rounded-tl-[4px] rounded-tr-[4px]">
             {/* Header */}
-            <div className='bg-[#3CC8A1] text-white p-4 rounded-t-lg mb-5'>
-              <h1 className='text-[24px] font-bold'>
+            <div className="mb-5 rounded-t-lg bg-[#3CC8A1] p-4 text-white">
+              <h1 className="text-[24px] font-bold">
                 {selectedData?.category} # {selectedData?.id}
               </h1>
 
-              <div className='flex justify-between items-center font-medium text-[16px] mt-2'>
-                <div className='space-x-5'>
+              <div className="mt-2 flex items-center justify-between text-[16px] font-medium">
+                <div className="space-x-5">
                   <span>By Rahul Sagu</span>
                   <span>04.10.24</span>
                 </div>
 
                 <button
                   onClick={reportHandler}
-                  className='bg-transparent px-2 py-1 rounded text-xs border border-white'
+                  className="rounded border border-white bg-transparent px-2 py-1 text-xs"
                 >
                   Report a problem
                 </button>
@@ -281,63 +282,66 @@ const SceneriosDetail = () => {
             {[
               {
                 id: 1,
-                title: 'Candidate Brief',
+                title: "Candidate Brief",
                 content: selectedData?.candidateBrief,
               },
               {
                 id: 2,
-                title: 'Actor Brief',
+                title: "Actor Brief",
                 content: selectedData?.actorBrief,
               },
               {
                 id: 3,
-                title: 'Examiner Brief',
+                title: "Examiner Brief",
                 content: selectedData?.examinerBrief,
               },
               {
                 id: 4,
-                title: 'Mark Scheme',
+                title: "Mark Scheme",
                 content: selectedData?.markscheme,
               },
-            ].map(panel => (
-              <div key={panel.id} className='border-b last:border-b-0 mb-2 bg-white '>
+            ].map((panel) => (
+              <div
+                key={panel.id}
+                className="mb-2 border-b bg-white last:border-b-0"
+              >
                 <button
                   onClick={() => togglePanel(panel.id)}
-                  className='w-full text-left p-4 bg-white flex justify-between items-center'
+                  className="flex w-full items-center justify-between bg-white p-4 text-left"
                 >
-                  <span className='font-bold ml-10 text-[16px] text-[#52525B] '>
+                  <span className="ml-10 text-[16px] font-bold text-[#52525B]">
                     {panel.title}
                   </span>
                   <span>
                     {openPanel === panel.id ? (
                       <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        className='lucide lucide-chevron-up'
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-chevron-up"
                       >
-                        <path d='m18 15-6-6-6 6' />
+                        <path d="m18 15-6-6-6 6" />
                       </svg>
                     ) : (
                       <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        className='lucide lucide-chevron-down'
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-chevron-down"
                       >
-                        <path d='m6 9 6 6 6-6' />
+                        <path d="m6 9 6 6 6-6" />
                       </svg>
                     )}
                   </span>
@@ -345,12 +349,12 @@ const SceneriosDetail = () => {
 
                 <div
                   className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-                    openPanel === panel.id ? 'max-h-full' : 'max-h-0'
+                    openPanel === panel.id ? "max-h-full" : "max-h-0"
                   }`}
                 >
                   <hr />
-                  <div className='p-4 bg-white '>
-                    <p className='text-[#52525B] text-[20px] transition-all duration-200 h-full'>
+                  <div className="bg-white p-4">
+                    <p className="h-full text-[20px] text-[#52525B] transition-all duration-200">
                       <MarkdownRender>{panel?.content}</MarkdownRender>
                     </p>
                   </div>
@@ -359,15 +363,15 @@ const SceneriosDetail = () => {
             ))}
 
             {/* Static Score Panel */}
-            <div className='border-b last:border-b-0 mb-2 bg-white '>
+            <div className="mb-2 border-b bg-white last:border-b-0">
               <button
                 onClick={() => togglePanel(5)} // Use a static ID for Score
-                className='w-full text-left p-4 bg-white flex justify-between items-center'
+                className="flex w-full items-center justify-between bg-white p-4 text-left"
               >
-                <span className='font-bold ml-10 text-[16px] text-[#52525B]'>
-                  <p className='flex items-center gap-x-5 -ml-9'>
-                    <span className='text-[#3CC8A1]'>
-                      <FaStar className='' />
+                <span className="ml-10 text-[16px] font-bold text-[#52525B]">
+                  <p className="-ml-9 flex items-center gap-x-5">
+                    <span className="text-[#3CC8A1]">
+                      <FaStar className="" />
                     </span>
                     Score
                   </p>
@@ -375,33 +379,33 @@ const SceneriosDetail = () => {
                 <span>
                   {openPanel === 5 ? (
                     <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='24'
-                      height='24'
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      stroke='currentColor'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      className='lucide lucide-chevron-up'
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-chevron-up"
                     >
-                      <path d='m18 15-6-6-6 6' />
+                      <path d="m18 15-6-6-6 6" />
                     </svg>
                   ) : (
                     <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='24'
-                      height='24'
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      stroke='currentColor'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      className='lucide lucide-chevron-down'
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-chevron-down"
                     >
-                      <path d='m6 9 6 6 6-6' />
+                      <path d="m6 9 6 6 6-6" />
                     </svg>
                   )}
                 </span>
@@ -409,45 +413,52 @@ const SceneriosDetail = () => {
 
               <div
                 className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-                  openPanel === 5 ? 'max-h-full' : 'max-h-0'
+                  openPanel === 5 ? "max-h-full" : "max-h-0"
                 }`}
               >
                 <hr />
-                <div className='p-4 bg-white'>
-                  <div className='space-y-6'>
+                <div className="bg-white p-4">
+                  <div className="space-y-6">
                     <div>
-                      <label className='block text-[#52525B] text-[16px] font-semibold mb-2'>
+                      <label className="mb-2 block text-[16px] font-semibold text-[#52525B]">
                         Candidate Score
                       </label>
-                      <div className='flex items-center text-[12px] border border-[#A1A1AA] w-[312px] h-[36px] px-3 py-2 rounded-[4px]'>
+                      <div className="flex h-[36px] w-[312px] items-center rounded-[4px] border border-[#A1A1AA] px-3 py-2 text-[12px]">
                         <svg
-                          className=''
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='18'
-                          height='18'
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          stroke='currentColor'
-                          strokeWidth='2'
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          class='lucide lucide-lock text-[#D4D4D8]'
+                          className=""
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          class="lucide lucide-lock text-[#D4D4D8]"
                         >
-                          <rect width='18' height='11' x='3' y='11' rx='2' ry='2' />
-                          <path d='M7 11V7a5 5 0 0 1 10 0v4' />
+                          <rect
+                            width="18"
+                            height="11"
+                            x="3"
+                            y="11"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
-                        <span className='ml-auto text-[#A1A1AA] text-[16px]'>
+                        <span className="ml-auto text-[16px] text-[#A1A1AA]">
                           {score}
                         </span>
                       </div>
                     </div>
                     <div>
-                      <label className='block text-gray-700 text-sm font-medium mb-2'>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Global Score
                       </label>
-                      <div className='flex text-[12px] items-center border border-[#A1A1AA] w-[312px] h-[36px] px-3 py-2 rounded-[4px]'>
-                        <span className='text-[#A1A1AA]'>Maximum: 5</span>
-                        <span className='ml-auto text-gray-700 font-bold text-[16px]'>
+                      <div className="flex h-[36px] w-[312px] items-center rounded-[4px] border border-[#A1A1AA] px-3 py-2 text-[12px]">
+                        <span className="text-[#A1A1AA]">Maximum: 5</span>
+                        <span className="ml-auto text-[16px] font-bold text-gray-700">
                           4
                         </span>
                       </div>

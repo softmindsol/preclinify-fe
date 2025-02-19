@@ -75,7 +75,6 @@ const AINewVersion = () => {
     user_id: userId,
   });
 
-  console.log(categoryName);
   const scenario = MEDICAL_SCENARIOS[categoryName] || {
     symptoms: [categoryName],
     patientProfile: `${userInfo?.user_metadata?.displayName?.split(" ")[0] || "unknown"}, a standard patient`,
@@ -270,7 +269,6 @@ const AINewVersion = () => {
       const summaryMatch = result.match(/Summary:\s*(.*?)(?=\n\n|Feedback:)/s);
       const feedbackMatch = result.match(/Feedback:\s*(.*?)(?=\n\n|Score:)/s);
       const scoreMatch = result.match(/Score:\s*(\d+)\/10/);
-      console.log(summaryMatch, scoreMatch, feedbackMatch);
 
       console.log(
         "Summary:",
