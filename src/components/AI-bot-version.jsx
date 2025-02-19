@@ -478,38 +478,36 @@ even if you're asked about them.`,
                 className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}
               >
                 <div
-                  className={`flex items-center ${
-                    entry.fromAI ? "justify-start" : "mx-2 flex-row-reverse"
+                  className={`mb-2 flex items-center ${
+                    entry.fromAI ? "justify-start" : "ml-auto flex-row-reverse"
                   }`}
                 >
                   {entry.fromAI ? (
-                    <div
-                      className="flex items-center justify-center rounded-full bg-[#F4F4F5]"
-                      style={{
-                        width: "60px",
-                        height: "60px",
-                      }}
-                    >
-                      <img src="/assets/Logo.png" alt="AI Icon" className="" />
+                    <div className="flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#F4F4F5]">
+                      <img
+                        src="/assets/Logo.png"
+                        alt="AI Icon"
+                        className="w-auto object-contain"
+                      />
                     </div>
                   ) : (
-                    <div className="ml-2 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#3CC8A1]">
+                    <div className="ml-2 flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#3CC8A1]">
                       <img
                         src="/assets/sethoscope.png"
                         alt="User Icon"
-                        className=""
+                        className="w-auto object-contain"
                       />
                     </div>
                   )}
-                  <div
-                    className={`${
-                      entry.fromAI ? "text-[#3F3F46]" : "text-white"
-                    } ml-2 rounded-[8px] ${
-                      entry.fromAI ? "bg-[#EDF2F7]" : "bg-[#3CC8A1]"
-                    } px-5 py-3`}
+                  <span
+                    className={`ml-2 rounded-[8px] px-5 py-3 ${
+                      entry.fromAI
+                        ? "bg-[#EDF2F7] text-[#3F3F46]"
+                        : "bg-[#3CC8A1] text-white"
+                    }`}
                   >
                     {entry.text}
-                  </div>
+                  </span>
                   {isLoading && entry.fromAI && (
                     <div className="ml-2">
                       <span className="animate-pulse">...</span>
