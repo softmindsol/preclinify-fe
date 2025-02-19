@@ -33,7 +33,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 
 function App() {
   const { theme } = useContext(ThemeContext);
- 
+
 
   return (
     <div className={`App`}>
@@ -77,9 +77,9 @@ function App() {
         <Route
           path='/chat-history'
           element={
-            <ProtectedRoute>
-              <ChatHistory />
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            <ChatHistory />
+            // </ProtectedRoute>
           }
         />
         <Route
@@ -87,7 +87,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
-           </ProtectedRoute>
+            </ProtectedRoute>
           }
         />
         <Route

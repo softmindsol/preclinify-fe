@@ -14,3 +14,18 @@ export const fetchOSCEBotData = createAsyncThunk(
         }
     }
 );
+
+
+export const insertOSCEBotData = createAsyncThunk(
+    'osce/insertOSCEBotData',
+    async (_, thunkAPI) => {
+        try {
+            const { data, error } = await supabase.from('AI_OSCE').select('*');
+            if (error) throw error;
+            return data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
