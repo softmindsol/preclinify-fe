@@ -507,44 +507,39 @@ const QuestionCard = () => {
     setShowFeedBackModal(!showFeedBackModal);
   };
 
-  useEffect(() => {
+useEffect(() => {
     if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
 
-    const handleKeyPress = e => {
-        // Check if the current question has been attempted
-        if (e.key === 'ArrowRight') {
+    const handleKeyPress = (e) => {
+        if (e.key === "ArrowRight") {
             nextQuestion();
             return;
         }
-        // Check if the current question has been attempted
-        if (e.key === 'ArrowLeft') {
+
+        if (e.key === "ArrowLeft") {
             prevQuestion();
             return;
         }
-        // Prevent default action for spacebar to avoid scrolling
-        if (e.key === ' ') {
+
+        if (e.key === " ") {
             e.preventDefault();
 
             if (isAnswered && !answerChecked) {
-                handleCheckAnswer(); // Call the check answer function
+                handleCheckAnswer();
                 setAnswerChecked(true);
-                console.log('spacebar pressed');
-            }
-            if (answerChecked) {
+                console.log("spacebar pressed");
+            } else if (answerChecked) {
                 nextQuestion();
                 setAnswerChecked(false);
-
             }
 
-
-            return; // Exit the function after handling spacebar
+            return;
         }
 
-        // Check if the current question has been attempted
         if (attempted[currentIndex] !== null) return;
 
         const key = e.key.toUpperCase();
-        const validKeys = ['Q', 'W', 'E', 'R', 'T'];
+        const validKeys = ["Q", "W", "E", "R", "T"];
         const keyIndex = validKeys.indexOf(key);
 
         if (
@@ -554,15 +549,14 @@ const QuestionCard = () => {
             const answer = data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
 
             handleAnswerSelect(answer);
-            setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
-
+            setIsAnswered(true);
             dispatch(setResult({ attempted }));
         }
     };
 
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-}, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered]); // ✅ Added isAnswered in dependency array
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+}, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered, showFeedBackModal]); // ✅ showFeedBackModal added
 
   useEffect(() => {
     if (review) {
