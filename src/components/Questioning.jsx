@@ -560,10 +560,6 @@ const Questioning = () => {
   }, [selectedModules, limit, selectedOption, selectedTab]);
 
   useEffect(() => {
-    dispatch(fetchTotalSBAQuestion({ ids: data.data }));
-  }, [selectedModules]);
-
-  useEffect(() => {
     if (selectedTab === "Pre-clinical") {
       if (selectedPreClinicalOption === "QuesGen") {
         dispatch(setPreclinicalType({ selectedPreClinicalOption }));
@@ -752,16 +748,34 @@ const Questioning = () => {
   }, [isSortedByPresentation, selectPresentation, limit]);
 
   useEffect(() => {
+    if (selectedOption !== "SBA") return;
+
+    setIsLoading(true);
+
+    dispatch(fetchTotalSBAQuestion({ ids: data.data }))
+      .unwrap()
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+  }, [selectedModules]); // Runs only once when the component mounts
+
+  useEffect(() => {
+    if (selectedOption !== "SBA") return; // Run only if selectedOption is "SBA"
     const fetchDailyWork = async () => {
       try {
         const query = supabase
           .from("resultsHistory")
-          .select("moduleId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
+          .select("moduleId, isCorrect, userId")
           .eq("userId", userId);
 
         if (selectedModules?.length) {
           query.in("moduleId", selectedModules);
         }
+
+        console.log("🚀 ~ fetchDailyWork ~ selectedModules:", selectedModules);
 
         const { data, error } = await query;
 
@@ -772,7 +786,7 @@ const Questioning = () => {
           const { moduleId, isCorrect } = curr;
 
           if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
+            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
           }
 
           if (Boolean(isCorrect)) {
@@ -783,14 +797,17 @@ const Questioning = () => {
 
           return acc;
         }, {});
-        setModuleTotals(Object.values(totalsByModule)); // Object ko array mein convert kiya
+
+        setModuleTotals(Object.values(totalsByModule));
       } catch (err) {
         console.error("Error fetching daily work:", err);
       }
     };
 
-    if (userId) fetchDailyWork();
-  }, [selectedOption, selectedModules]); // Handle selectedModules properly
+    if (userId) {
+      fetchDailyWork();
+    }
+  }, []); // Run only once
 
   useEffect(() => {
     const fetchDailyWork = async () => {
