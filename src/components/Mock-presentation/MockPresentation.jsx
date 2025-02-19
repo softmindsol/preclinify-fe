@@ -15,7 +15,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { setRemoveQuestionLimit } from "../../redux/features/limit/limit.slice";
 import { fetchConditionNameById } from "../../redux/features/SBA/sba.service";
-import DeepChatAI from "../DeepChat";
 import { setMcqsAccuracy } from "../../redux/features/accuracy/accuracy.slice";
 import { sessionCompleted } from "../../redux/features/recent-session/recent-session.slice";
 import ChemistryBeaker from "../chemistry-beaker";
@@ -40,6 +39,8 @@ import {
   insertResult,
   insertMockResult,
 } from "../../redux/features/all-results/result.sba.service";
+import Chatbot from "../chatbot";
+import Loader from "../common/Loader";
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60);
@@ -65,8 +66,6 @@ const MockPresentation = () => {
     error,
   } = useSelector((state) => state.mockModules);
 
-  console.log("presentationMcqs:", presentationMcqs);
-
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
   const dispatch = useDispatch();
@@ -75,6 +74,7 @@ const MockPresentation = () => {
   const [attempts, setAttempts] = useState(attempted); // Array to track question status: null = unseen, true = correct, false = incorrect
   const [isAccordionVisible, setIsAccordionVisible] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [answerChecked, setAnswerChecked] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
@@ -363,18 +363,18 @@ const MockPresentation = () => {
   };
 
   const handleFinishAndReview = () => {
-        if (!isFinishEnabled) return;
+    if (!isFinishEnabled) return;
+
+    setReviewLoading(true);
+
     if (isButtonClicked) {
       handleCheckAnswer();
-      // dispatch(setMcqsAccuracy({ accuracy }))
-      console.log("mock finish");
     }
-      // handleAnswerSelect()
-      //    Add a delay (for example, 2 seconds)
-      setTimeout(() => {
-        navigation("/score");
-      }, 3000); // 2000 ms = 2 seconds
-   
+
+    setTimeout(() => {
+      navigation("/score");
+      setReviewLoading(false);
+    }, 2000);
   };
 
   function handleShowPopup() {
@@ -569,6 +569,10 @@ const MockPresentation = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  if (reviewLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>
@@ -1194,18 +1198,18 @@ const MockPresentation = () => {
                 </div>
               </div>
               <div>
-                <DeepChatAI W="200px" />
                 <hr className="mx-5" />
               </div>
 
               <div className="mb-5 text-[12px]">
-                <div
-                  className={`flex items-center gap-x-2 font-semibold ${
+                <button
+                  className={`flex w-full items-center gap-x-2 font-semibold ${
                     isFinishEnabled
                       ? "cursor-pointer text-[#3CC8A1]"
                       : "cursor-not-allowed text-[#D4D4D8]"
                   } justify-center`}
                   onClick={handleFinishAndReview}
+                  disabled={!isFinishEnabled}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1222,7 +1226,7 @@ const MockPresentation = () => {
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                   <p>Finish and Review</p>
-                </div>
+                </button>
                 <hr className="my-2 w-[200px]" />
 
                 <div
@@ -1449,7 +1453,6 @@ const MockPresentation = () => {
           </div>
 
           <div>
-            <DeepChatAI W="250px" />
             <hr className="mx-5" />
           </div>
 
@@ -1501,6 +1504,7 @@ const MockPresentation = () => {
           </div>
         </div>
       </Drawer>
+      <Chatbot />
     </div>
   );
 };

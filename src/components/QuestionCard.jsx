@@ -381,7 +381,6 @@ const QuestionCard = () => {
       setReviewLoading(false);
     }, 2000);
   };
-  console.log("isButtonClicked:", isButtonClicked);
 
   function handleShowPopup() {
     setShowPopup(true); // Close the popup
@@ -605,8 +604,6 @@ const QuestionCard = () => {
   if (reviewLoading) {
     return <Loader />;
   }
-
-  console.log("review:", attempted);
 
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>
@@ -1443,7 +1440,6 @@ const QuestionCard = () => {
           </div>
 
           <div>
-            <DeepChatAI W="250px" />
             <hr className="mx-5" />
           </div>
 
