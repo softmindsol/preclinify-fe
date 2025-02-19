@@ -4,7 +4,6 @@ import supabase from "../../../config/helper";
 export const fetchUserStreak = createAsyncThunk(
   "user/fetchStreak",
   async ({ userId }, { rejectWithValue }) => {
-    console.log("userId:", userId);
     try {
       // Fetch Data from both tables
       const { data: table1Data, error: error1 } = await supabase

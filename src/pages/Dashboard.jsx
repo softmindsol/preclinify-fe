@@ -2,18 +2,10 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/common/Sidebar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  format,
-  startOfWeek,
-  endOfWeek,
-} from "date-fns";
+import { startOfMonth, endOfMonth, eachDayOfInterval, format } from "date-fns";
 import Drawer from "react-modern-drawer";
 //import styles 👇
 import "react-modern-drawer/dist/index.css";
-import StackedBar from "../components/charts/stacked-bar";
 import { useDispatch, useSelector } from "react-redux";
 import { clearResult } from "../redux/features/result/result.slice";
 import { resetQuestionReviewValue } from "../redux/features/question-review/question-review.slice";
@@ -53,11 +45,11 @@ const Dashboard = () => {
   const [sessionId, setSessionId] = useState([]);
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
   const examDuration = useSelector((state) => state?.examDates?.examDate);
-  const profile = useSelector((state) => state.personalInfo.userInfo[0]);
-  const userId = useSelector((state) => state.user.userId);
+  const profile = useSelector((state) => state.personalInfo.userInfo);
+  const profileLoading = useSelector((state) => state?.personalInfo?.loading);
+  const userId = useSelector((state) => state?.user?.userId);
   const streaks = useSelector((state) => state?.streak?.streak) || [];
   const userInfo = useSelector((state) => state?.user?.userInfo);
-
   const [filteredData, setFilteredData] = useState({
     correct: [],
     incorrect: [],
@@ -209,20 +201,24 @@ const Dashboard = () => {
     dispatch(setResetLimit());
 
     dispatch(clearRecentSessions());
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     localStorage.removeItem("examTimer");
     dispatch(clearResult());
     dispatch(resetQuestionReviewValue());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchUserId());
-    dispatch(fetchDaysUntilExam(userId));
-    dispatch(fetchUserInformation({ userId }));
-    dispatch(fetchUserStreak({ userId }));
-    dispatch(fetchUserInformation({ user_id: userId }));
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchDaysUntilExam(userId));
+      dispatch(fetchUserStreak({ userId }));
+      dispatch(fetchUserInformation({ user_id: userId }));
+    }
+  }, [userId, dispatch]);
 
   const getWeekRange = (date) => {
     const startOfWeek = new Date(date);
@@ -277,10 +273,13 @@ const Dashboard = () => {
         <div className="xs:gap-x-16 flex h-[150px] w-full flex-row items-center justify-center gap-x-3 py-5 sm:justify-evenly sm:gap-x-36 xl:gap-x-36 2xl:gap-x-20">
           <p className="text-[18px] font-extrabold text-[#52525B] dark:text-white sm:text-[24px] xl:text-[32px]">
             Hello,{" "}
-            {profile?.firstName
-              ? profile.firstName
-              : userInfo?.user_metadata?.displayName?.split(" ")[0] ||
-                "unknown"}
+            {profileLoading ? (
+              <span className="inline-block h-6 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600" />
+            ) : (
+              profile?.firstName ||
+              userInfo?.user_metadata?.displayName?.split(" ")[0] ||
+              "unknown"
+            )}
           </p>
 
           <div className="flex flex-col items-center space-y-3 md:flex-row md:gap-x-5 md:space-y-0">
@@ -317,9 +316,13 @@ const Dashboard = () => {
                 />
                 <div className="">
                   <p className="text-[14px] font-semibold text-[#52525B] dark:text-white xl:text-[18px]">
-                    {profile?.firstName && profile?.lastName
-                      ? `${profile.firstName} ${profile.lastName}`
-                      : userInfo?.user_metadata?.displayName || "unknown"}
+                    {profileLoading ? (
+                      <span className="inline-block h-5 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600" />
+                    ) : profile?.firstName && profile?.lastName ? (
+                      `${profile.firstName} ${profile.lastName}`
+                    ) : (
+                      userInfo?.user_metadata?.displayName || "unknown"
+                    )}
                   </p>
                 </div>
               </div>
