@@ -45,7 +45,6 @@ export const fetchUserStreak = createAsyncThunk(
             ? 1
             : 0, // Streak condition
       }));
-      console.log("Final Streak Data:", result);
       return result;
     } catch (error) {
       return rejectWithValue(error.message);
