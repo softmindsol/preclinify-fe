@@ -21,18 +21,22 @@ const HistoryList = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOSCEBotData({ user_id: userId }))
-      .unwrap()
-      .then((res) => {})
-      .catch((err) => {});
-  }, []);
+    if (userId) {
+      dispatch(fetchOSCEBotData({ user_id: userId }))
+        .unwrap()
+        .then((res) => {})
+        .catch((err) => {
+          console.error("Failed to fetch OSCE bot data:", err);
+        });
+    }
+  }, [dispatch, userId]);
 
   return (
     <div className="w-full lg:flex">
       <div className="fixed hidden h-full lg:block">
         <Sidebar />
       </div>
-      <div className="mx-auto mt-24 w-[1113px] rounded-lg bg-white shadow-md">
+      <div className="ml-[280px] mt-24 w-[1113px] rounded-lg bg-white shadow-md">
         <h2 className="mb-2 flex items-center gap-x-2 p-4 text-[18px] font-medium">
           <svg
             xmlns="http://www.w3.org/2000/svg"
