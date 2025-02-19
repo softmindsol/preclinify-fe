@@ -761,7 +761,7 @@ const Questioning = () => {
   }, []); // Runs only once when the component mounts
 
   useEffect(() => {
-    if (selectedOption !== "SBA") return; // Run only if selectedOption is "SBA"
+    if (selectedOption !== "SBA") return;
     const fetchDailyWork = async () => {
       try {
         const query = supabase

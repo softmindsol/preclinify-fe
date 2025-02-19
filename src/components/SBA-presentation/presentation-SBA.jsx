@@ -18,7 +18,6 @@ import { TbBaselineDensityMedium } from "react-icons/tb";
 import DiscussionBoard from "../Discussion";
 import Article from "../Article";
 import QuestionNavigator from "../QuestionNavigator";
-import DeepChatAI from "../DeepChat";
 import DashboardModal from "../common/DashboardModal";
 import FeedbackModal from "../common/Feedback";
 import ChemistryBeaker from "../chemistry-beaker";
@@ -27,8 +26,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../common/Logo";
 import Drawer from "react-modern-drawer";
-//import styles 👇
 import "react-modern-drawer/dist/index.css";
+import Chatbot from "../chatbot";
+import Loader from "../common/Loader";
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60);
@@ -38,7 +38,6 @@ const formatTime = (seconds) => {
   ).padStart(2, "0")}`;
 };
 
-// Function to calculate total time based on number of questions
 const calculateTimeForQuestions = (numQuestions) => {
   const timePerQuestionInSeconds = 60; // 1 minute per question
   const totalTimeInSeconds = numQuestions * timePerQuestionInSeconds; // Calculate total time
@@ -57,6 +56,7 @@ const SbaPresentation = () => {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const beakerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -330,7 +330,6 @@ const SbaPresentation = () => {
       index === presentationData[currentIndex].correctAnswerId;
   });
 
-  // Update attempts based on user actions
   const markQuestion = (index, status) => {
     setAttempts((prev) => {
       const updatedAttempts = [...prev];
@@ -341,20 +340,22 @@ const SbaPresentation = () => {
 
   const toggleMenu = (event) => {
     event.stopPropagation();
-    setIsSubMenuOpen(!isSubMenuOpen); // Toggle the menu visibility
+    setIsSubMenuOpen(!isSubMenuOpen);
   };
 
   const handleFinishAndReview = () => {
+    if (!isFinishEnabled) return;
+
+    setReviewLoading(true);
+
     if (isButtonClicked) {
       handleCheckAnswer();
-      // dispatch(setMcqsAccuracy({ accuracy }))
-
-      // handleAnswerSelect()
-      //    Add a delay (for example, 2 seconds)
-      setTimeout(() => {
-        navigation("/score");
-      }, 3000); // 2000 ms = 2 seconds
     }
+
+    setTimeout(() => {
+      navigation("/score");
+      setReviewLoading(false);
+    }, 2000);
   };
 
   function handleShowPopup() {
@@ -563,6 +564,9 @@ const SbaPresentation = () => {
     };
   }, []);
 
+  if (reviewLoading) {
+    return <Loader />;
+  }
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>
       <div className="min-h-screen dark:bg-[#1E1E2A]">
@@ -1119,18 +1123,18 @@ const SbaPresentation = () => {
                 </div>
               </div>
               <div>
-                <DeepChatAI W="200px" />
                 <hr className="mx-5" />
               </div>
 
               <div className="mb-5 text-[12px]">
-                <div
-                  className={`flex items-center gap-x-2 font-semibold ${
+                <button
+                  className={`flex w-full items-center gap-x-2 font-semibold ${
                     isFinishEnabled
                       ? "cursor-pointer text-[#3CC8A1]"
                       : "cursor-not-allowed text-[#D4D4D8]"
                   } justify-center`}
                   onClick={handleFinishAndReview}
+                  disabled={!isFinishEnabled}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1147,7 +1151,7 @@ const SbaPresentation = () => {
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                   <p>Finish and Review</p>
-                </div>
+                </button>
                 <hr className="my-2 w-[200px]" />
 
                 <div
@@ -1386,7 +1390,6 @@ const SbaPresentation = () => {
           </div>
 
           <div>
-            <DeepChatAI W="250px" />
             <hr className="mx-5" />
           </div>
 
@@ -1438,6 +1441,7 @@ const SbaPresentation = () => {
           </div>
         </div>
       </Drawer>
+      <Chatbot />
     </div>
   );
 };
