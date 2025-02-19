@@ -508,58 +508,61 @@ const QuestionCard = () => {
   };
 
   useEffect(() => {
-    const handleKeyPress = (e) => {
-      // Check if the current question has been attempted
-      if (e.key === "ArrowRight") {
-        nextQuestion();
-        return;
-      }
-      // Check if the current question has been attempted
-      if (e.key === "ArrowLeft") {
-        prevQuestion();
-        return;
-      }
-      // Prevent default action for spacebar to avoid scrolling
-      if (e.key === " ") {
-        e.preventDefault();
+    if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
 
-        if (isAnswered && !answerChecked) {
-          handleCheckAnswer(); // Call the check answer function
-          setAnswerChecked(true);
-          console.log("spacebar pressed");
+    const handleKeyPress = e => {
+        // Check if the current question has been attempted
+        if (e.key === 'ArrowRight') {
+            nextQuestion();
+            return;
         }
-        if (answerChecked) {
-          nextQuestion();
-          setAnswerChecked(false);
+        // Check if the current question has been attempted
+        if (e.key === 'ArrowLeft') {
+            prevQuestion();
+            return;
+        }
+        // Prevent default action for spacebar to avoid scrolling
+        if (e.key === ' ') {
+            e.preventDefault();
+
+            if (isAnswered && !answerChecked) {
+                handleCheckAnswer(); // Call the check answer function
+                setAnswerChecked(true);
+                console.log('spacebar pressed');
+            }
+            if (answerChecked) {
+                nextQuestion();
+                setAnswerChecked(false);
+
+            }
+
+
+            return; // Exit the function after handling spacebar
         }
 
-        return; // Exit the function after handling spacebar
-      }
+        // Check if the current question has been attempted
+        if (attempted[currentIndex] !== null) return;
 
-      // Check if the current question has been attempted
-      if (attempted[currentIndex] !== null) return;
+        const key = e.key.toUpperCase();
+        const validKeys = ['Q', 'W', 'E', 'R', 'T'];
+        const keyIndex = validKeys.indexOf(key);
 
-      const key = e.key.toUpperCase();
-      const validKeys = ["Q", "W", "E", "R", "T"];
-      const keyIndex = validKeys.indexOf(key);
+        if (
+            keyIndex !== -1 &&
+            keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
+        ) {
+            const answer = data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
 
-      if (
-        keyIndex !== -1 &&
-        keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
-      ) {
-        const answer =
-          data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
+            handleAnswerSelect(answer);
+            setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
 
-        handleAnswerSelect(answer);
-        setIsAnswered(true); // ✅ Set isAnswered to true after selecting an option
-
-        dispatch(setResult({ attempted }));
-      }
+            dispatch(setResult({ attempted }));
+        }
     };
 
-    document.addEventListener("keydown", handleKeyPress);
-    return () => document.removeEventListener("keydown", handleKeyPress);
-  }, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered]); // ✅ Added isAnswered in dependency array
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+}, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered]); // ✅ Added isAnswered in dependency array
 
   useEffect(() => {
     if (review) {
