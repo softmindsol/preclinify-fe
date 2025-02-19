@@ -229,11 +229,11 @@ const Dashboard = () => {
     const dayOfWeek = date.getDay();
 
     startOfWeek.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-    startOfWeek.setHours(0, 0, 0, 0); // Normalize to start of the day
+    startOfWeek.setHours(0, 0, 0, 0);
 
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999); // Normalize to end of the day
+    endOfWeek.setHours(23, 59, 59, 999);
 
     return { startOfWeek, endOfWeek };
   };
@@ -242,7 +242,7 @@ const Dashboard = () => {
 
   const filteredStreaks = streaks?.filter((streak) => {
     const streakDate = new Date(streak?.streakDate);
-    streakDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+    streakDate.setHours(0, 0, 0, 0);
     return streakDate >= startOfWeek && streakDate <= endOfWeek;
   });
 
@@ -251,11 +251,12 @@ const Dashboard = () => {
     .sort((a, b) => a - b)
     ?.slice(0, -1);
 
-  console.log("🚀 ~ Dashboard ~ noOfDays:", noOfDays);
-  const totalCorrects = filteredStreaks?.map((streak) => streak?.totalCorrect);
-  const totalIncorrects = filteredStreaks?.map(
-    (streak) => streak?.totalIncorrect,
-  );
+  const totalCorrects = filteredStreaks
+    ?.map((streak) => streak?.totalCorrect)
+    ?.slice(0, -1);
+  const totalIncorrects = filteredStreaks
+    ?.map((streak) => streak?.totalIncorrect)
+    ?.slice(0, -1);
 
   return (
     <div className={`w-full lg:flex ${darkModeRedux ? "dark" : ""}`}>
