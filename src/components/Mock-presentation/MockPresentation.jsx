@@ -271,9 +271,10 @@ const MockPresentation = () => {
         setIsAccordionVisible(false);
       }
 
+      setIsButtonClicked(false);
       if (isQuestionReview) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
+        // setIsAnswered(true);
+        // setIsAccordionVisible(true);
         if (presentationMcqs[currentIndex]?.conditionName !== null) {
           dispatch(
             fetchConditionNameById({
@@ -305,9 +306,11 @@ const MockPresentation = () => {
           return updatedAttempts;
         });
       }
+
+      setIsButtonClicked(false);
       if (isQuestionReview) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
+        // setIsAnswered(true);
+        // setIsAccordionVisible(true);
         if (presentationMcqs[currentIndex]?.conditionName !== null) {
           dispatch(
             fetchConditionNameById({
@@ -360,16 +363,18 @@ const MockPresentation = () => {
   };
 
   const handleFinishAndReview = () => {
-    if (true) {
+        if (!isFinishEnabled) return;
+    if (isButtonClicked) {
       handleCheckAnswer();
       // dispatch(setMcqsAccuracy({ accuracy }))
-
+      console.log("mock finish");
+    }
       // handleAnswerSelect()
       //    Add a delay (for example, 2 seconds)
       setTimeout(() => {
         navigation("/score");
       }, 3000); // 2000 ms = 2 seconds
-    }
+   
   };
 
   function handleShowPopup() {

@@ -273,10 +273,11 @@ const QuestionCard = () => {
         setIsAnswered(false);
         setIsAccordionVisible(false);
       }
+      setIsButtonClicked(false);
 
       if (isQuestionReview) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
+        // setIsAnswered(true);
+        // setIsAccordionVisible(true);
         if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
           dispatch(
             fetchConditionNameById({
@@ -303,7 +304,6 @@ const QuestionCard = () => {
     );
   };
 
-  const attemptedQuestions = getAttemptedQuestions();
   const prevQuestion = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
@@ -316,9 +316,11 @@ const QuestionCard = () => {
         setIsAnswered(false);
         setIsAccordionVisible(false);
       }
+      setIsButtonClicked(false);
+
       if (isQuestionReview) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
+        // setIsAnswered(true);
+        // setIsAccordionVisible(true);
       }
     }
   };
@@ -370,7 +372,7 @@ const QuestionCard = () => {
 
     setReviewLoading(true);
 
-    if (isAnswered) {
+    if (isButtonClicked) {
       handleCheckAnswer();
     }
 
@@ -379,9 +381,8 @@ const QuestionCard = () => {
       setReviewLoading(false);
     }, 2000);
   };
+  console.log("isButtonClicked:", isButtonClicked);
 
-  console.log("selectedAnswer:", selectedAnswer);
-  console.log("isAnswered:", isAnswered);
   function handleShowPopup() {
     setShowPopup(true); // Close the popup
   }
@@ -507,56 +508,63 @@ const QuestionCard = () => {
     setShowFeedBackModal(!showFeedBackModal);
   };
 
-useEffect(() => {
+  useEffect(() => {
     if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
 
     const handleKeyPress = (e) => {
-        if (e.key === "ArrowRight") {
-            nextQuestion();
-            return;
+      if (e.key === "ArrowRight") {
+        nextQuestion();
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
+        prevQuestion();
+        return;
+      }
+
+      if (e.key === " ") {
+        e.preventDefault();
+
+        if (isAnswered && !answerChecked) {
+          handleCheckAnswer();
+          setAnswerChecked(true);
+          console.log("spacebar pressed");
+        } else if (answerChecked) {
+          nextQuestion();
+          setAnswerChecked(false);
         }
 
-        if (e.key === "ArrowLeft") {
-            prevQuestion();
-            return;
-        }
+        return;
+      }
 
-        if (e.key === " ") {
-            e.preventDefault();
+      if (attempted[currentIndex] !== null) return;
 
-            if (isAnswered && !answerChecked) {
-                handleCheckAnswer();
-                setAnswerChecked(true);
-                console.log("spacebar pressed");
-            } else if (answerChecked) {
-                nextQuestion();
-                setAnswerChecked(false);
-            }
+      const key = e.key.toUpperCase();
+      const validKeys = ["Q", "W", "E", "R", "T"];
+      const keyIndex = validKeys.indexOf(key);
 
-            return;
-        }
+      if (
+        keyIndex !== -1 &&
+        keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
+      ) {
+        const answer =
+          data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
 
-        if (attempted[currentIndex] !== null) return;
-
-        const key = e.key.toUpperCase();
-        const validKeys = ["Q", "W", "E", "R", "T"];
-        const keyIndex = validKeys.indexOf(key);
-
-        if (
-            keyIndex !== -1 &&
-            keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
-        ) {
-            const answer = data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
-
-            handleAnswerSelect(answer);
-            setIsAnswered(true);
-            dispatch(setResult({ attempted }));
-        }
+        handleAnswerSelect(answer);
+        setIsAnswered(true);
+        dispatch(setResult({ attempted }));
+      }
     };
 
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
-}, [currentIndex, attempted, data?.mcqsByModulesData, isAnswered, showFeedBackModal]); // ✅ showFeedBackModal added
+  }, [
+    currentIndex,
+    attempted,
+    data?.mcqsByModulesData,
+    isAnswered,
+    showFeedBackModal,
+  ]); // ✅ showFeedBackModal added
 
   useEffect(() => {
     if (review) {
@@ -597,6 +605,8 @@ useEffect(() => {
   if (reviewLoading) {
     return <Loader />;
   }
+
+  console.log("review:", attempted);
 
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>

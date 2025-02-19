@@ -265,7 +265,7 @@ const MockTestQuestion = () => {
         setIsAnswered(false);
         setIsAccordionVisible(false);
       }
-
+      setIsButtonClicked(false);
       if (isQuestionReview) {
         setIsAnswered(true);
         setIsAccordionVisible(true);
@@ -300,9 +300,11 @@ const MockTestQuestion = () => {
           return updatedAttempts;
         });
       }
+
+      setIsButtonClicked(false);
       if (isQuestionReview) {
-        setIsAnswered(true);
-        setIsAccordionVisible(true);
+        // setIsAnswered(true);
+        // setIsAccordionVisible(true);
         if (mockData[currentIndex]?.conditionName !== null) {
           dispatch(
             fetchConditionNameById({
@@ -358,7 +360,7 @@ const MockTestQuestion = () => {
 
     setReviewLoading(true);
 
-    if (isAnswered) {
+    if (isButtonClicked) {
       handleCheckAnswer();
     }
 
