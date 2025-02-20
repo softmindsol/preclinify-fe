@@ -110,6 +110,8 @@ const Questioning = () => {
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
   );
+  const filterQuestion = useSelector((state) => state.filterQuestion);
+  console.log("filterQuestion", filterQuestion);
 
   const [selectPresentation, setSelectPresentation] = useState([]);
   const filteredSBAModules = data.data.filter((module) =>
