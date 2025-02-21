@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DashboardModal from "./common/DashboardModal";
 import FeedbackModal from "./common/Feedback";
 import { insertOSCEBotData } from "../redux/features/osce-bot/osce-bot.service";
-
+ 
 // Medical scenarios database
 const MEDICAL_SCENARIOS = {
   diabetes: {
@@ -33,13 +33,17 @@ const MEDICAL_SCENARIOS = {
 
 const AINewVersion = () => {
   const userInfo = useSelector((state) => state?.user?.userInfo);
-  const recognitionRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [voices, setVoices] = useState([]);
+    const audioRef = useRef(null);
+    const peerConnectionRef = useRef(null);
+    const dataChannelRef = useRef(null);
+    
+    const [transcript, setTranscript] = useState([]); // State to hold the conversation
+    const recognitionRef = useRef(null);
 
   const [isDashboard, setIsDashboard] = useState(false);
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
@@ -81,13 +85,13 @@ const AINewVersion = () => {
     initialComplaint: "Hi Doctor",
   };
 
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
-  };
+    const handleInputChange = (e) => {
+      setInputText(e.target.value);
+    };
 
-  const handleFeedBack = () => {
-    setShowFeedBackModal(true);
-  };
+    const handleFeedBack = () => {
+      setShowFeedBackModal(true);
+    };
 
   useEffect(() => {
     const SpeechRecognition =
@@ -151,8 +155,8 @@ const AINewVersion = () => {
             Authorization: `Bearer ${OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
-            model: "gpt-4",
-            audio: { voice: "alloy", format: "wav" },
+            model: "gpt-4o-audio-preview",
+            audio: { voice: "coral", format: "wav" },
             messages: [
               {
                 role: "system",
@@ -233,7 +237,7 @@ const AINewVersion = () => {
             Authorization: `Bearer ${OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
-            model: "gpt-4",
+            model: "gpt-4o-audio-preview",
             messages: [
               {
                 role: "system",

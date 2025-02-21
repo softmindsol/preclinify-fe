@@ -61,14 +61,15 @@ import {
 import { useLocation } from "react-router-dom";
 import { setSBAPresentationValue } from "../redux/features/presentationSBA/presentationSBA.slice";
 import { setMockPresentationValue } from "../redux/features/MockPresentation/presentationMock.slice";
+import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
 
 const Questioning = () => {
   const location = useLocation();
   const { state } = location;
   const sqa = useSelector((state) => state?.SQA || []);
-  const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
+  const darkModeRedux = useSelector((state) => state?.darkMode?.isDarkMode);
   const recentSession = useSelector(
-    (state) => state.recentSession.recentSessions,
+    (state) => state?.recentSession?.recentSessions,
   );
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
@@ -80,13 +81,14 @@ const Questioning = () => {
     modules,
     loading,
     error,
-  } = useSelector((state) => state.mockModules);
-  const data = useSelector((state) => state.module);
+  } = useSelector((state) => state?.mockModules);
+  const data = useSelector((state) => state?.module);
 
-  const { limit } = useSelector((state) => state.limit);
+  const { limit } = useSelector((state) => state?.limit);
   const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
   const [storedSession, setStoredSession] = useState([]);
   const [selectedModules, setSelectedModules] = useState([]);
+
   const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
   const [moduleId, setModuleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -106,7 +108,7 @@ const Questioning = () => {
   const SBADataLength = useSelector(
     (state) => state?.mcqsQuestion?.mcqsByModulesData,
   );
-  const userId = useSelector((state) => state.user.userId);
+  const userId = useSelector((state) => state?.user?.userId);
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
   );
@@ -124,6 +126,8 @@ const Questioning = () => {
   const filteredSAQModules = saqModule.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+  const filterQuestion = useSelector((state) => state?.filterQuestion);
+  console.log("filterQuestion:", filterQuestion);
 
   const [totals, setTotals] = useState({
     totalCorrect: 0,
@@ -898,6 +902,10 @@ const Questioning = () => {
       setSelectedOption(state);
     }
   }, [state]);
+
+  useEffect(() => {
+    dispatch(setSelectedSBAModule(selectedModules));
+  }, [selectedModules]);
 
   useEffect(() => {
     if (state === "QuesGen") {
