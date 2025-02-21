@@ -565,6 +565,7 @@ const QuestionCard = () => {
     data?.mcqsByModulesData,
     isAnswered,
     showFeedBackModal,
+    isAIExpanded,
   ]); // ✅ showFeedBackModal added
 
   useEffect(() => {
