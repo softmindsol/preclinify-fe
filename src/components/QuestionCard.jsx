@@ -82,6 +82,8 @@ const QuestionCard = () => {
   const userId = useSelector((state) => state.user.userId);
   const isQuestionReview = useSelector((state) => state?.questionReview?.value);
   const [feedback, setFeedback] = useState("");
+  const [isAIExpanded, setIsAIExpanded] = useState(false);
+  
   // Get the items to show for the current page
   const currentItems = data.data.slice(
     currentPage * itemsPerPage,
@@ -508,7 +510,7 @@ const QuestionCard = () => {
   };
 
   useEffect(() => {
-    if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
+    if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
 
     const handleKeyPress = (e) => {
       if (e.key === "ArrowRight") {
@@ -1493,7 +1495,7 @@ const QuestionCard = () => {
         </div>
       </Drawer>
 
-      <Chatbot />
+      <Chatbot   setIsAIExpanded = {setIsAIExpanded}/>
     </div>
   );
 };

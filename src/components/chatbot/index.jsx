@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import DeepChatAI from '../DeepChat';
 
-const Chatbot = () => {
+const Chatbot = ({setIsAIExpanded}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleChatbot = () => {
     setIsExpanded(!isExpanded);
   };
 
+  useEffect(() => {
+    setIsAIExpanded(isExpanded);
+  }
+  , [isExpanded, setIsAIExpanded]);
   return (
     <div
       className={`fixed bottom-0 right-10 md:right-[280px] w-[300px] shadow-xl rounded-t-2xl overflow-hidden bg-white transition-all duration-300 ease-in-out ${
