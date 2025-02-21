@@ -124,7 +124,6 @@ const Questioning = () => {
   const filteredSAQModules = saqModule.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-  const filterQuestion = useSelector((state) => state?.filterQuestion);
 
   const [totals, setTotals] = useState({
     totalCorrect: 0,

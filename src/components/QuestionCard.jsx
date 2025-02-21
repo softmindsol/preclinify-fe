@@ -1075,7 +1075,7 @@ const QuestionCard = () => {
                 </button>
               </div>
             )}
-            {isAccordionVisible && <DiscussionBoard />}
+            {isAccordionVisible && <DiscussionBoard setIsAIExpanded = {setIsAIExpanded} />}
             {isAccordionVisible && (
               <Article
                 article={article}
