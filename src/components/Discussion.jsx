@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import supabase from "../config/helper";
 
-const DiscussionBoard = ({ mcqId ='d4d9f3a0-1a7b-4b8c-9e3f-8c2a1b7c4d5e' }) => {
+const DiscussionBoard = ({ mcqId ='d4d9f3a0-1a7b-4b8c-9e3f-8c2a1b7c4d5e', setIsAIExpanded }) => {
     const darkModeRedux = useSelector(state => state.darkMode.isDarkMode);
     const [comments, setComments] = useState([]);
-    const [showComments, setShowComments] = useState(true);
+    const [showComments, setShowComments] = useState(false);
     const [newComment, setNewComment] = useState("");
     const [replyText, setReplyText] = useState("");
     const [replyingTo, setReplyingTo] = useState(null);
     const user = useSelector(state => state.user); // Assuming user data is stored in Redux
-
+    
     // Fetch comments from Supabase
     const fetchComments = async () => {
         const { data, error } = await supabase
@@ -105,6 +105,10 @@ const DiscussionBoard = ({ mcqId ='d4d9f3a0-1a7b-4b8c-9e3f-8c2a1b7c4d5e' }) => {
         if (!error) await fetchComments();
     };
 
+
+      useEffect(() => {
+        setIsAIExpanded(showComments);
+        }, [showComments, setIsAIExpanded]);
     return (
         <div className="p-6">
             <div className="mx-auto bg-white shadow rounded-lg pt-3 pb-2 dark:bg-[#1E1E2A] text-black dark:border-[1px] dark:border-[#3A3A48]">
