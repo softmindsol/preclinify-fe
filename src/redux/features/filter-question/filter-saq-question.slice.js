@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult } from "./filter-question.service";
+import { fetchAllResultSaq } from "./filter-saq-question.service";
 
 const initialState = {
     NotAnsweredQuestion: true,
@@ -44,15 +45,15 @@ const questionsSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload; // Store error message
             })
-            .addCase(fetchAllResult.pending, (state) => {
+            .addCase(fetchAllResultSaq.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
             })
-            .addCase(fetchAllResult.fulfilled, (state, action) => {
+            .addCase(fetchAllResultSaq.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.results = action.payload; // Store the fetched data
             })
-            .addCase(fetchAllResult.rejected, (state, action) => {
+            .addCase(fetchAllResultSaq.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload; // Store error message
             })

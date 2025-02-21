@@ -168,8 +168,8 @@ export const fetchIncorrectResult = createAsyncThunk(
 
 
 // Define the async thunk SBA
-export const fetchAllResult = createAsyncThunk(
-    "resultsHistory/fetchAllResult",
+export const fetchAllResultSaq = createAsyncThunk(
+    "resultsHistory/fetchAllResultSaq",
     async ({ moduleId }, thunkAPI) => {
         try {
             if (!moduleId || moduleId.length === 0) {
@@ -177,7 +177,7 @@ export const fetchAllResult = createAsyncThunk(
             }
 
             const { data, error } = await supabase
-                .from("mcqQuestions")
+                .from("resultHistorySaq")
                 .select("*")
                 .in("moduleId", moduleId) // moduleId array ke mutabiq records filter karega
 
@@ -185,8 +185,8 @@ export const fetchAllResult = createAsyncThunk(
             if (error) {
                 return thunkAPI.rejectWithValue(error.message);
             }
-
             console.log("All:", data);
+
             return data; // Filtered & sorted data return karega
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);

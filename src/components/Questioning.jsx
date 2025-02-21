@@ -125,7 +125,6 @@ const Questioning = () => {
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   const filterQuestion = useSelector((state) => state?.filterQuestion);
-  console.log("filterQuestion:", filterQuestion);
 
   const [totals, setTotals] = useState({
     totalCorrect: 0,
