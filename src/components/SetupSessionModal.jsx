@@ -59,8 +59,9 @@ const SetupSessionModal = ({
   const [modeType, setModeType] = useState("Endless");
   const filterQuestion = useSelector((state) => state?.filterQuestion);
 
-  console.log("filterQuestion:", filterQuestion);
+  const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
 
+  console.log("SaqfilterQuestion:", SaqfilterQuestion);
   // Debounced dispatch handler
   const debouncedDispatch = useCallback(
     debounce((value) => {
@@ -166,63 +167,63 @@ const SetupSessionModal = ({
     filterQuestion?.previouslyCorrectQuestion,
   ]);
 
-  useEffect(() => {
-    if (type === "SAQ" && !isLoadingShortQuestion) {
-      if (
-        !filterQuestion?.NotAnsweredQuestion &&
-        filterQuestion?.previouslyIncorrectQuestion &&
-        filterQuestion?.previouslyCorrectQuestion
-      ) {
-        dispatch(
-          fetchCorrectIncorrectResult({
-            moduleId: filterQuestion.selectedModules,
-          }),
-        )
-          .unwrap()
-          .then((res) => {})
-          .catch((err) => {
-            console.error(err);
-          });
-      } else if (
-        filterQuestion?.NotAnsweredQuestion &&
-        filterQuestion?.previouslyIncorrectQuestion &&
-        filterQuestion?.previouslyCorrectQuestion
-      ) {
-        dispatch(
-          fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
-        )
-          .unwrap()
-          .then((res) => {})
-          .catch((err) => {
-            console.error(err);
-          });
-      }
-      //  else if (filterQuestion?.previouslyCorrectQuestion) {
-      //   dispatch(
-      //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
-      //   )
-      //     .unwrap()
-      //     .then((res) => {})
-      //     .catch((err) => {});
-      // } else if (filterQuestion?.previouslyIncorrectQuestion) {
-      //   dispatch(
-      //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
-      //   )
-      //     .unwrap()
-      //     .then((res) => {})
-      //     .catch((err) => {
-      //       console.error(err);
-      //     });
-      // }
-    }
-  }, [
-    type,
-    isLoading,
-    dispatch,
-    filterQuestion?.NotAnsweredQuestion,
-    filterQuestion?.previouslyIncorrectQuestion,
-    filterQuestion?.previouslyCorrectQuestion,
-  ]);
+  // useEffect(() => {
+  //   if (type === "SAQ" && !isLoadingShortQuestion) {
+  //     if (
+  //       !filterQuestion?.NotAnsweredQuestion &&
+  //       filterQuestion?.previouslyIncorrectQuestion &&
+  //       filterQuestion?.previouslyCorrectQuestion
+  //     ) {
+  //       dispatch(
+  //         fetchCorrectIncorrectResult({
+  //           moduleId: filterQuestion.selectedModules,
+  //         }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {})
+  //         .catch((err) => {
+  //           console.error(err);
+  //         });
+  //     } else if (
+  //       filterQuestion?.NotAnsweredQuestion &&
+  //       filterQuestion?.previouslyIncorrectQuestion &&
+  //       filterQuestion?.previouslyCorrectQuestion
+  //     ) {
+  //       dispatch(
+  //         fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {})
+  //         .catch((err) => {
+  //           console.error(err);
+  //         });
+  //     }
+  //     //  else if (filterQuestion?.previouslyCorrectQuestion) {
+  //     //   dispatch(
+  //     //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
+  //     //   )
+  //     //     .unwrap()
+  //     //     .then((res) => {})
+  //     //     .catch((err) => {});
+  //     // } else if (filterQuestion?.previouslyIncorrectQuestion) {
+  //     //   dispatch(
+  //     //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
+  //     //   )
+  //     //     .unwrap()
+  //     //     .then((res) => {})
+  //     //     .catch((err) => {
+  //     //       console.error(err);
+  //     //     });
+  //     // }
+  //   }
+  // }, [
+  //   type,
+  //   isLoading,
+  //   dispatch,
+  //   filterQuestion?.NotAnsweredQuestion,
+  //   filterQuestion?.previouslyIncorrectQuestion,
+  //   filterQuestion?.previouslyCorrectQuestion,
+  // ]);
   useEffect(() => {
     if (isOpenSetUpSessionModal) {
       document.addEventListener("mousedown", handleClickOutside);

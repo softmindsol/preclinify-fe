@@ -165,29 +165,50 @@ export const fetchIncorrectResult = createAsyncThunk(
     }
 );
 
-
-
-// Define the async thunk SBA
 export const fetchAllResultSaq = createAsyncThunk(
-    "resultsHistory/fetchAllResultSaq",
-    async ({ moduleId }, thunkAPI) => {
+    "modules/fetchAllResultSaq",
+    async ({ moduleIds, limit }, thunkAPI) => {
         try {
-            if (!moduleId || moduleId.length === 0) {
-                return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            if (!moduleIds || moduleIds.length === 0) {
+                return thunkAPI.rejectWithValue("Module IDs array is empty or not provided");
             }
 
-            const { data, error } = await supabase
-                .from("resultHistorySaq")
+            // Step 1: Fetch Parent Questions
+            const { data: parentQuestions, error: parentError } = await supabase
+                .from("shortQuestions")
                 .select("*")
-                .in("moduleId", moduleId) // moduleId array ke mutabiq records filter karega
+                .in("moduleId", moduleIds);
 
-
-            if (error) {
-                return thunkAPI.rejectWithValue(error.message);
+            if (parentError) {
+                return thunkAPI.rejectWithValue(parentError.message);
             }
-            console.log("All:", data);
 
-            return data; // Filtered & sorted data return karega
+            if (!parentQuestions || parentQuestions.length === 0) {
+                return thunkAPI.rejectWithValue("No short questions found for the given modules.");
+            }
+
+            // Extracting parentIds
+            const parentIds = parentQuestions.map((item) => item.id);
+
+            // Step 2: Fetch Child Questions
+            const { data: childQuestions, error: childError } = await supabase
+                .from("sqaChild")
+                .select("*")
+                .in("parentQuestionId", parentIds)
+                .limit(limit); // Applying limit if provided
+
+            if (childError) {
+                return thunkAPI.rejectWithValue(childError.message);
+            }
+
+            // Step 3: Organize Data (Merging Parent with Children)
+            const organizedData = parentQuestions.map((parent) => ({
+                ...parent,
+                children: childQuestions.filter((child) => child.parentQuestionId === parent.id),
+            }));
+            console.log("organizedData:", organizedData);
+
+            return organizedData;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
         }

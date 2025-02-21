@@ -24,6 +24,7 @@ import { fetchDaysUntilExam } from "../redux/features/examDate/service";
 import { fetchUserInformation } from "../redux/features/personal-info/personal-info.service";
 import { fetchUserStreak } from "../redux/features/streak/streak.service";
 import BarChart from "../components/charts/stacked-bar";
+import { Clock, Factory } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -265,7 +266,7 @@ const Dashboard = () => {
       </div>
       <div className="mx-auto max-w-7xl px-12">
         <div className="flex-grow overflow-y-auto pb-4 text-black dark:bg-[#1E1E2A] lg:ml-[250px]">
-          <div className="xs:gap-x-16 flex w-full flex-row items-center justify-between gap-x-3 pb-3 pt-1 sm:justify-between sm:gap-x-36 xl:gap-x-36 2xl:gap-x-20">
+          <div className="xs:gap-x-16 flex w-full flex-row items-center justify-between gap-x-3 pb-2 pt-1 sm:justify-between sm:gap-x-36 xl:gap-x-36 2xl:gap-x-20">
             <p className="text-[18px] font-extrabold text-[#52525B] dark:text-white sm:text-[24px] xl:text-[32px]">
               Hello,{" "}
               {profileLoading ? (
@@ -277,8 +278,8 @@ const Dashboard = () => {
               )}
             </p>
 
-            <div className="flex flex-col items-center space-y-3 md:flex-row md:gap-x-5 md:space-y-0">
-              <div className="items-center justify-center rounded-[6px] bg-[#FFFFFF] px-5 py-5 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
+            <div className="flex flex-col items-center space-y-3 md:flex-row md:gap-x-3 md:space-y-0">
+              <div className="items-center justify-center rounded-[6px] bg-[#FFFFFF] px-7 py-2 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
                 {examDuration === null ? (
                   <div className="text-center">
                     <p className="text-[16px] font-medium text-[#71717A]">
@@ -296,18 +297,18 @@ const Dashboard = () => {
                     <p className="text-[18px] font-black text-[#FF9741] dark:text-white sm:text-[24px] xl:text-[32px]">
                       {examDuration || "N/A"} Days
                     </p>
-                    <p className="text-[10px] font-medium text-[#52525B] dark:text-white xl:text-[14px]">
+                    <p className="text-[10px] font-medium text-[#52525B] dark:text-white xl:text-sm">
                       Until your exam
                     </p>
                   </div>
                 )}
               </div>
-              <div className="rounded-[6px] bg-[#FFFFFF] px-3 py-5 text-center text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:w-[250px]">
-                <div className="flex h-full items-center justify-center gap-x-5">
+              <div className="h-[81px] rounded-[6px] bg-[#FFFFFF] px-4 py-2.5 text-center text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
+                <div className="flex h-full items-center justify-center gap-x-4">
                   <img
                     src="https://images.unsplash.com/photo-1719937051124-91c677bc58fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D"
                     alt="aaaa"
-                    className="h-10 w-10 rounded-full xl:h-12 xl:w-12"
+                    className="h-10 w-10 rounded-full md:h-14 md:w-14"
                   />
                   <div className="">
                     <p className="text-[14px] font-semibold text-[#52525B] dark:text-white xl:text-[18px]">
@@ -325,9 +326,9 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="mt-8 space-y-5 md:mt-0">
-            <div className="flex w-full flex-col items-center justify-center gap-x-5 md:flex-row">
-              <div className="xs:w-[420px] h-[430px] w-[95%] rounded-lg bg-white p-6 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] xl:w-[610px] 2xl:w-[745px]">
+          <div className="mt-8 space-y-6 md:mt-0">
+            <div className="flex w-full flex-col items-center justify-center gap-x-6 md:flex-row">
+              <div className="xs:w-[420px] h-[430px] w-[95%] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] xl:w-[610px] 2xl:w-[745px]">
                 <div className="flex items-end justify-end">
                   <div className="relative mb-5 w-[180px]">
                     <DatePicker
@@ -460,12 +461,12 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <div className="xs:w-[420px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
-                <div className="mt-2 p-5 text-center text-[14px] font-bold text-[#52525B] xl:text-[18px]">
+              <div className="xs:w-[445px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
+                <div className="p-5 text-center text-sm font-bold text-[#52525B] xl:text-lg">
                   <p className="dark:text-white">Quick Start</p>
                 </div>
-                <hr />
-                <div className="mt-4 flex flex-col items-center justify-between gap-y-8 p-5">
+                <div className="border-b-2"></div>
+                <div className="flex flex-col items-center justify-between gap-y-8 px-4 py-7">
                   {localRecentSession.length > 0 ? (
                     localRecentSession.map((sessionId, index) => {
                       const categoryIds = sessionId
@@ -525,7 +526,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="flex w-full flex-col items-center justify-center gap-x-5 md:flex-row-reverse">
+            <div className="flex w-full flex-col items-center justify-center gap-x-5 gap-y-1 md:flex-row-reverse">
               <div className="xs:w-[420px] h-[430px] w-[95%] rounded-lg text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[500px] md:w-[435px] xl:w-[665px] 2xl:w-[800px]">
                 {/* <h2 className='font-bold text-[20px] text-center py-3 dark:text-white'>
                 Monthly Progress
@@ -556,32 +557,18 @@ const Dashboard = () => {
               </div>
 
               <div className="xs:w-[420px] mt-2 h-[400px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[500px] md:w-[261px]">
-                <div className="flex cursor-pointer items-center justify-between p-5 text-center text-[18px] font-semibold text-[#52525B]">
-                  <p className="text-[#3F3F46] dark:text-white">Questions</p>
-                  <p className="flex items-center justify-center text-[16px] dark:text-white">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="lucide lucide-chevron-down text-[#FF9741] dark:text-white"
-                    >
-                      <path d="m6 9 6 6 6-6" />
-                    </svg>{" "}
+                <div className="flex cursor-pointer flex-col items-center p-4 text-center text-[18px] font-semibold text-[#52525B]">
+                  <p className="text-lg font-semibold text-[#3F3F46] dark:text-white">
+                    Questions
                   </p>
-                </div>
-                <hr />
-                <div className="flex flex-col items-center justify-center">
-                  <div
-                    onClick={() => navigate("/questioning", { state: "SAQ" })}
-                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 px-5 py-3 dark:text-white"
-                  >
-                    <div className="w-[20%]">
+                  <div className="flex items-center gap-x-4">
+                    <Link
+                      to="/Questioning"
+                      className="text-base font-semibold text-[#71717A] dark:text-gray-300"
+                    >
+                      Clinical
+                    </Link>
+                    <p className="flex items-center justify-center text-[16px] dark:text-white">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -592,11 +579,21 @@ const Dashboard = () => {
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        class="lucide lucide-pencil dark:text-white"
+                        class="lucide lucide-chevron-down text-[#FF9741]"
                       >
-                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                        <path d="m15 5 4 4" />
-                      </svg>
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>{" "}
+                    </p>
+                  </div>
+                </div>
+                <hr />
+                <div className="flex flex-col items-center justify-center">
+                  <div
+                    onClick={() => navigate("/questioning", { state: "SAQ" })}
+                    className="mt-2 flex w-[200px] cursor-pointer items-center justify-center gap-x-5 rounded-lg px-5 py-3 hover:bg-gray-100 dark:text-white"
+                  >
+                    <div className="w-[20%]">
+                      <img src="/assets/pencil.svg" alt="" />
                     </div>
                     <div className="w-[80%]">
                       <p className="text-[14px] font-semibold text-[#3F3F46] dark:text-white">
@@ -607,24 +604,10 @@ const Dashboard = () => {
 
                   <div
                     onClick={() => navigate("/questioning", { state: "SBA" })}
-                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 px-5 py-3"
+                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 rounded-lg px-5 py-3 hover:bg-gray-100"
                   >
                     <div className="w-[20%]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-circle-check dark:text-white"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="m9 12 2 2 4-4" />
-                      </svg>
+                      <img src="/assets/home.svg" alt="" />
                     </div>
                     <div className="w-[80%]">
                       <p className="text-[14px] font-semibold text-[#3F3F46] dark:text-white">
@@ -635,23 +618,10 @@ const Dashboard = () => {
 
                   <div
                     onClick={() => navigate("/questioning", { state: "Mock" })}
-                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 px-5 py-3"
+                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 rounded-lg px-5 py-3 hover:bg-gray-100"
                   >
                     <div className="w-[20%]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-bone dark:text-white"
-                      >
-                        <path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z" />
-                      </svg>
+                      <img src="/assets/timer.svg" alt="" />
                     </div>
                     <div className="w-[80%]">
                       <p className="text-[14px] font-semibold text-[#3F3F46] dark:text-white">
@@ -689,28 +659,10 @@ const Dashboard = () => {
                     onClick={() =>
                       navigate("/questioning", { state: "QuesGen" })
                     }
-                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 px-5 py-3"
+                    className="flex w-[200px] cursor-pointer items-center justify-center gap-x-5 rounded-lg px-5 py-3 hover:bg-gray-100"
                   >
                     <div className="w-[20%]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-chart-no-axes-combined dark:text-white"
-                      >
-                        <path d="M12 16v5" />
-                        <path d="M16 14v7" />
-                        <path d="M20 10v11" />
-                        <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" />
-                        <path d="M4 18v3" />
-                        <path d="M8 14v7" />
-                      </svg>
+                      <img src="/assets/bar.svg" alt="" />
                     </div>
                     <div className="w-[80%]">
                       <p className="text-[14px] font-semibold text-[#3F3F46] dark:text-white">
@@ -744,7 +696,7 @@ const Dashboard = () => {
             {[
               { name: "Dashboard", icon: "house" },
               { name: "Practice", icon: "dumbbell" },
-              { name: "Performance", icon: "chart-line" },
+              // { name: "Performance", icon: "chart-line" },
               { name: "OSCE", icon: "bed" },
             ].map((item, index) => (
               <div

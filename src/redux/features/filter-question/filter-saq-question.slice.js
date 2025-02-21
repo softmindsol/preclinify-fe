@@ -7,11 +7,20 @@ const initialState = {
     previouslyIncorrectQuestion: true,
     previouslyCorrectQuestion: true,
     selectedModules: [],
-    results: [],
+    shortQuestions: [],
+    modules: [],
+    attempts: [],
+    counts: {},
+    sqaChildren: [],
+    organizedData: [],
+    userAnswers: [],
+    checkedAnswers: [],
+    loading: false,
+    error: null,
 };
 
 const questionsSlice = createSlice({
-    name: "filterQuestion",
+    name: "SaqfilterQuestion",
     initialState,
     reducers: {
         toggleNotAnsweredQuestion: (state) => {

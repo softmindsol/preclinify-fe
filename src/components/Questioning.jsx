@@ -61,15 +61,14 @@ import {
 import { useLocation } from "react-router-dom";
 import { setSBAPresentationValue } from "../redux/features/presentationSBA/presentationSBA.slice";
 import { setMockPresentationValue } from "../redux/features/MockPresentation/presentationMock.slice";
-import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
 
 const Questioning = () => {
   const location = useLocation();
   const { state } = location;
   const sqa = useSelector((state) => state?.SQA || []);
-  const darkModeRedux = useSelector((state) => state?.darkMode?.isDarkMode);
+  const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
   const recentSession = useSelector(
-    (state) => state?.recentSession?.recentSessions,
+    (state) => state.recentSession.recentSessions,
   );
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
@@ -81,14 +80,13 @@ const Questioning = () => {
     modules,
     loading,
     error,
-  } = useSelector((state) => state?.mockModules);
-  const data = useSelector((state) => state?.module);
+  } = useSelector((state) => state.mockModules);
+  const data = useSelector((state) => state.module);
 
-  const { limit } = useSelector((state) => state?.limit);
+  const { limit } = useSelector((state) => state.limit);
   const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
   const [storedSession, setStoredSession] = useState([]);
   const [selectedModules, setSelectedModules] = useState([]);
-
   const [checkedItems, setCheckedItems] = useState({}); // State for checkboxes
   const [moduleId, setModuleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -108,10 +106,12 @@ const Questioning = () => {
   const SBADataLength = useSelector(
     (state) => state?.mcqsQuestion?.mcqsByModulesData,
   );
-  const userId = useSelector((state) => state?.user?.userId);
+  const userId = useSelector((state) => state.user.userId);
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
   );
+  const filterQuestion = useSelector((state) => state.filterQuestion);
+  console.log("filterQuestion", filterQuestion);
 
   const [selectPresentation, setSelectPresentation] = useState([]);
   const filteredSBAModules = data.data.filter((module) =>
@@ -900,10 +900,6 @@ const Questioning = () => {
   }, [state]);
 
   useEffect(() => {
-    dispatch(setSelectedSBAModule(selectedModules));
-  }, [selectedModules]);
-
-  useEffect(() => {
     if (state === "QuesGen") {
       setSelectedTab("Pre-clinical");
       setSelectedPreClinicalOption(state);
@@ -1085,7 +1081,7 @@ const Questioning = () => {
                       return (
                         <div
                           key={index}
-                          className="flex items-center justify-between"
+                          className="flex items-center justify-between gap-y-2"
                         >
                           <div>
                             <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
@@ -1129,7 +1125,7 @@ const Questioning = () => {
                   <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
                     <input
                       type="checkbox"
-                      className="custom-checkbox mr-2"
+                      className="mr-2 size-4"
                       checked={data?.data?.every((row) =>
                         selectedModules.includes(row.categoryId),
                       )} // Parent checkbox state
@@ -1159,15 +1155,15 @@ const Questioning = () => {
                   <div className="hidden text-center sm:block">Progress</div>
 
                   <div className="flex items-center gap-x-3">
-                    <div className="h-4 w-4 bg-[#3CC8A1]"></div>
+                    <div className="h-4 w-4 rounded-sm bg-[#3CC8A1]"></div>
                     <p>Correct</p>
                   </div>
                   <div className="flex items-center gap-x-3">
-                    <div className="h-4 w-4 bg-[#FF453A]"></div>
+                    <div className="h-4 w-4 rounded-sm bg-[#FF453A]"></div>
                     <p>Incorrect</p>
                   </div>
                   <div className="flex items-center gap-x-3">
-                    <div className="h-4 w-4 bg-[#E4E4E7]"></div>
+                    <div className="h-4 w-4 rounded-sm bg-[#E4E4E7]"></div>
                     <p>Unanswered</p>
                   </div>
                 </div>
@@ -1394,7 +1390,7 @@ const Questioning = () => {
                           <label className="flex cursor-pointer items-center hover:opacity-85">
                             <input
                               type="checkbox"
-                              className="custom-checkbox mr-2 hover:opacity-70"
+                              className="mr-2 size-4 rounded-none text-gray-800"
                               checked={selectedModules.includes(row.categoryId)}
                               onChange={() =>
                                 handleCheckboxChange(row.categoryId)
@@ -1481,7 +1477,7 @@ const Questioning = () => {
                           <label className="flex cursor-pointer items-center hover:opacity-85">
                             <input
                               type="checkbox"
-                              className="custom-checkbox mr-2 hover:opacity-70"
+                              className="mr-2 size-4 rounded-none text-gray-800"
                               checked={selectedModules.includes(row.categoryId)}
                               onChange={() =>
                                 handleCheckboxChange(row.categoryId)
@@ -1570,7 +1566,7 @@ const Questioning = () => {
                           <label className="flex cursor-pointer items-center hover:opacity-85">
                             <input
                               type="checkbox"
-                              className="custom-checkbox mr-2 hover:opacity-70"
+                              className="mr-2 size-4 rounded-none text-gray-800"
                               checked={selectedModules.includes(row.categoryId)}
                               onChange={() =>
                                 handleCheckboxChange(row.categoryId)
