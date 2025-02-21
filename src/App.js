@@ -30,6 +30,8 @@ import SbaPresentation from './components/SBA-presentation/presentation-SBA';
 import MockPresentation from './components/Mock-presentation/MockPresentation';
 import supabase from './config/helper';
 import ProtectedRoute from './auth/ProtectedRoute';
+import AIAssistant from './components/ai-assistant';
+import OSCEAI from './components/OSCE-AI-Audio-Stream';
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -77,11 +79,13 @@ function App() {
         <Route
           path='/chat-history'
           element={
-            // <ProtectedRoute>
-            <ChatHistory />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <ChatHistory />
+            </ProtectedRoute>
           }
         />
+
+
         <Route
           path='/dashboard'
           element={
@@ -143,7 +147,8 @@ function App() {
           path='/osce-ai-bot/:categoryName'
           element={
             <ProtectedRoute>
-              <AINewVersion />
+              {/* <AINewVersion /> */}
+              <OSCEAI />
             </ProtectedRoute>
           }
         />
