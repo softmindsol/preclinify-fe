@@ -53,7 +53,7 @@ export const fetchShortQuestionByModulesById = createAsyncThunk(
   async ({ moduleIds }, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase
-        .from("saqParent")
+        .from("saqParent") 
         .select("*")
         .in("categoryId", moduleIds); // 'in' method ka use
 

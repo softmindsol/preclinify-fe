@@ -13,7 +13,7 @@ const initialState = {
   attempts: [],
   counts: {},
   sqaChildren: [],
-  organizedData: [],
+  organizedData: [], 
   userAnswers: [],
   checkedAnswers: [],
   loading: false,

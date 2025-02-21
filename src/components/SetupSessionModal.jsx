@@ -22,6 +22,7 @@ import {
   fetchCorrectResult,
   fetchIncorrectResult,
 } from "../redux/features/filter-question/filter-question.service";
+import { fetchAllResultSaq } from "../redux/features/filter-question/filter-saq-question.service";
 
 const SetupSessionModal = ({
   isOpenSetUpSessionModal,
@@ -58,8 +59,9 @@ const SetupSessionModal = ({
   const [modeType, setModeType] = useState("Endless");
   const filterQuestion = useSelector((state) => state?.filterQuestion);
 
-  console.log("filterQuestion:", filterQuestion);
+  const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
 
+  console.log("SaqfilterQuestion:", SaqfilterQuestion);
   // Debounced dispatch handler
   const debouncedDispatch = useCallback(
     debounce((value) => {
@@ -165,6 +167,63 @@ const SetupSessionModal = ({
     filterQuestion?.previouslyCorrectQuestion,
   ]);
 
+  // useEffect(() => {
+  //   if (type === "SAQ" && !isLoadingShortQuestion) {
+  //     if (
+  //       !filterQuestion?.NotAnsweredQuestion &&
+  //       filterQuestion?.previouslyIncorrectQuestion &&
+  //       filterQuestion?.previouslyCorrectQuestion
+  //     ) {
+  //       dispatch(
+  //         fetchCorrectIncorrectResult({
+  //           moduleId: filterQuestion.selectedModules,
+  //         }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {})
+  //         .catch((err) => {
+  //           console.error(err);
+  //         });
+  //     } else if (
+  //       filterQuestion?.NotAnsweredQuestion &&
+  //       filterQuestion?.previouslyIncorrectQuestion &&
+  //       filterQuestion?.previouslyCorrectQuestion
+  //     ) {
+  //       dispatch(
+  //         fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {})
+  //         .catch((err) => {
+  //           console.error(err);
+  //         });
+  //     }
+  //     //  else if (filterQuestion?.previouslyCorrectQuestion) {
+  //     //   dispatch(
+  //     //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
+  //     //   )
+  //     //     .unwrap()
+  //     //     .then((res) => {})
+  //     //     .catch((err) => {});
+  //     // } else if (filterQuestion?.previouslyIncorrectQuestion) {
+  //     //   dispatch(
+  //     //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
+  //     //   )
+  //     //     .unwrap()
+  //     //     .then((res) => {})
+  //     //     .catch((err) => {
+  //     //       console.error(err);
+  //     //     });
+  //     // }
+  //   }
+  // }, [
+  //   type,
+  //   isLoading,
+  //   dispatch,
+  //   filterQuestion?.NotAnsweredQuestion,
+  //   filterQuestion?.previouslyIncorrectQuestion,
+  //   filterQuestion?.previouslyCorrectQuestion,
+  // ]);
   useEffect(() => {
     if (isOpenSetUpSessionModal) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -281,53 +340,50 @@ const SetupSessionModal = ({
                 </div>
               </div>
             )}
-            {(type === "SBA" ||
-              type === "SAQ") && (
-                <div className="mb-6 mt-8">
-                  <p className="mb-2 block text-[20px] font-medium text-[#52525B] dark:text-white">
-                    Question Type
-                  </p>
-                  <div className="mb-10 mt-5 flex items-center justify-between">
-                    <label className="capitalize text-gray-600 dark:text-white">
-                      Not Answered Questions
-                    </label>
-                    <input
-                      type="checkbox"
-                      checked={filterQuestion?.NotAnsweredQuestion}
-                      onChange={() => dispatch(toggleNotAnsweredQuestion())} // Toggle the state
-                      className={`mr-2 h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-200 checked:border-[#3CC8A1] checked:bg-[#3CC8A1]`}
-                    />
-                  </div>
-
-                  <div className="mb-10 mt-5 flex items-center justify-between">
-                    <label className="capitalize text-gray-600 dark:text-white">
-                      Previously Incorrect Questions
-                    </label>
-                    <input
-                      type="checkbox"
-                      checked={filterQuestion?.previouslyIncorrectQuestion}
-                      onChange={() =>
-                        dispatch(togglePreviouslyIncorrectQuestion())
-                      } // Toggle the state
-                      className={`mr-2 h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-200 checked:border-[#3CC8A1] checked:bg-[#3CC8A1]`}
-                    />
-                  </div>
-
-                  <div className="mb-10 mt-5 flex items-center justify-between">
-                    <label className="capitalize text-gray-600 dark:text-white">
-                      Previously Correct Questions
-                    </label>
-                    <input
-                      type="checkbox"
-                      checked={filterQuestion?.previouslyCorrectQuestion}
-                      onChange={() =>
-                        dispatch(togglePreviouslyCorrectQuestion())
-                      } // Toggle the state
-                      className={`mr-2 h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-200 checked:border-[#3CC8A1] checked:bg-[#3CC8A1]`}
-                    />
-                  </div>
+            {(type === "SBA" || type === "SAQ") && (
+              <div className="mb-6 mt-8">
+                <p className="mb-2 block text-[20px] font-medium text-[#52525B] dark:text-white">
+                  Question Type
+                </p>
+                <div className="mb-10 mt-5 flex items-center justify-between">
+                  <label className="capitalize text-gray-600 dark:text-white">
+                    Not Answered Questions
+                  </label>
+                  <input
+                    type="checkbox"
+                    checked={filterQuestion?.NotAnsweredQuestion}
+                    onChange={() => dispatch(toggleNotAnsweredQuestion())} // Toggle the state
+                    className={`mr-2 h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-200 checked:border-[#3CC8A1] checked:bg-[#3CC8A1]`}
+                  />
                 </div>
-              )}
+
+                <div className="mb-10 mt-5 flex items-center justify-between">
+                  <label className="capitalize text-gray-600 dark:text-white">
+                    Previously Incorrect Questions
+                  </label>
+                  <input
+                    type="checkbox"
+                    checked={filterQuestion?.previouslyIncorrectQuestion}
+                    onChange={() =>
+                      dispatch(togglePreviouslyIncorrectQuestion())
+                    } // Toggle the state
+                    className={`mr-2 h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-200 checked:border-[#3CC8A1] checked:bg-[#3CC8A1]`}
+                  />
+                </div>
+
+                <div className="mb-10 mt-5 flex items-center justify-between">
+                  <label className="capitalize text-gray-600 dark:text-white">
+                    Previously Correct Questions
+                  </label>
+                  <input
+                    type="checkbox"
+                    checked={filterQuestion?.previouslyCorrectQuestion}
+                    onChange={() => dispatch(togglePreviouslyCorrectQuestion())} // Toggle the state
+                    className={`mr-2 h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-200 checked:border-[#3CC8A1] checked:bg-[#3CC8A1]`}
+                  />
+                </div>
+              </div>
+            )}
             {/* Action Buttons */}
             <div className="absolute bottom-3 left-5 right-5">
               <button
