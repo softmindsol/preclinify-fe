@@ -1,49 +1,94 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult } from "./filter-question.service";
 
 const initialState = {
-    NotAnsweredQuestion: false,
-    previouslyIncorrectQuestion: false,
-    previouslyCorrectQuestion: false,
+    NotAnsweredQuestion: true,
+    previouslyIncorrectQuestion: true,
+    previouslyCorrectQuestion: true,
+    selectedModules: [],
+    results: [],
 };
 
 const questionsSlice = createSlice({
-    name: 'questions',
+    name: "filterQuestion",
     initialState,
     reducers: {
-        addNotAnsweredQuestion: (state, action) => {
-            state.NotAnsweredQuestion.push(action.payload);
+        toggleNotAnsweredQuestion: (state) => {
+            state.NotAnsweredQuestion = !state.NotAnsweredQuestion;
         },
-        addPreviouslyIncorrectQuestion: (state, action) => {
-            state.previouslyIncorrectQuestion.push(action.payload);
+        togglePreviouslyIncorrectQuestion: (state) => {
+            state.previouslyIncorrectQuestion = !state.previouslyIncorrectQuestion;
         },
-        addPreviouslyCorrectQuestion: (state, action) => {
-            state.previouslyCorrectQuestion.push(action.payload);
+        togglePreviouslyCorrectQuestion: (state) => {
+            state.previouslyCorrectQuestion = !state.previouslyCorrectQuestion;
         },
-        removeNotAnsweredQuestion: (state, action) => {
-            state.NotAnsweredQuestion = state.NotAnsweredQuestion.filter(
-                (question) => question.id !== action.payload.id
-            );
+        setSelectedSBAModule: (state, action) => {
+            state.selectedModules = action.payload;
         },
-        removePreviouslyIncorrectQuestion: (state, action) => {
-            state.previouslyIncorrectQuestion = state.previouslyIncorrectQuestion.filter(
-                (question) => question.id !== action.payload.id
-            );
+        clearResults: (state) => {
+            state.results = [];
+            state.error = null;
         },
-        removePreviouslyCorrectQuestion: (state, action) => {
-            state.previouslyCorrectQuestion = state.previouslyCorrectQuestion.filter(
-                (question) => question.id !== action.payload.id
-            );
-        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCorrectIncorrectResult.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchCorrectIncorrectResult.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Store the fetched data
+            })
+            .addCase(fetchCorrectIncorrectResult.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Store error message
+            })
+            .addCase(fetchAllResult.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchAllResult.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Store the fetched data
+            })
+            .addCase(fetchAllResult.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Store error message
+            })
+            .addCase(fetchCorrectResult.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchCorrectResult.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            })
+            .addCase(fetchCorrectResult.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Error ko state me store kar raha hai
+            })
+            .addCase(fetchIncorrectResult.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchIncorrectResult.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            })
+            .addCase(fetchIncorrectResult.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Error ko state me store kar raha hai
+            });
+            ;
     },
 });
 
 export const {
-    addNotAnsweredQuestion,
-    addPreviouslyIncorrectQuestion,
-    addPreviouslyCorrectQuestion,
-    removeNotAnsweredQuestion,
-    removePreviouslyIncorrectQuestion,
-    removePreviouslyCorrectQuestion,
+    toggleNotAnsweredQuestion,
+    togglePreviouslyIncorrectQuestion,
+    togglePreviouslyCorrectQuestion,
+    setSelectedSBAModule
 } = questionsSlice.actions;
 
 export default questionsSlice.reducer;

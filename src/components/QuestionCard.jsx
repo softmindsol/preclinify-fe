@@ -72,7 +72,7 @@ const QuestionCard = () => {
   const [border, setBorder] = useState(true);
   const mcqsAccuracy = useSelector((state) => state?.accuracy?.accuracy);
   const [showPopup, setShowPopup] = useState(false);
-  const data = useSelector((state) => state.mcqsQuestion || []);
+  const data = useSelector((state) => state?.filterQuestion?.results || []);
   const result = useSelector((state) => state.result);
   const [currentPage, setCurrentPage] = useState(0);
   const [isReviewEnabled, setIsReviewEnabled] = useState(false);
@@ -83,7 +83,7 @@ const QuestionCard = () => {
   const isQuestionReview = useSelector((state) => state?.questionReview?.value);
   const [feedback, setFeedback] = useState("");
   // Get the items to show for the current page
-  const currentItems = data.data.slice(
+  const currentItems = data.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage,
   );
@@ -110,6 +110,7 @@ const QuestionCard = () => {
   const handleFilterChange = (filter) => {
     setSelectedFilter(filter);
   };
+  console.log("Data:", data);
 
   // Arrays to store indices
   const unseenIndices = [];
@@ -119,47 +120,44 @@ const QuestionCard = () => {
   // Update getQuestionRange to use currentPage correctly
   const getQuestionRange = (currentPage) => {
     const start = currentPage * itemsPerPage;
-    const end = Math.min(start + itemsPerPage, data?.mcqsByModulesData?.length);
+    const end = Math.min(start + itemsPerPage, data?.length);
     return { start, end };
   };
 
   // Use currentPage to determine the start and end indices
   const { start, end } = getQuestionRange(currentPage);
   // Filtered items to display based on the selected filter
-  const filteredItems = data?.mcqsByModulesData
-    ?.slice(start, end)
-    .filter((question, index) => {
-      const displayNumber = start + index;
+  const filteredItems = data?.slice(start, end).filter((question, index) => {
+    const displayNumber = start + index;
 
-      // All items
-      allIndices.push(displayNumber);
+    // All items
+    allIndices.push(displayNumber);
 
-      if (selectedFilter === "All") {
-        return true; // Include all items
+    if (selectedFilter === "All") {
+      return true; // Include all items
+    }
+
+    if (selectedFilter === "Flagged") {
+      // Check if item is flagged (attempted)
+      const isFlagged =
+        attempted[displayNumber] === true || attempted[displayNumber] === false;
+      if (isFlagged) {
+        flaggedIndices.push(displayNumber); // Store index for flagged items
+        return true;
       }
+    }
 
-      if (selectedFilter === "Flagged") {
-        // Check if item is flagged (attempted)
-        const isFlagged =
-          attempted[displayNumber] === true ||
-          attempted[displayNumber] === false;
-        if (isFlagged) {
-          flaggedIndices.push(displayNumber); // Store index for flagged items
-          return true;
-        }
+    if (selectedFilter === "Unseen") {
+      // Check if item is unseen (unattempted)
+      const isUnseen = attempted[displayNumber] === null;
+      if (isUnseen) {
+        unseenIndices.push(displayNumber); // Store index for unseen items
+        return true;
       }
+    }
 
-      if (selectedFilter === "Unseen") {
-        // Check if item is unseen (unattempted)
-        const isUnseen = attempted[displayNumber] === null;
-        if (isUnseen) {
-          unseenIndices.push(displayNumber); // Store index for unseen items
-          return true;
-        }
-      }
-
-      return false; // Hide items that don't match the filter
-    });
+    return false; // Hide items that don't match the filter
+  });
 
   const toggleAccordion = (index) => {
     setIsAccordionOpen((prev) => {
@@ -169,7 +167,7 @@ const QuestionCard = () => {
         return newAccordionState; // Return the updated array
       } else {
         // If prev is not an array, initialize it with a new array based on data length
-        return new Array(data?.mcqsByModulesData?.length).fill(false);
+        return new Array(data?.length).fill(false);
       }
     });
   };
@@ -196,19 +194,17 @@ const QuestionCard = () => {
       setBorder(false);
 
       const correctAnswer =
-        data?.mcqsByModulesData[currentIndex].answersArray[
-          data?.mcqsByModulesData[currentIndex].correctAnswerId
-        ];
+        data[currentIndex].answersArray[data[currentIndex].correctAnswerId];
       const isCorrect = selectedAnswer === correctAnswer;
 
       setAttempts((prev) => {
         const updatedAttempts = [...prev];
         updatedAttempts[currentIndex] = isCorrect;
         dispatch(setAttempted(updatedAttempts));
-        if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
+        if (data[currentIndex]?.conditionName !== null) {
           dispatch(
             fetchConditionNameById({
-              id: data?.mcqsByModulesData[currentIndex]?.conditionName,
+              id: data[currentIndex]?.conditionName,
             }),
           )
             .unwrap()
@@ -220,9 +216,9 @@ const QuestionCard = () => {
         dispatch(
           insertResult({
             isCorrect,
-            questionId: data?.mcqsByModulesData[currentIndex].id,
+            questionId: data[currentIndex].id,
             userId,
-            moduleId: data?.mcqsByModulesData[currentIndex].moduleId,
+            moduleId: data[currentIndex].moduleId,
           }),
         );
         dispatch(setResult({ updatedAttempts }));
@@ -233,11 +229,11 @@ const QuestionCard = () => {
       setIsAccordionOpen((prev) => {
         const newAccordionState = [...prev].fill(false); // Close all first
         const selectedIndex =
-          data?.mcqsByModulesData[currentIndex].answersArray.indexOf(
+          data[currentIndex].answersArray.indexOf(
             selectedAnswer,
           );
         const correctIndex =
-          data?.mcqsByModulesData[currentIndex].correctAnswerId;
+          data[currentIndex].correctAnswerId;
 
         newAccordionState[correctIndex] = true; // Always open correct answer
         if (!isCorrect) {
@@ -257,7 +253,7 @@ const QuestionCard = () => {
   };
 
   const nextQuestion = () => {
-    if (currentIndex < data?.mcqsByModulesData.length - 1) {
+    if (currentIndex < data.length - 1) {
       // Mark the current question as unseen if skipped
       if (attempted[currentIndex] === null) {
         setAttempts((prev) => {
@@ -278,10 +274,10 @@ const QuestionCard = () => {
       if (isQuestionReview) {
         // setIsAnswered(true);
         // setIsAccordionVisible(true);
-        if (data?.mcqsByModulesData[currentIndex]?.conditionName !== null) {
+        if (data[currentIndex]?.conditionName !== null) {
           dispatch(
             fetchConditionNameById({
-              id: data?.mcqsByModulesData[currentIndex]?.conditionName,
+              id: data[currentIndex]?.conditionName,
             }),
           )
             .unwrap()
@@ -299,7 +295,7 @@ const QuestionCard = () => {
     }
   };
   const getAttemptedQuestions = () => {
-    return data?.mcqsByModulesData?.filter(
+    return data?.filter(
       (_, index) => attempted[index] !== null,
     );
   };
@@ -328,7 +324,7 @@ const QuestionCard = () => {
   // Correct the nextPage function
   const nextPage = () => {
     const newPage = currentPage + 1;
-    if (newPage * itemsPerPage < data?.mcqsByModulesData?.length) {
+    if (newPage * itemsPerPage < data?.length) {
       setCurrentPage(newPage);
       setCurrentIndex(newPage * itemsPerPage); // Set to the first question of the new page
     }
@@ -346,11 +342,11 @@ const QuestionCard = () => {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
-  data?.mcqsByModulesData[currentIndex]?.explanationList?.map(
+  data[currentIndex]?.explanationList?.map(
     (explanation, index) => {
       let isSelected = selectedAnswer === explanation;
       const isCorrectAnswer =
-        index === data?.mcqsByModulesData[currentIndex].correctAnswerId;
+        index === data[currentIndex].correctAnswerId;
     },
   );
 
@@ -406,38 +402,38 @@ const QuestionCard = () => {
   };
 
   useEffect(() => {
-    if (data?.mcqsByModulesData?.length) {
-      const initialAccordionState = data?.mcqsByModulesData[
+    if (data?.length) {
+      const initialAccordionState = data[
         currentIndex
       ]?.answersArray?.map(() => false);
       setIsAccordionOpen(initialAccordionState);
     }
-  }, [data.mcqsByModulesData]);
+  }, [data]);
 
   useEffect(() => {
     // Reset accordion state when the current question changes
-    if (data?.mcqsByModulesData[currentIndex]?.answersArray) {
+    if (data[currentIndex]?.answersArray) {
       const numAnswers =
-        data?.mcqsByModulesData[currentIndex].answersArray.length;
+        data[currentIndex].answersArray.length;
       setIsAccordionOpen(Array(numAnswers).fill(false));
     }
-  }, [currentIndex, data?.mcqsByModulesData]);
+  }, [currentIndex, data]);
 
   useEffect(() => {
     if (active) {
-      setAttempts(Array(data?.mcqsByModulesData?.length).fill(null)); // Initialize attempts as unseen
-      dispatch(setAttempted(Array(data?.mcqsByModulesData?.length).fill(null))); // Dispatch the updated attempts array to Redux
+      setAttempts(Array(data?.length).fill(null)); // Initialize attempts as unseen
+      dispatch(setAttempted(Array(data?.length).fill(null))); // Dispatch the updated attempts array to Redux
     }
-  }, [data?.mcqsByModulesData]);
+  }, [data]);
 
   useEffect(() => {
-    if (data?.mcqsByModulesData?.length > 0) {
+    if (data?.length > 0) {
       if (active) {
-        dispatch(initializeFlags(data?.mcqsByModulesData?.length));
-        dispatch(initializeVisited(data?.mcqsByModulesData?.length));
+        dispatch(initializeFlags(data?.length));
+        dispatch(initializeVisited(data?.length));
       }
     }
-  }, [data?.mcqsByModulesData]);
+  }, [data]);
 
   useEffect(() => {
     const correct = attempts.filter((attempt) => attempt === true).length;
@@ -498,10 +494,10 @@ const QuestionCard = () => {
   // Check if it's time to enable the Finish button
   useEffect(() => {
     setIsReviewEnabled(false);
-    if (data?.mcqsByModulesData.length === currentIndex + 1) {
+    if (data.length === currentIndex + 1) {
       setIsReviewEnabled(true); // Enable the Finish button when the condition is met
     }
-  }, [currentIndex, data?.mcqsByModulesData?.length]); // Re-run whenever currentIndex changes
+  }, [currentIndex, data?.length]); // Re-run whenever currentIndex changes
 
   const reportHandler = () => {
     setShowFeedBackModal(!showFeedBackModal);
@@ -544,10 +540,10 @@ const QuestionCard = () => {
 
       if (
         keyIndex !== -1 &&
-        keyIndex < data?.mcqsByModulesData[currentIndex]?.answersArray.length
+        keyIndex < data[currentIndex]?.answersArray.length
       ) {
         const answer =
-          data?.mcqsByModulesData[currentIndex].answersArray[keyIndex];
+          data[currentIndex].answersArray[keyIndex];
 
         handleAnswerSelect(answer);
         setIsAnswered(true);
@@ -560,7 +556,7 @@ const QuestionCard = () => {
   }, [
     currentIndex,
     attempted,
-    data?.mcqsByModulesData,
+    data,
     isAnswered,
     showFeedBackModal,
   ]); // ✅ showFeedBackModal added
@@ -631,7 +627,7 @@ const QuestionCard = () => {
                   className="h-full bg-[#60B0FA] transition-all duration-300 ease-in-out"
                   style={{
                     width: `${
-                      ((currentIndex + 1) / data?.mcqsByModulesData?.length) *
+                      ((currentIndex + 1) / data?.length) *
                       100
                     }%`,
                   }}
@@ -688,11 +684,11 @@ const QuestionCard = () => {
                 </button>
                 <h2 className="text-center font-semibold">
                   Question {currentIndex + 1} of{" "}
-                  {data?.mcqsByModulesData?.length}
+                  {data?.length}
                 </h2>
                 <button
                   className={`text-white ${
-                    currentIndex + 1 === data?.mcqsByModulesData?.length
+                    currentIndex + 1 === data?.length
                       ? "cursor-not-allowed opacity-70"
                       : ""
                   }`}
@@ -746,22 +742,22 @@ const QuestionCard = () => {
             </div>
 
             {/* Question start */}
-            {data?.mcqsByModulesData.length > 0 && (
+            {data.length > 0 && (
               <div className="mt-6 p-6" key={currentIndex}>
                 <p className="text-justify text-[14px] text-[#000000] dark:text-white lg:text-[16px]">
-                  {data?.mcqsByModulesData[currentIndex].questionStem}
+                  {data[currentIndex].questionStem}
                 </p>
 
                 <h3 className="mt-4 text-[12px] font-bold text-[#3F3F46] dark:text-white lg:text-[14px]">
-                  {data?.mcqsByModulesData[currentIndex].leadQuestion}
+                  {data[currentIndex].leadQuestion}
                 </h3>
                 <div className="mt-4 space-y-4">
-                  {data?.mcqsByModulesData[currentIndex]?.answersArray?.map(
+                  {data[currentIndex]?.answersArray?.map(
                     (answer, index) => {
                       const isSelected = selectedAnswer === answer;
                       const isCorrectAnswer =
                         index ===
-                        data?.mcqsByModulesData[currentIndex]?.correctAnswerId;
+                        data[currentIndex]?.correctAnswerId;
 
                       const borderColor =
                         isButtonClicked || attempted[currentIndex] !== null
@@ -911,7 +907,7 @@ const QuestionCard = () => {
                                   <hr className={`mx-5 ${borderColor}`} />
                                   <p className="px-5 py-2 text-[12px] text-[#3F3F46]">
                                     {
-                                      data?.mcqsByModulesData[currentIndex]
+                                      data[currentIndex]
                                         ?.explanationList[index]
                                     }
                                   </p>
@@ -1080,7 +1076,7 @@ const QuestionCard = () => {
             {isAccordionVisible && (
               <Article
                 article={article}
-                id={data?.mcqsByModulesData[currentIndex]?.conditionName}
+                id={data[currentIndex]?.conditionName}
               />
             )}
           </div>
@@ -1267,8 +1263,8 @@ const QuestionCard = () => {
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
           userId={userId}
-          questionStem={data?.mcqsByModulesData[currentIndex]}
-          leadQuestion={data?.mcqsByModulesData[currentIndex].leadQuestion}
+          questionStem={data[currentIndex]}
+          leadQuestion={data[currentIndex].leadQuestion}
         />
       )}
 
