@@ -15,7 +15,7 @@ const SceneriosDetail = () => {
   const [seconds, setSeconds] = useState(0); // Starting second
   const [timerActive, setTimerActive] = useState(false); // Timer active state
   const navigate = useNavigate(); // Initialize useNavigate hook
-  const { selectedData, loading, error } = useSelector(state => state.osce);
+  const { selectedData, loading, error } = useSelector((state) => state.osce);
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -29,7 +29,7 @@ const SceneriosDetail = () => {
     setOpenPanel(openPanel === panel ? null : panel);
   };
 
-  const extractHeadings = markdown => {
+  const extractHeadings = (markdown) => {
     const headingRegex = /^(#{1,6})\s(.+)$/gm; // Match all headings (# to ######)
     const listItemRegex = /^\s*[-*+]\s(.+)$/gm; // Match list items under headings (bullets: -, *, +)
 
@@ -482,6 +482,8 @@ const SceneriosDetail = () => {
           setShowPopup={setShowPopup}
         />
       )}
+
+      
     </div>
   );
 };

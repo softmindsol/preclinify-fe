@@ -1,10 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../../../config/helper";
+import { useSelector } from "react-redux";
+
 // Define an async thunk to fetch modules
 export const fetchMcqsQuestion = createAsyncThunk(
   "modules/fetchMcqsQuestion",
   async (_, { rejectWithValue }) => {
     try {
+     
       const { data, error } = await supabase.from("mcqQuestions").select("*");
 
       // If there's an error in the response, reject it
@@ -35,13 +38,11 @@ export const fetchTotalSBAQuestion = createAsyncThunk(
         return rejectWithValue(error.message);
       }
 
-            // Group questions by categoryId
-            const groupedData = categoryIds.map(categoryId => ({
-                categoryId,
-                questions: data.filter(question => question.moduleId === categoryId)
-            }));
-
-
+      // Group questions by categoryId
+      const groupedData = categoryIds.map((categoryId) => ({
+        categoryId,
+        questions: data.filter((question) => question.moduleId === categoryId),
+      }));
 
       return groupedData;
     } catch (error) {
@@ -132,8 +133,7 @@ export const fetchConditionNameById = createAsyncThunk(
 
       const query = supabase.from("conditionNames").select("*").eq("id", id);
 
-            const { data, error } = await query;
-
+      const { data, error } = await query;
 
       if (error) {
         return rejectWithValue(
