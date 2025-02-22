@@ -324,7 +324,7 @@ const AINewVersion = () => {
   useEffect(() => {
     const initWebRTC = async () => {
       const tokenResponse = await fetch(
-        `http://localhost:8000/session/${categoryName}`,
+        `http://localhost:8001/session/${categoryName}`,
       );
       const data = await tokenResponse.json();
       const EPHEMERAL_KEY = data.client_secret.value;
