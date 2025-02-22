@@ -218,6 +218,7 @@ const ShortQuestion = () => {
         questionId: sqa[parentIndex]?.id,
         userId,
         moduleId: sqa[parentIndex]?.categoryId,
+        parentId: sqa[parentIndex].id,
       }),
     );
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
@@ -240,6 +241,7 @@ const ShortQuestion = () => {
         questionId: sqa[parentIndex]?.id,
         userId,
         moduleId: sqa[parentIndex]?.categoryId,
+        parentId: sqa[parentIndex].id,
       }),
     );
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
@@ -262,6 +264,7 @@ const ShortQuestion = () => {
         questionId: sqa[parentIndex]?.id,
         userId,
         moduleId: sqa[parentIndex]?.categoryId,
+        parentId: sqa[parentIndex].id,
       }),
     );
   }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);

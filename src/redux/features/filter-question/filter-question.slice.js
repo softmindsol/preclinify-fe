@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult } from "./filter-question.service";
+import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult, fetchUnattemptedQuestions } from "./filter-question.service";
 
 const initialState = {
     NotAnsweredQuestion: true,
@@ -7,6 +7,7 @@ const initialState = {
     previouslyCorrectQuestion: true,
     selectedModules: [],
     results: [],
+    isLoading:false
 };
 
 const questionsSlice = createSlice({
@@ -79,7 +80,19 @@ const questionsSlice = createSlice({
             .addCase(fetchIncorrectResult.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload; // Error ko state me store kar raha hai
-            });
+            })
+            .addCase(fetchUnattemptedQuestions.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchUnattemptedQuestions.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            })
+            .addCase(fetchUnattemptedQuestions.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Error ko state me store kar raha hai
+            })
             ;
     },
 });

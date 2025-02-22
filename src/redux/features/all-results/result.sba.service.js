@@ -55,7 +55,7 @@ export const insertMockResult = createAsyncThunk(
 export const insertSAQResult = createAsyncThunk(
   "resultsHistory/insertSAQResult",
   async (
-    { isCorrect, isIncorrect, isPartial, questionId, userId, moduleId },
+    { parentId, isCorrect, isIncorrect, isPartial, questionId, userId, moduleId },
     thunkAPI,
   ) => {
     try {
@@ -67,6 +67,7 @@ export const insertSAQResult = createAsyncThunk(
           questionId,
           userId,
           moduleId,
+          parentId
         },
       ]);
 

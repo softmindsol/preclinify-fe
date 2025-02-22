@@ -410,7 +410,7 @@ const Questioning = () => {
             dispatch(
               setLoading({ key: "modules/fetchMcqsByModules", value: false }),
             );
-          });
+          }); 
       } else if (selectedOption === "SAQ") {
         dispatch(
           setLoading({

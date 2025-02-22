@@ -95,6 +95,65 @@ export const fetchCorrectIncorrectResult = createAsyncThunk(
 
 
 
+// UnAswered Question
+
+export const fetchUnattemptedQuestions = createAsyncThunk(
+    "resultsHistory/fetchUnattemptedQuestions",
+    async ({ moduleId, totalLimit }, thunkAPI) => {
+        try {
+            if (!moduleId || moduleId.length === 0) {
+                return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            }
+
+            // Step 1: Fetch all attempted questionIds from resultsHistory
+            const { data: attemptedResults, error: attemptedResultsError } = await supabase
+                .from("resultsHistory")
+                .select("questionId")
+                .in("moduleId", moduleId);
+
+            if (attemptedResultsError) {
+                return thunkAPI.rejectWithValue(attemptedResultsError.message);
+            }
+            console.log("attemptedResults:", attemptedResults)
+
+            // Extract attempted question IDs
+            const attemptedQuestionIds = attemptedResults.map(item => item.questionId);
+
+            // Step 2: Fetch questions that are NOT in attemptedQuestionIds
+            let query = supabase
+                .from("mcqQuestions")
+                .select("*")
+                .in("moduleId", moduleId);
+
+            if (attemptedQuestionIds.length > 0) {
+                query = query.not("id", "in", `(${attemptedQuestionIds.join(",")})`);
+            }
+
+            const { data: mcqData, error: mcqError } = await query;
+
+            if (mcqError) {
+                return thunkAPI.rejectWithValue(mcqError.message);
+            }
+
+            // Step 3: Shuffle data and apply limit
+            const shuffledData = mcqData.sort(() => Math.random() - 0.5);
+            const finalData = totalLimit ? shuffledData.slice(0, totalLimit) : shuffledData;
+
+            console.log("Fetched Unattempted Questions:", finalData);
+            return finalData;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
+
+
+
+
+
+
+
 // Define the async thunk SBA
 export const fetchCorrectResult = createAsyncThunk(
     "resultsHistory/fetchCorrectResult",
@@ -162,7 +221,7 @@ export const fetchCorrectResult = createAsyncThunk(
 );
 
 
- 
+
 export const fetchIncorrectResult = createAsyncThunk(
     "resultsHistory/fetchIncorrectResult",
     async ({ moduleId, totalLimit }, thunkAPI) => {

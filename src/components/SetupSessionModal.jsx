@@ -10,7 +10,12 @@ import {
   fetchMockTest,
   fetchMockTestById,
 } from "../redux/features/mock-test/mock.service";
-import { fetchShortQuestionByModules } from "../redux/features/SAQ/saq.service";
+import {
+  fetchModulesById,
+  fetchShortQuestionByModules,
+  fetchShortQuestionByModulesById,
+  fetchSqaChild,
+} from "../redux/features/SAQ/saq.service";
 import {
   toggleNotAnsweredQuestion,
   togglePreviouslyCorrectQuestion,
@@ -21,6 +26,7 @@ import {
   fetchCorrectIncorrectResult,
   fetchCorrectResult,
   fetchIncorrectResult,
+  fetchUnattemptedQuestions,
 } from "../redux/features/filter-question/filter-question.service";
 import { fetchAllResultSaq } from "../redux/features/filter-question/filter-saq-question.service";
 
@@ -59,9 +65,11 @@ const SetupSessionModal = ({
   const [modeType, setModeType] = useState("Endless");
   const filterQuestion = useSelector((state) => state?.filterQuestion);
   const { limit } = useSelector((state) => state?.limit);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [saqModule, setSAQModule] = useState([]);
 
   const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
-  console.log("filterQuestion:", filterQuestion);
+  console.log("filterQuestion:", filterQuestion?.isLoading);
   // Debounced dispatch handler
   const debouncedDispatch = useCallback(
     debounce((value) => {
@@ -168,6 +176,18 @@ const SetupSessionModal = ({
           .catch((err) => {
             console.error(err);
           });
+      } else if (filterQuestion?.NotAnsweredQuestion) {
+        dispatch(
+          fetchUnattemptedQuestions({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
       }
     }
   }, [
@@ -179,66 +199,108 @@ const SetupSessionModal = ({
     filterQuestion?.previouslyCorrectQuestion,
   ]);
 
-  useEffect(() => {
-    if (type === "SAQ" && !isLoadingShortQuestion) {
-      if (
-        !filterQuestion?.NotAnsweredQuestion &&
-        filterQuestion?.previouslyIncorrectQuestion &&
-        filterQuestion?.previouslyCorrectQuestion
-      ) {
-        dispatch(
-          fetchCorrectIncorrectResult({
-            moduleId: filterQuestion.selectedModules,
-          }),
-        )
-          .unwrap()
-          .then((res) => {})
-          .catch((err) => {
-            console.error(err);
-          });
-      } 
-      // else if (
-      //   filterQuestion?.NotAnsweredQuestion &&
-      //   filterQuestion?.previouslyIncorrectQuestion &&
-      //   filterQuestion?.previouslyCorrectQuestion
-      // ) {
-      //   dispatch(
-      //     fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
-      //   )
-      //     .unwrap()
-      //     .then((res) => {})
-      //     .catch((err) => {
-      //       console.error(err);
-      //     });
-      // }
-      //  else if (filterQuestion?.previouslyCorrectQuestion) {
-      //   dispatch(
-      //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
-      //   )
-      //     .unwrap()
-      //     .then((res) => {})
-      //     .catch((err) => {});
-      // } else if (filterQuestion?.previouslyIncorrectQuestion) {
-      //   dispatch(
-      //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
-      //   )
-      //     .unwrap()
-      //     .then((res) => {})
-      //     .catch((err) => {
-      //       console.error(err);
-      //     });
-      // }
-    }
-  }, [
-    type,
-    isLoading,
-    dispatch,
-    filterQuestion?.NotAnsweredQuestion,
-    filterQuestion?.previouslyIncorrectQuestion,
-    filterQuestion?.previouslyCorrectQuestion,
-  ]);
- 
- 
+  // useEffect(() => {
+  //   if (type === "SAQ") {
+  //     if (
+  //       filterQuestion?.NotAnsweredQuestion &&
+  //       filterQuestion?.previouslyIncorrectQuestion &&
+  //       filterQuestion?.previouslyCorrectQuestion
+  //     ) {
+  //       dispatch(
+  //         fetchShortQuestionByModules({
+  //           moduleIds: filterQuestion.selectedModules,
+  //           totalLimit: limit,
+  //         }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {
+  //           dispatch(console.log("response: ", res));
+
+  //           dispatch(fetchModulesById({ ids: res.ids }))
+  //             .unwrap()
+  //             .then((res) => {
+  //               setIsLoaded(false);
+
+  //               setSAQModule(res);
+  //             })
+  //             .catch((err) => {
+  //               setIsLoaded(false);
+  //             });
+  //         })
+  //         .catch((err) => {});
+
+  //       // Fetch Question By ID
+  //       dispatch(
+  //         fetchShortQuestionByModulesById({
+  //           moduleIds: filterQuestion.selectedModules,
+  //         }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {
+  //           if (res && res.length > 0) {
+  //             // Extracting all parentIds
+  //             const parentIds = res.map((item) => item.id);
+
+  //             // Dispatch fetchSqaChild with all parentIds
+  //             dispatch(fetchSqaChild({ parentIds, limit }))
+  //               .unwrap()
+  //               .then((childRes) => {
+  //                 // Organizing Data
+  //                 const organizedData = res.map((parent) => ({
+  //                   ...parent,
+  //                   children: childRes.filter(
+  //                     (child) => child.parentQuestionId === parent.id,
+  //                   ),
+  //                 }));
+  //               })
+  //               .catch((err) => {
+  //                 console.log("Error fetching SQA Child:", err);
+  //               });
+  //           }
+  //         })
+  //         .catch((err) => {});
+  //     }
+  //     else if (
+  //       !filterQuestion?.NotAnsweredQuestion &&
+  //       filterQuestion?.previouslyIncorrectQuestion &&
+  //       filterQuestion?.previouslyCorrectQuestion
+  //     ) {
+  //       dispatch(
+  //         fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
+  //       )
+  //         .unwrap()
+  //         .then((res) => {})
+  //         .catch((err) => {
+  //           console.error(err);
+  //         });
+  //     }
+  //     //  else if (filterQuestion?.previouslyCorrectQuestion) {
+  //     //   dispatch(
+  //     //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
+  //     //   )
+  //     //     .unwrap()
+  //     //     .then((res) => {})
+  //     //     .catch((err) => {});
+  //     // } else if (filterQuestion?.previouslyIncorrectQuestion) {
+  //     //   dispatch(
+  //     //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
+  //     //   )
+  //     //     .unwrap()
+  //     //     .then((res) => {})
+  //     //     .catch((err) => {
+  //     //       console.error(err);
+  //     //     });
+  //     // }
+  //   }
+  // }, [
+  //   type,
+  //   isLoading,
+  //   dispatch,
+  //   filterQuestion?.NotAnsweredQuestion,
+  //   filterQuestion?.previouslyIncorrectQuestion,
+  //   filterQuestion?.previouslyCorrectQuestion,
+  // ]);
+
   useEffect(() => {
     if (isOpenSetUpSessionModal) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -411,23 +473,16 @@ const SetupSessionModal = ({
                       ? "bg-[#82c7b4]"
                       : "bg-[#3CC8A1]"
                   } ${
-                    !filterQuestion?.previouslyIncorrectQuestion &&
-                    !filterQuestion?.previouslyCorrectQuestion &&
-                    !filterQuestion?.NotAnsweredQuestion &&
-                    "disabled:cursor-not-allowed"
+                    filterQuestion?.isLoading && "disabled:cursor-not-allowed"
                   } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
                   disabled={
-                    !filterQuestion?.previouslyIncorrectQuestion &&
-                    !filterQuestion?.previouslyCorrectQuestion &&
-                    !filterQuestion?.NotAnsweredQuestion
+                    (!filterQuestion?.previouslyIncorrectQuestion &&
+                      !filterQuestion?.previouslyCorrectQuestion &&
+                      !filterQuestion?.NotAnsweredQuestion) ||
+                    filterQuestion?.isLoading
                   }
                 >
-                  {isLoading ||
-                  isLoadingShortQuestion ||
-                  isQuesGenLoading ||
-                  isMockLoading
-                    ? "Loading..."
-                    : "Start Questions"}
+                  {filterQuestion?.isLoading ? "Loading..." : "Start Questions"}
                 </button>
               </div>
             ) : (
