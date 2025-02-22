@@ -32,6 +32,7 @@ import supabase from './config/helper';
 import ProtectedRoute from './auth/ProtectedRoute';
 import AIAssistant from './components/ai-assistant';
 import OSCEAI from './components/OSCE-AI-Audio-Stream';
+import AudioStreamingClient from './components/AudioStream';
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -148,7 +149,8 @@ function App() {
           element={
             <ProtectedRoute>
               {/* <AINewVersion /> */}
-              <OSCEAI />
+              {/* <OSCEAI /> */}
+              <AudioStreamingClient   />
             </ProtectedRoute>
           }
         />

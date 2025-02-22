@@ -85,13 +85,13 @@ const AINewVersion = () => {
     initialComplaint: "Hi Doctor",
   };
 
-    const handleInputChange = (e) => {
-      setInputText(e.target.value);
-    };
+  const handleInputChange = (e) => {
+    setInputText(e.target.value);
+  };
 
-    const handleFeedBack = () => {
-      setShowFeedBackModal(true);
-    };
+  const handleFeedBack = () => {
+    setShowFeedBackModal(true);
+  };
 
   useEffect(() => {
     const SpeechRecognition =

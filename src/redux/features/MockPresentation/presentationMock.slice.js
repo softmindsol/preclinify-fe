@@ -10,6 +10,10 @@ const presentationSlice = createSlice({
     reducers: {
         setMockPresentationValue: (state, action) => {
             state.isMockPresentation = action.payload;
+        },
+        resetMockPresentationValue:(state, action)=>{
+            state.isMockPresentation = false;
+          
         }
     },
 });
@@ -18,4 +22,4 @@ const presentationSlice = createSlice({
 export default presentationSlice.reducer;
 
 // Export actions
-export const { setMockPresentationValue } = presentationSlice.actions;
+export const { setMockPresentationValue, resetMockPresentationValue } = presentationSlice.actions;

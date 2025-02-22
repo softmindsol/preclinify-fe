@@ -108,6 +108,7 @@ const MockPresentation = () => {
     return savedTime ? parseInt(savedTime, 10) : initialTime; // Use saved time if available
   });
   const beakerRef = useRef(null);
+  const [isAIExpanded, setIsAIExpanded] = useState(false);
 
   const review = useSelector((state) => state.questionReview.value);
   const [accuracy, setAccuracy] = useState(mcqsAccuracy); // Calculated accuracy
@@ -1504,7 +1505,7 @@ const MockPresentation = () => {
           </div>
         </div>
       </Drawer>
-      <Chatbot />
+      <Chatbot setIsAIExpanded={setIsAIExpanded} />
     </div>
   );
 };

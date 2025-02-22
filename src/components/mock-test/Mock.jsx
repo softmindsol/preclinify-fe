@@ -71,6 +71,7 @@ const MockTestQuestion = () => {
   const [reviewLoading, setReviewLoading] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [isAIExpanded, setIsAIExpanded] = useState(false);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -1526,7 +1527,7 @@ const MockTestQuestion = () => {
           </div>
         </div>
       </Drawer>
-      <Chatbot />
+      <Chatbot setIsAIExpanded={setIsAIExpanded} />
     </div>
   );
 };

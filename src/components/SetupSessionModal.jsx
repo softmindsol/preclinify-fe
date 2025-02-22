@@ -58,10 +58,10 @@ const SetupSessionModal = ({
   const [timer, setTimer] = useState(5);
   const [modeType, setModeType] = useState("Endless");
   const filterQuestion = useSelector((state) => state?.filterQuestion);
+  const { limit } = useSelector((state) => state?.limit);
 
   const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
-
-  console.log("SaqfilterQuestion:", SaqfilterQuestion);
+  console.log("filterQuestion:", filterQuestion);
   // Debounced dispatch handler
   const debouncedDispatch = useCallback(
     debounce((value) => {
@@ -122,6 +122,7 @@ const SetupSessionModal = ({
         dispatch(
           fetchCorrectIncorrectResult({
             moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
           }),
         )
           .unwrap()
@@ -134,7 +135,12 @@ const SetupSessionModal = ({
         filterQuestion?.previouslyIncorrectQuestion &&
         filterQuestion?.previouslyCorrectQuestion
       ) {
-        dispatch(fetchAllResult({ moduleId: filterQuestion.selectedModules }))
+        dispatch(
+          fetchAllResult({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
+        )
           .unwrap()
           .then((res) => {})
           .catch((err) => {
@@ -142,14 +148,20 @@ const SetupSessionModal = ({
           });
       } else if (filterQuestion?.previouslyCorrectQuestion) {
         dispatch(
-          fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
+          fetchCorrectResult({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
         )
           .unwrap()
           .then((res) => {})
           .catch((err) => {});
       } else if (filterQuestion?.previouslyIncorrectQuestion) {
         dispatch(
-          fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
+          fetchIncorrectResult({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
         )
           .unwrap()
           .then((res) => {})
@@ -167,63 +179,66 @@ const SetupSessionModal = ({
     filterQuestion?.previouslyCorrectQuestion,
   ]);
 
-  // useEffect(() => {
-  //   if (type === "SAQ" && !isLoadingShortQuestion) {
-  //     if (
-  //       !filterQuestion?.NotAnsweredQuestion &&
-  //       filterQuestion?.previouslyIncorrectQuestion &&
-  //       filterQuestion?.previouslyCorrectQuestion
-  //     ) {
-  //       dispatch(
-  //         fetchCorrectIncorrectResult({
-  //           moduleId: filterQuestion.selectedModules,
-  //         }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {})
-  //         .catch((err) => {
-  //           console.error(err);
-  //         });
-  //     } else if (
-  //       filterQuestion?.NotAnsweredQuestion &&
-  //       filterQuestion?.previouslyIncorrectQuestion &&
-  //       filterQuestion?.previouslyCorrectQuestion
-  //     ) {
-  //       dispatch(
-  //         fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {})
-  //         .catch((err) => {
-  //           console.error(err);
-  //         });
-  //     }
-  //     //  else if (filterQuestion?.previouslyCorrectQuestion) {
-  //     //   dispatch(
-  //     //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
-  //     //   )
-  //     //     .unwrap()
-  //     //     .then((res) => {})
-  //     //     .catch((err) => {});
-  //     // } else if (filterQuestion?.previouslyIncorrectQuestion) {
-  //     //   dispatch(
-  //     //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
-  //     //   )
-  //     //     .unwrap()
-  //     //     .then((res) => {})
-  //     //     .catch((err) => {
-  //     //       console.error(err);
-  //     //     });
-  //     // }
-  //   }
-  // }, [
-  //   type,
-  //   isLoading,
-  //   dispatch,
-  //   filterQuestion?.NotAnsweredQuestion,
-  //   filterQuestion?.previouslyIncorrectQuestion,
-  //   filterQuestion?.previouslyCorrectQuestion,
-  // ]);
+  useEffect(() => {
+    if (type === "SAQ" && !isLoadingShortQuestion) {
+      if (
+        !filterQuestion?.NotAnsweredQuestion &&
+        filterQuestion?.previouslyIncorrectQuestion &&
+        filterQuestion?.previouslyCorrectQuestion
+      ) {
+        dispatch(
+          fetchCorrectIncorrectResult({
+            moduleId: filterQuestion.selectedModules,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+      } 
+      // else if (
+      //   filterQuestion?.NotAnsweredQuestion &&
+      //   filterQuestion?.previouslyIncorrectQuestion &&
+      //   filterQuestion?.previouslyCorrectQuestion
+      // ) {
+      //   dispatch(
+      //     fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
+      //   )
+      //     .unwrap()
+      //     .then((res) => {})
+      //     .catch((err) => {
+      //       console.error(err);
+      //     });
+      // }
+      //  else if (filterQuestion?.previouslyCorrectQuestion) {
+      //   dispatch(
+      //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
+      //   )
+      //     .unwrap()
+      //     .then((res) => {})
+      //     .catch((err) => {});
+      // } else if (filterQuestion?.previouslyIncorrectQuestion) {
+      //   dispatch(
+      //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
+      //   )
+      //     .unwrap()
+      //     .then((res) => {})
+      //     .catch((err) => {
+      //       console.error(err);
+      //     });
+      // }
+    }
+  }, [
+    type,
+    isLoading,
+    dispatch,
+    filterQuestion?.NotAnsweredQuestion,
+    filterQuestion?.previouslyIncorrectQuestion,
+    filterQuestion?.previouslyCorrectQuestion,
+  ]);
+ 
+ 
   useEffect(() => {
     if (isOpenSetUpSessionModal) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -385,36 +400,68 @@ const SetupSessionModal = ({
               </div>
             )}
             {/* Action Buttons */}
-            <div className="absolute bottom-3 left-5 right-5">
-              <button
-                onClick={handleQuestion}
-                className={`py-2 ${
-                  isLoading ||
+            {type === "SBA" || type === "SAQ" ? (
+              <div className="absolute bottom-3 left-5 right-5">
+                <button
+                  onClick={handleQuestion}
+                  className={`py-2 ${
+                    !filterQuestion?.previouslyIncorrectQuestion &&
+                    !filterQuestion?.previouslyCorrectQuestion &&
+                    !filterQuestion?.NotAnsweredQuestion
+                      ? "bg-[#82c7b4]"
+                      : "bg-[#3CC8A1]"
+                  } ${
+                    !filterQuestion?.previouslyIncorrectQuestion &&
+                    !filterQuestion?.previouslyCorrectQuestion &&
+                    !filterQuestion?.NotAnsweredQuestion &&
+                    "disabled:cursor-not-allowed"
+                  } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
+                  disabled={
+                    !filterQuestion?.previouslyIncorrectQuestion &&
+                    !filterQuestion?.previouslyCorrectQuestion &&
+                    !filterQuestion?.NotAnsweredQuestion
+                  }
+                >
+                  {isLoading ||
                   isLoadingShortQuestion ||
                   isQuesGenLoading ||
                   isMockLoading
-                    ? "bg-[#82c7b4]"
-                    : "bg-[#3CC8A1]"
-                } ${
-                  isLoading ||
-                  isQuesGenLoading ||
-                  (isMockLoading && "disabled:cursor-not-allowed")
-                } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
-                disabled={
-                  isLoading ||
+                    ? "Loading..."
+                    : "Start Questions"}
+                </button>
+              </div>
+            ) : (
+              <div className="absolute bottom-3 left-5 right-5">
+                <button
+                  onClick={handleQuestion}
+                  className={`py-2 ${
+                    isLoading ||
+                    isLoadingShortQuestion ||
+                    isQuesGenLoading ||
+                    isMockLoading
+                      ? "bg-[#82c7b4]"
+                      : "bg-[#3CC8A1]"
+                  } ${
+                    isLoading ||
+                    isQuesGenLoading ||
+                    (isMockLoading && "disabled:cursor-not-allowed")
+                  } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
+                  disabled={
+                    isLoading ||
+                    isLoadingShortQuestion ||
+                    isQuesGenLoading ||
+                    isMockLoading
+                  }
+                >
+                  {isLoading ||
                   isLoadingShortQuestion ||
                   isQuesGenLoading ||
                   isMockLoading
-                }
-              >
-                {isLoading ||
-                isLoadingShortQuestion ||
-                isQuesGenLoading ||
-                isMockLoading
-                  ? "Loading..."
-                  : "Start Questions"}
-              </button>
-            </div>
+                    ? "Loading..."
+                    : "Start Questions"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -10,7 +10,10 @@ const presentationSlice = createSlice({
     reducers: {
         setSBAPresentationValue: (state, action) => {
             state.isSBAPresentation = action.payload;
-        }
+        },
+        resetSBAPresentationValue: (state, action) => {
+            state.isSBAPresentation = false;
+        },
     },
 });
 
@@ -18,4 +21,4 @@ const presentationSlice = createSlice({
 export default presentationSlice.reducer;
 
 // Export actions
-export const { setSBAPresentationValue } = presentationSlice.actions;
+export const { setSBAPresentationValue, resetSBAPresentationValue } = presentationSlice.actions;
