@@ -122,34 +122,6 @@ const AudioStreamingClient = () => {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        .transcript {
-          max-height: 300px;
-          overflow-y: auto;
-          padding: 10px;
-          background-color: #f9f9f9;
-          border-radius: 8px;
-        }
-        .message {
-          padding: 5px 10px;
-          margin-bottom: 8px;
-          border-radius: 8px;
-          max-width: 70%;
-          word-wrap: break-word;
-        }
-        .user-message {
-          background-color: #e0f7fa;
-          align-self: flex-start;
-        }
-        .ai-message {
-          background-color: #f1f8e9;
-          align-self: flex-end;
-        }
-        strong {
-          font-weight: bold;
-        }
-      `}</style>
     </div>
   );
 };
