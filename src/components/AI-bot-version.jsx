@@ -13,8 +13,6 @@ const AINewVersion = () => {
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const [selectedVoice, setSelectedVoice] = useState(null);
-  const [voices, setVoices] = useState([]);
 
   const [isDashboard, setIsDashboard] = useState(false);
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
@@ -25,18 +23,11 @@ const AINewVersion = () => {
   const { selectedData, loading, error } = useSelector((state) => state.osce);
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
-  const [loader, setLoader] = useState(false);
   const [openPanel, setOpenPanel] = useState(null);
-  const [checkboxState, setCheckboxState] = useState([]);
-  const [isMicActive, setIsMicActive] = useState(false);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
   const [isPatientOn, setIsPatientOn] = useState(false);
-  const [isAISpeaking, setIsAISpeaking] = useState(false);
-  const [summary, setSummary] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [score, setScore] = useState(0);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
 

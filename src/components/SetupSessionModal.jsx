@@ -11,9 +11,13 @@ import {
   fetchMockTestById,
 } from "../redux/features/mock-test/mock.service";
 import {
+  fetchCorrectShortQuestionByModules,
+  fetchIncorrectCorrectShortQuestionByModules,
+  fetchInCorrectShortQuestionByModules,
   fetchModulesById,
   fetchShortQuestionByModules,
   fetchShortQuestionByModulesById,
+  fetchShortQuestionsWithChildren,
   fetchSqaChild,
 } from "../redux/features/SAQ/saq.service";
 import {
@@ -69,8 +73,12 @@ const SetupSessionModal = ({
   const [saqModule, setSAQModule] = useState([]);
 
   const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
-  console.log("filterQuestion:", filterQuestion?.isLoading);
-  // Debounced dispatch handler
+  const FiltershortQuestions = useSelector(
+    (state) => state?.FiltershortQuestions?.results,
+  ); // Debounced dispatch handler
+
+  console.log("FiltershortQuestions:", FiltershortQuestions);
+
   const debouncedDispatch = useCallback(
     debounce((value) => {
       dispatch(setLimit(value));
@@ -199,107 +207,67 @@ const SetupSessionModal = ({
     filterQuestion?.previouslyCorrectQuestion,
   ]);
 
-  // useEffect(() => {
-  //   if (type === "SAQ") {
-  //     if (
-  //       filterQuestion?.NotAnsweredQuestion &&
-  //       filterQuestion?.previouslyIncorrectQuestion &&
-  //       filterQuestion?.previouslyCorrectQuestion
-  //     ) {
-  //       dispatch(
-  //         fetchShortQuestionByModules({
-  //           moduleIds: filterQuestion.selectedModules,
-  //           totalLimit: limit,
-  //         }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {
-  //           dispatch(console.log("response: ", res));
-
-  //           dispatch(fetchModulesById({ ids: res.ids }))
-  //             .unwrap()
-  //             .then((res) => {
-  //               setIsLoaded(false);
-
-  //               setSAQModule(res);
-  //             })
-  //             .catch((err) => {
-  //               setIsLoaded(false);
-  //             });
-  //         })
-  //         .catch((err) => {});
-
-  //       // Fetch Question By ID
-  //       dispatch(
-  //         fetchShortQuestionByModulesById({
-  //           moduleIds: filterQuestion.selectedModules,
-  //         }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {
-  //           if (res && res.length > 0) {
-  //             // Extracting all parentIds
-  //             const parentIds = res.map((item) => item.id);
-
-  //             // Dispatch fetchSqaChild with all parentIds
-  //             dispatch(fetchSqaChild({ parentIds, limit }))
-  //               .unwrap()
-  //               .then((childRes) => {
-  //                 // Organizing Data
-  //                 const organizedData = res.map((parent) => ({
-  //                   ...parent,
-  //                   children: childRes.filter(
-  //                     (child) => child.parentQuestionId === parent.id,
-  //                   ),
-  //                 }));
-  //               })
-  //               .catch((err) => {
-  //                 console.log("Error fetching SQA Child:", err);
-  //               });
-  //           }
-  //         })
-  //         .catch((err) => {});
-  //     }
-  //     else if (
-  //       !filterQuestion?.NotAnsweredQuestion &&
-  //       filterQuestion?.previouslyIncorrectQuestion &&
-  //       filterQuestion?.previouslyCorrectQuestion
-  //     ) {
-  //       dispatch(
-  //         fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {})
-  //         .catch((err) => {
-  //           console.error(err);
-  //         });
-  //     }
-  //     //  else if (filterQuestion?.previouslyCorrectQuestion) {
-  //     //   dispatch(
-  //     //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
-  //     //   )
-  //     //     .unwrap()
-  //     //     .then((res) => {})
-  //     //     .catch((err) => {});
-  //     // } else if (filterQuestion?.previouslyIncorrectQuestion) {
-  //     //   dispatch(
-  //     //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
-  //     //   )
-  //     //     .unwrap()
-  //     //     .then((res) => {})
-  //     //     .catch((err) => {
-  //     //       console.error(err);
-  //     //     });
-  //     // }
-  //   }
-  // }, [
-  //   type,
-  //   isLoading,
-  //   dispatch,
-  //   filterQuestion?.NotAnsweredQuestion,
-  //   filterQuestion?.previouslyIncorrectQuestion,
-  //   filterQuestion?.previouslyCorrectQuestion,
-  // ]);
+  useEffect(() => {
+    if (type === "SAQ") {
+      if (
+        filterQuestion?.NotAnsweredQuestion &&
+        filterQuestion?.previouslyIncorrectQuestion &&
+        filterQuestion?.previouslyCorrectQuestion
+      ) {
+        dispatch(
+          fetchShortQuestionsWithChildren({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        );
+      } else if (
+        filterQuestion?.previouslyIncorrectQuestion &&
+        filterQuestion?.previouslyCorrectQuestion
+      ) {
+        dispatch(
+          fetchIncorrectCorrectShortQuestionByModules({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        )
+          .unwrap()
+          .then()
+          .catch((err) => {
+            console.log("previously correctIncorrect error", err);
+          });
+      } else if (filterQuestion?.previouslyCorrectQuestion) {
+        dispatch(
+          fetchCorrectShortQuestionByModules({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {});
+      } else if (filterQuestion?.previouslyIncorrectQuestion) {
+        dispatch(
+          fetchInCorrectShortQuestionByModules({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    }
+  }, [
+    type,
+    isLoading,
+    dispatch,
+    filterQuestion?.NotAnsweredQuestion,
+    filterQuestion?.previouslyIncorrectQuestion,
+    filterQuestion?.previouslyCorrectQuestion,
+    limit,
+  ]);
 
   useEffect(() => {
     if (isOpenSetUpSessionModal) {
