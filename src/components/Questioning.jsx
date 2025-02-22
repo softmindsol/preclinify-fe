@@ -59,8 +59,15 @@ import {
   fetchPresentation,
 } from "../redux/features/sort-by-presentation/sort-by-presentation.service";
 import { useLocation } from "react-router-dom";
-import { setSBAPresentationValue } from "../redux/features/presentationSBA/presentationSBA.slice";
-import { setMockPresentationValue } from "../redux/features/MockPresentation/presentationMock.slice";
+import {
+  resetSBAPresentationValue,
+  setSBAPresentationValue,
+} from "../redux/features/presentationSBA/presentationSBA.slice";
+import {
+  resetMockPresentationValue,
+  setMockPresentationValue,
+} from "../redux/features/MockPresentation/presentationMock.slice";
+import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
 
 const Questioning = () => {
   const location = useLocation();
@@ -110,8 +117,6 @@ const Questioning = () => {
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
   );
-  const filterQuestion = useSelector((state) => state.filterQuestion);
-  console.log("filterQuestion", filterQuestion);
 
   const [selectPresentation, setSelectPresentation] = useState([]);
   const filteredSBAModules = data.data.filter((module) =>
@@ -370,6 +375,9 @@ const Questioning = () => {
 
     sessionStorage.removeItem("persist:result");
     // Dispatch Redux action to clear 'result' from Redux store
+
+    dispatch(resetSBAPresentationValue());
+    dispatch(resetMockPresentationValue());
     dispatch(clearResult());
     dispatch(clearMcqsAccuracy());
     dispatch(resetAttempts([]));
@@ -402,7 +410,7 @@ const Questioning = () => {
             dispatch(
               setLoading({ key: "modules/fetchMcqsByModules", value: false }),
             );
-          });
+          }); 
       } else if (selectedOption === "SAQ") {
         dispatch(
           setLoading({
@@ -751,6 +759,7 @@ const Questioning = () => {
     if (selectedOption !== "SBA") return;
 
     setIsLoading(true);
+    console.log("SBA selected", selectedOption);
 
     dispatch(fetchTotalSBAQuestion({ ids: data.data }))
       .unwrap()
@@ -762,50 +771,56 @@ const Questioning = () => {
       });
   }, [selectedModules, selectedOption]); // Runs only once when the component mounts
 
-  useEffect(() => {
-    if (selectedOption !== "SBA") return;
-    const fetchDailyWork = async () => {
-      try {
-        const query = supabase
-          .from("resultsHistory")
-          .select("moduleId, isCorrect, userId")
-          .eq("userId", userId);
+  useEffect(
+    () => {
+      if (selectedOption !== "SBA") return;
+      const fetchDailyWork = async () => {
+        console.log("SBA selected", selectedOption);
 
-        if (selectedModules?.length) {
-          query.in("moduleId", selectedModules);
+        try {
+          const query = supabase
+            .from("resultsHistory")
+            .select("moduleId, isCorrect, userId")
+            .eq("userId", userId);
+
+          if (selectedModules?.length) {
+            query.in("moduleId", selectedModules);
+          }
+
+          const { data, error } = await query;
+
+          if (error) throw error;
+
+          // Compute totals
+          const totalsByModule = data.reduce((acc, curr) => {
+            const { moduleId, isCorrect } = curr;
+
+            if (!acc[moduleId]) {
+              acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
+            }
+
+            if (Boolean(isCorrect)) {
+              acc[moduleId].totalCorrect += 1;
+            } else {
+              acc[moduleId].totalIncorrect += 1;
+            }
+
+            return acc;
+          }, {});
+
+          setModuleTotals(Object.values(totalsByModule));
+        } catch (err) {
+          console.error("Error fetching daily work:", err);
         }
+      };
 
-        const { data, error } = await query;
-
-        if (error) throw error;
-
-        // Compute totals
-        const totalsByModule = data.reduce((acc, curr) => {
-          const { moduleId, isCorrect } = curr;
-
-          if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
-          }
-
-          if (Boolean(isCorrect)) {
-            acc[moduleId].totalCorrect += 1;
-          } else {
-            acc[moduleId].totalIncorrect += 1;
-          }
-
-          return acc;
-        }, {});
-
-        setModuleTotals(Object.values(totalsByModule));
-      } catch (err) {
-        console.error("Error fetching daily work:", err);
+      if (userId) {
+        fetchDailyWork();
       }
-    };
-
-    if (userId) {
-      fetchDailyWork();
-    }
-  }, []); // Run only once
+    },
+    [userId, selectedTab],
+    selectedModules,
+  ); // Run only once
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -846,7 +861,7 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [selectedOption]); // Handle selectedModules properly
+  }, [selectedOption, userId]); // Handle selectedModules properly
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -892,7 +907,12 @@ const Questioning = () => {
     };
 
     if (userId) fetchDailyWork();
-  }, [selectedOption]);
+  }, [selectedOption, userId]);
+
+  useEffect(() => {
+    dispatch(setSelectedSBAModule(selectedModules));
+  }, [dispatch, selectedModules]);
+  console.log("selectedModule:", selectedModules);
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
@@ -930,7 +950,7 @@ const Questioning = () => {
               {/* Tab Section */}
               <div className="flex items-center justify-between space-x-2 text-[12px] font-medium text-[#3F3F46] md:text-[16px]">
                 <button
-                  className={`w-[50%] px-4 py-2 ${
+                  className={`w-[100%] px-4 py-2 ${
                     selectedTab === "Clinical"
                       ? "bg-white text-black"
                       : "bg-[#E4E4E7] text-gray-500"
@@ -939,7 +959,7 @@ const Questioning = () => {
                 >
                   Clinical
                 </button>
-                <button
+                {/* <button
                   className={`w-[50%] px-4 py-2 ${
                     selectedTab === "Pre-clinical"
                       ? "bg-white text-black"
@@ -948,7 +968,7 @@ const Questioning = () => {
                   onClick={() => handleTabChange("Pre-clinical")}
                 >
                   Pre-clinical
-                </button>
+                </button> */}
               </div>
               {/* Search and Button Section */}
               <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
@@ -960,11 +980,11 @@ const Questioning = () => {
                     </p>
                   )}
 
-                  {selectedTab === "Pre-clinical" && (
+                  {/* {selectedTab === "Pre-clinical" && (
                     <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
                       Pre Clinical
                     </p>
-                  )}
+                  )} */}
                   <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
                     <div className="group">
                       <svg
@@ -1171,7 +1191,7 @@ const Questioning = () => {
               <div className="mb-5 mt-2 h-[1px] bg-[#A1A1AA]" />
 
               <div>
-                {selectedTab === "Pre-clinical" &&
+                {/* {selectedTab === "Pre-clinical" &&
                   (questionGenModule?.modules?.length > 0 ? (
                     questionGenModule.modules
                       .filter(
@@ -1204,7 +1224,7 @@ const Questioning = () => {
                     <div className="py-3 text-center text-gray-500">
                       No modules available.
                     </div>
-                  ))}
+                  ))} */}
 
                 {selectedTab === "Clinical" &&
                   type === "SBA" &&

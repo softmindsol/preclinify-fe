@@ -10,7 +10,16 @@ import {
   fetchMockTest,
   fetchMockTestById,
 } from "../redux/features/mock-test/mock.service";
-import { fetchShortQuestionByModules } from "../redux/features/SAQ/saq.service";
+import {
+  fetchCorrectShortQuestionByModules,
+  fetchIncorrectCorrectShortQuestionByModules,
+  fetchInCorrectShortQuestionByModules,
+  fetchModulesById,
+  fetchShortQuestionByModules,
+  fetchShortQuestionByModulesById,
+  fetchShortQuestionsWithChildren,
+  fetchSqaChild,
+} from "../redux/features/SAQ/saq.service";
 import {
   toggleNotAnsweredQuestion,
   togglePreviouslyCorrectQuestion,
@@ -21,6 +30,7 @@ import {
   fetchCorrectIncorrectResult,
   fetchCorrectResult,
   fetchIncorrectResult,
+  fetchUnattemptedQuestions,
 } from "../redux/features/filter-question/filter-question.service";
 import { fetchAllResultSaq } from "../redux/features/filter-question/filter-saq-question.service";
 
@@ -58,11 +68,17 @@ const SetupSessionModal = ({
   const [timer, setTimer] = useState(5);
   const [modeType, setModeType] = useState("Endless");
   const filterQuestion = useSelector((state) => state?.filterQuestion);
+  const { limit } = useSelector((state) => state?.limit);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [saqModule, setSAQModule] = useState([]);
 
   const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
+  const FiltershortQuestions = useSelector(
+    (state) => state?.FiltershortQuestions?.results,
+  ); // Debounced dispatch handler
 
-  console.log("SaqfilterQuestion:", SaqfilterQuestion);
-  // Debounced dispatch handler
+  console.log("FiltershortQuestions:", FiltershortQuestions);
+
   const debouncedDispatch = useCallback(
     debounce((value) => {
       dispatch(setLimit(value));
@@ -122,6 +138,7 @@ const SetupSessionModal = ({
         dispatch(
           fetchCorrectIncorrectResult({
             moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
           }),
         )
           .unwrap()
@@ -134,7 +151,12 @@ const SetupSessionModal = ({
         filterQuestion?.previouslyIncorrectQuestion &&
         filterQuestion?.previouslyCorrectQuestion
       ) {
-        dispatch(fetchAllResult({ moduleId: filterQuestion.selectedModules }))
+        dispatch(
+          fetchAllResult({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
+        )
           .unwrap()
           .then((res) => {})
           .catch((err) => {
@@ -142,14 +164,32 @@ const SetupSessionModal = ({
           });
       } else if (filterQuestion?.previouslyCorrectQuestion) {
         dispatch(
-          fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
+          fetchCorrectResult({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
         )
           .unwrap()
           .then((res) => {})
           .catch((err) => {});
       } else if (filterQuestion?.previouslyIncorrectQuestion) {
         dispatch(
-          fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
+          fetchIncorrectResult({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+      } else if (filterQuestion?.NotAnsweredQuestion) {
+        dispatch(
+          fetchUnattemptedQuestions({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+          }),
         )
           .unwrap()
           .then((res) => {})
@@ -167,63 +207,68 @@ const SetupSessionModal = ({
     filterQuestion?.previouslyCorrectQuestion,
   ]);
 
-  // useEffect(() => {
-  //   if (type === "SAQ" && !isLoadingShortQuestion) {
-  //     if (
-  //       !filterQuestion?.NotAnsweredQuestion &&
-  //       filterQuestion?.previouslyIncorrectQuestion &&
-  //       filterQuestion?.previouslyCorrectQuestion
-  //     ) {
-  //       dispatch(
-  //         fetchCorrectIncorrectResult({
-  //           moduleId: filterQuestion.selectedModules,
-  //         }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {})
-  //         .catch((err) => {
-  //           console.error(err);
-  //         });
-  //     } else if (
-  //       filterQuestion?.NotAnsweredQuestion &&
-  //       filterQuestion?.previouslyIncorrectQuestion &&
-  //       filterQuestion?.previouslyCorrectQuestion
-  //     ) {
-  //       dispatch(
-  //         fetchAllResultSaq({ moduleId: filterQuestion.selectedModules }),
-  //       )
-  //         .unwrap()
-  //         .then((res) => {})
-  //         .catch((err) => {
-  //           console.error(err);
-  //         });
-  //     }
-  //     //  else if (filterQuestion?.previouslyCorrectQuestion) {
-  //     //   dispatch(
-  //     //     fetchCorrectResult({ moduleId: filterQuestion.selectedModules }),
-  //     //   )
-  //     //     .unwrap()
-  //     //     .then((res) => {})
-  //     //     .catch((err) => {});
-  //     // } else if (filterQuestion?.previouslyIncorrectQuestion) {
-  //     //   dispatch(
-  //     //     fetchIncorrectResult({ moduleId: filterQuestion.selectedModules }),
-  //     //   )
-  //     //     .unwrap()
-  //     //     .then((res) => {})
-  //     //     .catch((err) => {
-  //     //       console.error(err);
-  //     //     });
-  //     // }
-  //   }
-  // }, [
-  //   type,
-  //   isLoading,
-  //   dispatch,
-  //   filterQuestion?.NotAnsweredQuestion,
-  //   filterQuestion?.previouslyIncorrectQuestion,
-  //   filterQuestion?.previouslyCorrectQuestion,
-  // ]);
+  useEffect(() => {
+    if (type === "SAQ") {
+      if (
+        filterQuestion?.NotAnsweredQuestion &&
+        filterQuestion?.previouslyIncorrectQuestion &&
+        filterQuestion?.previouslyCorrectQuestion
+      ) {
+        dispatch(
+          fetchShortQuestionsWithChildren({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        );
+      } else if (
+        filterQuestion?.previouslyIncorrectQuestion &&
+        filterQuestion?.previouslyCorrectQuestion
+      ) {
+        dispatch(
+          fetchIncorrectCorrectShortQuestionByModules({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        )
+          .unwrap()
+          .then()
+          .catch((err) => {
+            console.log("previously correctIncorrect error", err);
+          });
+      } else if (filterQuestion?.previouslyCorrectQuestion) {
+        dispatch(
+          fetchCorrectShortQuestionByModules({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {});
+      } else if (filterQuestion?.previouslyIncorrectQuestion) {
+        dispatch(
+          fetchInCorrectShortQuestionByModules({
+            moduleIds: filterQuestion.selectedModules,
+            limit: limit,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    }
+  }, [
+    type,
+    isLoading,
+    dispatch,
+    filterQuestion?.NotAnsweredQuestion,
+    filterQuestion?.previouslyIncorrectQuestion,
+    filterQuestion?.previouslyCorrectQuestion,
+    limit,
+  ]);
+
   useEffect(() => {
     if (isOpenSetUpSessionModal) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -385,36 +430,61 @@ const SetupSessionModal = ({
               </div>
             )}
             {/* Action Buttons */}
-            <div className="absolute bottom-3 left-5 right-5">
-              <button
-                onClick={handleQuestion}
-                className={`py-2 ${
-                  isLoading ||
+            {type === "SBA" || type === "SAQ" ? (
+              <div className="absolute bottom-3 left-5 right-5">
+                <button
+                  onClick={handleQuestion}
+                  className={`py-2 ${
+                    !filterQuestion?.previouslyIncorrectQuestion &&
+                    !filterQuestion?.previouslyCorrectQuestion &&
+                    !filterQuestion?.NotAnsweredQuestion
+                      ? "bg-[#82c7b4]"
+                      : "bg-[#3CC8A1]"
+                  } ${
+                    filterQuestion?.isLoading && "disabled:cursor-not-allowed"
+                  } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
+                  disabled={
+                    (!filterQuestion?.previouslyIncorrectQuestion &&
+                      !filterQuestion?.previouslyCorrectQuestion &&
+                      !filterQuestion?.NotAnsweredQuestion) ||
+                    filterQuestion?.isLoading
+                  }
+                >
+                  {filterQuestion?.isLoading ? "Loading..." : "Start Questions"}
+                </button>
+              </div>
+            ) : (
+              <div className="absolute bottom-3 left-5 right-5">
+                <button
+                  onClick={handleQuestion}
+                  className={`py-2 ${
+                    isLoading ||
+                    isLoadingShortQuestion ||
+                    isQuesGenLoading ||
+                    isMockLoading
+                      ? "bg-[#82c7b4]"
+                      : "bg-[#3CC8A1]"
+                  } ${
+                    isLoading ||
+                    isQuesGenLoading ||
+                    (isMockLoading && "disabled:cursor-not-allowed")
+                  } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
+                  disabled={
+                    isLoading ||
+                    isLoadingShortQuestion ||
+                    isQuesGenLoading ||
+                    isMockLoading
+                  }
+                >
+                  {isLoading ||
                   isLoadingShortQuestion ||
                   isQuesGenLoading ||
                   isMockLoading
-                    ? "bg-[#82c7b4]"
-                    : "bg-[#3CC8A1]"
-                } ${
-                  isLoading ||
-                  isQuesGenLoading ||
-                  (isMockLoading && "disabled:cursor-not-allowed")
-                } w-[100%] rounded-[8px] text-[16px] font-semibold text-white hover:bg-[#2e9e7e] dark:text-white`}
-                disabled={
-                  isLoading ||
-                  isLoadingShortQuestion ||
-                  isQuesGenLoading ||
-                  isMockLoading
-                }
-              >
-                {isLoading ||
-                isLoadingShortQuestion ||
-                isQuesGenLoading ||
-                isMockLoading
-                  ? "Loading..."
-                  : "Start Questions"}
-              </button>
-            </div>
+                    ? "Loading..."
+                    : "Start Questions"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

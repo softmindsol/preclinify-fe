@@ -30,12 +30,13 @@ import personalInfoReducer from "./features/personal-info/personal-info.slice";
 import filterQuestionsReducer from './features/filter-question/filter-question.slice'
 import streakReducer from "./features/streak/streak.slice";
 import SaqfilterQuestionReducer from "./features/filter-question/filter-saq-question.slice";
-
+import FiltershortQuestionsReducer from './features/filter-question/filter-saq-question.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: "root",
   storage, // LocalStorage for modules and mcqsQuestion
   whitelist: [
+    "FiltershortQuestionsReducer",
     "Mockpresentation",
     "presentations",
     "userAnswers",
@@ -68,6 +69,7 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  FiltershortQuestions:FiltershortQuestionsReducer,
   SaqfilterQuestion: SaqfilterQuestionReducer,
   filterQuestion: filterQuestionsReducer,
   streak: streakReducer,

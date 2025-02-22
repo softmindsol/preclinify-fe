@@ -73,6 +73,7 @@ const SbaPresentation = () => {
   const userId = useSelector((state) => state.user.userId);
   const isQuestionReview = useSelector((state) => state?.questionReview?.value);
   // Get the items to show for the current page
+  const [isAIExpanded, setIsAIExpanded] = useState(false);
 
   const [selectedFilter, setSelectedFilter] = useState("All"); // Default is 'All'
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
@@ -1028,7 +1029,7 @@ const SbaPresentation = () => {
                 </button>
               </div>
             )}
-            {isAccordionVisible && <DiscussionBoard />}
+            {/* {isAccordionVisible && <DiscussionBoard />} */}
             {isAccordionVisible && (
               <Article
                 article={article}
@@ -1441,7 +1442,7 @@ const SbaPresentation = () => {
           </div>
         </div>
       </Drawer>
-      <Chatbot />
+      <Chatbot setIsAIExpanded={setIsAIExpanded} />
     </div>
   );
 };
