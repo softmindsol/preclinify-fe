@@ -1,60 +1,59 @@
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import './App.css';
-import Pricing from './pages/Pricing';
-import VerifyEmail from './pages/VerifyEmail';
-import Setting from './pages/Setting';
-import Dashboard from './pages/Dashboard';
-import ForgetPassword from './pages/ForgetPassword';
-import ResetPassword from './pages/ResetPassword';
-import Questioning from './components/Questioning';
-import QuestionCard from './components/QuestionCard';
-import Score from './components/common/Score';
-import ShortQuestion from './components/ShortQuestion';
-import Scenarios from './components/Scenerio';
-import SceneriosDetail from './components/SceneriosDetail';
-import ContactPage from './components/contact-us';
-import { useContext, useEffect } from 'react';
-import ThemeContext from './lib/ThemeContext';
-import ChatHistory from './components/common/ChatHistory';
-import OSCEAIBOT from './components/OSCE-AI-BOT';
-import QuestionGenerator from './components/question-generation/QuestionGenerator';
-import MockTestQuestion from './components/mock-test/Mock';
-import PersonalInformation from './pages/PersonalInformation';
-import CheckoutSuccess from './pages/CheckoutSuccess';
-import CheckoutCancel from './pages/CheckoutCancel';
-import AINewVersion from './components/AI-bot-version';
-import SbaPresentation from './components/SBA-presentation/presentation-SBA';
-import MockPresentation from './components/Mock-presentation/MockPresentation';
-import supabase from './config/helper';
-import ProtectedRoute from './auth/ProtectedRoute';
-import AIAssistant from './components/ai-assistant';
-import OSCEAI from './components/OSCE-AI-Audio-Stream';
-import AudioStreamingClient from './components/AudioStream';
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import "./App.css";
+import Pricing from "./pages/Pricing";
+import VerifyEmail from "./pages/VerifyEmail";
+import Setting from "./pages/Setting";
+import Dashboard from "./pages/Dashboard";
+import ForgetPassword from "./pages/ForgetPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Questioning from "./components/Questioning";
+import QuestionCard from "./components/QuestionCard";
+import Score from "./components/common/Score";
+import ShortQuestion from "./components/ShortQuestion";
+import Scenarios from "./components/Scenerio";
+import SceneriosDetail from "./components/SceneriosDetail";
+import ContactPage from "./components/contact-us";
+import { useContext, useEffect } from "react";
+import ThemeContext from "./lib/ThemeContext";
+import ChatHistory from "./components/common/ChatHistory";
+import OSCEAIBOT from "./components/OSCE-AI-BOT";
+import QuestionGenerator from "./components/question-generation/QuestionGenerator";
+import MockTestQuestion from "./components/mock-test/Mock";
+import PersonalInformation from "./pages/PersonalInformation";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import CheckoutCancel from "./pages/CheckoutCancel";
+import AINewVersion from "./components/AI-bot-version";
+import SbaPresentation from "./components/SBA-presentation/presentation-SBA";
+import MockPresentation from "./components/Mock-presentation/MockPresentation";
+import supabase from "./config/helper";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import AIAssistant from "./components/ai-assistant";
+import OSCEAI from "./components/OSCE-AI-Audio-Stream";
+import AudioStreamingClient from "./components/AudioStream";
 
 function App() {
   const { theme } = useContext(ThemeContext);
-
 
   return (
     <div className={`App`}>
       <Routes>
         {/* Public Routes */}
         <Route index element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Register />} />
-        <Route path='/pricing' element={<Pricing />} />
-        <Route path='/forget-password' element={<ForgetPassword />} />
-        <Route path='/verify-email' element={<VerifyEmail />} />
-        <Route path='/contact-us' element={<ContactPage />} />
-        <Route path='/checkout-success' element={<CheckoutSuccess />} />
-        <Route path='/checkout-cancelled' element={<CheckoutCancel />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Register />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/forget-password" element={<ForgetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/contact-us" element={<ContactPage />} />
+        <Route path="/checkout-success" element={<CheckoutSuccess />} />
+        <Route path="/checkout-cancelled" element={<CheckoutCancel />} />
         {/* <Route path='/personal-info' element={<PersonalInformation />} /> */}
 
         <Route
-          path='/setting'
+          path="/setting"
           element={
             <ProtectedRoute>
               <Setting />
@@ -62,7 +61,7 @@ function App() {
           }
         />
         <Route
-          path='/sba-presentation'
+          path="/sba-presentation"
           element={
             <ProtectedRoute>
               <SbaPresentation />
@@ -70,7 +69,7 @@ function App() {
           }
         />
         <Route
-          path='/mock-presentation'
+          path="/mock-presentation"
           element={
             <ProtectedRoute>
               <MockPresentation />
@@ -78,7 +77,7 @@ function App() {
           }
         />
         <Route
-          path='/chat-history'
+          path="/chat-history"
           element={
             <ProtectedRoute>
               <ChatHistory />
@@ -86,9 +85,8 @@ function App() {
           }
         />
 
-
         <Route
-          path='/dashboard'
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
@@ -96,16 +94,16 @@ function App() {
           }
         />
         <Route
-          path='/questioning'
+          path="/questioning"
           element={
             <ProtectedRoute>
               <Questioning />
             </ProtectedRoute>
           }
         />
-        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
-          path='/question-card'
+          path="/question-card"
           element={
             <ProtectedRoute>
               <QuestionCard />
@@ -113,7 +111,7 @@ function App() {
           }
         />
         <Route
-          path='/score'
+          path="/score"
           element={
             <ProtectedRoute>
               <Score />
@@ -121,7 +119,7 @@ function App() {
           }
         />
         <Route
-          path='/short-question'
+          path="/short-question"
           element={
             <ProtectedRoute>
               <ShortQuestion />
@@ -129,7 +127,7 @@ function App() {
           }
         />
         <Route
-          path='/osce'
+          path="/osce"
           element={
             <ProtectedRoute>
               <Scenarios />
@@ -137,7 +135,7 @@ function App() {
           }
         />
         <Route
-          path='/static-scenerios-detail/:id'
+          path="/static-scenerios-detail/:id"
           element={
             <ProtectedRoute>
               <SceneriosDetail />
@@ -145,17 +143,17 @@ function App() {
           }
         />
         <Route
-          path='/osce-ai-bot/:categoryName'
+          path="/osce-ai-bot/:categoryName"
           element={
             <ProtectedRoute>
-              {/* <AINewVersion /> */}
+              <AINewVersion />
               {/* <OSCEAI /> */}
-              <AudioStreamingClient   />
+              {/* { <AudioStreamingClient   />} */}
             </ProtectedRoute>
           }
         />
         <Route
-          path='/question-generator'
+          path="/question-generator"
           element={
             <ProtectedRoute>
               <QuestionGenerator />
@@ -163,7 +161,7 @@ function App() {
           }
         />
         <Route
-          path='/mock-test'
+          path="/mock-test"
           element={
             <ProtectedRoute>
               <MockTestQuestion />
