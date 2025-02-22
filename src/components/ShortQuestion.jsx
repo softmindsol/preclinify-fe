@@ -52,6 +52,9 @@ const calculateTimeForQuestions = (numQuestions) => {
   return totalTimeInSeconds; // Return total time in seconds
 };
 const ShortQuestion = () => {
+  const FiltershortQuestions = useSelector(
+    (state) => state?.FiltershortQuestions?.results,
+  );
   const sqa = useSelector((state) => state?.SQA?.organizedData || []);
   const attempted = useSelector((state) => state.attempts?.attempts);
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
@@ -96,7 +99,7 @@ const ShortQuestion = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [parentIndex, setParentIndex] = useState(0);
-  const totalQuestions = sqa.reduce(
+  const totalQuestions = FiltershortQuestions.reduce(
     (total, parent) => total + parent?.children?.length,
     0,
   );
@@ -106,10 +109,13 @@ const ShortQuestion = () => {
   const [checkedAnswers, setCheckedAnswers] = useState(
     Array(totalQuestions).fill(false),
   );
+
+  console.log("FiltershortQuestions:", FiltershortQuestions);
+
   // Initialize attempts with null values
   // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
   // const currentItems = sqa.children.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-  const allChildren = sqa.flatMap((parent) => parent.children); // or use: const allChildren = [].concat(...sqa.map(parent => parent.children));
+  const allChildren = FiltershortQuestions.flatMap((parent) => parent.children); // or use: const allChildren = [].concat(...sqa.map(parent => parent.children));
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   // Get the current items based on the current page
   const currentItems = allChildren.slice(
@@ -147,9 +153,9 @@ const ShortQuestion = () => {
   };
 
   const nextQuestion = () => {
-    if (childIndex < sqa[parentIndex]?.children.length - 1) {
+    if (childIndex < FiltershortQuestions[parentIndex]?.children.length - 1) {
       setChildIndex((prev) => prev + 1);
-    } else if (parentIndex < sqa.length - 1) {
+    } else if (parentIndex < FiltershortQuestions.length - 1) {
       setParentIndex((prev) => prev + 1);
       setChildIndex(0);
     }
@@ -177,7 +183,7 @@ const ShortQuestion = () => {
       setChildIndex((prev) => prev - 1);
     } else if (parentIndex > 0) {
       setParentIndex((prev) => prev - 1);
-      setChildIndex(sqa[parentIndex - 1]?.children.length - 1);
+      setChildIndex(FiltershortQuestions[parentIndex - 1]?.children.length - 1);
     }
     setIsAnswerChecked(false);
     setCurrentIndex((prev) => prev - 1); // Update current index
@@ -202,9 +208,10 @@ const ShortQuestion = () => {
   };
   const handleIncorrectClick = useCallback(() => {
     const globalIndex =
-      sqa
-        .slice(0, parentIndex)
-        .reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+      FiltershortQuestions.slice(0, parentIndex).reduce(
+        (acc, parent) => acc + parent.children.length,
+        0,
+      ) + childIndex;
     markQuestion(globalIndex, false);
     dispatch(setMcqsAccuracy({ accuracy }));
     setTestCheckAnswer(false);
@@ -215,19 +222,28 @@ const ShortQuestion = () => {
         isCorrect: false,
         isIncorrect: true,
         isPartial: false,
-        questionId: sqa[parentIndex]?.id,
+        questionId: FiltershortQuestions[parentIndex]?.id,
         userId,
-        moduleId: sqa[parentIndex]?.categoryId,
-        parentId: sqa[parentIndex].id,
+        moduleId: FiltershortQuestions[parentIndex]?.categoryId,
+        parentId: FiltershortQuestions[parentIndex]?.id,
+        childrenId: FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
       }),
     );
-  }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
+  }, [
+    FiltershortQuestions,
+    parentIndex,
+    childIndex,
+    dispatch,
+    accuracy,
+    nextQuestion,
+  ]);
 
   const handlePartialClick = useCallback(() => {
     const globalIndex =
-      sqa
-        .slice(0, parentIndex)
-        .reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+      FiltershortQuestions.slice(0, parentIndex).reduce(
+        (acc, parent) => acc + parent.children.length,
+        0,
+      ) + childIndex;
     markQuestion(globalIndex, "partial");
     dispatch(setMcqsAccuracy({ accuracy }));
     setTestCheckAnswer(false);
@@ -238,19 +254,29 @@ const ShortQuestion = () => {
         isCorrect: false,
         isIncorrect: false,
         isPartial: true,
-        questionId: sqa[parentIndex]?.id,
+        questionId: FiltershortQuestions[parentIndex]?.id,
         userId,
-        moduleId: sqa[parentIndex]?.categoryId,
-        parentId: sqa[parentIndex].id,
+        moduleId: FiltershortQuestions[parentIndex]?.categoryId,
+        parentId: FiltershortQuestions[parentIndex]?.id,
+
+        childrenId: FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
       }),
     );
-  }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
+  }, [
+    FiltershortQuestions,
+    parentIndex,
+    childIndex,
+    dispatch,
+    accuracy,
+    nextQuestion,
+  ]);
 
   const handleCorrectClick = useCallback(() => {
     const globalIndex =
-      sqa
-        .slice(0, parentIndex)
-        .reduce((acc, parent) => acc + parent.children.length, 0) + childIndex;
+      FiltershortQuestions.slice(0, parentIndex).reduce(
+        (acc, parent) => acc + parent.children.length,
+        0,
+      ) + childIndex;
     markQuestion(globalIndex, true);
     dispatch(setMcqsAccuracy({ accuracy }));
     setTestCheckAnswer(false);
@@ -261,13 +287,22 @@ const ShortQuestion = () => {
         isCorrect: true,
         isIncorrect: false,
         isPartial: false,
-        questionId: sqa[parentIndex]?.id,
+        questionId: FiltershortQuestions[parentIndex]?.id,
         userId,
-        moduleId: sqa[parentIndex]?.categoryId,
-        parentId: sqa[parentIndex].id,
+        moduleId: FiltershortQuestions[parentIndex]?.categoryId,
+        parentId: FiltershortQuestions[parentIndex]?.id,
+
+        childrenId: FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
       }),
     );
-  }, [sqa, parentIndex, childIndex, dispatch, accuracy, nextQuestion]);
+  }, [
+    FiltershortQuestions,
+    parentIndex,
+    childIndex,
+    dispatch,
+    accuracy,
+    nextQuestion,
+  ]);
 
   const handleFilterChange = (filter) => {
     setSelectedFilter(filter);
@@ -431,12 +466,12 @@ const ShortQuestion = () => {
   }, [attempted]);
 
   useEffect(() => {
-    if (sqa.length > 0) {
+    if (FiltershortQuestions.length > 0) {
       if (active) {
         dispatch(initializeAnswers(totalQuestions)); // Initialize answers when the component mounts
       }
     }
-  }, [sqa, dispatch, totalQuestions]);
+  }, [FiltershortQuestions, dispatch, totalQuestions]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -496,24 +531,25 @@ const ShortQuestion = () => {
 
   useEffect(() => {
     setIsReviewEnabled(false);
-    if (sqa[parentIndex]?.children.length === childIndex + 1) {
+    if (FiltershortQuestions[parentIndex]?.children.length === childIndex + 1) {
       setIsReviewEnabled(true); // Enable the Finish button when the condition is met
     }
-  }, [childIndex, sqa[parentIndex]?.children.length]); // Re-run whenever currentIndex changes
+  }, [childIndex, FiltershortQuestions[parentIndex]?.children.length]); // Re-run whenever currentIndex changes
   useEffect(() => {
-    const totalQuestions = sqa.reduce(
+    const totalQuestions = FiltershortQuestions.reduce(
       (acc, parent) => acc + parent.children.length,
       0,
     );
     const currentQuestionNumber =
       childIndex +
       1 +
-      sqa
-        .slice(0, parentIndex)
-        .reduce((acc, parent) => acc + parent.children.length, 0);
+      FiltershortQuestions.slice(0, parentIndex).reduce(
+        (acc, parent) => acc + parent.children.length,
+        0,
+      );
 
     setIsReviewEnabled(currentQuestionNumber === totalQuestions);
-  }, [childIndex, parentIndex, sqa]);
+  }, [childIndex, parentIndex, FiltershortQuestions]);
 
   useEffect(() => {
     if (active) {
@@ -571,13 +607,11 @@ const ShortQuestion = () => {
                   width: `${
                     ((childIndex +
                       1 +
-                      sqa
-                        .slice(0, parentIndex)
-                        .reduce(
-                          (acc, parent) => acc + parent.children.length,
-                          0,
-                        )) /
-                      sqa.reduce(
+                      FiltershortQuestions.slice(0, parentIndex).reduce(
+                        (acc, parent) => acc + parent.children.length,
+                        0,
+                      )) /
+                      FiltershortQuestions.reduce(
                         (total, parent) => total + parent.children.length,
                         0,
                       )) *
@@ -645,14 +679,15 @@ const ShortQuestion = () => {
                   // Calculate current question number
                   childIndex +
                     1 +
-                    sqa
-                      .slice(0, parentIndex)
-                      .reduce((acc, parent) => acc + parent.children.length, 0)
+                    FiltershortQuestions.slice(0, parentIndex).reduce(
+                      (acc, parent) => acc + parent.children.length,
+                      0,
+                    )
                 }{" "}
                 of{" "}
                 {
                   // Calculate total questions
-                  sqa.reduce(
+                  FiltershortQuestions.reduce(
                     (total, parent) => total + parent.children.length,
                     0,
                   )
@@ -660,8 +695,9 @@ const ShortQuestion = () => {
               </h2>
               <button
                 className={`text-white ${
-                  childIndex + 1 === sqa[parentIndex]?.children?.length &&
-                  parentIndex === sqa.length - 1
+                  childIndex + 1 ===
+                    FiltershortQuestions[parentIndex]?.children?.length &&
+                  parentIndex === FiltershortQuestions.length - 1
                     ? "opacity-70 disabled:cursor-not-allowed"
                     : ""
                 }`}
@@ -717,11 +753,14 @@ const ShortQuestion = () => {
           {/* Question Section */}
           <div className="mt-6 p-6">
             <p className="w-[100%] text-justify text-[#000000] dark:text-white lg:w-[720px]">
-              {sqa[parentIndex]?.parentQuestion}
+              {FiltershortQuestions[parentIndex]?.parentQuestion}
             </p>
 
             <h3 className="mt-4 w-[100%] text-wrap text-[14px] font-bold text-[#27272A] dark:text-white lg:w-[720px]">
-              {sqa[parentIndex]?.children[childIndex]?.questionLead}
+              {
+                FiltershortQuestions[parentIndex]?.children[childIndex]
+                  ?.questionLead
+              }
             </h3>
 
             <div></div>
@@ -758,7 +797,10 @@ const ShortQuestion = () => {
                 <textarea
                   className="mt-2 h-[180px] w-[100%] text-wrap rounded-[6px] border border-[#3CC8A1] p-5 placeholder:font-semibold placeholder:text-[#3F3F46] lg:w-[720px]"
                   placeholder="This is the user’s answer"
-                  value={sqa[parentIndex]?.children[childIndex]?.idealAnswer}
+                  value={
+                    FiltershortQuestions[parentIndex]?.children[childIndex]
+                      ?.idealAnswer
+                  }
                   readOnly
                 />
               </div>

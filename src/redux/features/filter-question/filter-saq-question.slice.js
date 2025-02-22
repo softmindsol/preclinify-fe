@@ -1,104 +1,73 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult } from "./filter-question.service";
-import { fetchAllResultSaq } from "./filter-saq-question.service";
+import { fetchCorrectShortQuestionByModules, fetchIncorrectCorrectShortQuestionByModules, fetchInCorrectShortQuestionByModules, fetchShortQuestionsWithChildren } from "../SAQ/saq.service";
 
 const initialState = {
-    NotAnsweredQuestion: true,
-    previouslyIncorrectQuestion: true,
-    previouslyCorrectQuestion: true,
-    selectedModules: [],
     shortQuestions: [],
-    modules: [],
-    attempts: [],
-    counts: {},
-    sqaChildren: [],
-    organizedData: [],
-    userAnswers: [],
-    checkedAnswers: [],
+    results: [],
     loading: false,
     error: null,
 };
 
-const questionsSlice = createSlice({
-    name: "SaqfilterQuestion",
+const shortQuestionSlice = createSlice({
+    name: "FiltershortQuestions",
     initialState,
-    reducers: {
-        toggleNotAnsweredQuestion: (state) => {
-            state.NotAnsweredQuestion = !state.NotAnsweredQuestion;
-        },
-        togglePreviouslyIncorrectQuestion: (state) => {
-            state.previouslyIncorrectQuestion = !state.previouslyIncorrectQuestion;
-        },
-        togglePreviouslyCorrectQuestion: (state) => {
-            state.previouslyCorrectQuestion = !state.previouslyCorrectQuestion;
-        },
-        setSelectedSBAModule: (state, action) => {
-            state.selectedModules = action.payload;
-        },
-        clearResults: (state) => {
-            state.results = [];
-            state.error = null;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(fetchCorrectIncorrectResult.pending, (state) => {
-                state.isLoading = true;
+            // Handle fetchShortQuestionByModules
+            .addCase(fetchShortQuestionsWithChildren.pending, (state) => {
+                state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchCorrectIncorrectResult.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.results = action.payload; // Store the fetched data
+            .addCase(fetchShortQuestionsWithChildren.fulfilled, (state, action) => {
+                state.loading = false;
+                state.results = action.payload;
             })
-            .addCase(fetchCorrectIncorrectResult.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload; // Store error message
+            .addCase(fetchShortQuestionsWithChildren.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
-            .addCase(fetchAllResultSaq.pending, (state) => {
-                state.isLoading = true;
+
+            // Handle fetchIncorrectCorrectShortQuestionByModules
+            .addCase(fetchIncorrectCorrectShortQuestionByModules.pending, (state) => {
+                state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchAllResultSaq.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.results = action.payload; // Store the fetched data
+            .addCase(fetchIncorrectCorrectShortQuestionByModules.fulfilled, (state, action) => {
+                state.loading = false;
+                state.results = action.payload;
             })
-            .addCase(fetchAllResultSaq.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload; // Store error message
+            .addCase(fetchIncorrectCorrectShortQuestionByModules.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
-            .addCase(fetchCorrectResult.pending, (state) => {
-                state.isLoading = true;
+            // Handle fetchCorrectShortQuestionByModules
+            .addCase(fetchCorrectShortQuestionByModules.pending, (state) => {
+                state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchCorrectResult.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            .addCase(fetchCorrectShortQuestionByModules.fulfilled, (state, action) => {
+                state.loading = false;
+                state.results = action.payload;
             })
-            .addCase(fetchCorrectResult.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload; // Error ko state me store kar raha hai
+            .addCase(fetchCorrectShortQuestionByModules.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
-            .addCase(fetchIncorrectResult.pending, (state) => {
-                state.isLoading = true;
+            // Handle fetchInCorrectShortQuestionByModules
+            .addCase(fetchInCorrectShortQuestionByModules.pending, (state) => {
+                state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchIncorrectResult.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            .addCase(fetchInCorrectShortQuestionByModules.fulfilled, (state, action) => {
+                state.loading = false;
+                state.results = action.payload;
             })
-            .addCase(fetchIncorrectResult.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload; // Error ko state me store kar raha hai
+            .addCase(fetchInCorrectShortQuestionByModules.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
-        ;
-    },
+    }, 
 });
 
-export const {
-    toggleNotAnsweredQuestion,
-    togglePreviouslyIncorrectQuestion,
-    togglePreviouslyCorrectQuestion,
-    setSelectedSBAModule
-} = questionsSlice.actions;
-
-export default questionsSlice.reducer;
+export default shortQuestionSlice.reducer;

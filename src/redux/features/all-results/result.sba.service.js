@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../../../config/helper";
+import { Children } from "react";
 
 // Define the async thunk SBA
 export const insertResult = createAsyncThunk(
@@ -55,7 +56,7 @@ export const insertMockResult = createAsyncThunk(
 export const insertSAQResult = createAsyncThunk(
   "resultsHistory/insertSAQResult",
   async (
-    { parentId, isCorrect, isIncorrect, isPartial, questionId, userId, moduleId },
+    { childrenId, parentId, isCorrect, isIncorrect, isPartial, questionId, userId, moduleId },
     thunkAPI,
   ) => {
     try {
@@ -67,7 +68,8 @@ export const insertSAQResult = createAsyncThunk(
           questionId,
           userId,
           moduleId,
-          parentId
+          parentId,
+          childrenId
         },
       ]);
 
