@@ -1,46 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "./common/Logo";
 import { useNavigate, useParams } from "react-router-dom";
-import ConfirmationModal from "./common/Confirmation-OSCE";
-import supabase from "../config/helper";
 import { useDispatch, useSelector } from "react-redux";
 import DashboardModal from "./common/DashboardModal";
 import FeedbackModal from "./common/Feedback";
-import { insertOSCEBotData } from "../redux/features/osce-bot/osce-bot.service";
-
-// Medical scenarios database
-// const MEDICAL_SCENARIOS = {
-//   diabetes: {
-//     symptoms: ["Increased thirst", "Frequent urination", "Fatigue"],
-//     patientProfile:
-//       "Rohan Sagu, a 45-year-old male, family history of diabetes",
-//     initialComplaint:
-//       "I've been feeling very thirsty and urinating more frequently lately.",
-//   },
-//   asthma: {
-//     symptoms: ["Shortness of breath", "Chest tightness", "Wheezing"],
-//     patientProfile: "Rohan Sagu, a 30-year-old female with pollen allergy",
-//     initialComplaint:
-//       "I've been having trouble breathing and hear a whistling sound in my chest.",
-//   },
-//   hypertension: {
-//     symptoms: ["Headaches", "Dizziness", "Nosebleeds"],
-//     patientProfile: "Rohan Sahu, a 55-year-old male with smoking habit",
-//     initialComplaint:
-//       "I've been getting frequent headaches and sometimes feel lightheaded.",
-//   },
-// };
+import useVoiceRecorder from "../hooks/useVoiceRecorder";
+import useSummaryAndFeedback from "../hooks/useSummaryAndFeedback";
 
 const AINewVersion = () => {
-  const audioRef = useRef(null);
-  const peerConnectionRef = useRef(null);
-  const dataChannelRef = useRef(null);
-  const [transcript, setTranscript] = useState([]); // State to hold the conversation
-  const recognitionRef = useRef(null);
   const { categoryName } = useParams();
 
   const userInfo = useSelector((state) => state?.user?.userInfo);
-  const [isRecording, setIsRecording] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const [selectedVoice, setSelectedVoice] = useState(null);
@@ -70,173 +40,14 @@ const AINewVersion = () => {
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
 
-  //   const [chatFeedBack, setChatFeedBack] = useState({
-  //     feedback: "",
-  //     summary: "",
-  //     category: categoryName,
-  //     score: 0,
-  //     user_id: userId,
-  //   });
+  const { isRecording, transcript, audioRef, initWebRTC, stopRecording } =
+    useVoiceRecorder(categoryName);
 
-  //   const scenario = MEDICAL_SCENARIOS[categoryName] || {
-  //     symptoms: [categoryName],
-  //     patientProfile: `${userInfo?.user_metadata?.displayName?.split(" ")[0] || "unknown"}, a standard patient`,
-  //     initialComplaint: "Hi Doctor",
-  //   };
-
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
-  };
+  const { chatFeedback } = useSummaryAndFeedback(transcript);
 
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
   };
-
-  //   const generateSummaryAndFeedback = async () => {
-  //     const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_OSCE_KEY;
-
-  //     try {
-  //       const response = await fetch(
-  //         "https://api.openai.com/v1/chat/completions",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             Authorization: `Bearer ${OPENAI_API_KEY}`,
-  //           },
-  //           body: JSON.stringify({
-  //             model: "gpt-4o-audio-preview",
-  //             messages: [
-  //               {
-  //                 role: "system",
-  //                 content: `You are a medical examiner. Analyze the following consultation transcript and return a structured JSON response with the following format:
-
-  //             {
-  //               "summary": "Concise summary of the conversation",
-  //               "feedback": "Detailed constructive feedback",
-  //               "score": 7
-  //             }
-
-  //             Follow UK consultation guidelines and focus on:
-  //             - Introduction and empathy
-  //             - Safety-netting
-  //             - Red flag symptoms
-  //             - Past medical and surgical history
-  //             - Ideas, concerns, and expectations
-  //             - Family and social history
-  //             - Overall consultation style.
-
-  //             Ensure the response is strictly formatted as JSON without additional text.`,
-  //               },
-  //               {
-  //                 role: "user",
-  //                 content: `Transcript:\n${transcript
-  //                   .map(
-  //                     (entry) =>
-  //                       `${entry.fromAI ? "Patient" : "Doctor"}: ${entry.text}`,
-  //                   )
-  //                   .join("\n")}`,
-  //               },
-  //             ],
-  //           }),
-  //         },
-  //       );
-
-  //       const data = await response.json();
-
-  //       // Parse the JSON content from OpenAI response
-  //       const result = JSON.parse(data.choices[0].message.content);
-  //       setChatFeedBack((prevState) => ({
-  //         ...prevState,
-  //         feedback: result.feedback,
-  //         summary: result.summary,
-  //         score: result.score,
-  //       }));
-
-  //       return result;
-  //     } catch (error) {
-  //       console.error("Error generating summary and feedback:", error);
-  //       return null;
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     if (transcript.length > 0) {
-  //       generateSummaryAndFeedback();
-  //     }
-  //   }, [transcript]); // Trigger whenever the transcript updates
-
-  const playAIResponse = (text) => {
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
-    }
-
-    // Stop any ongoing recognition
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-
-    const sentences = text.split(". ");
-    let index = 0;
-
-    setIsAISpeaking(true); // Set AI speaking state to true
-    setIsRecording(false);
-
-    const speakNext = () => {
-      if (index < sentences.length) {
-        const utterance = new SpeechSynthesisUtterance(sentences[index]);
-        utterance.pitch = 1.2;
-        utterance.rate = 1;
-        utterance.volume = 1;
-
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-        }
-
-        utterance.onend = () => {
-          index++;
-          if (index >= sentences.length) {
-            setIsAISpeaking(false); // Reset when done speaking
-          }
-          speakNext();
-        };
-
-        window.speechSynthesis.speak(utterance);
-      }
-    };
-
-    speakNext();
-  };
-  //   const handleStartRecording = () => {
-  //     // if (!isPatientOn) return;
-
-  //     // Get current recognition state
-  //     const recognition = recognitionRef.current;
-  //     if (!recognition) return;
-
-  //     // Toggle recording state
-  //     if (!isRecording) {
-  //       // Ensure any existing recognition is stopped first
-  //       recognition.stop();
-  //       recognition.abort();
-  //       setIsPatientOn(false);
-  //       // Start fresh recognition
-  //       recognition.start();
-  //       setIsRecording(true);
-  //       setIsMicActive(true);
-  //     } else {
-  //       // Stop ongoing recognition
-  //       recognition.stop();
-  //       setIsRecording(false);
-  //       setIsPatientOn(true);
-  //       setIsMicActive(false);
-  //       setShowModal(true);
-  //     }
-
-  //     // setTimeout(() => {
-  //     //     setIsMicActive(false);
-  //     // }, 200);
-  //   };
 
   const handlerOpenDashboardModal = () => {
     setIsDashboardModalOpen(!isDashboardModalOpen);
@@ -247,20 +58,14 @@ const AINewVersion = () => {
     }
   };
 
-  //   const finishReviewHandler = () => {
-  //     dispatch(insertOSCEBotData({ chatFeedBack }))
-  //       .unwrap()
-  //       .then(() => {
-  //         navigate("/chat-history");
-  //       })
-  //       .catch(() => {});
+  //   const handleSubmit = (e) => {
+  //     e.preventDefault();
+  //     if (inputText.trim() !== "") {
+  //       sendTextMessage(inputText);
+  //       setTranscript((prev) => [...prev, { fromAI: false, text: inputText }]);
+  //       setInputText(""); // Clear input field
+  //     }
   //   };
-
-  // const finishReview = () => {
-  //   generateSummaryAndFeedback(); // Generate final summary and feedback
-  //   setIsDashboardModalOpen(true); // Open the dashboard modal
-  // };
-  // //   console.log("chatFeedBack:", chatFeedBack);
 
   useEffect(() => {
     const savedMinutes = localStorage.getItem("minutes");
@@ -303,116 +108,6 @@ const AINewVersion = () => {
 
     return () => clearInterval(timerInterval);
   }, [timerActive, minutes, seconds, navigate]);
-
-  useEffect(() => {
-    if (isAISpeaking && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-      setIsMicActive(false);
-
-      // setIsPatientOn(true);
-    }
-  }, [isAISpeaking]);
-
-  //   useEffect(() => {
-  //     if (transcriptContainerRef.current) {
-  //       transcriptContainerRef.current.scrollTop =
-  //         transcriptContainerRef.current.scrollHeight;
-  //     }
-  //   }, [transcript]);
-
-  useEffect(() => {
-    const initWebRTC = async () => {
-      const tokenResponse = await fetch(
-        `http://localhost:8000/session/${categoryName}`,
-      );
-      const data = await tokenResponse.json();
-      const EPHEMERAL_KEY = data.client_secret.value;
-      const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-      const baseUrl = "https://api.openai.com/v1/realtime";
-      const model = "gpt-4o-realtime-preview-2024-12-17";
-
-      const peerConnection = new RTCPeerConnection();
-      peerConnectionRef.current = peerConnection;
-
-      const audioElement = audioRef.current;
-      peerConnection.ontrack = (event) => {
-        audioElement.srcObject = event.streams[0];
-      };
-
-      const localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-      peerConnection.addTrack(localStream.getTracks()[0]);
-
-      const dataChannel = peerConnection.createDataChannel("oai-events");
-      dataChannelRef.current = dataChannel;
-
-      dataChannel.addEventListener("message", (event) => {
-        const message = JSON.parse(event.data);
-        if (message && message.transcript) {
-          setTranscript((prevTranscript) => [
-            ...prevTranscript,
-            { fromAI: true, text: message.transcript },
-          ]);
-        }
-      });
-
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-
-      const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
-        method: "POST",
-        body: offer.sdp,
-        headers: {
-          Authorization: `Bearer ${EPHEMERAL_KEY}`,
-          "Content-Type": "application/sdp",
-        },
-      });
-
-      const answer = { type: "answer", sdp: await sdpResponse.text() };
-      await peerConnection.setRemoteDescription(answer);
-    };
-
-    initWebRTC();
-
-    // Initialize Speech Recognition
-    const initSpeechRecognition = () => {
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognitionRef.current = recognition;
-
-        recognition.continuous = true; // Continuous listening
-        recognition.interimResults = false; // Only final results
-        recognition.lang = "en-US"; // Set language (change as needed)
-
-        recognition.onresult = (event) => {
-          const transcriptText =
-            event.results[event.results.length - 1][0].transcript;
-          setTranscript((prevTranscript) => [
-            ...prevTranscript,
-            { fromAI: false, text: transcriptText },
-          ]);
-        };
-
-        recognition.start(); // Start listening
-      } else {
-        console.error(
-          "SpeechRecognition API is not supported in this browser.",
-        );
-      }
-    };
-
-    initSpeechRecognition();
-
-    return () => {
-      if (peerConnectionRef.current) peerConnectionRef.current.close();
-      if (recognitionRef.current) recognitionRef.current.stop();
-    };
-  }, []);
 
   return (
     <div className="w-full">
@@ -540,10 +235,7 @@ const AINewVersion = () => {
 
       <div className={`${darkModeRedux ? "dark" : ""}`}>
         <main className="relative ml-[250px] mt-5 h-[60vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
-          <div
-            className="transcript h-full overflow-y-auto pr-4"
-            // ref={transcriptContainerRef}
-          >
+          <div className="transcript h-full overflow-y-auto pr-4">
             {transcript.map((entry, index) => (
               <div
                 key={index}
@@ -593,33 +285,31 @@ const AINewVersion = () => {
 
         <div className="ml-[250px] mt-5 h-[35vh] rounded-[8px] bg-white p-5">
           <div className="flex w-full flex-col items-center justify-center gap-2">
-            {
-              <button
-                // onClick={handleStartRecording}
-                className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
-              >
-                <audio ref={audioRef} autoPlay controls />
-                <img
-                  src="/assets/mic.svg"
-                  width={30}
-                  height={30}
-                  className="flex cursor-pointer items-center justify-center"
-                  alt=""
-                />
-              </button>
-            }
+            <button
+              onClick={isRecording ? stopRecording : initWebRTC}
+              className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
+            >
+              <audio ref={audioRef} className="hidden" />
+              <img
+                src="/assets/mic.svg"
+                width={30}
+                height={30}
+                className="flex cursor-pointer items-center justify-center"
+                alt=""
+              />
+            </button>
 
             <div
               className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
             >
               <form
-                // onSubmit={}
                 className="flex items-center justify-center gap-2"
+                // onSubmit={handleSubmit}
               >
                 <input
                   type="text"
                   value={inputText}
-                  onChange={handleInputChange}
+                  onChange={(e) => setInputText(e.target.value)}
                   className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
                   placeholder="What’s brought you in today? (press spacebar to speak)"
                 />
