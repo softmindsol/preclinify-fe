@@ -46,9 +46,8 @@ const AINewVersion = () => {
     stopRecording,
   } = useVoiceRecorder(AIPrompt);
   const instruction = AIPrompt;
-  const { chatFeedback, generateSummaryAndFeedback } = useSummaryAndFeedback(
-    transcript,
-  );
+  const { chatFeedback, generateSummaryAndFeedback } =
+    useSummaryAndFeedback(transcript);
   console.log(chatFeedback);
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
@@ -121,7 +120,6 @@ const AINewVersion = () => {
       { fromAI: true, text: aiResponse }, // AI's message
     ]);
   };
-  console.log("inputText:", inputText);
 
   //   const handleSubmit = (e) => {
   //     e  .preventDefault();
@@ -132,11 +130,12 @@ const AINewVersion = () => {
   //     }
   //   };
   const finishReviewHandler = async () => {
-    await dispatch(
-      insertOSCEBotData({
-        chatFeedback,
-      }),
-    );
+    try {
+      await dispatch(insertOSCEBotData({ chatFeedback })).unwrap();
+      navigate("/chat-history"); // Navigate after successful dispatch
+    } catch (error) {
+      console.error("Error inserting OSCE Bot Data:", error);
+    }
   };
 
   useEffect(() => {
@@ -333,7 +332,7 @@ const AINewVersion = () => {
             Text
           </button>
           <button
-            className={`flex w-full items-center  justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
+            className={`flex w-full items-center justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
               activeTab === "voice" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
             } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
             onClick={() => setActiveTab("voice")}

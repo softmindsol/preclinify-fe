@@ -31,6 +31,8 @@ const HistoryList = () => {
     }
   }, [dispatch, userId]);
 
+  
+
   return (
     <div className="w-full lg:flex">
       <div className="fixed hidden h-full lg:block">
@@ -58,22 +60,23 @@ const HistoryList = () => {
         </h2>
         <hr />
         <div className="space-y-2">
-          {oscebot.map((item) => (
+          {oscebot?.map((item, index) => (
             <div key={item.id} className="border-b last:border-none">
               <div className="flex items-center justify-between px-5 py-2">
                 <div className="flex w-[30%] items-center justify-between">
                   <h3 className="text-[16px] font-medium text-[#3F3F46]">
-                    {item.category}
+                    {/* {item?.category} */}
+                    {index+1}
                   </h3>
                   <p className="text-[16px] font-bold text-[#A1A1AA]">
-                    {formatDate(item.created_at)}
+                    {formatDate(item?.created_at)}
                   </p>
                 </div>
                 <div className="flex w-[30%] items-center justify-between gap-x-2 space-x-2">
                   <div className="relative h-[27px] w-40 rounded-[3px] bg-[#E4E4E7]">
                     <div
                       className="absolute left-0 top-0 h-[27px] rounded-[3px] bg-[#3CC8A1]"
-                      style={{ width: `${item.score * 10}% ` }}
+                      style={{ width: `${item?.score * 10}% ` }}
                     ></div>
                   </div>
                   <button
@@ -116,11 +119,11 @@ const HistoryList = () => {
               </div>
               {openItemId === item.id && (
                 <div className="rounded bg-gray-50 p-4">
-                  <p className="text-sm text-gray-700">{item.summary}</p>
+                  <p className="text-sm text-gray-700">{item?.summary}</p>
                   <p className="mt-10 text-[18px] font-semibold text-black">
                     Feedback: <br />{" "}
                     <span className="text-[14px] font-normal">
-                      {item.feedback}
+                      {item?.feedback}
                     </span>
                   </p>
                 </div>
