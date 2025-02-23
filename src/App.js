@@ -33,6 +33,9 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import AIAssistant from "./components/ai-assistant";
 import OSCEAI from "./components/OSCE-AI-Audio-Stream";
 import AudioStreamingClient from "./components/AudioStream";
+import { Privacy } from "./pages/Privacy";
+import TermCondition from "./pages/TermCondition";
+import Declaimer from "./pages/Declaimer";
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -166,6 +169,30 @@ function App() {
             <ProtectedRoute>
               <MockTestQuestion />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/privacy-policy"
+          element={
+        
+              <Privacy />
+            
+          }
+        />
+        <Route
+          path="/term-and-condition"
+          element={
+           
+            <TermCondition />
+          
+          }
+        />
+        <Route
+          path="/disclaimer"
+          element={
+           
+              <Declaimer />
+   
           }
         />
       </Routes>

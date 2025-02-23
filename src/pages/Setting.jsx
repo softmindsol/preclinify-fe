@@ -185,9 +185,9 @@ const Setting = () => {
                   Your remaining credit for OSCE
                 </p>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[12px] font-semibold dark:text-white sm:text-[14px]">
+                  {/* <span className="text-[12px] font-semibold dark:text-white sm:text-[14px]">
                     6969
-                  </span>
+                  </span> */}
                 </div>
               </div>
               <button className="rounded-[6px] border-[1px] border-[#3CC8A1] px-2 py-1 text-[12px] text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white sm:text-[14px]">
@@ -210,9 +210,9 @@ const Setting = () => {
                   Platinum Tier Subscription
                 </p>
               </div>
-              <p className="text-[14px] font-bold text-[#71717A] dark:text-white sm:text-[16px]">
+              {/* <p className="text-[14px] font-bold text-[#71717A] dark:text-white sm:text-[16px]">
                 £3499 / Year
-              </p>
+              </p> */}
             </div>
 
             <button className="rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[12px] text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-[1px] dark:border-white dark:text-white dark:hover:border-[#FF9741] sm:text-[14px]">
@@ -220,9 +220,9 @@ const Setting = () => {
             </button>
           </div>
           <div className="mt-4 flex space-x-4">
-            <button className="rounded-[6px] border-[1px] border-[#FF9741] px-3 py-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-[1px] dark:border-white dark:text-white dark:hover:border-[#FF9741] sm:text-[14px]">
+            {/* <button className="rounded-[6px] border-[1px] border-[#FF9741] px-3 py-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-[1px] dark:border-white dark:text-white dark:hover:border-[#FF9741] sm:text-[14px]">
               Purchase OSCE Credit
-            </button>
+            </button> */}
             <button className="rounded-[6px] border-[1px] border-[#FF9741] px-3 py-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-[1px] dark:border-white dark:text-white dark:hover:border-[#FF9741] sm:text-[14px]">
               Update Billing Information
             </button>
@@ -342,9 +342,9 @@ const Setting = () => {
             Advanced
           </p>
           <div className="mt-10 flex flex-col gap-y-5">
-            <button className="w-[156px] rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[14px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-[1px] dark:border-white dark:text-white dark:hover:border-[#FF9741]">
+            {/* <button className="w-[156px] rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[14px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-[1px] dark:border-white dark:text-white dark:hover:border-[#FF9741]">
               Clear Cache
-            </button>
+            </button> */}
 
             <button className="w-[190px] rounded-[6px] border-[1px] border-[#FF453A] bg-[#FF453A] px-2.5 py-1.5 text-[14px] font-semibold text-[#ffff] transition-all duration-200 hover:bg-transparent hover:text-[#FF453A]">
               Reset Progress Data
