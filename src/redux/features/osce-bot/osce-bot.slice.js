@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchOSCEBotData } from "./osce-bot.service"; // Assuming the thunk is in the thunks.js file
+import { fetchOSCEBotData, insertOSCEBotData } from "./osce-bot.service"; // Assuming the thunk is in the thunks.js file
 
 const initialState = {
     data: [],
@@ -23,7 +23,18 @@ const osceSlice = createSlice({
             .addCase(fetchOSCEBotData.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            .addCase(insertOSCEBotData.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(insertOSCEBotData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(insertOSCEBotData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     },
 });
 

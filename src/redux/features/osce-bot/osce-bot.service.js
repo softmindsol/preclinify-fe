@@ -17,18 +17,21 @@ export const fetchOSCEBotData = createAsyncThunk(
         }
     }
 );
-
+ 
 
 export const insertOSCEBotData = createAsyncThunk(
-    'osce/insertOSCEBotData',
-    async ({ chatFeedBack }, thunkAPI) => {
+    "osce/insertOSCEBotData",
+    async ({ chatFeedback }, thunkAPI) => { // ✅ Consistent naming
         try {
+            console.log("chatFeedback received:", chatFeedback);
 
-            console.log("chatFeedBack:", chatFeedBack);
+            if (!chatFeedback || Object.keys(chatFeedback).length === 0) {
+                throw new Error("chatFeedback is empty or undefined");
+            }
 
             const { data, error } = await supabase
-                .from('AI_OSCE')
-                .insert([chatFeedBack]); // Insert the chatFeedBack object into the table
+                .from("AI_OSCE")
+                .insert([chatFeedback]); // ✅ Wrap in an array
 
             if (error) throw error;
             return data;
@@ -37,5 +40,4 @@ export const insertOSCEBotData = createAsyncThunk(
         }
     }
 );
-
 

@@ -6,6 +6,7 @@ import DashboardModal from "./common/DashboardModal";
 import FeedbackModal from "./common/Feedback";
 import useVoiceRecorder from "../hooks/useVoiceRecorder";
 import useSummaryAndFeedback from "../hooks/useSummaryAndFeedback";
+import { insertOSCEBotData } from "../redux/features/osce-bot/osce-bot.service";
 
 const AINewVersion = () => {
   const { categoryName } = useParams();
@@ -34,7 +35,6 @@ const AINewVersion = () => {
   const { isRecording, transcript, audioRef, initWebRTC, stopRecording } =
     useVoiceRecorder(categoryName);
 
-  console.log("transcript:", transcript);
   const { chatFeedback, generateSummaryAndFeedback } =
     useSummaryAndFeedback(transcript);
   console.log(chatFeedback);
@@ -52,16 +52,20 @@ const AINewVersion = () => {
   };
 
   //   const handleSubmit = (e) => {
-  //     e.preventDefault();
+  //     e  .preventDefault();
   //     if (inputText.trim() !== "") {
   //       sendTextMessage(inputText);
   //       setTranscript((prev) => [...prev, { fromAI: false, text: inputText }]);
   //       setInputText(""); // Clear input field
   //     }
   //   };
+  const finishReviewHandler = async () => {
 
-  const finishReviewHandler = () => {
-    setFinishReview(true);
+    await dispatch(
+      insertOSCEBotData({
+        chatFeedback,
+      }),
+    );
   };
 
   useEffect(() => {
