@@ -14,7 +14,7 @@ const useVoiceRecorder = (AIPrompt) => {
 console.log("prompt:", prompt);
 
       // Fetch Ephemeral Key for WebRTC Session
- const tokenResponse = await fetch("http://localhost:8001/session", {
+ const tokenResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/session`, {
    method: "POST", // POST request to send data
    headers: {
      "Content-Type": "application/json", // Telling backend that body contains JSON
