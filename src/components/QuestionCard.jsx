@@ -79,7 +79,7 @@ const QuestionCard = () => {
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const itemsPerPage = 10;
   const [article, setArticle] = useState({});
-  const userId = useSelector((state) => state.user.userId);
+  const userId = localStorage.getItem("userId");
   const isQuestionReview = useSelector((state) => state?.questionReview?.value);
   const [feedback, setFeedback] = useState("");
   const [isAIExpanded, setIsAIExpanded] = useState(false);

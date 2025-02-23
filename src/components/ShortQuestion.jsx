@@ -103,7 +103,7 @@ const ShortQuestion = () => {
     (total, parent) => total + parent?.children?.length,
     0,
   );
-  const userId = useSelector((state) => state.user.userId);
+  const userId = localStorage.getItem("userId");
   const [isAIExpanded, setIsAIExpanded] = useState(false);
 
   const [checkedAnswers, setCheckedAnswers] = useState(

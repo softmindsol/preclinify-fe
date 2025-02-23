@@ -12,6 +12,7 @@ import {
 } from "../redux/features/mock-test/mock.service";
 import {
   fetchCorrectShortQuestionByModules,
+  fetchFilteredCorrecUnAnsweredShortQuestions,
   fetchIncorrectCorrectShortQuestionByModules,
   fetchInCorrectShortQuestionByModules,
   fetchModulesById,
@@ -30,6 +31,8 @@ import {
   fetchCorrectIncorrectResult,
   fetchCorrectResult,
   fetchIncorrectResult,
+  fetchUnattemptedAndCorrectQuestions,
+  fetchUnattemptedAndIncorrectQuestions,
   fetchUnattemptedQuestions,
 } from "../redux/features/filter-question/filter-question.service";
 import { fetchAllResultSaq } from "../redux/features/filter-question/filter-saq-question.service";
@@ -71,14 +74,14 @@ const SetupSessionModal = ({
   const { limit } = useSelector((state) => state?.limit);
   const [isLoaded, setIsLoaded] = useState(false);
   const [saqModule, setSAQModule] = useState([]);
-
+  const userId = localStorage.getItem("userId");
   const SaqfilterQuestion = useSelector((state) => state?.SaqfilterQuestion);
   const FiltershortQuestions = useSelector(
     (state) => state?.FiltershortQuestions?.results,
   ); // Debounced dispatch handler
 
   console.log("FiltershortQuestions:", FiltershortQuestions);
-
+  console.log("userId:", userId);
   const debouncedDispatch = useCallback(
     debounce((value) => {
       dispatch(setLimit(value));
@@ -139,6 +142,41 @@ const SetupSessionModal = ({
           fetchCorrectIncorrectResult({
             moduleId: filterQuestion.selectedModules,
             totalLimit: limit,
+            userId,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+      } else if (
+        !filterQuestion?.previouslyIncorrectQuestion &&
+        filterQuestion?.previouslyCorrectQuestion &&
+        filterQuestion?.NotAnsweredQuestion
+      ) {
+        dispatch(
+          fetchUnattemptedAndCorrectQuestions({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+            userId,
+          }),
+        )
+          .unwrap()
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+      } else if (
+        filterQuestion?.previouslyIncorrectQuestion &&
+        !filterQuestion?.previouslyCorrectQuestion &&
+        filterQuestion?.NotAnsweredQuestion
+      ) {
+        dispatch(
+          fetchUnattemptedAndIncorrectQuestions({
+            moduleId: filterQuestion.selectedModules,
+            totalLimit: limit,
+            userId,
           }),
         )
           .unwrap()
@@ -155,6 +193,7 @@ const SetupSessionModal = ({
           fetchAllResult({
             moduleId: filterQuestion.selectedModules,
             totalLimit: limit,
+            userId,
           }),
         )
           .unwrap()
@@ -167,6 +206,7 @@ const SetupSessionModal = ({
           fetchCorrectResult({
             moduleId: filterQuestion.selectedModules,
             totalLimit: limit,
+            userId,
           }),
         )
           .unwrap()
@@ -177,6 +217,7 @@ const SetupSessionModal = ({
           fetchIncorrectResult({
             moduleId: filterQuestion.selectedModules,
             totalLimit: limit,
+            userId,
           }),
         )
           .unwrap()
@@ -189,6 +230,7 @@ const SetupSessionModal = ({
           fetchUnattemptedQuestions({
             moduleId: filterQuestion.selectedModules,
             totalLimit: limit,
+            userId,
           }),
         )
           .unwrap()
@@ -218,9 +260,11 @@ const SetupSessionModal = ({
           fetchShortQuestionsWithChildren({
             moduleIds: filterQuestion.selectedModules,
             limit: limit,
+            userId,
           }),
         );
       } else if (
+        !filterQuestion?.NotAnsweredQuestion &&
         filterQuestion?.previouslyIncorrectQuestion &&
         filterQuestion?.previouslyCorrectQuestion
       ) {
@@ -228,6 +272,7 @@ const SetupSessionModal = ({
           fetchIncorrectCorrectShortQuestionByModules({
             moduleIds: filterQuestion.selectedModules,
             limit: limit,
+            userId
           }),
         )
           .unwrap()
@@ -235,11 +280,13 @@ const SetupSessionModal = ({
           .catch((err) => {
             console.log("previously correctIncorrect error", err);
           });
-      } else if (filterQuestion?.previouslyCorrectQuestion) {
+      } 
+      else if (filterQuestion?.previouslyCorrectQuestion) {
         dispatch(
           fetchCorrectShortQuestionByModules({
             moduleIds: filterQuestion.selectedModules,
             limit: limit,
+            userId,
           }),
         )
           .unwrap()
@@ -250,6 +297,7 @@ const SetupSessionModal = ({
           fetchInCorrectShortQuestionByModules({
             moduleIds: filterQuestion.selectedModules,
             limit: limit,
+            userId,
           }),
         )
           .unwrap()

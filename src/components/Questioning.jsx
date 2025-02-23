@@ -410,7 +410,7 @@ const Questioning = () => {
             dispatch(
               setLoading({ key: "modules/fetchMcqsByModules", value: false }),
             );
-          }); 
+          });
       } else if (selectedOption === "SAQ") {
         dispatch(
           setLoading({
@@ -808,6 +808,7 @@ const Questioning = () => {
             return acc;
           }, {});
 
+          console.log("totalsByModule:", totalsByModule);
           setModuleTotals(Object.values(totalsByModule));
         } catch (err) {
           console.error("Error fetching daily work:", err);

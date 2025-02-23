@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult, fetchUnattemptedQuestions } from "./filter-question.service";
+import { fetchAllResult, fetchCorrectIncorrectResult, fetchCorrectResult, fetchIncorrectResult, fetchUnattemptedAndCorrectQuestions, fetchUnattemptedAndIncorrectQuestions, fetchUnattemptedQuestions } from "./filter-question.service";
 
 const initialState = {
     NotAnsweredQuestion: true,
@@ -7,7 +7,7 @@ const initialState = {
     previouslyCorrectQuestion: true,
     selectedModules: [],
     results: [],
-    isLoading:false
+    isLoading: false
 };
 
 const questionsSlice = createSlice({
@@ -90,6 +90,30 @@ const questionsSlice = createSlice({
                 state.results = action.payload; // Fetched data ko results array me store kar raha hai
             })
             .addCase(fetchUnattemptedQuestions.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Error ko state me store kar raha hai
+            })
+            .addCase(fetchUnattemptedAndCorrectQuestions.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchUnattemptedAndCorrectQuestions.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            })
+            .addCase(fetchUnattemptedAndCorrectQuestions.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Error ko state me store kar raha hai
+            })
+            .addCase(fetchUnattemptedAndIncorrectQuestions.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchUnattemptedAndIncorrectQuestions.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.results = action.payload; // Fetched data ko results array me store kar raha hai
+            })
+            .addCase(fetchUnattemptedAndIncorrectQuestions.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload; // Error ko state me store kar raha hai
             })
