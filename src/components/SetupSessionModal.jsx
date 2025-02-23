@@ -281,28 +281,6 @@ const SetupSessionModal = ({
             console.log("previously correctIncorrect error", err);
           });
       } 
-      
-      else if (
-        filterQuestion?.NotAnsweredQuestion &&
-        !filterQuestion?.previouslyIncorrectQuestion &&
-        filterQuestion?.previouslyCorrectQuestion
-      ) {
-        dispatch(
-          fetchFilteredCorrecUnAnsweredShortQuestions({
-            moduleIds: filterQuestion.selectedModules,
-            limit: limit,
-            userId,
-          }),
-        )
-          .unwrap()
-          .then((res) => {})
-          .catch((err) => {});
-        
-      } 
-      
-      
-      
-      
       else if (filterQuestion?.previouslyCorrectQuestion) {
         dispatch(
           fetchCorrectShortQuestionByModules({
