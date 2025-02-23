@@ -173,7 +173,7 @@ const Pricing = () => {
                             className="mt-1 flex-shrink-0 text-[#FF9741]"
                             size={18}
                           />
-                          <span className="ml-3 text-gray-700">{feature}</span>
+                          <span className="ml-3 text-[#3F3F46]">{feature}</span>
                         </div>
                       ))}
                     </div>
