@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-const useVoiceRecorder = (categoryName) => {
+const useVoiceRecorder = (AIPrompt) => {
   const audioRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const dataChannelRef = useRef(null);
@@ -11,11 +11,18 @@ const useVoiceRecorder = (categoryName) => {
   const initWebRTC = async () => {
     try {
       setIsRecording(true);
+console.log("prompt:", prompt);
 
       // Fetch Ephemeral Key for WebRTC Session
-      const tokenResponse = await fetch(
-        `http://localhost:8000/session/${categoryName}`,
-      );
+ const tokenResponse = await fetch("http://localhost:8001/session", {
+   method: "POST", // POST request to send data
+   headers: {
+     "Content-Type": "application/json", // Telling backend that body contains JSON
+   },
+   body: JSON.stringify({
+     prompt: AIPrompt, // AI Prompt pass kar rahe hain
+   }),
+ });
       const data = await tokenResponse.json();
       const EPHEMERAL_KEY = data.client_secret.value;
       const baseUrl = "https://api.openai.com/v1/realtime";
@@ -141,6 +148,7 @@ const useVoiceRecorder = (categoryName) => {
 
   return {
     isRecording,
+    setTranscript,
     transcript,
     audioRef,
     initWebRTC,

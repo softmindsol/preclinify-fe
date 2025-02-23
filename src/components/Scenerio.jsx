@@ -656,7 +656,7 @@ console.log("data:", data);
                               to={
                                 activeTab === "static"
                                   ? `/static-scenerios-detail/${osce.id}`
-                                  : `/osce-ai-bot/${categoryName.replace(/\s+/g, "-")}`
+                                  : `/osce-ai-bot/${osce.id}`
                               }
                             >
                               <div className="flex h-full flex-col justify-between">

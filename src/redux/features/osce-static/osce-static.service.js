@@ -18,6 +18,7 @@ export const fetchOSCEData = createAsyncThunk(
 export const fetchOSCEDataById = createAsyncThunk(
   "osce/fetchOSCEDataById",
   async (id, thunkAPI) => {
+
     try {
       const { data, error } = await supabase
         .from("staticOSCE")
@@ -32,6 +33,29 @@ export const fetchOSCEDataById = createAsyncThunk(
     }
   },
 );
+
+
+export const fetchOSCEPromptById = createAsyncThunk(
+  "osce/fetchOSCEPromptById",
+  async (id, thunkAPI) => {
+    try {
+      const { data, error } = await supabase
+        .from("staticOSCE")
+        .select("OSCE_prompt")
+        .eq("id", id)
+        .single();
+
+      if (error) throw error;
+
+      console.log("Fetched Data:", data); // Debugging ke liye log karo
+
+      return data?.OSCE_prompt; // Sirf OSCE_prompt return karna
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
 
 export const fetchModules = createAsyncThunk(
   "modules/fetchModules",

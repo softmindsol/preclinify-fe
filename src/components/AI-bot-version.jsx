@@ -7,15 +7,18 @@ import FeedbackModal from "./common/Feedback";
 import useVoiceRecorder from "../hooks/useVoiceRecorder";
 import useSummaryAndFeedback from "../hooks/useSummaryAndFeedback";
 import { insertOSCEBotData } from "../redux/features/osce-bot/osce-bot.service";
-import { fetchOSCEDataById } from "../redux/features/osce-static/osce-static.service";
+import {
+  fetchOSCEDataById,
+  fetchOSCEPromptById,
+} from "../redux/features/osce-static/osce-static.service";
 
 const AINewVersion = () => {
-  const { categoryName } = useParams();
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState("text");
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-
+  // const [transcripts, setTranscript] = useState([]);
   const [isDashboard, setIsDashboard] = useState(false);
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
   const [minutes, setMinutes] = useState(8);
@@ -24,6 +27,7 @@ const AINewVersion = () => {
   const [timerActive, setTimerActive] = useState(false);
   const { selectedData, loading, error } = useSelector((state) => state.osce);
   const dispatch = useDispatch();
+  const [AIPrompt, setAIPrompt] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [openPanel, setOpenPanel] = useState(null);
   const [inputText, setInputText] = useState("");
@@ -33,21 +37,21 @@ const AINewVersion = () => {
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
   const [finishReview, setFinishReview] = useState(false);
-  const { isRecording, transcript, audioRef, initWebRTC, stopRecording } =
-    useVoiceRecorder(categoryName);
-
-  const { chatFeedback, generateSummaryAndFeedback } =
-    useSummaryAndFeedback(transcript);
+  const {
+    isRecording,
+    transcript,
+    setTranscript,
+    audioRef,
+    initWebRTC,
+    stopRecording,
+  } = useVoiceRecorder(AIPrompt);
+  const instruction = AIPrompt;
+  const { chatFeedback, generateSummaryAndFeedback } = useSummaryAndFeedback(
+    transcript,
+  );
   console.log(chatFeedback);
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
-  };
-
-  const handleSendText = async (e) => {
-    e.preventDefault();
-    if (inputText.trim() === "") return;
-
-    setInputText("");
   };
 
   const handleInputChange = (e) => {
@@ -62,6 +66,62 @@ const AINewVersion = () => {
       navigate("/dashboard");
     }
   };
+  const fetchAIResponse = async (userText) => {
+    const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API;
+    console.log("OPENAI_API_KEY:", OPENAI_API_KEY);
+
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            audio: { voice: "alloy", format: "wav" },
+            messages: [
+              {
+                role: "system",
+                content: instruction,
+              },
+              { role: "user", content: userText },
+            ],
+          }),
+        },
+      );
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      return "Could you please repeat that?";
+    }
+  };
+
+  const handleSendText = async (e) => {
+    e.preventDefault();
+    if (inputText.trim() === "") return;
+
+    // Add user's input to the transcript
+    setTranscript((prevTranscript) => [
+      ...prevTranscript,
+      { fromAI: false, text: inputText }, // User's message
+    ]);
+
+    setInputText("");
+    setIsLoading(true);
+    const aiResponse = await fetchAIResponse(inputText);
+    setIsLoading(false);
+
+    // Add AI's response to the transcript
+    setTranscript((prevTranscript) => [
+      ...prevTranscript,
+      { fromAI: true, text: aiResponse }, // AI's message
+    ]);
+  };
+  console.log("inputText:", inputText);
 
   //   const handleSubmit = (e) => {
   //     e  .preventDefault();
@@ -125,6 +185,17 @@ const AINewVersion = () => {
       generateSummaryAndFeedback();
     }
   }, [transcript]); // Trigger whenever the transcript updates
+
+  useEffect(() => {
+    dispatch(fetchOSCEPromptById(id))
+      .unwrap()
+      .then((res) => {
+        setAIPrompt(res);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+      });
+  }, [id, dispatch]);
 
   return (
     <div className="w-full">
@@ -254,24 +325,20 @@ const AINewVersion = () => {
         {/* Tabs */}
         <div className="flex space-x-4 border-b border-gray-300 pb-2">
           <button
-            className={`px-4 py-2 text-lg font-medium ${
-              activeTab === "text"
-                ? "border-b-2 border-[#3CC8A1] text-[#3CC8A1]"
-                : "text-gray-500"
-            }`}
+            className={`flex w-full items-center justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
+              activeTab === "text" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
+            } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
             onClick={() => setActiveTab("text")}
           >
-            AI Text
+            Text
           </button>
           <button
-            className={`px-4 py-2 text-lg font-medium ${
-              activeTab === "voice"
-                ? "border-b-2 border-[#3CC8A1] text-[#3CC8A1]"
-                : "text-gray-500"
-            }`}
+            className={`flex w-full items-center  justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
+              activeTab === "voice" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
+            } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
             onClick={() => setActiveTab("voice")}
           >
-            AI Voice
+            Voice
           </button>
         </div>
 
@@ -279,7 +346,7 @@ const AINewVersion = () => {
         <div className={`${darkModeRedux ? "dark" : ""}`}>
           {activeTab === "text" && (
             <div>
-              <main className="relative mb-5 h-[60vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div className="transcript h-full overflow-y-auto pr-4">
                   {transcript.map((entry, index) => (
                     <div
@@ -347,7 +414,7 @@ const AINewVersion = () => {
 
           {activeTab === "voice" && (
             <div className="">
-              <main className="relative mb-5 h-[60vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div className="transcript h-full overflow-y-auto pr-4">
                   {transcript.map((entry, index) => (
                     <div
@@ -389,7 +456,7 @@ const AINewVersion = () => {
                   ))}
                 </div>
               </main>
-              <div className="h-[35vh] rounded-[8px] bg-white p-5">
+              <div className="h-[30vh] rounded-[8px] bg-white p-5">
                 <div className="flex w-full flex-col items-center justify-center gap-2">
                   <button
                     onClick={isRecording ? stopRecording : initWebRTC}

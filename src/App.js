@@ -143,7 +143,7 @@ function App() {
           }
         />
         <Route
-          path="/osce-ai-bot/:categoryName"
+          path="/osce-ai-bot/:id"
           element={
             <ProtectedRoute>
               <AINewVersion />
