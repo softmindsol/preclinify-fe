@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 
 const useSummaryAndFeedback = (transcript) => {
   const [chatFeedback, setChatFeedback] = useState({
@@ -7,7 +6,6 @@ const useSummaryAndFeedback = (transcript) => {
     feedback: "",
     score: null,
   });
-  const { categoryName } = useParams();
   const userId = localStorage.getItem("userId");
 
   const generateSummaryAndFeedback = async () => {
@@ -71,7 +69,6 @@ const useSummaryAndFeedback = (transcript) => {
         feedback: result.feedback,
         score: result.score,
         user_id: userId,
-        category:categoryName,
       });
 
       return result;
@@ -80,7 +77,6 @@ const useSummaryAndFeedback = (transcript) => {
       return null;
     }
   };
-
 
   return { chatFeedback, generateSummaryAndFeedback };
 };
