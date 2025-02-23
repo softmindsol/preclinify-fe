@@ -7,10 +7,11 @@ import FeedbackModal from "./common/Feedback";
 import useVoiceRecorder from "../hooks/useVoiceRecorder";
 import useSummaryAndFeedback from "../hooks/useSummaryAndFeedback";
 import { insertOSCEBotData } from "../redux/features/osce-bot/osce-bot.service";
+import { fetchOSCEDataById } from "../redux/features/osce-static/osce-static.service";
 
 const AINewVersion = () => {
   const { categoryName } = useParams();
-
+  const [activeTab, setActiveTab] = useState("text");
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -42,6 +43,17 @@ const AINewVersion = () => {
     setShowFeedBackModal(true);
   };
 
+  const handleSendText = async (e) => {
+    e.preventDefault();
+    if (inputText.trim() === "") return;
+
+    setInputText("");
+  };
+
+  const handleInputChange = (e) => {
+    setInputText(e.target.value);
+  };
+
   const handlerOpenDashboardModal = () => {
     setIsDashboardModalOpen(!isDashboardModalOpen);
   };
@@ -60,7 +72,6 @@ const AINewVersion = () => {
   //     }
   //   };
   const finishReviewHandler = async () => {
-
     await dispatch(
       insertOSCEBotData({
         chatFeedback,
@@ -239,92 +250,164 @@ const AINewVersion = () => {
         </div>
       </div>
 
-      <div className={`${darkModeRedux ? "dark" : ""}`}>
-        <main className="relative ml-[250px] mt-5 h-[60vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
-          <div className="transcript h-full overflow-y-auto pr-4">
-            {transcript.map((entry, index) => (
-              <div
-                key={index}
-                className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}
-              >
+      <div className="ml-[250px] mt-5">
+        {/* Tabs */}
+        <div className="flex space-x-4 border-b border-gray-300 pb-2">
+          <button
+            className={`px-4 py-2 text-lg font-medium ${
+              activeTab === "text"
+                ? "border-b-2 border-[#3CC8A1] text-[#3CC8A1]"
+                : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("text")}
+          >
+            AI Text
+          </button>
+          <button
+            className={`px-4 py-2 text-lg font-medium ${
+              activeTab === "voice"
+                ? "border-b-2 border-[#3CC8A1] text-[#3CC8A1]"
+                : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("voice")}
+          >
+            AI Voice
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className={`${darkModeRedux ? "dark" : ""}`}>
+          {activeTab === "text" && (
+            <div>
+              <main className="relative mb-5 h-[60vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+                <div className="transcript h-full overflow-y-auto pr-4">
+                  {transcript.map((entry, index) => (
+                    <div
+                      key={index}
+                      className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}
+                    >
+                      <div
+                        className={`flex items-center ${entry.fromAI ? "justify-start" : "ml-auto flex-row-reverse"}`}
+                      >
+                        {entry.fromAI ? (
+                          <div className="flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#F4F4F5]">
+                            <img
+                              src="/assets/Logo.png"
+                              alt="AI Icon"
+                              className="w-auto object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="ml-2 flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#3CC8A1]">
+                            <img
+                              src="/assets/sethoscope.png"
+                              alt="User Icon"
+                              className="w-auto object-contain"
+                            />
+                          </div>
+                        )}
+                        <span
+                          className={`ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
+                        >
+                          {entry.text}
+                        </span>
+                        {isLoading && entry.fromAI && (
+                          <div className="ml-2">
+                            <span className="animate-pulse">...</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </main>
+              <div className="h-[30vh] rounded-[8px] bg-white p-5">
                 <div
-                  className={`mb-2 flex items-center ${
-                    entry.fromAI ? "justify-start" : "ml-auto flex-row-reverse"
-                  }`}
+                  className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
                 >
-                  {entry.fromAI ? (
-                    <div className="flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#F4F4F5]">
-                      <img
-                        src="/assets/Logo.png"
-                        alt="AI Icon"
-                        className="w-auto object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <div className="ml-2 flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#3CC8A1]">
-                      <img
-                        src="/assets/sethoscope.png"
-                        alt="User Icon"
-                        className="w-auto object-contain"
-                      />
-                    </div>
-                  )}
-                  <span
-                    className={`ml-2 rounded-[8px] px-5 py-3 ${
-                      entry.fromAI
-                        ? "bg-[#EDF2F7] text-[#3F3F46]"
-                        : "bg-[#3CC8A1] text-white"
-                    }`}
+                  <form
+                    onSubmit={handleSendText}
+                    className="flex items-center justify-center gap-2"
                   >
-                    {entry.text}
-                  </span>
-                  {isLoading && entry.fromAI && (
-                    <div className="ml-2">
-                      <span className="animate-pulse">...</span>
-                    </div>
-                  )}
+                    <input
+                      type="text"
+                      value={inputText}
+                      onChange={handleInputChange}
+                      className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
+                      placeholder="What’s brought you in today? (press spacebar to speak)"
+                    />
+                    <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
+                      Send
+                    </button>
+                  </form>
                 </div>
               </div>
-            ))}
-          </div>
-        </main>
-
-        <div className="ml-[250px] mt-5 h-[35vh] rounded-[8px] bg-white p-5">
-          <div className="flex w-full flex-col items-center justify-center gap-2">
-            <button
-              onClick={isRecording ? stopRecording : initWebRTC}
-              className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
-            >
-              <audio ref={audioRef} className="hidden" />
-              <img
-                src="/assets/mic.svg"
-                width={30}
-                height={30}
-                className="flex cursor-pointer items-center justify-center"
-                alt=""
-              />
-            </button>
-
-            <div
-              className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
-            >
-              <form
-                className="flex items-center justify-center gap-2"
-                // onSubmit={handleSubmit}
-              >
-                <input
-                  type="text"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
-                  placeholder="What’s brought you in today? (press spacebar to speak)"
-                />
-                <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
-                  Send
-                </button>
-              </form>
             </div>
-          </div>
+          )}
+
+          {activeTab === "voice" && (
+            <div className="">
+              <main className="relative mb-5 h-[60vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+                <div className="transcript h-full overflow-y-auto pr-4">
+                  {transcript.map((entry, index) => (
+                    <div
+                      key={index}
+                      className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}
+                    >
+                      <div
+                        className={`mb-2 flex items-center ${entry.fromAI ? "justify-start" : "ml-auto flex-row-reverse"}`}
+                      >
+                        {entry.fromAI ? (
+                          <div className="flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#F4F4F5]">
+                            <img
+                              src="/assets/Logo.png"
+                              alt="AI Icon"
+                              className="w-auto object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="ml-2 flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#3CC8A1]">
+                            <img
+                              src="/assets/sethoscope.png"
+                              alt="User Icon"
+                              className="w-auto object-contain"
+                            />
+                          </div>
+                        )}
+                        <span
+                          className={`ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
+                        >
+                          {entry.text}
+                        </span>
+                        {isLoading && entry.fromAI && (
+                          <div className="ml-2">
+                            <span className="animate-pulse">...</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </main>
+              <div className="h-[35vh] rounded-[8px] bg-white p-5">
+                <div className="flex w-full flex-col items-center justify-center gap-2">
+                  <button
+                    onClick={isRecording ? stopRecording : initWebRTC}
+                    className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
+                  >
+                    <audio ref={audioRef} className="hidden" />
+                    <img
+                      src="/assets/mic.svg"
+                      width={30}
+                      height={30}
+                      className="flex cursor-pointer items-center justify-center"
+                      alt=""
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

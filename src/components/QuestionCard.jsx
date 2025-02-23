@@ -83,7 +83,7 @@ const QuestionCard = () => {
   const isQuestionReview = useSelector((state) => state?.questionReview?.value);
   const [feedback, setFeedback] = useState("");
   const [isAIExpanded, setIsAIExpanded] = useState(false);
-  
+
   // Get the items to show for the current page
   const currentItems = data.slice(
     currentPage * itemsPerPage,
@@ -113,6 +113,7 @@ const QuestionCard = () => {
     setSelectedFilter(filter);
   };
   console.log("Data:", data);
+  console.log("length:", data.length);
 
   // Arrays to store indices
   const unseenIndices = [];
@@ -231,11 +232,8 @@ const QuestionCard = () => {
       setIsAccordionOpen((prev) => {
         const newAccordionState = [...prev].fill(false); // Close all first
         const selectedIndex =
-          data[currentIndex].answersArray.indexOf(
-            selectedAnswer,
-          );
-        const correctIndex =
-          data[currentIndex].correctAnswerId;
+          data[currentIndex].answersArray.indexOf(selectedAnswer);
+        const correctIndex = data[currentIndex].correctAnswerId;
 
         newAccordionState[correctIndex] = true; // Always open correct answer
         if (!isCorrect) {
@@ -297,9 +295,7 @@ const QuestionCard = () => {
     }
   };
   const getAttemptedQuestions = () => {
-    return data?.filter(
-      (_, index) => attempted[index] !== null,
-    );
+    return data?.filter((_, index) => attempted[index] !== null);
   };
 
   const prevQuestion = () => {
@@ -344,13 +340,10 @@ const QuestionCard = () => {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
-  data[currentIndex]?.explanationList?.map(
-    (explanation, index) => {
-      let isSelected = selectedAnswer === explanation;
-      const isCorrectAnswer =
-        index === data[currentIndex].correctAnswerId;
-    },
-  );
+  data[currentIndex]?.explanationList?.map((explanation, index) => {
+    let isSelected = selectedAnswer === explanation;
+    const isCorrectAnswer = index === data[currentIndex].correctAnswerId;
+  });
 
   const markQuestion = (index, status) => {
     setAttempts((prev) => {
@@ -405,9 +398,9 @@ const QuestionCard = () => {
 
   useEffect(() => {
     if (data?.length) {
-      const initialAccordionState = data[
-        currentIndex
-      ]?.answersArray?.map(() => false);
+      const initialAccordionState = data[currentIndex]?.answersArray?.map(
+        () => false,
+      );
       setIsAccordionOpen(initialAccordionState);
     }
   }, [data]);
@@ -415,8 +408,7 @@ const QuestionCard = () => {
   useEffect(() => {
     // Reset accordion state when the current question changes
     if (data[currentIndex]?.answersArray) {
-      const numAnswers =
-        data[currentIndex].answersArray.length;
+      const numAnswers = data[currentIndex].answersArray.length;
       setIsAccordionOpen(Array(numAnswers).fill(false));
     }
   }, [currentIndex, data]);
@@ -544,8 +536,7 @@ const QuestionCard = () => {
         keyIndex !== -1 &&
         keyIndex < data[currentIndex]?.answersArray.length
       ) {
-        const answer =
-          data[currentIndex].answersArray[keyIndex];
+        const answer = data[currentIndex].answersArray[keyIndex];
 
         handleAnswerSelect(answer);
         setIsAnswered(true);
@@ -606,504 +597,643 @@ const QuestionCard = () => {
 
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>
-      <div className="min-h-screen dark:bg-[#1E1E2A]">
-        <div className="flex w-full items-center justify-between bg-white p-5 lg:hidden">
-          <div className="">
-            <img src="/assets/small-logo.png" alt="Logo sm" />
-          </div>
-
-          <div className="" onClick={toggleDrawer}>
-            <TbBaselineDensityMedium />
-          </div>
+      {data.length == 0 ? (
+        <div>
+          <p className="text-center text-gray-500">No record available</p>
         </div>
-        <div className="mx-auto flex items-center justify-center p-6 text-black">
-          <div
-            className={`w-[100%] max-w-full transition-all duration-150 md:w-[80%] lg:w-[70%] xl:w-[55%] ${
-              toggleSidebar ? "2xl:w-[55%]" : "2xl:w-[40%]"
-            } ${toggleSidebar ? "lg:mr-[130px]" : "lg:mr-[200px]"} `}
-          >
-            {/* Header Section */}
-            <div className="relative flex items-center justify-between rounded-md bg-[#3CC8A1] p-6 text-white">
-              {/* Progress Bar */}
-              <div className="absolute bottom-0 left-0 h-[4px] w-full overflow-hidden rounded-md bg-[#D4D4D8]">
-                <div
-                  className="h-full bg-[#60B0FA] transition-all duration-300 ease-in-out"
-                  style={{
-                    width: `${
-                      ((currentIndex + 1) / data?.length) *
-                      100
-                    }%`,
-                  }}
-                ></div>
+      ) : (
+        <div>
+          <div className="min-h-screen dark:bg-[#1E1E2A]">
+            <div className="flex w-full items-center justify-between bg-white p-5 lg:hidden">
+              <div className="">
+                <img src="/assets/small-logo.png" alt="Logo sm" />
               </div>
 
-              {/* Left Icon */}
-              <div className="absolute left-4">
-                <div className="relative">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-ellipsis h-4 w-4 cursor-pointer lg:h-6 lg:w-6"
-                    onClick={(e) => toggleMenu(e)} // Toggle submenu on click
-                  >
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="19" cy="12" r="1" />
-                    <circle cx="5" cy="12" r="1" />
-                  </svg>
-
-                  {/* Submenu */}
-                  {isSubMenuOpen && (
-                    <div
-                      ref={menuRef} // Attach ref to the submenu container
-                      className="absolute right-0 mt-2 w-[150px] rounded-md border border-gray-300 bg-white shadow-lg"
-                    >
-                      <ul>
-                        <li
-                          className="cursor-pointer p-2 text-[#3F3F46] hover:bg-[#3CC8A1] hover:text-white"
-                          onClick={reportHandler}
-                        >
-                          Report
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Question Navigation */}
-              <div className="absolute left-1/2 flex -translate-x-1/2 transform items-center space-x-4 text-[14px] lg:text-[18px]">
-                <button
-                  className={`text-white ${
-                    currentIndex + 1 <= 1 ? "cursor-not-allowed opacity-70" : ""
-                  }`}
-                  onClick={prevQuestion}
-                >
-                  &larr;
-                </button>
-                <h2 className="text-center font-semibold">
-                  Question {currentIndex + 1} of{" "}
-                  {data?.length}
-                </h2>
-                <button
-                  className={`text-white ${
-                    currentIndex + 1 === data?.length
-                      ? "cursor-not-allowed opacity-70"
-                      : ""
-                  }`}
-                  onClick={nextQuestion}
-                >
-                  &rarr;
-                </button>
-              </div>
-
-              {/* Right Icons */}
-              <div className="absolute right-4 flex space-x-4">
-                <div className="relative">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-flask-conical cursor-pointer hover:opacity-80"
-                    onClick={beakerToggledHandler}
-                  >
-                    <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
-                    <path d="M6.453 15h11.094" />
-                    <path d="M8.5 2h7" />
-                  </svg>
-                </div>
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill={flaggedQuestions[currentIndex] ? "white" : "none"}
-                  stroke={
-                    flaggedQuestions[currentIndex] ? "white" : "currentColor"
-                  }
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-flag cursor-pointer hover:opacity-80"
-                  onClick={handleFlagQuestion}
-                >
-                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                  <line x1="4" x2="4" y1="22" y2="15" />
-                </svg>
+              <div className="" onClick={toggleDrawer}>
+                <TbBaselineDensityMedium />
               </div>
             </div>
+            <div className="mx-auto flex items-center justify-center p-6 text-black">
+              <div
+                className={`w-[100%] max-w-full transition-all duration-150 md:w-[80%] lg:w-[70%] xl:w-[55%] ${
+                  toggleSidebar ? "2xl:w-[55%]" : "2xl:w-[40%]"
+                } ${toggleSidebar ? "lg:mr-[130px]" : "lg:mr-[200px]"} `}
+              >
+                {/* Header Section */}
+                <div className="relative flex items-center justify-between rounded-md bg-[#3CC8A1] p-6 text-white">
+                  {/* Progress Bar */}
+                  <div className="absolute bottom-0 left-0 h-[4px] w-full overflow-hidden rounded-md bg-[#D4D4D8]">
+                    <div
+                      className="h-full bg-[#60B0FA] transition-all duration-300 ease-in-out"
+                      style={{
+                        width: `${((currentIndex + 1) / data?.length) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
 
-            {/* Question start */}
-            {data.length > 0 && (
-              <div className="mt-6 p-6" key={currentIndex}>
-                <p className="text-justify text-[14px] text-[#000000] dark:text-white lg:text-[16px]">
-                  {data[currentIndex].questionStem}
-                </p>
+                  {/* Left Icon */}
+                  <div className="absolute left-4">
+                    <div className="relative">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-ellipsis h-4 w-4 cursor-pointer lg:h-6 lg:w-6"
+                        onClick={(e) => toggleMenu(e)} // Toggle submenu on click
+                      >
+                        <circle cx="12" cy="12" r="1" />
+                        <circle cx="19" cy="12" r="1" />
+                        <circle cx="5" cy="12" r="1" />
+                      </svg>
 
-                <h3 className="mt-4 text-[12px] font-bold text-[#3F3F46] dark:text-white lg:text-[14px]">
-                  {data[currentIndex].leadQuestion}
-                </h3>
-                <div className="mt-4 space-y-4">
-                  {data[currentIndex]?.answersArray?.map(
-                    (answer, index) => {
-                      const isSelected = selectedAnswer === answer;
-                      const isCorrectAnswer =
-                        index ===
-                        data[currentIndex]?.correctAnswerId;
-
-                      const borderColor =
-                        isButtonClicked || attempted[currentIndex] !== null
-                          ? isCorrectAnswer
-                            ? "border-[#22C55E]"
-                            : "border-[#EF4444]"
-                          : "";
-                      const bgColor =
-                        isButtonClicked || attempted[currentIndex] !== null
-                          ? isCorrectAnswer
-                            ? "bg-[#DCFCE7]"
-                            : "bg-[#FEE2E2]"
-                          : "";
-
-                      return (
+                      {/* Submenu */}
+                      {isSubMenuOpen && (
                         <div
-                          key={index}
-                          className={`rounded-md border ${
-                            attempted[currentIndex] !== null
-                              ? isCorrectAnswer
-                                ? "border-[#22C55E] bg-[#DCFCE7]"
-                                : isSelected
-                                  ? "border-[#EF4444] bg-[#FEE2E2]"
-                                  : "border-white bg-white"
-                              : isSelected
-                                ? "border-[#3CC8A1] bg-[#FAFAFA]"
-                                : "border-white bg-white hover:border-[#3CC8A1]"
-                          }`}
+                          ref={menuRef} // Attach ref to the submenu container
+                          className="absolute right-0 mt-2 w-[150px] rounded-md border border-gray-300 bg-white shadow-lg"
                         >
-                          {!isAccordionVisible &&
-                          attempted[currentIndex] === null ? (
-                            <label
-                              className={`flex cursor-pointer items-center space-x-3 rounded-md p-4 py-[12px] text-[14px] dark:border dark:bg-[#1E1E2A] lg:text-[16px]`}
-                              onClick={() => handleAnswerSelect(answer, index)}
+                          <ul>
+                            <li
+                              className="cursor-pointer p-2 text-[#3F3F46] hover:bg-[#3CC8A1] hover:text-white"
+                              onClick={reportHandler}
                             >
-                              <input
-                                type="radio"
-                                name="answer"
-                                className="form-radio h-5 w-5 text-green-500 focus:ring-green-500"
-                                checked={isSelected}
-                                readOnly
-                              />
-                              <span className="flex-1 font-medium text-[#3F3F46] dark:text-white">
-                                {answer}
-                              </span>
-                              <span className="rounded-md bg-gray-200 px-2 py-1 text-[#27272A]">
-                                {["Q", "W", "E", "R", "T"][index]}
-                              </span>
-                            </label>
-                          ) : (
+                              Report
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Question Navigation */}
+                  <div className="absolute left-1/2 flex -translate-x-1/2 transform items-center space-x-4 text-[14px] lg:text-[18px]">
+                    <button
+                      className={`text-white ${
+                        currentIndex + 1 <= 1
+                          ? "cursor-not-allowed opacity-70"
+                          : ""
+                      }`}
+                      onClick={prevQuestion}
+                    >
+                      &larr;
+                    </button>
+                    <h2 className="text-center font-semibold">
+                      Question {currentIndex + 1} of {data?.length}
+                    </h2>
+                    <button
+                      className={`text-white ${
+                        currentIndex + 1 === data?.length
+                          ? "cursor-not-allowed opacity-70"
+                          : ""
+                      }`}
+                      onClick={nextQuestion}
+                    >
+                      &rarr;
+                    </button>
+                  </div>
+
+                  {/* Right Icons */}
+                  <div className="absolute right-4 flex space-x-4">
+                    <div className="relative">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-flask-conical cursor-pointer hover:opacity-80"
+                        onClick={beakerToggledHandler}
+                      >
+                        <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" />
+                        <path d="M6.453 15h11.094" />
+                        <path d="M8.5 2h7" />
+                      </svg>
+                    </div>
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill={flaggedQuestions[currentIndex] ? "white" : "none"}
+                      stroke={
+                        flaggedQuestions[currentIndex]
+                          ? "white"
+                          : "currentColor"
+                      }
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-flag cursor-pointer hover:opacity-80"
+                      onClick={handleFlagQuestion}
+                    >
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                      <line x1="4" x2="4" y1="22" y2="15" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Question start */}
+                {data.length > 0 && (
+                  <div className="mt-6 p-6" key={currentIndex}>
+                    <p className="text-justify text-[14px] text-[#000000] dark:text-white lg:text-[16px]">
+                      {data[currentIndex].questionStem}
+                    </p>
+
+                    <h3 className="mt-4 text-[12px] font-bold text-[#3F3F46] dark:text-white lg:text-[14px]">
+                      {data[currentIndex].leadQuestion}
+                    </h3>
+                    <div className="mt-4 space-y-4">
+                      {data[currentIndex]?.answersArray?.map(
+                        (answer, index) => {
+                          const isSelected = selectedAnswer === answer;
+                          const isCorrectAnswer =
+                            index === data[currentIndex]?.correctAnswerId;
+
+                          const borderColor =
+                            isButtonClicked || attempted[currentIndex] !== null
+                              ? isCorrectAnswer
+                                ? "border-[#22C55E]"
+                                : "border-[#EF4444]"
+                              : "";
+                          const bgColor =
+                            isButtonClicked || attempted[currentIndex] !== null
+                              ? isCorrectAnswer
+                                ? "bg-[#DCFCE7]"
+                                : "bg-[#FEE2E2]"
+                              : "";
+
+                          return (
                             <div
-                              className={`border ${borderColor} ${bgColor} rounded-md`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleAccordion(index);
-                              }}
+                              key={index}
+                              className={`rounded-md border ${
+                                attempted[currentIndex] !== null
+                                  ? isCorrectAnswer
+                                    ? "border-[#22C55E] bg-[#DCFCE7]"
+                                    : isSelected
+                                      ? "border-[#EF4444] bg-[#FEE2E2]"
+                                      : "border-white bg-white"
+                                  : isSelected
+                                    ? "border-[#3CC8A1] bg-[#FAFAFA]"
+                                    : "border-white bg-white hover:border-[#3CC8A1]"
+                              }`}
                             >
-                              <label
-                                className={`flex cursor-pointer items-center space-x-3 rounded-md p-4 text-[14px] lg:text-[16px]`}
-                                onClick={() =>
-                                  handleAnswerSelect(answer, index)
-                                }
-                              >
-                                <div
-                                  className={`flex h-6 w-6 items-center justify-center rounded-full ${
-                                    isButtonClicked ||
-                                    attempted[currentIndex] !== null
-                                      ? isCorrectAnswer
-                                        ? "border border-green-500 bg-green-100"
-                                        : "border border-red-500 bg-red-100"
-                                      : "border border-gray-300 bg-gray-100"
-                                  }`}
+                              {!isAccordionVisible &&
+                              attempted[currentIndex] === null ? (
+                                <label
+                                  className={`flex cursor-pointer items-center space-x-3 rounded-md p-4 py-[12px] text-[14px] dark:border dark:bg-[#1E1E2A] lg:text-[16px]`}
+                                  onClick={() =>
+                                    handleAnswerSelect(answer, index)
+                                  }
                                 >
-                                  {(isButtonClicked ||
-                                    attempted[currentIndex] !== null) &&
-                                    (isCorrectAnswer ? (
+                                  <input
+                                    type="radio"
+                                    name="answer"
+                                    className="form-radio h-5 w-5 text-green-500 focus:ring-green-500"
+                                    checked={isSelected}
+                                    readOnly
+                                  />
+                                  <span className="flex-1 font-medium text-[#3F3F46] dark:text-white">
+                                    {answer}
+                                  </span>
+                                  <span className="rounded-md bg-gray-200 px-2 py-1 text-[#27272A]">
+                                    {["Q", "W", "E", "R", "T"][index]}
+                                  </span>
+                                </label>
+                              ) : (
+                                <div
+                                  className={`border ${borderColor} ${bgColor} rounded-md`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleAccordion(index);
+                                  }}
+                                >
+                                  <label
+                                    className={`flex cursor-pointer items-center space-x-3 rounded-md p-4 text-[14px] lg:text-[16px]`}
+                                    onClick={() =>
+                                      handleAnswerSelect(answer, index)
+                                    }
+                                  >
+                                    <div
+                                      className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                                        isButtonClicked ||
+                                        attempted[currentIndex] !== null
+                                          ? isCorrectAnswer
+                                            ? "border border-green-500 bg-green-100"
+                                            : "border border-red-500 bg-red-100"
+                                          : "border border-gray-300 bg-gray-100"
+                                      }`}
+                                    >
+                                      {(isButtonClicked ||
+                                        attempted[currentIndex] !== null) &&
+                                        (isCorrectAnswer ? (
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="2"
+                                            stroke="green"
+                                            className="h-4 w-4"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="M5 13l4 4L19 7"
+                                            />
+                                          </svg>
+                                        ) : (
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="2"
+                                            stroke="red"
+                                            className="h-4 w-4"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="M6 18L18 6M6 6l12 12"
+                                            />
+                                          </svg>
+                                        ))}
+                                    </div>
+                                    <span className="flex-1 text-[#27272A]">
+                                      {answer}
+                                    </span>
+                                    {isAccordionOpen[index] ? (
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
+                                        width="24"
+                                        height="24"
                                         viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
                                         strokeWidth="2"
-                                        stroke="green"
-                                        className="h-4 w-4"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-chevron-up"
                                       >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          d="M5 13l4 4L19 7"
-                                        />
+                                        <path d="m18 15-6-6-6 6" />
                                       </svg>
                                     ) : (
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
+                                        width="24"
+                                        height="24"
                                         viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
                                         strokeWidth="2"
-                                        stroke="red"
-                                        className="h-4 w-4"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-chevron-down"
                                       >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          d="M6 18L18 6M6 6l12 12"
-                                        />
+                                        <path d="m6 9 6 6 6-6" />
                                       </svg>
-                                    ))}
-                                </div>
-                                <span className="flex-1 text-[#27272A]">
-                                  {answer}
-                                </span>
-                                {isAccordionOpen[index] ? (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-chevron-up"
-                                  >
-                                    <path d="m18 15-6-6-6 6" />
-                                  </svg>
-                                ) : (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="lucide lucide-chevron-down"
-                                  >
-                                    <path d="m6 9 6 6 6-6" />
-                                  </svg>
-                                )}
-                              </label>
+                                    )}
+                                  </label>
 
-                              {/* Conditionally render the hr and p tags */}
-                              {isAccordionOpen[index] && (
-                                <>
-                                  <hr className={`mx-5 ${borderColor}`} />
-                                  <p className="px-5 py-2 text-[12px] text-[#3F3F46]">
-                                    {
-                                      data[currentIndex]
-                                        ?.explanationList[index]
-                                    }
-                                  </p>
-                                </>
+                                  {/* Conditionally render the hr and p tags */}
+                                  {isAccordionOpen[index] && (
+                                    <>
+                                      <hr className={`mx-5 ${borderColor}`} />
+                                      <p className="px-5 py-2 text-[12px] text-[#3F3F46]">
+                                        {
+                                          data[currentIndex]?.explanationList[
+                                            index
+                                          ]
+                                        }
+                                      </p>
+                                    </>
+                                  )}
+                                </div>
                               )}
                             </div>
-                          )}
-                        </div>
-                      );
-                    },
-                  )}
-                </div>
+                          );
+                        },
+                      )}
+                    </div>
 
-                {/* Submit Button */}
-                {!isReviewEnabled &&
-                  (isAccordionVisible ? (
-                    <div className="group">
-                      <button
-                        className="mt-2 flex w-full items-center justify-center gap-x-3 rounded-md border border-[#3CC8A1] bg-[#3CC8A1] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] lg:text-[16px]"
-                        onClick={nextQuestion}
-                      >
-                        Next Question
-                        <span className="rounded-[4px] bg-white px-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#3CC8A1]">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-space text-black transition-all duration-300 ease-in-out group-hover:text-white"
+                    {/* Submit Button */}
+                    {!isReviewEnabled &&
+                      (isAccordionVisible ? (
+                        <div className="group">
+                          <button
+                            className="mt-2 flex w-full items-center justify-center gap-x-3 rounded-md border border-[#3CC8A1] bg-[#3CC8A1] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#3CC8A1] lg:text-[16px]"
+                            onClick={nextQuestion}
                           >
-                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                          </svg>
-                        </span>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="group">
-                      <button
-                        className={`mt-2 flex w-full items-center justify-center gap-x-3 rounded-md bg-[#3CC8A1] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out lg:text-[16px] ${
-                          isAnswered && "hover:bg-transparent"
-                        } ${
-                          isAnswered && "hover:text-[#3CC8A1]"
-                        } border border-[#3CC8A1] ${
-                          !isAnswered && "cursor-not-allowed"
-                        }`}
-                        onClick={handleCheckAnswer}
-                        disabled={isAnswered === false}
-                      >
-                        Check Answer
-                        <span
-                          className={`rounded-[4px] bg-white px-[2px] ${
-                            isAnswered && "group-hover:bg-[#3CC8A1]"
-                          } transition-all duration-300 ease-in-out`}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className={`lucide lucide-space text-black ${
-                              isAnswered && "group-hover:text-white"
-                            } transition-all duration-300 ease-in-out`}
+                            Next Question
+                            <span className="rounded-[4px] bg-white px-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#3CC8A1]">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-space text-black transition-all duration-300 ease-in-out group-hover:text-white"
+                              >
+                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                              </svg>
+                            </span>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="group">
+                          <button
+                            className={`mt-2 flex w-full items-center justify-center gap-x-3 rounded-md bg-[#3CC8A1] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out lg:text-[16px] ${
+                              isAnswered && "hover:bg-transparent"
+                            } ${
+                              isAnswered && "hover:text-[#3CC8A1]"
+                            } border border-[#3CC8A1] ${
+                              !isAnswered && "cursor-not-allowed"
+                            }`}
+                            onClick={handleCheckAnswer}
+                            disabled={isAnswered === false}
                           >
-                            <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                          </svg>
-                        </span>
-                      </button>
-                    </div>
-                  ))}
-                {isReviewEnabled && (
-                  <div
-                    className={`flex items-center gap-x-2 font-semibold ${
-                      isFinishEnabled
-                        ? "cursor-pointer text-[#3CC8A1]"
-                        : "cursor-not-allowed text-[#D4D4D8]"
-                    } justify-center`}
-                    onClick={handleFinishAndReview}
-                  >
-                    {review === false && (
-                      <div className="group w-full">
-                        <button className="mt-2 flex w-full items-center justify-center gap-x-3 rounded-md border border-[#60B0FA] bg-[#60B0FA] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] lg:text-[16px]">
-                          Finish and Review
-                          <span className="rounded-[4px] bg-white px-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#60B0FA]">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-space text-black transition-all duration-300 ease-in-out group-hover:text-white"
+                            Check Answer
+                            <span
+                              className={`rounded-[4px] bg-white px-[2px] ${
+                                isAnswered && "group-hover:bg-[#3CC8A1]"
+                              } transition-all duration-300 ease-in-out`}
                             >
-                              <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-                            </svg>
-                          </span>
-                        </button>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className={`lucide lucide-space text-black ${
+                                  isAnswered && "group-hover:text-white"
+                                } transition-all duration-300 ease-in-out`}
+                              >
+                                <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                              </svg>
+                            </span>
+                          </button>
+                        </div>
+                      ))}
+                    {isReviewEnabled && (
+                      <div
+                        className={`flex items-center gap-x-2 font-semibold ${
+                          isFinishEnabled
+                            ? "cursor-pointer text-[#3CC8A1]"
+                            : "cursor-not-allowed text-[#D4D4D8]"
+                        } justify-center`}
+                        onClick={handleFinishAndReview}
+                      >
+                        {review === false && (
+                          <div className="group w-full">
+                            <button className="mt-2 flex w-full items-center justify-center gap-x-3 rounded-md border border-[#60B0FA] bg-[#60B0FA] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] lg:text-[16px]">
+                              Finish and Review
+                              <span className="rounded-[4px] bg-white px-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#60B0FA]">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="20"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="lucide lucide-space text-black transition-all duration-300 ease-in-out group-hover:text-white"
+                                >
+                                  <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                                </svg>
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {review === true && (
+                      <div className="group w-full">
+                        <div tabIndex="0">
+                          {" "}
+                          {/* Ensure the div is focusable */}
+                          <button
+                            className="mt-2 flex w-full items-center justify-center gap-x-3 rounded-md border border-[#60B0FA] bg-[#60B0FA] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] lg:text-[16px]"
+                            onClick={() => navigation("/dashboard")}
+                          >
+                            Back to Dashboard
+                            <span className="flex items-center gap-1 rounded-[4px] bg-white px-[4px] py-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#60B0FA]">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-corner-down-left text-black transition-all duration-300 ease-in-out group-hover:text-white"
+                              >
+                                <polyline points="9 10 4 15 9 20" />
+                                <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+                              </svg>
+                              <span className="text-[12px] font-semibold text-black group-hover:text-white">
+                                Enter
+                              </span>
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
                 )}
 
-                {review === true && (
-                  <div className="group w-full">
-                    <div tabIndex="0">
-                      {" "}
-                      {/* Ensure the div is focusable */}
-                      <button
-                        className="mt-2 flex w-full items-center justify-center gap-x-3 rounded-md border border-[#60B0FA] bg-[#60B0FA] px-6 py-2 text-[14px] font-semibold text-white transition-all duration-300 ease-in-out hover:bg-transparent hover:text-[#60B0FA] lg:text-[16px]"
-                        onClick={() => navigation("/dashboard")}
-                      >
-                        Back to Dashboard
-                        <span className="flex items-center gap-1 rounded-[4px] bg-white px-[4px] py-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#60B0FA]">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-corner-down-left text-black transition-all duration-300 ease-in-out group-hover:text-white"
-                          >
-                            <polyline points="9 10 4 15 9 20" />
-                            <path d="M20 4v7a4 4 0 0 1-4 4H4" />
-                          </svg>
-                          <span className="text-[12px] font-semibold text-black group-hover:text-white">
-                            Enter
-                          </span>
-                        </span>
-                      </button>
-                    </div>
+                {isAccordionVisible && (
+                  <div className="mx-7 flex items-center justify-between">
+                    <p className="text-[16px] font-medium text-[#3F3F46] dark:text-white">
+                      Notice a problem with this question?
+                    </p>
+                    <button
+                      onClick={reportHandler}
+                      className="rounded-[4px] bg-gray-200 p-3 text-[14px] font-semibold text-[#193154] transition-all duration-300 hover:bg-[#d9d9db]"
+                    >
+                      Report
+                    </button>
                   </div>
                 )}
+                {/* {isAccordionVisible && <DiscussionBoard setIsAIExpanded = {setIsAIExpanded} />} */}
+                {isAccordionVisible && (
+                  <Article
+                    article={article}
+                    id={data[currentIndex]?.conditionName}
+                  />
+                )}
               </div>
-            )}
 
-            {isAccordionVisible && (
-              <div className="mx-7 flex items-center justify-between">
-                <p className="text-[16px] font-medium text-[#3F3F46] dark:text-white">
-                  Notice a problem with this question?
-                </p>
-                <button
-                  onClick={reportHandler}
-                  className="rounded-[4px] bg-gray-200 p-3 text-[14px] font-semibold text-[#193154] transition-all duration-300 hover:bg-[#d9d9db]"
+              {/* Sidebar Section */}
+              <div className={`fixed right-0 top-0 hidden lg:block`}>
+                <div
+                  className={`flex h-screen w-[28%] flex-col items-center justify-between bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:w-[25%] lg:w-[240px] ${
+                    !toggleSidebar ? "translate-x-0" : "translate-x-full"
+                  } transition-transform duration-300`}
                 >
-                  Report
-                </button>
-              </div>
-            )}
-            {/* {isAccordionVisible && <DiscussionBoard setIsAIExpanded = {setIsAIExpanded} />} */}
-            {isAccordionVisible && (
-              <Article
-                article={article}
-                id={data[currentIndex]?.conditionName}
-              />
-            )}
-          </div>
+                  <div className="w-full">
+                    <div className="mt-5 flex items-center justify-between">
+                      <div className="flex items-center"></div>
 
-          {/* Sidebar Section */}
-          <div className={`fixed right-0 top-0 hidden lg:block`}>
-            <div
-              className={`flex h-screen w-[28%] flex-col items-center justify-between bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:w-[25%] lg:w-[240px] ${
-                !toggleSidebar ? "translate-x-0" : "translate-x-full"
-              } transition-transform duration-300`}
-            >
-              <div className="w-full">
-                <div className="mt-5 flex items-center justify-between">
-                  <div className="flex items-center"></div>
+                      <div className="absolute left-1/2 -translate-x-1/2 transform">
+                        <Logo />
+                      </div>
 
-                  <div className="absolute left-1/2 -translate-x-1/2 transform">
-                    <Logo />
+                      <div
+                        className="flex cursor-pointer items-center"
+                        onClick={() => {
+                          setToggleSidebar(!toggleSidebar);
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          className="lucide lucide-chevrons-left mr-4 dark:text-white"
+                        >
+                          <path d="m11 17-5-5 5-5" />
+                          <path d="m18 17-5-5 5-5" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div className="mt-10 flex flex-col items-center justify-center">
+                      {isTimerMode["mode"] === "Endless" && (
+                        <div
+                          className={`h-[96px] w-[90%] rounded-[8px] bg-[#3CC8A1] ${
+                            mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"
+                          } text-center text-[#ffff]`}
+                        >
+                          <div>
+                            <p className="mt-3 text-[12px]">Accuracy</p>
+                            <p className="text-[36px] font-black">
+                              {mcqsAccuracy}%
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {isTimerMode["mode"] === "Exam" && (
+                        <div
+                          className={`h-[96px] w-[90%] rounded-[8px] ${
+                            timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
+                          } text-center text-[#ffff]`}
+                        >
+                          <div>
+                            <p className="mt-3 text-[12px]">Time:</p>
+                            {review === true ? (
+                              <p className="text-[36px] font-black">
+                                {"00:00"}
+                              </p>
+                            ) : (
+                              <p className="text-[36px] font-black">
+                                {formatTime(timer)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <QuestionNavigator
+                      attempted={attempted}
+                      flaggedQuestions={flaggedQuestions}
+                      visited={visited}
+                      currentIndex={currentIndex}
+                      setCurrentIndex={setCurrentIndex}
+                    />
+                    <div className="px-10 py-5 text-[#D4D4D8]">
+                      <hr />
+                    </div>
+                  </div>
+                  <div>
+                    <hr className="mx-5" />
                   </div>
 
+                  <div className="mb-5 text-[12px]">
+                    <button
+                      className={`flex w-full items-center gap-x-2 font-semibold ${
+                        isFinishEnabled
+                          ? "cursor-pointer text-[#3CC8A1]"
+                          : "cursor-not-allowed text-[#D4D4D8]"
+                      } justify-center`}
+                      onClick={handleFinishAndReview}
+                      disabled={!isFinishEnabled}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-check"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                      <p>Finish and Review</p>
+                    </button>
+                    <hr className="my-2 w-[200px]" />
+
+                    <div
+                      className="flex cursor-pointer items-center justify-center gap-x-2 whitespace-nowrap font-semibold text-[#FF453A]"
+                      onClick={handleShowPopup}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-chevron-left"
+                      >
+                        <path d="m15 18-6-6 6-6" />
+                      </svg>
+                      <p>Back to Dashboard</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`3A3A48 absolute right-0 top-0 h-screen w-[28%] bg-white dark:border-[1px] dark:border-[#3A3A48] md:w-[25%] lg:w-[50px] ${
+                    !toggleSidebar && "translate-x-full"
+                  } text-black transition-transform duration-300 dark:bg-[#1E1E2A]`}
+                >
                   <div
-                    className="flex cursor-pointer items-center"
-                    onClick={() => {
-                      setToggleSidebar(!toggleSidebar);
-                    }}
+                    className="flex cursor-pointer items-center dark:bg-[#1E1E2A]"
+                    onClick={() => setToggleSidebar(!toggleSidebar)}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -1112,69 +1242,209 @@ const QuestionCard = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      className="lucide lucide-chevrons-left mr-4 dark:text-white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-chevrons-right ml-3 mt-5 dark:text-white"
                     >
-                      <path d="m11 17-5-5 5-5" />
-                      <path d="m18 17-5-5 5-5" />
+                      <path d="m6 17 5-5-5-5" />
+                      <path d="m13 17 5-5-5-5" />
                     </svg>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+          {showPopup && (
+            <DashboardModal
+              handleBackToDashboard={handleBackToDashboard}
+              setShowPopup={setShowPopup}
+            />
+          )}
 
-                <div className="mt-10 flex flex-col items-center justify-center">
-                  {isTimerMode["mode"] === "Endless" && (
-                    <div
-                      className={`h-[96px] w-[90%] rounded-[8px] bg-[#3CC8A1] ${
-                        mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"
-                      } text-center text-[#ffff]`}
-                    >
-                      <div>
-                        <p className="mt-3 text-[12px]">Accuracy</p>
-                        <p className="text-[36px] font-black">
-                          {mcqsAccuracy}%
-                        </p>
-                      </div>
-                    </div>
-                  )}
+          {showFeedBackModal && (
+            <FeedbackModal
+              showFeedBackModal={showFeedBackModal}
+              setShowFeedBackModal={setShowFeedBackModal}
+              userId={userId}
+              questionStem={data[currentIndex]}
+              leadQuestion={data[currentIndex].leadQuestion}
+            />
+          )}
 
-                  {isTimerMode["mode"] === "Exam" && (
-                    <div
-                      className={`h-[96px] w-[90%] rounded-[8px] ${
-                        timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
-                      } text-center text-[#ffff]`}
-                    >
-                      <div>
-                        <p className="mt-3 text-[12px]">Time:</p>
-                        {review === true ? (
-                          <p className="text-[36px] font-black">{"00:00"}</p>
-                        ) : (
-                          <p className="text-[36px] font-black">
-                            {formatTime(timer)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+          <div
+            ref={beakerRef}
+            className={`absolute right-0 top-0 transition-all duration-500 ${
+              beakerToggle
+                ? "visible opacity-100"
+                : "pointer-events-none invisible opacity-0"
+            }`}
+          >
+            <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
+          </div>
 
-                <QuestionNavigator
-                  attempted={attempted}
-                  flaggedQuestions={flaggedQuestions}
-                  visited={visited}
-                  currentIndex={currentIndex}
-                  setCurrentIndex={setCurrentIndex}
-                />
-                <div className="px-10 py-5 text-[#D4D4D8]">
-                  <hr />
+          <Drawer
+            open={isOpen}
+            onClose={toggleDrawer}
+            direction="right"
+            className="bla bla bla"
+            lockBackgroundScroll={true}
+          >
+            <div className="m-5" onClick={toggleDrawer}>
+              <RxCross2 />
+            </div>
+
+            <div className="h-screen bg-white">
+              <div className="mt-5 flex items-center justify-between">
+                <div className="flex items-center"></div>
+
+                <div className="absolute left-1/2 -translate-x-1/2 transform">
+                  <Logo />
                 </div>
               </div>
+
+              <div className="mt-10 flex flex-col items-center justify-center">
+                {isTimerMode["mode"] === "Endless" && (
+                  <div
+                    className={`h-[96px] w-[90%] rounded-[8px] bg-[#3CC8A1] ${
+                      mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"
+                    } text-center text-[#ffff]`}
+                  >
+                    <div>
+                      {" "}
+                      <p className="mt-3 text-[12px]">Accuracy</p>
+                      <p className="text-[36px] font-black">{mcqsAccuracy}%</p>
+                    </div>
+                  </div>
+                )}
+
+                {isTimerMode["mode"] === "Exam" && (
+                  <div
+                    className={`h-[96px] w-[90%] rounded-[8px] ${
+                      timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
+                    } text-center text-[#ffff]`}
+                  >
+                    <div>
+                      <p className="mt-3 text-[12px]">Time:</p>
+
+                      {review === true ? (
+                        <p className="text-[36px] font-black">{"00:00"}</p>
+                      ) : (
+                        <p className="text-[36px] font-black">
+                          {formatTime(timer)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <>
+                <div className="flex w-full items-center justify-between p-5 text-[12px]">
+                  <span
+                    className={`w-[30%] cursor-pointer text-center ${
+                      selectedFilter === "All"
+                        ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
+                        : "hover:text-[#3CC8A1]"
+                    }`}
+                    onClick={() => handleFilterChange("All")}
+                  >
+                    All
+                  </span>
+                  <span
+                    className={`w-[36%] cursor-pointer text-center ${
+                      selectedFilter === "Flagged"
+                        ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
+                        : "hover:text-[#3CC8A1]"
+                    }`}
+                    onClick={() => handleFilterChange("Flagged")}
+                  >
+                    Flagged
+                  </span>
+                  <span
+                    className={`w-[30%] cursor-pointer text-center ${
+                      selectedFilter === "Unseen"
+                        ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
+                        : "hover:text-[#3CC8A1]"
+                    }`}
+                    onClick={() => handleFilterChange("Unseen")}
+                  >
+                    Unseen
+                  </span>
+                </div>
+              </>
+
+              <div className="flex items-center justify-center">
+                <div className="grid grid-cols-5 gap-2">
+                  {Array.from({ length: end - start }, (_, i) => start + i).map(
+                    (num, i) => {
+                      const bgColor =
+                        attempted[num] === true
+                          ? "bg-[#3CC8A1]"
+                          : attempted[num] === false
+                            ? "bg-[#FF453A]"
+                            : "bg-gray-300";
+
+                      return (
+                        <div key={i}>
+                          <div
+                            className={`${bgColor} flex h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-[2px] text-[14px] font-bold text-white`}
+                            onClick={() => {
+                              setCurrentIndex(num);
+                            }}
+                          >
+                            <p>{num + 1}</p>
+                          </div>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-center gap-x-28 text-[#71717A]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  className="lucide lucide-move-left cursor-pointer"
+                  onClick={prevPage}
+                >
+                  <path d="M6 8L2 12L6 16" />
+                  <path d="M2 12H22" />
+                </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  className="lucide lucide-move-right cursor-pointer"
+                  onClick={nextPage}
+                >
+                  <path d="M18 8L22 12L18 16" />
+                  <path d="M2 12H22" />
+                </svg>
+              </div>
+              <div className="px-10 py-5 text-[#D4D4D8]">
+                <hr />
+              </div>
+
               <div>
                 <hr className="mx-5" />
               </div>
 
-              <div className="mb-5 text-[12px]">
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-[12px]">
+                {/* Finish and Review Button */}
                 <button
                   className={`flex w-full items-center gap-x-2 font-semibold ${
                     isFinishEnabled
@@ -1201,11 +1471,8 @@ const QuestionCard = () => {
                   <p>Finish and Review</p>
                 </button>
                 <hr className="my-2 w-[200px]" />
-
-                <div
-                  className="flex cursor-pointer items-center justify-center gap-x-2 whitespace-nowrap font-semibold text-[#FF453A]"
-                  onClick={handleShowPopup}
-                >
+                {/* Back to Dashboard Button */}
+                <div className="flex items-center justify-center gap-x-2 whitespace-nowrap font-semibold text-[#FF453A]">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -1224,275 +1491,11 @@ const QuestionCard = () => {
                 </div>
               </div>
             </div>
+          </Drawer>
 
-            <div
-              className={`3A3A48 absolute right-0 top-0 h-screen w-[28%] bg-white dark:border-[1px] dark:border-[#3A3A48] md:w-[25%] lg:w-[50px] ${
-                !toggleSidebar && "translate-x-full"
-              } text-black transition-transform duration-300 dark:bg-[#1E1E2A]`}
-            >
-              <div
-                className="flex cursor-pointer items-center dark:bg-[#1E1E2A]"
-                onClick={() => setToggleSidebar(!toggleSidebar)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-chevrons-right ml-3 mt-5 dark:text-white"
-                >
-                  <path d="m6 17 5-5-5-5" />
-                  <path d="m13 17 5-5-5-5" />
-                </svg>
-              </div>
-            </div>
-          </div>
+          <Chatbot setIsAIExpanded={setIsAIExpanded} />
         </div>
-      </div>
-      {showPopup && (
-        <DashboardModal
-          handleBackToDashboard={handleBackToDashboard}
-          setShowPopup={setShowPopup}
-        />
       )}
-
-      {showFeedBackModal && (
-        <FeedbackModal
-          showFeedBackModal={showFeedBackModal}
-          setShowFeedBackModal={setShowFeedBackModal}
-          userId={userId}
-          questionStem={data[currentIndex]}
-          leadQuestion={data[currentIndex].leadQuestion}
-        />
-      )}
-
-      <div
-        ref={beakerRef}
-        className={`absolute right-0 top-0 transition-all duration-500 ${
-          beakerToggle
-            ? "visible opacity-100"
-            : "pointer-events-none invisible opacity-0"
-        }`}
-      >
-        <ChemistryBeaker beakerToggledHandler={beakerToggledHandler} />
-      </div>
-
-      <Drawer
-        open={isOpen}
-        onClose={toggleDrawer}
-        direction="right"
-        className="bla bla bla"
-        lockBackgroundScroll={true}
-      >
-        <div className="m-5" onClick={toggleDrawer}>
-          <RxCross2 />
-        </div>
-
-        <div className="h-screen bg-white">
-          <div className="mt-5 flex items-center justify-between">
-            <div className="flex items-center"></div>
-
-            <div className="absolute left-1/2 -translate-x-1/2 transform">
-              <Logo />
-            </div>
-          </div>
-
-          <div className="mt-10 flex flex-col items-center justify-center">
-            {isTimerMode["mode"] === "Endless" && (
-              <div
-                className={`h-[96px] w-[90%] rounded-[8px] bg-[#3CC8A1] ${
-                  mcqsAccuracy > 34 ? "bg-[#3CC8A1]" : "bg-[#FF453A]"
-                } text-center text-[#ffff]`}
-              >
-                <div>
-                  {" "}
-                  <p className="mt-3 text-[12px]">Accuracy</p>
-                  <p className="text-[36px] font-black">{mcqsAccuracy}%</p>
-                </div>
-              </div>
-            )}
-
-            {isTimerMode["mode"] === "Exam" && (
-              <div
-                className={`h-[96px] w-[90%] rounded-[8px] ${
-                  timer <= 60 ? "bg-[#FF453A]" : "bg-[#3CC8A1]"
-                } text-center text-[#ffff]`}
-              >
-                <div>
-                  <p className="mt-3 text-[12px]">Time:</p>
-
-                  {review === true ? (
-                    <p className="text-[36px] font-black">{"00:00"}</p>
-                  ) : (
-                    <p className="text-[36px] font-black">
-                      {formatTime(timer)}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <>
-            <div className="flex w-full items-center justify-between p-5 text-[12px]">
-              <span
-                className={`w-[30%] cursor-pointer text-center ${
-                  selectedFilter === "All"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("All")}
-              >
-                All
-              </span>
-              <span
-                className={`w-[36%] cursor-pointer text-center ${
-                  selectedFilter === "Flagged"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("Flagged")}
-              >
-                Flagged
-              </span>
-              <span
-                className={`w-[30%] cursor-pointer text-center ${
-                  selectedFilter === "Unseen"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("Unseen")}
-              >
-                Unseen
-              </span>
-            </div>
-          </>
-
-          <div className="flex items-center justify-center">
-            <div className="grid grid-cols-5 gap-2">
-              {Array.from({ length: end - start }, (_, i) => start + i).map(
-                (num, i) => {
-                  const bgColor =
-                    attempted[num] === true
-                      ? "bg-[#3CC8A1]"
-                      : attempted[num] === false
-                        ? "bg-[#FF453A]"
-                        : "bg-gray-300";
-
-                  return (
-                    <div key={i}>
-                      <div
-                        className={`${bgColor} flex h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-[2px] text-[14px] font-bold text-white`}
-                        onClick={() => {
-                          setCurrentIndex(num);
-                        }}
-                      >
-                        <p>{num + 1}</p>
-                      </div>
-                    </div>
-                  );
-                },
-              )}
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-center gap-x-28 text-[#71717A]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-move-left cursor-pointer"
-              onClick={prevPage}
-            >
-              <path d="M6 8L2 12L6 16" />
-              <path d="M2 12H22" />
-            </svg>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-move-right cursor-pointer"
-              onClick={nextPage}
-            >
-              <path d="M18 8L22 12L18 16" />
-              <path d="M2 12H22" />
-            </svg>
-          </div>
-          <div className="px-10 py-5 text-[#D4D4D8]">
-            <hr />
-          </div>
-
-          <div>
-            <hr className="mx-5" />
-          </div>
-
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-[12px]">
-            {/* Finish and Review Button */}
-            <button
-              className={`flex w-full items-center gap-x-2 font-semibold ${
-                isFinishEnabled
-                  ? "cursor-pointer text-[#3CC8A1]"
-                  : "cursor-not-allowed text-[#D4D4D8]"
-              } justify-center`}
-              onClick={handleFinishAndReview}
-              disabled={!isFinishEnabled}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-check"
-              >
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-              <p>Finish and Review</p>
-            </button>
-            <hr className="my-2 w-[200px]" />
-            {/* Back to Dashboard Button */}
-            <div className="flex items-center justify-center gap-x-2 whitespace-nowrap font-semibold text-[#FF453A]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-chevron-left"
-              >
-                <path d="m15 18-6-6 6-6" />
-              </svg>
-              <p>Back to Dashboard</p>
-            </div>
-          </div>
-        </div>
-      </Drawer>
-
-      <Chatbot   setIsAIExpanded = {setIsAIExpanded}/>
     </div>
   );
 };

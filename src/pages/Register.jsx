@@ -5,9 +5,12 @@ import * as Yup from "yup";
 import supabase from "../config/helper";
 import Logo from "../components/common/Logo";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { fetchUserPhoneNumber, insertOrUpdateUserInformation } from "../redux/features/personal-info/personal-info.service";
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Formik setup
   const formik = useFormik({
@@ -50,6 +53,14 @@ const Register = () => {
           toast.error("Error occurred while registering");
         } else {
           // Show success toast
+
+          await dispatch(
+            fetchUserPhoneNumber({
+             
+              email: values.email,
+              phone: values.phone,
+            }),
+          );
           navigate("/verify-email");
           toast.success(
             "Registration Successful! Check your email and verify it.",

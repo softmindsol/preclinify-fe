@@ -24,6 +24,7 @@ const Scenarios = () => {
   const [module, setModule] = useState([]);
   const [activeTab, setActiveTab] = useState("static");
   const categoryRef = useRef(null);
+console.log("data:", data);
 
   useEffect(() => {
     const fetchData = async () => {
