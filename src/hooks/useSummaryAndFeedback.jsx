@@ -76,11 +76,6 @@ const useSummaryAndFeedback = (transcript) => {
     }
   };
 
-  useEffect(() => {
-    if (transcript.length > 0) {
-      generateSummaryAndFeedback();
-    }
-  }, [transcript]); // Trigger whenever the transcript updates
 
   return { chatFeedback, generateSummaryAndFeedback };
 };

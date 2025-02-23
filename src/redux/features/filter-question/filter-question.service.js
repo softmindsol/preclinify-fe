@@ -31,17 +31,21 @@ export const distributeLimits = (moduleIds, totalLimit) => {
 
 export const fetchCorrectIncorrectResult = createAsyncThunk(
     "resultsHistory/fetchCorrectIncorrectResult",
-    async ({ moduleId, totalLimit }, thunkAPI) => {
+    async ({ userId, moduleId, totalLimit }, thunkAPI) => {
         try {
             if (!moduleId || moduleId.length === 0) {
                 return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            }
+            if (!userId) {
+                return thunkAPI.rejectWithValue("User ID is required.");
             }
 
             // Step 1: Fetch correct and incorrect results
             const { data: results, error: resultsError } = await supabase
                 .from("resultsHistory")
-                .select("moduleId, questionId, isCorrect") // moduleId, questionId aur isCorrect lenge
+                .select("moduleId, questionId, isCorrect") // Fetch moduleId, questionId & isCorrect
                 .in("moduleId", moduleId)
+                .eq("userId", userId) // Filter by userId
                 .order("moduleId", { ascending: true });
 
             if (resultsError) {
@@ -52,40 +56,51 @@ export const fetchCorrectIncorrectResult = createAsyncThunk(
                 return thunkAPI.rejectWithValue("No results found.");
             }
 
-            // Extract unique moduleIds and questionIds
-            const moduleIds = [...new Set(results.map(item => item.moduleId))];
-            const questionIds = results.map(item => item.questionId);
+            // Step 2: Group by moduleId while preserving duplicates
+            const moduleWiseQuestions = results.reduce((acc, item) => {
+                if (!acc[item.moduleId]) acc[item.moduleId] = [];
+                acc[item.moduleId].push(item.questionId); // Maintain duplicates
+                return acc;
+            }, {});
 
-            if (moduleIds.length === 0 || questionIds.length === 0) {
-                return thunkAPI.rejectWithValue("No module IDs or question IDs found.");
-            }
+            // Step 3: Distribute limit per module
+            const moduleLimits = distributeLimits(Object.keys(moduleWiseQuestions), totalLimit);
 
-            // Step 2: Apply limit logic
-            const moduleLimits = distributeLimits(moduleIds, totalLimit);
-
-            // Fetch questions with distributed limits
+            // Step 4: Fetch questions while maintaining order & duplicacy
             const promises = moduleLimits.map(async ({ moduleId, limit }) => {
-                let query = supabase
-                    .from("mcqQuestions")
-                    .select("*")
-                    .eq("moduleId", moduleId)
-                    .in("id", questionIds); // Filter by question IDs
+                const questionIds = moduleWiseQuestions[moduleId]; // Get original duplicate-preserved IDs
 
-                if (limit !== null) {
-                    query = query.limit(limit);
+                if (!questionIds.length) return [];
+
+                // Fetch each question individually (preserving duplicates)
+                const questionFetchPromises = questionIds.map(async (questionId) => {
+                    const { data, error } = await supabase
+                        .from("mcqQuestions")
+                        .select("*")
+                        .eq("moduleId", moduleId)
+                        .eq("id", questionId)
+                        .limit(1); // Fetch one at a time to maintain duplicate count
+
+                    if (error) {
+                        throw new Error(`Error fetching question for moduleId ${moduleId}, questionId ${questionId}: ${error.message}`);
+                    }
+                    return data[0]; // Return single object
+                });
+
+                let questions = await Promise.all(questionFetchPromises);
+
+                // Apply limit per module
+                if (limit !== null && limit < questions.length) {
+                    questions = questions.slice(0, limit);
                 }
 
-                const { data, error } = await query;
-                if (error) {
-                    throw new Error(`Error fetching questions for moduleId ${moduleId}: ${error.message}`);
-                }
-                return data;
+                return questions;
             });
 
             const resultsData = await Promise.all(promises);
             const combinedData = resultsData.flat().sort(() => Math.random() - 0.5); // Shuffle
 
-            console.log("Fetched Correct & Incorrect Questions:", combinedData);
+            console.log("Fetched Correct & Incorrect Questions (Limited & Preserving Duplicates):", combinedData);
             return combinedData;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
@@ -94,22 +109,26 @@ export const fetchCorrectIncorrectResult = createAsyncThunk(
 );
 
 
-
 // UnAswered Question
 
 export const fetchUnattemptedQuestions = createAsyncThunk(
     "resultsHistory/fetchUnattemptedQuestions",
-    async ({ moduleId, totalLimit }, thunkAPI) => {
+    async ({ userId, moduleId, totalLimit }, thunkAPI) => {
         try {
             if (!moduleId || moduleId.length === 0) {
                 return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
             }
 
+            if (!userId) {
+                return thunkAPI.rejectWithValue("User ID is required.");
+            }
             // Step 1: Fetch all attempted questionIds from resultsHistory
             const { data: attemptedResults, error: attemptedResultsError } = await supabase
                 .from("resultsHistory")
                 .select("questionId")
-                .in("moduleId", moduleId);
+                .eq("userId", userId) // Filter by userId
+                .in("moduleId", moduleId)
+
 
             if (attemptedResultsError) {
                 return thunkAPI.rejectWithValue(attemptedResultsError.message);
@@ -123,7 +142,8 @@ export const fetchUnattemptedQuestions = createAsyncThunk(
             let query = supabase
                 .from("mcqQuestions")
                 .select("*")
-                .in("moduleId", moduleId);
+                .in("moduleId", moduleId)
+
 
             if (attemptedQuestionIds.length > 0) {
                 query = query.not("id", "in", `(${attemptedQuestionIds.join(",")})`);
@@ -148,25 +168,24 @@ export const fetchUnattemptedQuestions = createAsyncThunk(
 );
 
 
-
-
-
-
-
-
 // Define the async thunk SBA
 export const fetchCorrectResult = createAsyncThunk(
     "resultsHistory/fetchCorrectResult",
-    async ({ moduleId, totalLimit }, thunkAPI) => {
+    async ({ userId, moduleId, totalLimit }, thunkAPI) => {
         try {
-            if (!moduleId || moduleId.length === 0) {
-                return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            if (!userId) {
+                return thunkAPI.rejectWithValue("User ID is required.");
             }
 
-            // Step 1: Fetch correct results
-            const { data: correctResults, error: resultsError } = await supabase
+            if (!moduleId || moduleId.length === 0) {
+                return thunkAPI.rejectWithValue("Module ID array is empty or not provided.");
+            }
+
+            // Step 1: Fetch incorrect results for the specific user
+            const { data: incorrectResults, error: resultsError } = await supabase
                 .from("resultsHistory")
-                .select("moduleId, questionId")
+                .select("*")
+                .eq("userId", userId) // Filter by userId
                 .in("moduleId", moduleId)
                 .eq("isCorrect", true)
                 .order("moduleId", { ascending: true });
@@ -175,65 +194,84 @@ export const fetchCorrectResult = createAsyncThunk(
                 return thunkAPI.rejectWithValue(resultsError.message);
             }
 
-            if (!correctResults || correctResults.length === 0) {
-                return thunkAPI.rejectWithValue("No correct results found.");
+            if (!incorrectResults || incorrectResults.length === 0) {
+                return thunkAPI.rejectWithValue("No incorrect results found for this user.");
             }
 
-            // Extract unique moduleIds and questionIds
-            const moduleIds = [...new Set(correctResults.map(item => item.moduleId))];
-            const questionIds = correctResults.map(item => item.questionId);
-
-            if (moduleIds.length === 0 || questionIds.length === 0) {
-                return thunkAPI.rejectWithValue("No module IDs or question IDs found in correct results.");
-            }
+            console.log("Fetched Incorrect Results:", incorrectResults);
 
             // Step 2: Apply limit logic
-            const moduleLimits = distributeLimits(moduleIds, totalLimit);
+            const moduleLimits = distributeLimits(moduleId, totalLimit);
 
-            // Fetch questions with distributed limits
+            // **Use Map to group incorrect questions by moduleId**
+            const moduleQuestionMap = new Map();
+            incorrectResults.forEach((result) => {
+                if (!moduleQuestionMap.has(result.moduleId)) {
+                    moduleQuestionMap.set(result.moduleId, []);
+                }
+                moduleQuestionMap.get(result.moduleId).push(result.questionId);
+            });
+
+            // Fetch questions while preserving duplicates
             const promises = moduleLimits.map(async ({ moduleId, limit }) => {
-                let query = supabase
-                    .from("mcqQuestions")
-                    .select("*")
-                    .eq("moduleId", moduleId)
-                    .in("id", questionIds); // Filter by question IDs
+                const questionIds = moduleQuestionMap.get(moduleId) || [];
 
-                if (limit !== null) {
-                    query = query.limit(limit);
+                if (questionIds.length === 0) return [];
+
+                // Fetch each question individually (preserving duplicates)
+                const questionFetchPromises = questionIds.map(async (questionId) => {
+                    const { data, error } = await supabase
+                        .from("mcqQuestions")
+                        .select("*")
+                        .eq("moduleId", moduleId)
+                        .eq("id", questionId)
+                        .limit(1); // Fetch one at a time to maintain duplicate count
+
+                    if (error) {
+                        throw new Error(`Error fetching question for moduleId ${moduleId}, questionId ${questionId}: ${error.message}`);
+                    }
+                    return data[0]; // Return single object
+                });
+
+                let questions = await Promise.all(questionFetchPromises);
+
+                // Apply limit per module
+                if (limit !== null && limit < questions.length) {
+                    questions = questions.slice(0, limit);
                 }
 
-                const { data, error } = await query;
-                if (error) {
-                    throw new Error(`Error fetching questions for moduleId ${moduleId}: ${error.message}`);
-                }
-                return data;
+                return questions;
             });
 
             const results = await Promise.all(promises);
             const combinedData = results.flat().sort(() => Math.random() - 0.5); // Shuffle
 
-            console.log("Fetched Correct Questions:", combinedData);
+            console.log("Final Incorrect Questions (Limited & Preserving Duplicates):", combinedData);
             return combinedData;
+
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
         }
     }
 );
 
-
-
 export const fetchIncorrectResult = createAsyncThunk(
     "resultsHistory/fetchIncorrectResult",
-    async ({ moduleId, totalLimit }, thunkAPI) => {
+    async ({ userId, moduleId, totalLimit }, thunkAPI) => {
         try {
-            if (!moduleId || moduleId.length === 0) {
-                return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            if (!userId) {
+                return thunkAPI.rejectWithValue("User ID is required.");
             }
 
-            // Step 1: Fetch incorrect results
+            if (!moduleId || moduleId.length === 0) {
+                return thunkAPI.rejectWithValue("Module ID array is empty or not provided.");
+            }
+
+            // Step 1: Fetch incorrect results for the specific user
             const { data: incorrectResults, error: resultsError } = await supabase
                 .from("resultsHistory")
-                .select("moduleId, questionId")
+                .select("*")
+                .eq("userId", userId) // Filter by userId
                 .in("moduleId", moduleId)
                 .eq("isCorrect", false)
                 .order("moduleId", { ascending: true });
@@ -243,44 +281,60 @@ export const fetchIncorrectResult = createAsyncThunk(
             }
 
             if (!incorrectResults || incorrectResults.length === 0) {
-                return thunkAPI.rejectWithValue("No incorrect results found.");
+                return thunkAPI.rejectWithValue("No incorrect results found for this user.");
             }
 
-            // Extract unique moduleIds and questionIds
-            const moduleIds = [...new Set(incorrectResults.map(item => item.moduleId))];
-            const questionIds = incorrectResults.map(item => item.questionId);
-
-            if (moduleIds.length === 0 || questionIds.length === 0) {
-                return thunkAPI.rejectWithValue("No module IDs or question IDs found in incorrect results.");
-            }
+            console.log("Fetched Incorrect Results:", incorrectResults);
 
             // Step 2: Apply limit logic
-            const moduleLimits = distributeLimits(moduleIds, totalLimit);
+            const moduleLimits = distributeLimits(moduleId, totalLimit);
 
-            // Fetch questions with distributed limits
+            // **Use Map to group incorrect questions by moduleId**
+            const moduleQuestionMap = new Map();
+            incorrectResults.forEach((result) => {
+                if (!moduleQuestionMap.has(result.moduleId)) {
+                    moduleQuestionMap.set(result.moduleId, []);
+                }
+                moduleQuestionMap.get(result.moduleId).push(result.questionId);
+            });
+
+            // Fetch questions while preserving duplicates
             const promises = moduleLimits.map(async ({ moduleId, limit }) => {
-                let query = supabase
-                    .from("mcqQuestions")
-                    .select("*")
-                    .eq("moduleId", moduleId)
-                    .in("id", questionIds); // Filter by question IDs
+                const questionIds = moduleQuestionMap.get(moduleId) || [];
 
-                if (limit !== null) {
-                    query = query.limit(limit);
+                if (questionIds.length === 0) return [];
+
+                // Fetch each question individually (preserving duplicates)
+                const questionFetchPromises = questionIds.map(async (questionId) => {
+                    const { data, error } = await supabase
+                        .from("mcqQuestions")
+                        .select("*")
+                        .eq("moduleId", moduleId)
+                        .eq("id", questionId)
+                        .limit(1); // Fetch one at a time to maintain duplicate count
+
+                    if (error) {
+                        throw new Error(`Error fetching question for moduleId ${moduleId}, questionId ${questionId}: ${error.message}`);
+                    }
+                    return data[0]; // Return single object
+                });
+
+                let questions = await Promise.all(questionFetchPromises);
+
+                // Apply limit per module
+                if (limit !== null && limit < questions.length) {
+                    questions = questions.slice(0, limit);
                 }
 
-                const { data, error } = await query;
-                if (error) {
-                    throw new Error(`Error fetching questions for moduleId ${moduleId}: ${error.message}`);
-                }
-                return data;
+                return questions;
             });
 
             const results = await Promise.all(promises);
             const combinedData = results.flat().sort(() => Math.random() - 0.5); // Shuffle
 
-            console.log("Fetched fetchIncorrectResult Questions:", combinedData);
+            console.log("Final Incorrect Questions (Limited & Preserving Duplicates):", combinedData);
             return combinedData;
+
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
         }
@@ -330,3 +384,174 @@ export const fetchAllResult = createAsyncThunk(
     }
 );
 
+
+//  fetchUnattemptedAndCorrectQuestions SBA
+export const fetchUnattemptedAndCorrectQuestions = createAsyncThunk(
+    "resultsHistory/fetchUnattemptedAndCorrectQuestions",
+    async ({ userId, moduleId, totalLimit }, thunkAPI) => {
+        try {
+            if (!moduleId || moduleId.length === 0) {
+                return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            }
+            if (!userId) {
+                return thunkAPI.rejectWithValue("User ID is required.");
+            }
+            console.log("fetchUnattemptedAndCorrectQuestions")
+
+            // Step 1: Fetch all attempted questionIds from resultsHistory
+            const { data: attemptedResults, error: attemptedResultsError } = await supabase
+                .from("resultsHistory")
+                .select("questionId, isCorrect, moduleId")
+                .eq("userId", userId)
+                .in("moduleId", moduleId);
+
+            if (attemptedResultsError) {
+                return thunkAPI.rejectWithValue(attemptedResultsError.message);
+            }
+            console.log("attemptedResults:", attemptedResults);
+
+
+            // Step 2: Extract attempted question IDs and count correct answers
+            const attemptedQuestionIds = new Set();
+            const correctQuestionCount = new Map(); // Track occurrences of each correct question
+
+            attemptedResults.forEach(({ questionId, isCorrect, moduleId }) => {
+                attemptedQuestionIds.add(questionId);
+
+                if (isCorrect) {
+                    const key = `${moduleId}-${questionId}`; // Unique key for tracking
+                    correctQuestionCount.set(key, (correctQuestionCount.get(key) || 0) + 1);
+                }
+            });
+
+            // Step 3: Fetch unattempted questions (i.e., those NOT in attemptedQuestionIds)
+            let unattemptedQuery = supabase
+                .from("mcqQuestions")
+                .select("*")
+                .in("moduleId", moduleId);
+
+            if (attemptedQuestionIds.size > 0) {
+                unattemptedQuery = unattemptedQuery.not("id", "in", `(${Array.from(attemptedQuestionIds).join(",")})`);
+            }
+
+            const { data: unattemptedQuestions, error: unattemptedError } = await unattemptedQuery;
+            if (unattemptedError) {
+                return thunkAPI.rejectWithValue(unattemptedError.message);
+            }
+
+            // Step 4: Fetch correct questions while preserving duplicates
+            const correctQuestionPromises = Array.from(correctQuestionCount.entries()).map(async ([key, count]) => {
+                const [moduleId, questionId] = key.split("-");
+
+                const { data, error } = await supabase
+                    .from("mcqQuestions")
+                    .select("*")
+                    .eq("id", questionId)
+                    .eq("moduleId", moduleId)
+                    .limit(1); // Fetch one question at a time
+
+                if (error) {
+                    throw new Error(`Error fetching correct question for moduleId ${moduleId}, questionId ${questionId}: ${error.message}`);
+                }
+
+                return Array(count).fill(data[0]); // Duplicate the question based on its occurrence count
+            });
+
+            const correctQuestions = (await Promise.all(correctQuestionPromises)).flat();
+
+            // Step 5: Merge, shuffle, and apply total limit
+            const combinedQuestions = [...unattemptedQuestions, ...correctQuestions].sort(() => Math.random() - 0.5);
+            const finalData = totalLimit ? combinedQuestions.slice(0, totalLimit) : combinedQuestions;
+
+            console.log("Fetched Unattempted & Correct Questions:", finalData);
+            return finalData;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
+
+export const fetchUnattemptedAndIncorrectQuestions = createAsyncThunk(
+    "resultsHistory/fetchUnattemptedAndIncorrectQuestions",
+    async ({ userId, moduleId, totalLimit }, thunkAPI) => {
+        try {
+            if (!moduleId || moduleId.length === 0) {
+                return thunkAPI.rejectWithValue("moduleId array is empty or not provided");
+            }
+            if (!userId) {
+                return thunkAPI.rejectWithValue("User ID is required.");
+            }
+            console.log("fetchUnattemptedAndIncorrectQuestions");
+
+            // Step 1: Fetch all attempted questionIds from resultsHistory
+            const { data: attemptedResults, error: attemptedResultsError } = await supabase
+                .from("resultsHistory")
+                .select("questionId, isCorrect, moduleId")
+                .eq("userId", userId)
+                .in("moduleId", moduleId);
+
+            if (attemptedResultsError) {
+                return thunkAPI.rejectWithValue(attemptedResultsError.message);
+            }
+            console.log("attemptedResults:", attemptedResults);
+
+            // Step 2: Extract attempted question IDs and count incorrect answers
+            const attemptedQuestionIds = new Set();
+            const incorrectQuestionCount = new Map(); // Track occurrences of each incorrect question
+
+            attemptedResults.forEach(({ questionId, isCorrect, moduleId }) => {
+                attemptedQuestionIds.add(questionId);
+
+                if (!isCorrect) {
+                    const key = `${moduleId}-${questionId}`; // Unique key for tracking
+                    incorrectQuestionCount.set(key, (incorrectQuestionCount.get(key) || 0) + 1);
+                }
+            });
+
+            // Step 3: Fetch unattempted questions (i.e., those NOT in attemptedQuestionIds)
+            let unattemptedQuery = supabase
+                .from("mcqQuestions")
+                .select("*")
+                .in("moduleId", moduleId);
+
+            if (attemptedQuestionIds.size > 0) {
+                unattemptedQuery = unattemptedQuery.not("id", "in", `(${Array.from(attemptedQuestionIds).join(",")})`);
+            }
+
+            const { data: unattemptedQuestions, error: unattemptedError } = await unattemptedQuery;
+            if (unattemptedError) {
+                return thunkAPI.rejectWithValue(unattemptedError.message);
+            }
+
+            // Step 4: Fetch incorrect questions while preserving duplicates
+            const incorrectQuestionPromises = Array.from(incorrectQuestionCount.entries()).map(async ([key, count]) => {
+                const [moduleId, questionId] = key.split("-");
+
+                const { data, error } = await supabase
+                    .from("mcqQuestions")
+                    .select("*")
+                    .eq("id", questionId)
+                    .eq("moduleId", moduleId)
+                    .limit(1); // Fetch one question at a time
+
+                if (error) {
+                    throw new Error(`Error fetching incorrect question for moduleId ${moduleId}, questionId ${questionId}: ${error.message}`);
+                }
+
+                return Array(count).fill(data[0]); // Duplicate the question based on its occurrence count
+            });
+
+            const incorrectQuestions = (await Promise.all(incorrectQuestionPromises)).flat();
+
+            // Step 5: Merge, shuffle, and apply total limit
+            const combinedQuestions = [...unattemptedQuestions, ...incorrectQuestions].sort(() => Math.random() - 0.5);
+            const finalData = totalLimit ? combinedQuestions.slice(0, totalLimit) : combinedQuestions;
+
+            console.log("Fetched Unattempted & Incorrect Questions:", finalData);
+            return finalData;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);

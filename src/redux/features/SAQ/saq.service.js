@@ -103,14 +103,23 @@ export const fetchShortQuestionByModules = createAsyncThunk(
 
 export const fetchCorrectShortQuestionByModules = createAsyncThunk(
   "modules/fetchCorrectShortQuestionByModules",
-  async ({ moduleIds, limit }, { rejectWithValue }) => {
+  async ({ userId, moduleIds, limit }, { rejectWithValue }) => {
     try {
-      // Step 1: Fetch only correct data from resultHistorySaq
+      if (!userId) {
+        return rejectWithValue("User ID is required.");
+      }
+
+      if (!moduleIds || moduleIds.length === 0) {
+        return rejectWithValue("Module ID array is empty or not provided.");
+      }
+
+      // Step 1: Fetch only correct data from resultHistorySaq (keeping duplicates)
       const { data: resultHistory, error: resultError } = await supabase
         .from("resultHistorySaq")
         .select("moduleId, questionId, childrenId")
-        .eq("isCorrect", true) // ✅ Fetch only correct answers
-        .eq("moduleId", moduleIds);
+        .eq("userId", userId)
+        .eq("isCorrect", true)
+        .in("moduleId", moduleIds);
 
       if (resultError) {
         throw new Error(`Error fetching resultHistorySaq: ${resultError.message}`);
@@ -120,16 +129,17 @@ export const fetchCorrectShortQuestionByModules = createAsyncThunk(
         return rejectWithValue("No correct records found in resultHistorySaq.");
       }
 
-      // Extract unique parentIds and ids
-      const parentIds = [...new Set(resultHistory.map((item) => item.questionId))];
-      const resultHistoryIds = [...new Set(resultHistory.map((item) => item.childrenId))];
-      console.log("resultHistoryIds:", resultHistoryIds);
+      // Extract all parentIds (with duplicates)
+      const parentIds = resultHistory.map((item) => item.questionId);
+      const childrenIds = resultHistory.map((item) => item.childrenId);
+
+      console.log("Result History Children IDs (Preserving Duplicates):", childrenIds);
 
       if (parentIds.length === 0) {
         return rejectWithValue("No parentIds found in resultHistorySaq.");
       }
 
-      // Step 2: Fetch data from saqParent based on parentId
+      // Step 2: Fetch saqParent data while maintaining duplicates
       const { data: saqParentData, error: parentError } = await supabase
         .from("saqParent")
         .select("id, categoryId, parentQuestion")
@@ -139,32 +149,37 @@ export const fetchCorrectShortQuestionByModules = createAsyncThunk(
         throw new Error(`Error fetching saqParent data: ${parentError.message}`);
       }
 
-      // Extract categoryIds from saqParent data
-      const categoryIds = [...new Set(saqParentData.map((item) => item.categoryId))];
+      // Extract categoryIds (keeping duplicates for proper mapping)
+      const categoryIds = saqParentData.map((item) => item.categoryId);
 
       if (categoryIds.length === 0) {
         return rejectWithValue("No categoryIds found in saqParent.");
       }
 
-      // Step 3: Fetch saqChild records based on categoryId, parentQuestionId, and resultHistoryIds
-      let childQuery = supabase
-        .from("saqChild")
-        .select("*")
-        .in("categoryId", categoryIds)
-        .in("parentQuestionId", parentIds)
-        .in("id", resultHistoryIds); // Filter by correct resultHistoryIds
+      // Step 3: Fetch saqChild records for each childrenId (preserving duplicates)
+      const childFetchPromises = childrenIds.map(async (childId) => {
+        const { data, error } = await supabase
+          .from("saqChild")
+          .select("*")
+          .eq("id", childId)
+          .limit(1); // Fetch individually to maintain duplicate occurrences
 
-      if (limit) {
-        childQuery = childQuery.limit(limit); // ✅ Applying limit on saqChild
+        if (error) {
+          throw new Error(`Error fetching saqChild data: ${error.message}`);
+        }
+
+        return data[0]; // Return single object to maintain structure
+      });
+
+      let saqChildData = await Promise.all(childFetchPromises);
+      saqChildData = saqChildData.filter(Boolean); // Remove any null values
+
+      // Step 4: Apply Limit if needed (while keeping duplicates)
+      if (limit && limit < saqChildData.length) {
+        saqChildData = saqChildData.slice(0, limit);
       }
 
-      const { data: saqChildData, error: childError } = await childQuery;
-
-      if (childError) {
-        throw new Error(`Error fetching saqChild data: ${childError.message}`);
-      }
-
-      // Step 4: Group data into required structure
+      // Step 5: Group data into required structure while keeping duplicates
       const groupedData = saqParentData.map((parent) => {
         const children = saqChildData.filter(
           (child) => child.parentQuestionId === parent.id
@@ -174,13 +189,13 @@ export const fetchCorrectShortQuestionByModules = createAsyncThunk(
           categoryId: parent.categoryId,
           id: parent.id,
           parentQuestion: parent.parentQuestion,
-          children: children, // Array of correct child questions related to this parent
+          children, // Preserved duplicate child questions
         };
       });
 
-      console.log("Correct Data:", groupedData);
-
+      console.log("Correct Data (Duplicates Preserved):", groupedData);
       return groupedData;
+
     } catch (error) {
       return rejectWithValue({
         message: error?.message || "An unexpected error occurred",
@@ -191,16 +206,25 @@ export const fetchCorrectShortQuestionByModules = createAsyncThunk(
 );
 
 
+
 export const fetchInCorrectShortQuestionByModules = createAsyncThunk(
   "modules/fetchInCorrectShortQuestionByModules",
-  async ({ moduleIds, limit }, { rejectWithValue }) => {
+  async ({ userId, moduleIds, limit }, { rejectWithValue }) => {
     try {
+      if (!userId) {
+        return rejectWithValue("User ID is required.");
+      }
+
+      if (!moduleIds || moduleIds.length === 0) {
+        return rejectWithValue("Module ID array is empty or not provided.");
+      }
       // Step 1: Fetch only incorrect data from resultHistorySaq
       const { data: resultHistory, error: resultError } = await supabase
         .from("resultHistorySaq")
         .select("moduleId, questionId, childrenId")
         .eq("isIncorrect", true) // ✅ Fetch only incorrect answers
-        .eq("moduleId", moduleIds);
+        .eq("moduleId", moduleIds)
+        .eq('userId', userId)
 
       if (resultError) {
         throw new Error(`Error fetching resultHistorySaq: ${resultError.message}`);
@@ -282,15 +306,63 @@ export const fetchInCorrectShortQuestionByModules = createAsyncThunk(
 
 
 
-export const fetchIncorrectCorrectShortQuestionByModules = createAsyncThunk(
-  "modules/fetchIncorrectCorrectShortQuestionByModules",
-  async ({ moduleIds, limit }, { rejectWithValue }) => {
+export const fetchIncorrectUnAnsweredShortQuestionByModule = createAsyncThunk(
+  "modules/fetchIncorrectUnAnsweredShortQuestionByModule",
+  async ({ userId, moduleIds, limit }, { rejectWithValue }) => {
     try {
-      // Step 1: Fetch data from resultHistorySaq
+
+      if (!userId) {
+        return rejectWithValue("User ID is required.");
+      }
+
+      if (!moduleIds || moduleIds.length === 0) {
+        return rejectWithValue("Module ID array is empty or not provided.");
+      }
+      // Step 1: Fetch only incorrect data from resultHistorySaq
       const { data: resultHistory, error: resultError } = await supabase
         .from("resultHistorySaq")
-        .select("moduleId, questionId, childrenId") // Including id
-        .eq("moduleId", moduleIds);
+        .select("moduleId, questionId, childrenId")
+        .eq("isCorrect", true) // ✅ Fetch only incorrect answers
+        .eq("moduleId", moduleIds)
+        .eq('userId', userId)
+
+      if (resultError) {
+        throw new Error(`Error fetching resultHistorySaq: ${resultError.message}`);
+      }
+
+      if (!resultHistory || resultHistory.length === 0) {
+        return rejectWithValue("No incorrect records found in resultHistorySaq.");
+      }
+
+    } catch (error) {
+      return rejectWithValue({
+        message: error?.message || "An unexpected error occurred",
+        stack: error?.stack,
+      });
+    }
+  }
+);
+
+
+export const fetchIncorrectCorrectShortQuestionByModules = createAsyncThunk(
+  "modules/fetchIncorrectCorrectShortQuestionByModules",
+  async ({ userId, moduleIds, limit }, { rejectWithValue }) => {
+    try {
+      if (!userId) {
+        return rejectWithValue("User ID is required.");
+      }
+
+      if (!moduleIds || moduleIds.length === 0) {
+        return rejectWithValue("Module ID array is empty or not provided.");
+      }
+
+      // ✅ Fetch both correct & incorrect answers
+      const { data: resultHistory, error: resultError } = await supabase
+        .from("resultHistorySaq")
+        .select("moduleId, questionId, childrenId, isIncorrect, isCorrect")
+        .eq("userId", userId)
+        .in("moduleId", moduleIds)
+        .or("isIncorrect.eq.true,isCorrect.eq.true");
 
       if (resultError) {
         throw new Error(`Error fetching resultHistorySaq: ${resultError.message}`);
@@ -300,16 +372,17 @@ export const fetchIncorrectCorrectShortQuestionByModules = createAsyncThunk(
         return rejectWithValue("No records found in resultHistorySaq.");
       }
 
-      // Extract unique parentIds and ids
-      const parentIds = [...new Set(resultHistory.map((item) => item.questionId))];
-      const resultHistoryIds = [...new Set(resultHistory.map((item) => item.childrenId))];
-      console.log("resultHistoryIds:", resultHistoryIds);
+      console.log("resultHistory:", resultHistory.length);
+
+      // ✅ Preserve duplicates by NOT using Set
+      const parentIds = resultHistory.map((item) => item.questionId);
+      const resultHistoryIds = resultHistory.map((item) => item.childrenId);
 
       if (parentIds.length === 0) {
         return rejectWithValue("No parentIds found in resultHistorySaq.");
       }
 
-      // Step 2: Fetch data from saqParent based on parentId
+      // ✅ Fetch data from saqParent
       const { data: saqParentData, error: parentError } = await supabase
         .from("saqParent")
         .select("id, categoryId, parentQuestion")
@@ -319,42 +392,40 @@ export const fetchIncorrectCorrectShortQuestionByModules = createAsyncThunk(
         throw new Error(`Error fetching saqParent data: ${parentError.message}`);
       }
 
-      // Extract categoryIds from saqParent data
-      const categoryIds = [...new Set(saqParentData.map((item) => item.categoryId))];
+      const categoryIds = saqParentData.map((item) => item.categoryId);
 
       if (categoryIds.length === 0) {
         return rejectWithValue("No categoryIds found in saqParent.");
       }
 
-      // Step 3: Fetch data from saqChild based on categoryId, parentQuestionId, and resultHistoryIds
+      // ✅ Fetch data from saqChild without removing duplicates
       let childQuery = supabase
         .from("saqChild")
-        .select("*") // Selecting required fields
+        .select("*")
         .in("categoryId", categoryIds)
-        .in("parentQuestionId", parentIds)
-        .in("id", resultHistoryIds); // Filter by resultHistoryIds
+        .in("id", resultHistoryIds);
 
       if (limit) {
-        childQuery = childQuery.limit(limit); // ✅ Applying limit on saqChild
+        childQuery = childQuery.limit(limit);
       }
 
       const { data: saqChildData, error: childError } = await childQuery;
+      console.log("saqChildData:", saqChildData);
 
       if (childError) {
         throw new Error(`Error fetching saqChild data: ${childError.message}`);
       }
 
-      // Step 4: Group data into required structure
-      const groupedData = saqParentData.map((parent) => {
-        const children = saqChildData.filter(
-          (child) => child.parentQuestionId === parent.id
-        );
+      // ✅ Preserve duplicates while grouping data
+      const groupedData = resultHistory.map((record) => {
+        const parent = saqParentData.find((p) => p.id === record.questionId);
+        const children = saqChildData.filter((child) => child.id === record.childrenId);
 
         return {
-          categoryId: parent.categoryId,
-          id: parent.id,
-          parentQuestion: parent.parentQuestion,
-          children: children, // Array of child questions related to this parent
+          categoryId: parent?.categoryId || null,
+          id: parent?.id || null,
+          parentQuestion: parent?.parentQuestion || null,
+          children: children, // Preserve duplicates
         };
       });
 
@@ -435,6 +506,94 @@ export const fetchShortQuestionsWithChildren = createAsyncThunk(
   }
 );
 
+
+
+export const fetchFilteredCorrecUnAnsweredShortQuestions = createAsyncThunk(
+  "modules/fetchFilteredCorrecUnAnsweredShortQuestions",
+  async ({ userId, moduleIds, limit }, { rejectWithValue }) => {
+    try {
+      if (!userId) {
+        return rejectWithValue("User ID is required.");
+      }
+
+      if (!moduleIds || moduleIds.length === 0) {
+        return rejectWithValue("Module ID array is empty or not provided.");
+      }
+
+      // ✅ Step 1: Fetch incorrect & unanswered records from resultHistorySaq
+      const { data: resultHistory, error: resultError } = await supabase
+        .from("resultHistorySaq")
+        .select("moduleId, questionId, childrenId")
+        .eq("isIncorrect", true)
+        .in("moduleId", moduleIds)
+        .eq("userId", userId);
+
+      if (resultError) {
+        throw new Error(`Error fetching resultHistorySaq: ${resultError.message}`);
+      }
+      console.log("resultHistory:", resultHistory);
+
+      // ✅ Extracting questionIds and childrenIds from resultHistorySaq
+      const excludedParentIds = resultHistory.map((item) => item.questionId);
+      const excludedChildIds = resultHistory.map((item) => item.childrenId);
+
+      // ✅ Step 2: Fetch only those records from saqParent that are NOT in resultHistorySaq
+      const { data: saqParentData, error: parentError } = await supabase
+        .from("saqParent")
+        .select("id, categoryId, parentQuestion")
+        .in("categoryId", moduleIds)
+        .not("id", "in", `(${excludedParentIds.join(",")})`); // ✅ Exclude resultHistorySaq parentIds
+
+      if (parentError) {
+        throw new Error(`Error fetching saqParent data: ${parentError.message}`);
+      }
+
+      console.log("saqParentData:", saqParentData)
+      if (!saqParentData || saqParentData.length === 0) {
+        return rejectWithValue("No matching saqParent records found.");
+      }
+
+      // ✅ Extracting categoryIds from saqParent
+      const categoryIds = saqParentData.map((item) => item.categoryId);
+      const parentIds = saqParentData.map((item) => item.id);
+
+      // ✅ Step 3: Fetch only those saqChild records that belong to the filtered saqParent
+      let childQuery = supabase
+        .from("saqChild")
+        .select("*")
+        .in("categoryId", categoryIds)
+        .in("parentQuestionId", parentIds)
+        .not("id", "in", `(${excludedChildIds.join(",")})`); // ✅ Exclude resultHistorySaq childrenIds
+
+      if (limit) {
+        childQuery = childQuery.limit(limit);
+      }
+
+      const { data: saqChildData, error: childError } = await childQuery;
+
+      if (childError) {
+        throw new Error(`Error fetching saqChild data: ${childError.message}`);
+      }
+
+      // ✅ Step 4: Combine Parent & Child Data
+      const combinedData = saqParentData.map((parent) => ({
+        categoryId: parent.categoryId,
+        id: parent.id,
+        parentQuestion: parent.parentQuestion,
+        children: saqChildData.filter((child) => child.parentQuestionId === parent.id),
+      }));
+
+      console.log("Filtered Data (excluding resultHistorySaq records):", combinedData);
+
+      return combinedData;
+    } catch (error) {
+      return rejectWithValue({
+        message: error?.message || "An unexpected error occurred",
+        stack: error?.stack,
+      });
+    }
+  }
+);
 
 
 

@@ -30,12 +30,14 @@ const AINewVersion = () => {
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
-
+  const [finishReview, setFinishReview] = useState(false);
   const { isRecording, transcript, audioRef, initWebRTC, stopRecording } =
     useVoiceRecorder(categoryName);
 
-  const { chatFeedback } = useSummaryAndFeedback(transcript);
-
+  console.log("transcript:", transcript);
+  const { chatFeedback, generateSummaryAndFeedback } =
+    useSummaryAndFeedback(transcript);
+  console.log(chatFeedback);
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
   };
@@ -57,6 +59,10 @@ const AINewVersion = () => {
   //       setInputText(""); // Clear input field
   //     }
   //   };
+
+  const finishReviewHandler = () => {
+    setFinishReview(true);
+  };
 
   useEffect(() => {
     const savedMinutes = localStorage.getItem("minutes");
@@ -99,6 +105,11 @@ const AINewVersion = () => {
 
     return () => clearInterval(timerInterval);
   }, [timerActive, minutes, seconds, navigate]);
+  useEffect(() => {
+    if (transcript.length > 0) {
+      generateSummaryAndFeedback();
+    }
+  }, [transcript]); // Trigger whenever the transcript updates
 
   return (
     <div className="w-full">
@@ -180,7 +191,7 @@ const AINewVersion = () => {
 
             <div className="mt-5">
               <div
-                // onClick={finishReviewHandler}
+                onClick={finishReviewHandler}
                 className="mb-4 flex cursor-pointer items-center justify-center gap-x-2 font-semibold text-[#3CC8A1]"
               >
                 <svg
