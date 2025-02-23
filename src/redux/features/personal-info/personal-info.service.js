@@ -35,3 +35,23 @@ export const fetchUserInformation = createAsyncThunk(
     }
   },
 );
+
+export const fetchUserPhoneNumber = createAsyncThunk(
+  "user/fetchUserPhoneNumber",
+  async ({ email,phone }, { rejectWithValue }) => {
+    try {
+
+      
+      const { data, error } = await supabase
+        .from("UsersContactNumber")
+        .insert([{  email, phone }])
+       
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  },
+);
+

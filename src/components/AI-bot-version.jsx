@@ -7,6 +7,7 @@ import FeedbackModal from "./common/Feedback";
 import useVoiceRecorder from "../hooks/useVoiceRecorder";
 import useSummaryAndFeedback from "../hooks/useSummaryAndFeedback";
 import { insertOSCEBotData } from "../redux/features/osce-bot/osce-bot.service";
+import { fetchOSCEDataById } from "../redux/features/osce-static/osce-static.service";
 
 const AINewVersion = () => {
   const { categoryName } = useParams();
@@ -60,7 +61,6 @@ const AINewVersion = () => {
   //     }
   //   };
   const finishReviewHandler = async () => {
-
     await dispatch(
       insertOSCEBotData({
         chatFeedback,
@@ -114,7 +114,7 @@ const AINewVersion = () => {
       generateSummaryAndFeedback();
     }
   }, [transcript]); // Trigger whenever the transcript updates
-
+ 
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -305,7 +305,7 @@ const AINewVersion = () => {
               />
             </button>
 
-            <div
+            {/* <div
               className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
             >
               <form
@@ -323,7 +323,7 @@ const AINewVersion = () => {
                   Send
                 </button>
               </form>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
