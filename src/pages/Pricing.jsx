@@ -4,8 +4,10 @@ import { CheckCircle, Tag } from "lucide-react";
 import PlanSlug from "../utils/PlanSlug";
 import axios from "axios";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const Pricing = () => {
+  const userId = localStorage.getItem("userId");
   const [isAnnual, setIsAnnual] = useState(false);
 
   const pricingPlans = {
@@ -92,8 +94,7 @@ const Pricing = () => {
       toast.success("You are being redirected to the payment gateway");
       // Send the plan slug to the backend via an Axios POST request
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/subscribe?plan=${planSlug}`,
-      );
+        `${process.env.REACT_APP_BACKEND_URL}/subscribe?plan=${planSlug}&userId=${userId}` );
 
       if (response.status === 200) {
         // Handle success (maybe show a success message to the user)
