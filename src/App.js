@@ -178,7 +178,7 @@ function App() {
               <Privacy />
             
           }
-        />
+        /> 
         <Route
           path="/term-and-condition"
           element={
