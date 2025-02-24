@@ -52,14 +52,17 @@ const Slider = () => {
             />
             <div className="w-[640px] text-center text-[10px] font-medium text-[#3F3F46] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]">
               <p>
-                “Preclinify has been an incredible tool for my revision, helping
-                me reinforce my knowledge and prepare effectively for exams.
+                “Preclinify has been a wonderful addition to my revision and has
+                really helped me test my knowledge in preparation for exams. The
+                questions are engaging and relevant, and the answers are clearly
+                and thoughtfully explained. Highly recommended for fellow future
+                doctors!”.
               </p>
-              <p>
+              {/* <p>
                 The questions are engaging, highly relevant, and come with
                 well-explained answers that make complex topics easier to
-                understand”.
-              </p>
+                understand
+              </p> */}
               <p
                 className="text-[12px] font-bold text-[#FF9741] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]"
                 style={{ marginTop: "10px" }}
