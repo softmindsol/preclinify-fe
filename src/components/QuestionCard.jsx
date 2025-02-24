@@ -112,8 +112,7 @@ const QuestionCard = () => {
   const handleFilterChange = (filter) => {
     setSelectedFilter(filter);
   };
-  console.log("Data:", data);
-  console.log("length:", data.length);
+ 
 
   // Arrays to store indices
   const unseenIndices = [];
