@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../components/common/Logo';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import supabase from '../config/helper';
 import { toast } from 'sonner';
 
@@ -62,62 +62,72 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className='flex items-center w-full overflow-hidden'>
-            <div className='bg-[#FFFFFF] h-screen flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]'>
-                <Logo />
-                <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46]'>Reset Password</p>
-                <form
-                    onSubmit={handlePasswordUpdate}
-                    className='mt-2 space-y-3 w-[90%] sm:w-[430px]'
-                >
-                    <div>
-                        <label htmlFor="password" className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>
-                            Password
-                        </label>
-                        <br />
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder='Enter your Password...'
-                            className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="confirmPassword" className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>
-                            Confirm Password
-                        </label>
-                        <br />
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder='Enter your Confirm Password...'
-                            className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
-                            required
-                        />
-                    </div>
-
-                    {error && <p className='text-red-500 text-sm'>{error}</p>}
-                    {message && <p className='text-green-500 text-sm'>{message}</p>}
-
-                    <div>
-                        <button
-                            type='submit'
-                            className='w-full h-[50px] rounded-[8px] text-[14px] sm:text-[16px] bg-[#FFE9D6] text-[#FF9741] font-medium hover:bg-[#e3863a] hover:text-white transition-all duration-150'
-                        >
-                            Update
-                        </button>
-                    </div>
-                </form>
+      <div className="flex w-full items-center overflow-hidden">
+        <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">
+          <Link to="/">
+            <Logo />
+          </Link>
+          <p className="text-[16px] font-medium leading-[29px] text-[#3F3F46] sm:text-[24px]">
+            Reset Password
+          </p>
+          <form
+            onSubmit={handlePasswordUpdate}
+            className="mt-2 w-[90%] space-y-3 sm:w-[430px]"
+          >
+            <div>
+              <label
+                htmlFor="password"
+                className="text-[14px] font-medium text-[#3CC8A1] sm:text-[16px]"
+              >
+                Password
+              </label>
+              <br />
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your Password..."
+                className="mt-2 h-[50px] w-full rounded-[8px] border-[2px] border-black p-5 placeholder:text-[14px] md:placeholder:text-[16px]"
+                required
+              />
             </div>
-            <div className='bg-[#F4F4F5] hidden lg:flex h-screen items-center justify-center w-[50%]'>
-                <img src="/assets/AI_hosptial-removebg-preview.png" alt="" />
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="text-[14px] font-medium text-[#3CC8A1] sm:text-[16px]"
+              >
+                Confirm Password
+              </label>
+              <br />
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Enter your Confirm Password..."
+                className="mt-2 h-[50px] w-full rounded-[8px] border-[2px] border-black p-5 placeholder:text-[14px] md:placeholder:text-[16px]"
+                required
+              />
             </div>
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            {message && <p className="text-sm text-green-500">{message}</p>}
+
+            <div>
+              <button
+                type="submit"
+                className="h-[50px] w-full rounded-[8px] bg-[#FFE9D6] text-[14px] font-medium text-[#FF9741] transition-all duration-150 hover:bg-[#e3863a] hover:text-white sm:text-[16px]"
+              >
+                Update
+              </button>
+            </div>
+          </form>
         </div>
+        <div className="hidden h-screen w-[50%] items-center justify-center bg-[#F4F4F5] lg:flex">
+          <img src="/assets/AI_hosptial-removebg-preview.png" alt="" />
+        </div>
+      </div>
     );
 };
 

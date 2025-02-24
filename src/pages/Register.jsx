@@ -42,7 +42,9 @@ const Register = () => {
     onSubmit: async (values, { setSubmitting }) => {
       // Check if all checkboxes are checked
       if (!termsChecked || !emailUpdatesChecked || !smsUpdatesChecked) {
-        toast.error("Please agree to the terms and conditions and check the other options.");
+        toast.error(
+          "Please agree to the terms and conditions and check the other options.",
+        );
         setSubmitting(false);
         return;
       }
@@ -86,7 +88,10 @@ const Register = () => {
   return (
     <div className="flex w-full items-center overflow-hidden">
       <div className="flex min-h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] py-5 lg:w-[50%]">
-        <Logo />
+        <Link to="/">
+          <Logo />
+        </Link>
+
         <p className="mb-5 text-[16px] font-medium leading-[29px] text-[#3F3F46] sm:text-[24px]">
           Sign up into Preclinify
         </p>

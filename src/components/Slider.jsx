@@ -30,7 +30,11 @@ const Slider = () => {
                 The website is really easy to use and match the questions that
                 come up in my exams. Wish I discovered it in 1st year!”{" "}
               </p>
-
+              {/* <p>
+                The questions are engaging and relevant, and the answers are
+                clearly and thoughtfully explained. Highly recommended for
+                fellow future doctors!”
+              </p> */}
               <p
                 className="text-[12px] font-bold text-[#FF9741] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]"
                 style={{ marginTop: "10px" }}
@@ -48,15 +52,19 @@ const Slider = () => {
             />
             <div className="w-[640px] text-center text-[10px] font-medium text-[#3F3F46] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]">
               <p>
-                “The website is really easy to use and match the questions that
-                come up in my exams. Wish I discovered it in 1st year!”
+                “Preclinify has been an incredible tool for my revision, helping
+                me reinforce my knowledge and prepare effectively for exams.
               </p>
-
+              <p>
+                The questions are engaging, highly relevant, and come with
+                well-explained answers that make complex topics easier to
+                understand”.
+              </p>
               <p
                 className="text-[12px] font-bold text-[#FF9741] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]"
                 style={{ marginTop: "10px" }}
               >
-                Omar, Nottingham University
+                Mohammad, University College London
               </p>
             </div>
           </div>

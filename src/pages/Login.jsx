@@ -58,7 +58,9 @@ const Login = () => {
   return (
     <div className="flex w-full items-center overflow-hidden">
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">
-        <Logo />
+        <Link to="/">
+          <Logo />
+        </Link>
         <p className="text-[16px] font-medium leading-[29px] text-[#3F3F46] sm:text-[24px]">
           Log into Preclinify
         </p>
