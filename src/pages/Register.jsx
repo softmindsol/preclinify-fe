@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -6,12 +6,19 @@ import supabase from "../config/helper";
 import Logo from "../components/common/Logo";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
-import { fetchUserPhoneNumber, insertOrUpdateUserInformation } from "../redux/features/personal-info/personal-info.service";
+import {
+  fetchUserPhoneNumber,
+  insertOrUpdateUserInformation,
+} from "../redux/features/personal-info/personal-info.service";
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [emailUpdatesChecked, setEmailUpdatesChecked] = useState(false);
+  const [smsUpdatesChecked, setSmsUpdatesChecked] = useState(false);
 
+  // Formik setup
   // Formik setup
   const formik = useFormik({
     initialValues: {
@@ -29,13 +36,17 @@ const Register = () => {
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Required"),
-      phone: Yup.string()
-        // .matches(/^\+[1-9]\d{1,14}$/, 'Phone number must be in E.164 format (e.g., +1234567890)')
-        .required("Required"),
-
+      phone: Yup.string().required("Required"),
       displayName: Yup.string().required("Name is Required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
+      // Check if all checkboxes are checked
+      if (!termsChecked || !emailUpdatesChecked || !smsUpdatesChecked) {
+        toast.error("Please agree to the terms and conditions and check the other options.");
+        setSubmitting(false);
+        return;
+      }
+
       try {
         // Supabase auth register
         const { user, error } = await supabase.auth.signUp({
@@ -52,11 +63,8 @@ const Register = () => {
         if (error) {
           toast.error("Error occurred while registering");
         } else {
-          // Show success toast
-
           await dispatch(
             fetchUserPhoneNumber({
-             
               email: values.email,
               phone: values.phone,
             }),
@@ -67,11 +75,10 @@ const Register = () => {
           );
         }
       } catch (error) {
-        // Handle any unexpected error
         console.error("error:", error);
         toast.error("An error occurred. Please try again!");
       } finally {
-        setSubmitting(false); // Stop the loader once API call is done
+        setSubmitting(false);
       }
     },
   });
@@ -212,14 +219,21 @@ const Register = () => {
                 name="rememberMe"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-[#282F5A] focus:ring-1 focus:ring-[#282F5A]"
+                onChange={(e) => setTermsChecked(e.target.checked)}
               />
               <label
                 htmlFor="rememberMe"
                 className="mx-3 text-[14px] font-medium text-[#3F3F46] sm:text-[16px]"
               >
                 I agree to{" "}
-                <span className="underline">Terms and conditions</span> and{" "}
-                <span className="underline">Privacy Policy</span>
+                <Link to={"/term-and-condition"}>
+                  {" "}
+                  <span className="underline">Terms and conditions</span>{" "}
+                </Link>
+                and{" "}
+                <Link to={"/privacy-policy"}>
+                  <span className="underline">Privacy Policy</span>
+                </Link>
               </label>
             </div>
             <div className="flex items-center">
@@ -228,6 +242,7 @@ const Register = () => {
                 name="emailUpdates"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-[#282F5A] focus:ring-1 focus:ring-[#282F5A]"
+                onChange={(e) => setEmailUpdatesChecked(e.target.checked)}
               />
               <label
                 htmlFor="emailUpdates"
@@ -242,6 +257,7 @@ const Register = () => {
                 name="smsUpdates"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-[#282F5A] focus:ring-1 focus:ring-[#282F5A]"
+                onChange={(e) => setSmsUpdatesChecked(e.target.checked)}
               />
               <label
                 htmlFor="smsUpdates"
@@ -254,7 +270,12 @@ const Register = () => {
             <div>
               <button
                 type="submit"
-                disabled={formik.isSubmitting}
+                disabled={
+                  formik.isSubmitting ||
+                  !termsChecked ||
+                  !emailUpdatesChecked ||
+                  !smsUpdatesChecked
+                }
                 className="h-[50px] w-full rounded-[8px] bg-[#FFE9D6] text-[14px] font-medium text-[#FF9741] transition-all duration-150 hover:bg-[#e3863a] hover:text-white sm:text-[16px]"
               >
                 {formik.isSubmitting ? "Loading..." : "Sign Up"}

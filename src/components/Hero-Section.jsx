@@ -17,13 +17,13 @@ const Hero = () => {
     <div className="mt-8 overflow-y-auto">
       <div className="relative flex h-[60vh] items-center justify-center md:h-[77vh] lg:h-screen">
         <div
-          className="-left-10 top-32 hidden h-[450px] w-[150px] bg-cover bg-no-repeat md:absolute md:block lg:h-[500px] lg:w-[200px] xl:h-[557px] xl:w-[273px]"
-          style={{ backgroundImage: `url('/assets/Hero4.png')` }}
+          className="-left-3 top-32 hidden h-[450px] w-[150px] bg-cover bg-no-repeat md:absolute md:block lg:h-[500px] lg:w-[200px] xl:h-[557px] xl:w-[273px]"
+          style={{ backgroundImage: `url('/assets/Hero4-1.png')` }}
         ></div>
 
         <div
           className="right-0 top-32 hidden h-[450px] w-[150px] bg-cover bg-no-repeat md:absolute md:block lg:h-[500px] lg:w-[200px] xl:h-[557px] xl:w-[273px]"
-          style={{ backgroundImage: `url('/assets/Hero4.png')` }}
+          style={{ backgroundImage: `url('/assets/Hero4-2.png')` }}
         ></div>
 
         <div className="w-[90%] space-y-5 text-center md:w-[35%] xl:w-[40%] 2xl:space-y-10">
@@ -66,7 +66,7 @@ const Hero = () => {
                 }`}
                 onClick={() => setSelectedAnswer(answer.id)}
               >
-                <div className="flex h-[70px] items-center">
+                <div className="flex items-center xl:h-[70px]">
                   <input
                     type="radio"
                     name="answer"
