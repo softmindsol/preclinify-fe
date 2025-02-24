@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Logo from '../components/common/Logo';
 import supabase from '../config/helper';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 const ForgetPassword = () => {
     const [email, setEmail] = useState('');
@@ -41,53 +42,54 @@ const ForgetPassword = () => {
     };
 
     return (
-        <div className='flex items-center w-full overflow-hidden'>
-            <div className='bg-[#FFFFFF] h-screen flex items-center justify-center gap-y-5 flex-col w-screen lg:w-[50%]'>
-                <Logo />
-                <p className='text-[16px] sm:text-[24px] leading-[29px] font-medium text-[#3F3F46]'>Forget Password</p>
-                <form
-                    onSubmit={handlePasswordReset}
-                    className='mt-2 space-y-3 w-[90%] sm:w-[430px]'
-                >
-                    <div>
-                        <label htmlFor="email" className='text-[#3CC8A1] text-[14px] sm:text-[16px] font-medium'>
-                            Email Address
-                        </label>
-                        <br />
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder='Enter your Email...'
-                            className='rounded-[8px] mt-2 border-[2px] border-black p-5 w-full h-[50px] placeholder:text-[14px] md:placeholder:text-[16px]'
-                            required
-                        />
-                    </div>
-
-                    {error && <p className='text-red-500 text-sm'>{error}</p>}
-                    {message && <p className='text-green-500 text-sm'>{message}</p>}
-
-                    <div>
-                                                   <button
-                                                       type='submit'
-                                                       className='w-full h-[50px] text-[14px] sm:text-[16px] rounded-[8px] bg-[#FFE9D6] text-[#FF9741] font-medium hover:bg-[#e3863a] hover:text-white transition-all duration-150'
-                                                   >
-                                                       {isLoading ? (
-                                                           
-                                                              'Loading...'
-                                                         
-                                                       ) : (
-                                                           "Continue"
-                                                       )}
-                                                   </button>
-                    </div>
-                </form>
+      <div className="flex w-full items-center overflow-hidden">
+        <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">
+          <Link to="/">
+            <Logo />
+          </Link>
+          <p className="text-[16px] font-medium leading-[29px] text-[#3F3F46] sm:text-[24px]">
+            Forget Password
+          </p>
+          <form
+            onSubmit={handlePasswordReset}
+            className="mt-2 w-[90%] space-y-3 sm:w-[430px]"
+          >
+            <div>
+              <label
+                htmlFor="email"
+                className="text-[14px] font-medium text-[#3CC8A1] sm:text-[16px]"
+              >
+                Email Address
+              </label>
+              <br />
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your Email..."
+                className="mt-2 h-[50px] w-full rounded-[8px] border-[2px] border-black p-5 placeholder:text-[14px] md:placeholder:text-[16px]"
+                required
+              />
             </div>
-            <div className='bg-[#F4F4F5] hidden lg:flex h-screen items-center justify-center w-[50%]'>
-                <img src="/assets/AI_hosptial-removebg-preview.png" alt="" />
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            {message && <p className="text-sm text-green-500">{message}</p>}
+
+            <div>
+              <button
+                type="submit"
+                className="h-[50px] w-full rounded-[8px] bg-[#FFE9D6] text-[14px] font-medium text-[#FF9741] transition-all duration-150 hover:bg-[#e3863a] hover:text-white sm:text-[16px]"
+              >
+                {isLoading ? "Loading..." : "Continue"}
+              </button>
             </div>
+          </form>
         </div>
+        <div className="hidden h-screen w-[50%] items-center justify-center bg-[#F4F4F5] lg:flex">
+          <img src="/assets/AI_hosptial-removebg-preview.png" alt="" />
+        </div>
+      </div>
     );
 };
 
