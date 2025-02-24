@@ -67,7 +67,7 @@ const Slider = () => {
                 className="text-[12px] font-bold text-[#FF9741] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]"
                 style={{ marginTop: "10px" }}
               >
-                Mohammad, University College London
+                Mohammed from UCL
               </p>
             </div>
           </div>
