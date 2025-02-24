@@ -27,8 +27,8 @@ const Slider = () => {
             />
             <div className="w-[640px] text-center text-[10px] font-medium text-[#3F3F46] sm:text-[16px] xl:text-[20px] 2xl:text-[24px]">
               <p>
-                The website is really easy to use and match the questions that
-                come up in my exams. Wish I discovered it in 1st year!”{" "}
+                “The website is really easy to use and match the questions that
+                come up in my exams. Wish I discovered it in 1st year!”
               </p>
               {/* <p>
                 The questions are engaging and relevant, and the answers are
