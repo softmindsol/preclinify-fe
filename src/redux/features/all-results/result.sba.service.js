@@ -30,7 +30,7 @@ export const insertResult = createAsyncThunk(
 // Define the async thunk
 export const insertMockResult = createAsyncThunk(
   "resultsHistory/insertMockResult",
-  async ({ isCorrect, questionId, userId, moduleId }, thunkAPI) => {
+  async ({ isCorrect, questionId, userId, moduleId, paperId }, thunkAPI) => {
     try {
       const { data, error } = await supabase.from("resultHistoryMock").insert([
         {
@@ -38,6 +38,7 @@ export const insertMockResult = createAsyncThunk(
           questionId,
           userId,
           moduleId,
+          paperId
         },
       ]);
 

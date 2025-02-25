@@ -24,7 +24,6 @@ import { fetchDaysUntilExam } from "../redux/features/examDate/service";
 import { fetchUserInformation } from "../redux/features/personal-info/personal-info.service";
 import { fetchUserStreak } from "../redux/features/streak/streak.service";
 import BarChart from "../components/charts/stacked-bar";
-import { Clock, Factory } from "lucide-react";
 import MobileBar from "../components/common/Drawer";
 
 const Dashboard = () => {
@@ -49,7 +48,7 @@ const Dashboard = () => {
   const examDuration = useSelector((state) => state?.examDates?.examDate);
   const profile = useSelector((state) => state.personalInfo.userInfo);
   const profileLoading = useSelector((state) => state?.personalInfo?.loading);
-  const userId = useSelector((state) => state?.user?.userId);
+  const userId = localStorage.getItem("userId");
   const streaks = useSelector((state) => state?.streak?.streak) || [];
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [filteredData, setFilteredData] = useState({

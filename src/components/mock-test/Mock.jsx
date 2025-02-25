@@ -72,6 +72,7 @@ const MockTestQuestion = () => {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [isAIExpanded, setIsAIExpanded] = useState(false);
+  console.log("mockData:", mockData);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -219,6 +220,7 @@ const MockTestQuestion = () => {
             questionId: mockData[currentIndex].id,
             userId,
             moduleId: mockData[currentIndex].moduleId,
+            paperId: mockData[currentIndex].paperId,
           }),
         );
 

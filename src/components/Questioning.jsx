@@ -137,7 +137,7 @@ const Questioning = () => {
     totalUnanswered: 0,
   });
   const [moduleTotals, setModuleTotals] = useState({});
-  const [mockModuleTotals, setMockModuleTotals] = useState({});
+  const [mockModuleTotals, setMockModuleTotals] = useState([{}]);
   const [saqModuleTotals, setSaqModuleTotals] = useState({});
   const [selectedTab, setSelectedTab] = useState("Clinical");
   const presentations = useSelector(
@@ -830,11 +830,11 @@ const Questioning = () => {
       try {
         const query = supabase
           .from("resultHistoryMock")
-          .select("moduleId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
+          .select("paperId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
           .eq("userId", userId);
 
         if (selectedModules?.length) {
-          query.in("moduleId", selectedModules);
+          query.in("paperId", selectedModules);
         }
 
         const { data, error } = await query;
@@ -843,16 +843,16 @@ const Questioning = () => {
 
         // Compute totals
         const totalsByModule = data.reduce((acc, curr) => {
-          const { moduleId, isCorrect } = curr;
+          const { paperId, isCorrect } = curr;
 
-          if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
+          if (!acc[paperId]) {
+            acc[paperId] = { paperId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
           }
 
           if (Boolean(isCorrect)) {
-            acc[moduleId].totalCorrect += 1;
+            acc[paperId].totalCorrect += 1;
           } else {
-            acc[moduleId].totalIncorrect += 1;
+            acc[paperId].totalIncorrect += 1;
           }
 
           return acc;
@@ -865,6 +865,7 @@ const Questioning = () => {
 
     if (userId) fetchDailyWork();
   }, [selectedOption, userId]); // Handle selectedModules properly
+  console.log("MockModuleTotals:", mockModuleTotals);
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -916,6 +917,8 @@ const Questioning = () => {
     dispatch(setSelectedSBAModule(selectedModules));
   }, [dispatch, selectedModules]);
   console.log("selectedModule:", selectedModules);
+  console.log("selectedOption:", selectedOption);
+
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
@@ -1553,29 +1556,34 @@ const Questioning = () => {
                   !isSortedByPresentation &&
                   type === "Mock" &&
                   mockTestIds?.map((row) => {
+                    const moduleData = mockModuleTotals?.find(
+                      (module) => module?.paperId === row,
+                    );
+                    const totalQuestions = moduleData; // Directly use the count from sqa.counts
                     // const totalQuestions = moduleData
                     //   ? moduleData.questions.length
                     //   : 0;
+                    console.log("totalQuestions:", totalQuestions);
 
-                    // // Ensure moduleTotals is always an array
-                    // const moduleTotalsArray = Array.isArray(mockModuleTotals)
-                    //   ? mockModuleTotals
-                    //   : Object.values(mockModuleTotals || {});
+                    // Ensure moduleTotals is always an array
+                    const moduleTotalsArray = Array.isArray(mockModuleTotals)
+                      ? mockModuleTotals
+                      : Object.values(mockModuleTotals || {});
 
-                    // // Get the totals for correct and incorrect answers
-                    // const moduleTotal = moduleTotalsArray.find(
-                    //   (m) => String(m.moduleId) === String(row.categoryId),
-                    // ) || { totalCorrect: 0, totalIncorrect: 0 };
+                    // Get the totals for correct and incorrect answers
+                    const moduleTotal = moduleTotalsArray.find(
+                      (m) => String(m.paperId) === String(row),
+                    ) || { totalCorrect: 0, totalIncorrect: 0 };
 
-                    // const { totalCorrect, totalIncorrect } = moduleTotal;
+                    const { totalCorrect, totalIncorrect } = moduleTotal;
 
-                    // // Calculate percentage for progress bar
-                    // const correctPercentage = totalQuestions
-                    //   ? (totalCorrect / totalQuestions) * 100
-                    //   : 0;
-                    // const incorrectPercentage = totalQuestions
-                    //   ? (totalIncorrect / totalQuestions) * 100
-                    //   : 0;
+                    // Calculate percentage for progress bar
+                    const correctPercentage = totalQuestions
+                      ? (totalCorrect / totalQuestions) * 100
+                      : 0;
+                    const incorrectPercentage = totalQuestions
+                      ? (totalIncorrect / totalQuestions) * 100
+                      : 0;
 
                     return (
                       <div
@@ -1594,10 +1602,8 @@ const Questioning = () => {
                           </label>
                         </div>
                         {/* Progress Bar and Total Questions */}
-                        {/* <div className="flex w-full items-center justify-center space-x-2">
-                         
+                        <div className="flex w-full items-center justify-center space-x-2">
                           <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
-                           
                             <span
                               className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
                               style={{ width: `${correctPercentage}%` }}
@@ -1605,7 +1611,6 @@ const Questioning = () => {
                               {totalCorrect > 0 && <span>{totalCorrect}</span>}
                             </span>
 
-                           
                             <span
                               className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
                               style={{ width: `${incorrectPercentage}%` }}
@@ -1615,9 +1620,7 @@ const Questioning = () => {
                               )}
                             </span>
                           </div>
-
-                       
-                        </div> */}
+                        </div>
                       </div>
                     );
                   })}
