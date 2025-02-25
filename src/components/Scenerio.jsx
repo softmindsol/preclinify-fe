@@ -12,6 +12,7 @@ import {
   fetchOSCEData,
 } from "../redux/features/osce-static/osce-static.service";
 import MobileBar from "./common/Drawer";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 
 const Scenarios = () => {
   const { data = [], loading } = useSelector((state) => state.osce);

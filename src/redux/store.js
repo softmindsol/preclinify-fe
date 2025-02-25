@@ -31,6 +31,7 @@ import filterQuestionsReducer from './features/filter-question/filter-question.s
 import streakReducer from "./features/streak/streak.slice";
 import SaqfilterQuestionReducer from "./features/filter-question/filter-saq-question.slice";
 import FiltershortQuestionsReducer from './features/filter-question/filter-saq-question.slice'
+import subscriptionReducer from './features/subscription/subscription.slice';
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: "root",
@@ -69,6 +70,7 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  subscription: subscriptionReducer,
   FiltershortQuestions:FiltershortQuestionsReducer,
   SaqfilterQuestion: SaqfilterQuestionReducer,
   filterQuestion: filterQuestionsReducer,
