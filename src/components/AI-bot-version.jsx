@@ -100,7 +100,9 @@ const AINewVersion = () => {
       return "Could you please repeat that?";
     }
   };
-
+  const reportHandler = () => {
+    setShowFeedBackModal(!showFeedBackModal);
+  };
   const handleSendText = async (e) => {
     e.preventDefault();
     if (inputText.trim() === "") return;
@@ -483,7 +485,15 @@ const AINewVersion = () => {
           )}
         </div>
       </div>
-
+      {showFeedBackModal && (
+        <FeedbackModal
+          showFeedBackModal={showFeedBackModal}
+          setShowFeedBackModal={setShowFeedBackModal}
+          userId={userId}
+          questionStem={''}
+          leadQuestion={''}
+        />
+      )}
       {isDashboardModalOpen && (
         <DashboardModal
           setShowPopup={setIsDashboardModalOpen}

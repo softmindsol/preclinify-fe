@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ExamCountdown from "../components/settings/ExamCountdown";
 import { toast } from "sonner";
 import { clearUserId } from "../redux/features/user-id/userId.slice";
-import MobileBar from './../components/common/Drawer';
+import MobileBar from "./../components/common/Drawer";
 import {
   fetchUserInformation,
   insertOrUpdateUserInformation,
@@ -36,14 +36,14 @@ const Setting = () => {
     lastName: "",
     university: "",
     year: "",
-  });  
+  });
   const userId = localStorage.getItem("userId");
   const profile = useSelector((state) => state?.personalInfo?.userInfo);
   // Logout function
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut().then(() => {
-         localStorage.removeItem("userId");
+        //  localStorage.removeItem("userId");
         dispatch(clearUserId());
         toast.success("User logged out successfully");
         navigate("/login");

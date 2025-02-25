@@ -23,10 +23,10 @@ const FeedbackModal = ({
       return;
     }
 
-    if (!questionStem?.id) {
-      toast.error("Invalid question ID.");
-      return;
-    }
+    // if (!questionStem?.id) {
+    //   toast.error("Invalid question ID.");
+    //   return;
+    // }
 
     try {
       setLoading(true);
