@@ -68,6 +68,7 @@ import {
   setMockPresentationValue,
 } from "../redux/features/MockPresentation/presentationMock.slice";
 import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
+import MobileBar from "./common/Drawer";
 
 const Questioning = () => {
   const location = useLocation();
@@ -136,7 +137,7 @@ const Questioning = () => {
     totalUnanswered: 0,
   });
   const [moduleTotals, setModuleTotals] = useState({});
-  const [mockModuleTotals, setMockModuleTotals] = useState({});
+  const [mockModuleTotals, setMockModuleTotals] = useState([{}]);
   const [saqModuleTotals, setSaqModuleTotals] = useState({});
   const [selectedTab, setSelectedTab] = useState("Clinical");
   const presentations = useSelector(
@@ -355,15 +356,13 @@ const Questioning = () => {
     } else if (type === "Mock") {
       setIsSortedByPresentation(false);
 
-      dispatch(setLoading({ key: "modules/fetchModulesByMock", value: true }));
+      dispatch(setLoading({ key: "modules/fetchMockTest", value: true }));
       setIsLoading(true);
-      dispatch(fetchModules())
+      dispatch(fetchMockTest())
         .unwrap()
         .then((res) => {
           setIsLoading(false);
-          dispatch(
-            setLoading({ key: "modules/fetchModulesByMock", value: false }),
-          );
+          dispatch(setLoading({ key: "modules/fetchMockTest", value: false }));
         })
         .catch((err) => {
           dispatch(
@@ -514,32 +513,35 @@ const Questioning = () => {
           .unwrap()
           .then((ids) => {
             // Pass the fetched IDs to fetchModules
-            dispatch(fetchModulesById({ ids }))
-              .unwrap()
-              .then((res) => {
-                setIsLoading(false);
-                dispatch(
-                  setLoading({
-                    key: "modules/fetchModulesByMock",
-                    value: false,
-                  }),
-                );
 
-                dispatch(fetchTotalSBAQuestion({ ids: res }))
-                  .unwrap()
-                  .then((res) => {
-                    dispatch(fetchTotalMockQuestion({ ids: res })).unwrap();
-                  });
-              })
-              .catch((err) => {
-                setIsLoading(false);
-                dispatch(
-                  setLoading({
-                    key: "modules/fetchModulesByMock",
-                    value: false,
-                  }),
-                );
-              });
+            console.log("questioning ids:", ids);
+
+            // dispatch(fetchModulesById({ ids }))
+            //   .unwrap()
+            //   .then((res) => {
+            //     setIsLoading(false);
+            //     dispatch(
+            //       setLoading({
+            //         key: "modules/fetchModulesByMock",
+            //         value: false,
+            //       }),
+            //     );
+
+            //     dispatch(fetchTotalSBAQuestion({ ids: res }))
+            //       .unwrap()
+            //       .then((res) => {
+            //         dispatch(fetchTotalMockQuestion({ ids: res })).unwrap();
+            //       });
+            //   })
+            //   .catch((err) => {
+            //     setIsLoading(false);
+            //     dispatch(
+            //       setLoading({
+            //         key: "modules/fetchModulesByMock",
+            //         value: false,
+            //       }),
+            //     );
+            //   });
           })
           .catch((err) => {
             setIsLoading(false);
@@ -828,11 +830,11 @@ const Questioning = () => {
       try {
         const query = supabase
           .from("resultHistoryMock")
-          .select("moduleId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
+          .select("paperId, isCorrect, userId") // Yahan specify kiya ke kaun se fields chahiye
           .eq("userId", userId);
 
         if (selectedModules?.length) {
-          query.in("moduleId", selectedModules);
+          query.in("paperId", selectedModules);
         }
 
         const { data, error } = await query;
@@ -841,16 +843,16 @@ const Questioning = () => {
 
         // Compute totals
         const totalsByModule = data.reduce((acc, curr) => {
-          const { moduleId, isCorrect } = curr;
+          const { paperId, isCorrect } = curr;
 
-          if (!acc[moduleId]) {
-            acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
+          if (!acc[paperId]) {
+            acc[paperId] = { paperId, totalCorrect: 0, totalIncorrect: 0 }; // moduleId bhi add kiya
           }
 
           if (Boolean(isCorrect)) {
-            acc[moduleId].totalCorrect += 1;
+            acc[paperId].totalCorrect += 1;
           } else {
-            acc[moduleId].totalIncorrect += 1;
+            acc[paperId].totalIncorrect += 1;
           }
 
           return acc;
@@ -863,6 +865,7 @@ const Questioning = () => {
 
     if (userId) fetchDailyWork();
   }, [selectedOption, userId]); // Handle selectedModules properly
+  console.log("MockModuleTotals:", mockModuleTotals);
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -914,6 +917,8 @@ const Questioning = () => {
     dispatch(setSelectedSBAModule(selectedModules));
   }, [dispatch, selectedModules]);
   console.log("selectedModule:", selectedModules);
+  console.log("selectedOption:", selectedOption);
+
   useEffect(() => {
     if (state) {
       setSelectedOption(state);
@@ -1550,13 +1555,15 @@ const Questioning = () => {
                 {selectedTab === "Clinical" &&
                   !isSortedByPresentation &&
                   type === "Mock" &&
-                  filteredMockModules?.map((row) => {
-                    const moduleData = mockMcqsByModulesData?.find(
-                      (module) => module.categoryId === row.categoryId,
+                  mockTestIds?.map((row) => {
+                    const moduleData = mockModuleTotals?.find(
+                      (module) => module?.paperId === row,
                     );
-                    const totalQuestions = moduleData
-                      ? moduleData.questions.length
-                      : 0;
+                    const totalQuestions = moduleData; // Directly use the count from sqa.counts
+                    // const totalQuestions = moduleData
+                    //   ? moduleData.questions.length
+                    //   : 0;
+                    console.log("totalQuestions:", totalQuestions);
 
                     // Ensure moduleTotals is always an array
                     const moduleTotalsArray = Array.isArray(mockModuleTotals)
@@ -1565,7 +1572,7 @@ const Questioning = () => {
 
                     // Get the totals for correct and incorrect answers
                     const moduleTotal = moduleTotalsArray.find(
-                      (m) => String(m.moduleId) === String(row.categoryId),
+                      (m) => String(m.paperId) === String(row),
                     ) || { totalCorrect: 0, totalIncorrect: 0 };
 
                     const { totalCorrect, totalIncorrect } = moduleTotal;
@@ -1588,19 +1595,15 @@ const Questioning = () => {
                             <input
                               type="checkbox"
                               className="mr-2 size-4 rounded-none text-gray-800"
-                              checked={selectedModules.includes(row.categoryId)}
-                              onChange={() =>
-                                handleCheckboxChange(row.categoryId)
-                              }
+                              checked={selectedModules.includes(row)}
+                              onChange={() => handleCheckboxChange(row)}
                             />
-                            {row.categoryName}
+                            Paper {row}
                           </label>
                         </div>
                         {/* Progress Bar and Total Questions */}
                         <div className="flex w-full items-center justify-center space-x-2">
-                          {/* Progress Bar */}
                           <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
-                            {/* Green Section (Correct Answers) */}
                             <span
                               className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
                               style={{ width: `${correctPercentage}%` }}
@@ -1608,7 +1611,6 @@ const Questioning = () => {
                               {totalCorrect > 0 && <span>{totalCorrect}</span>}
                             </span>
 
-                            {/* Red Section (Incorrect Answers) */}
                             <span
                               className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
                               style={{ width: `${incorrectPercentage}%` }}
@@ -1618,9 +1620,6 @@ const Questioning = () => {
                               )}
                             </span>
                           </div>
-
-                          {/* Total Questions */}
-                          {/* <span className="text-gray-700 dark:text-white text-sm">{totalQuestions}</span> */}
                         </div>
                       </div>
                     );
@@ -1630,109 +1629,11 @@ const Questioning = () => {
           )}
         </div>
       </div>
-      <Drawer
-        open={isOpen}
-        onClose={toggleDrawer}
-        direction="right"
-        className="bla bla bla"
-        lockBackgroundScroll={true}
-      >
-        <div className="m-5" onClick={toggleDrawer}>
-          <RxCross2 />
-        </div>
-
-        <div className="mb-10 flex items-center justify-center">
-          <Logo />
-        </div>
-        <div className="flex min-h-screen flex-col justify-between overflow-y-auto">
-          <nav className="w-full space-y-5 text-[#3F3F46]">
-            {[
-              { name: "Dashboard", icon: "house" },
-              { name: "Practice", icon: "dumbbell" },
-              { name: "Performance", icon: "chart-line" },
-
-              { name: "OSCE", icon: "bed" },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="group flex cursor-pointer items-center space-x-3 px-6"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className={`lucide lucide-${item.icon} group-hover:text-[#3CC8A1]`}
-                >
-                  {/* Define paths for the icons */}
-                  {item.icon === "house" && (
-                    <>
-                      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-                      <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    </>
-                  )}
-                  {item.icon === "dumbbell" && (
-                    <>
-                      <path d="M14.4 14.4 9.6 9.6" />
-                      <path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z" />
-                      <path d="m21.5 21.5-1.4-1.4" />
-                      <path d="M3.9 3.9 2.5 2.5" />
-                      <path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z" />
-                    </>
-                  )}
-                  {item.icon === "chart-line" && (
-                    <>
-                      <path d="M3 3v16a2 2 0 0 0 2 2h16" />
-                      <path d="m19 9-5 5-4-4-3 3" />
-                    </>
-                  )}
-                  {item.icon === "git-merge" && (
-                    <>
-                      <circle cx="18" cy="18" r="3" />
-                      <circle cx="6" cy="6" r="3" />
-                      <path d="M6 21V9a9 9 0 0 0 9 9" />
-                    </>
-                  )}
-                  {item.icon === "book-open" && (
-                    <>
-                      <path d="M12 7v14" />
-                      <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
-                    </>
-                  )}
-                  {item.icon === "bed" && (
-                    <>
-                      <path d="M2 4v16" />
-                      <path d="M2 8h18a2 2 0 0 1 2 2v10" />
-                      <path d="M2 17h20" />
-                      <path d="M6 8v9" />
-                    </>
-                  )}
-                </svg>
-                <span className="text-[14px] font-medium group-hover:text-[#3CC8A1]">
-                  {item.name}
-                </span>
-              </div>
-            ))}
-          </nav>
-
-          {/* Bottom Settings */}
-          <div className="mb-40 mt-auto w-full px-6">
-            <Link to={"/setting"}>
-              <div className="group flex cursor-pointer items-center space-x-3 text-[#3F3F46]">
-                <i className="fa fa-cog text-xl group-hover:text-[#3CC8A1]"></i>
-                <span className="text-[14px] font-medium group-hover:text-[#3CC8A1]">
-                  Settings
-                </span>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </Drawer>
+      <MobileBar
+        toggleDrawer={toggleDrawer}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
 
       {isOpenSetUpSessionModal && (
         <SetupSessionModal

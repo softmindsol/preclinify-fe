@@ -43,6 +43,7 @@ const Setting = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut().then(() => {
+         localStorage.removeItem("userId");
         dispatch(clearUserId());
         toast.success("User logged out successfully");
         navigate("/login");

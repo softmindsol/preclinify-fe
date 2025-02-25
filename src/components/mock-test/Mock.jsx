@@ -72,6 +72,7 @@ const MockTestQuestion = () => {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [isAIExpanded, setIsAIExpanded] = useState(false);
+  console.log("mockData:", mockData);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -93,7 +94,7 @@ const MockTestQuestion = () => {
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage,
   );
-  const userId = useSelector((state) => state.user.userId);
+  const userId = localStorage.getItem("userId");
   const [selectedFilter, setSelectedFilter] = useState("All"); // Default is 'All'
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
   const isTimerMode = useSelector((state) => state.mode);
@@ -219,6 +220,7 @@ const MockTestQuestion = () => {
             questionId: mockData[currentIndex].id,
             userId,
             moduleId: mockData[currentIndex].moduleId,
+            paperId: mockData[currentIndex].paperId,
           }),
         );
 
@@ -479,7 +481,6 @@ const MockTestQuestion = () => {
 
         if (isAnswered) {
           handleCheckAnswer(); // ✅ Spacebar pressed, check answer
-          console.log("Spacebar pressed - Checking answer");
         }
         return; // Exit function to prevent other key checks
       }
@@ -528,7 +529,6 @@ const MockTestQuestion = () => {
         if (isAnswered && !answerChecked) {
           handleCheckAnswer();
           setAnswerChecked(true);
-          console.log("spacebar pressed");
         } else if (answerChecked) {
           nextQuestion();
           setAnswerChecked(false);
@@ -1056,7 +1056,7 @@ const MockTestQuestion = () => {
                 </button>
               </div>
             )}
-            {isAccordionVisible && <DiscussionBoard />}
+            {/* {isAccordionVisible && <DiscussionBoard />} */}
             {isAccordionVisible && (
               <Article
                 article={article}
@@ -1373,109 +1373,14 @@ const MockTestQuestion = () => {
             )}
           </div>
 
-          <div className="">
-            <div className="flex w-full items-center justify-between p-5 text-[12px]">
-              <span
-                className={`w-[30%] cursor-pointer text-center ${
-                  selectedFilter === "All"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("All")}
-              >
-                All
-              </span>
-              <span
-                className={`w-[36%] cursor-pointer text-center ${
-                  selectedFilter === "Flagged"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("Flagged")}
-              >
-                Flagged
-              </span>
-              <span
-                className={`w-[30%] cursor-pointer text-center ${
-                  selectedFilter === "Unseen"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("Unseen")}
-              >
-                Unseen
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center">
-            <div className="grid grid-cols-5 gap-2">
-              {Array.from({ length: end - start }, (_, i) => start + i).map(
-                (num, i) => {
-                  const bgColor =
-                    attempted[num] === true
-                      ? "bg-[#3CC8A1]" // Correct answer
-                      : attempted[num] === false
-                        ? "bg-[#FF453A]" // Incorrect answer
-                        : "bg-gray-300"; // Unattempted
-
-                  return (
-                    <div key={i}>
-                      <div
-                        className={`${bgColor} flex h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-[2px] text-[14px] font-bold text-white`}
-                        onClick={() => {
-                          setCurrentIndex(num); // Navigate to the selected question
-                        }}
-                      >
-                        <p>{num + 1}</p>
-                      </div>
-                    </div>
-                  );
-                },
-              )}
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-center gap-x-28 text-[#71717A]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-move-left cursor-pointer"
-              onClick={prevPage}
-            >
-              <path d="M6 8L2 12L6 16" />
-              <path d="M2 12H22" />
-            </svg>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-move-right cursor-pointer"
-              onClick={nextPage}
-            >
-              <path d="M18 8L22 12L18 16" />
-              <path d="M2 12H22" />
-            </svg>
-          </div>
+          <QuestionNavigator
+            attempted={attempted}
+            flaggedQuestions={flaggedQuestions}
+            visited={visited}
+            setCurrentIndex={setCurrentIndex}
+          />
           <div className="px-10 py-5 text-[#D4D4D8]">
             <hr />
-          </div>
-
-          <div>
-            <DeepChatAI W="250px" />
-            <hr className="mx-5" />
           </div>
 
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-[12px]">

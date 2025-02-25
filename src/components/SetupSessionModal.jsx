@@ -80,8 +80,7 @@ const SetupSessionModal = ({
     (state) => state?.FiltershortQuestions?.results,
   ); // Debounced dispatch handler
 
-  console.log("FiltershortQuestions:", FiltershortQuestions);
-  console.log("userId:", userId);
+ 
   const debouncedDispatch = useCallback(
     debounce((value) => {
       dispatch(setLimit(value));
