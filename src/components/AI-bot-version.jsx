@@ -11,6 +11,7 @@ import {
   fetchOSCEDataById,
   fetchOSCEPromptById,
 } from "../redux/features/osce-static/osce-static.service";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -36,6 +37,7 @@ const AINewVersion = () => {
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
+  const subscription = useSelector((state) => state?.subscription?.data);
   const [finishReview, setFinishReview] = useState(false);
   const {
     isRecording,
@@ -184,6 +186,7 @@ const AINewVersion = () => {
       generateSummaryAndFeedback();
     }
   }, [transcript]); // Trigger whenever the transcript updates
+  console.log("subscription:", subscription);
 
   useEffect(() => {
     dispatch(fetchOSCEPromptById(id))
@@ -195,7 +198,9 @@ const AINewVersion = () => {
         console.error("Error:", err);
       });
   }, [id, dispatch]);
-
+  useEffect(() => {
+    dispatch(fetchSubscriptions());
+  }, []);
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -457,19 +462,21 @@ const AINewVersion = () => {
               </main>
               <div className="h-[30vh] rounded-[8px] bg-white p-5">
                 <div className="flex w-full flex-col items-center justify-center gap-2">
-                  <button
-                    onClick={isRecording ? stopRecording : initWebRTC}
-                    className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
-                  >
-                    <audio ref={audioRef} className="hidden" />
-                    <img
-                      src="/assets/mic.svg"
-                      width={30}
-                      height={30}
-                      className="flex cursor-pointer items-center justify-center"
-                      alt=""
-                    />
-                  </button>
+                  {
+                    <button
+                      onClick={isRecording ? stopRecording : initWebRTC}
+                      className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
+                    >
+                      <audio ref={audioRef} className="hidden" />
+                      <img
+                        src="/assets/mic.svg"
+                        width={30}
+                        height={30}
+                        className="flex cursor-pointer items-center justify-center"
+                        alt=""
+                      />
+                    </button>
+                  }
                 </div>
               </div>
             </div>
