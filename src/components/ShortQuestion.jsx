@@ -110,8 +110,6 @@ const ShortQuestion = () => {
     Array(totalQuestions).fill(false),
   );
 
-  console.log("FiltershortQuestions:", FiltershortQuestions);
-
   // Initialize attempts with null values
   // const [attempts, setAttempts] = useState(Array(totalQuestions).fill(null));
   // const currentItems = sqa.children.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
@@ -1189,129 +1187,16 @@ const ShortQuestion = () => {
               )}
             </div>
           </div>
+          <QuestionNavigator
+            attempted={attempted}
+            flaggedQuestions={flaggedQuestions}
+            visited={visited}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+          />
 
-          <div className="">
-            <div className="flex w-full items-center justify-between p-5 text-[12px]">
-              <span
-                className={`w-[30%] cursor-pointer text-center ${
-                  selectedFilter === "All"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("All")}
-              >
-                All
-              </span>
-              <span
-                className={`w-[36%] cursor-pointer text-center ${
-                  selectedFilter === "Flagged"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("Flagged")}
-              >
-                Flagged
-              </span>
-              <span
-                className={`w-[30%] cursor-pointer text-center ${
-                  selectedFilter === "Unseen"
-                    ? "border-b-[1px] border-[#3CC8A1] text-[#3CC8A1]"
-                    : "hover:text-[#3CC8A1]"
-                }`}
-                onClick={() => handleFilterChange("Unseen")}
-              >
-                Unseen
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center">
-            <div className="grid grid-cols-5 gap-2">
-              {indicesToDisplay.map((num, i) => {
-                const bgColor =
-                  result.result[num] === true
-                    ? "bg-[#3CC8A1]" // Correct
-                    : result.result[num] === false
-                      ? "bg-[#FF453A]" // Incorrect (Flagged)
-                      : "bg-gray-300"; // Unseen (null)
-
-                return (
-                  <div key={i}>
-                    <div
-                      className={`${bgColor} flex h-[26px] w-[26px] items-center justify-center rounded-[2px] text-[14px] font-bold text-white`}
-                      onClick={() => markQuestion(num)} // Use `num` for marking
-                    >
-                      <p>{num + 1}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-center gap-x-28 text-[#71717A]">
-            <button
-              className={`${
-                currentPage === 0
-                  ? "cursor-not-allowed opacity-50"
-                  : "cursor-pointer"
-              }`}
-              onClick={currentPage > 0 ? prevPage : null}
-              disabled={currentPage === 0}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-move-left"
-              >
-                <path d="M6 8L2 12L6 16" />
-                <path d="M2 12H22" />
-              </svg>
-            </button>
-
-            <button
-              className={`${
-                (currentPage + 1) * itemsPerPage >= currentItems.length
-                  ? "cursor-not-allowed opacity-50"
-                  : "cursor-pointer"
-              }`}
-              onClick={
-                (currentPage + 1) * itemsPerPage < currentItems.length
-                  ? nextPage
-                  : null
-              }
-              disabled={(currentPage + 1) * itemsPerPage >= currentItems.length}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-move-right"
-              >
-                <path d="M18 8L22 12L18 16" />
-                <path d="M2 12H22" />
-              </svg>
-            </button>
-          </div>
           <div className="px-10 py-5 text-[#D4D4D8]">
             <hr />
-          </div>
-
-          <div>
-            <DeepChatAI W="250px" />
-            <hr className="mx-5" />
           </div>
 
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-[12px]">
