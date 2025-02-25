@@ -462,24 +462,21 @@ const AINewVersion = () => {
               </main>
               <div className="h-[30vh] rounded-[8px] bg-white p-5">
                 <div className="flex w-full flex-col items-center justify-center gap-2">
-                  {/* {subscription?.used_tokens !== subscription?.total_tokens ? ( */}
+                  {
                     <button
                       onClick={isRecording ? stopRecording : initWebRTC}
-                      disabled={true}
-                      className={`mt-5 flex h-[98px] w-[98px] transform items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"} ${subscription?.used_tokens === subscription?.total_tokens ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                      className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
                     >
                       <audio ref={audioRef} className="hidden" />
                       <img
                         src="/assets/mic.svg"
                         width={30}
                         height={30}
-                        className="flex items-center justify-center"
+                        className="flex cursor-pointer items-center justify-center"
                         alt=""
                       />
                     </button>
-                  {/* ) : (
-                    <button></button>
-                  )} */}
+                  }
                 </div>
               </div>
             </div>

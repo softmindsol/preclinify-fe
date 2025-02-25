@@ -72,7 +72,6 @@ const MockTestQuestion = () => {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [isAIExpanded, setIsAIExpanded] = useState(false);
-  console.log("mockData:", mockData);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishEnabled, setIsFinishEnabled] = useState(false);
@@ -474,13 +473,29 @@ const MockTestQuestion = () => {
 
   // Add this useEffect hook to handle keyboard events
   useEffect(() => {
+        if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
     const handleKeyPress = (e) => {
+
+       if (e.key === "ArrowRight") {
+         nextQuestion();
+         return;
+       }
+
+       if (e.key === "ArrowLeft") {
+         prevQuestion();
+         return;
+       }
+
       // Prevent spacebar from scrolling the page
       if (e.key === " ") {
         e.preventDefault();
 
-        if (isAnswered) {
-          handleCheckAnswer(); // ✅ Spacebar pressed, check answer
+        if (isAnswered && !answerChecked) {
+          handleCheckAnswer();
+          setAnswerChecked(true);
+        } else if (answerChecked) {
+          nextQuestion();
+          setAnswerChecked(false);
         }
         return; // Exit function to prevent other key checks
       }
@@ -506,58 +521,65 @@ const MockTestQuestion = () => {
 
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
-  }, [currentIndex, attempted, mockData, isAnswered]); // ✅ Dependency array updated
+  }, [currentIndex, attempted, mockData, isAnswered, isAIExpanded]); // ✅ Dependency array updated
 
   // Add this useEffect hook to handle keyboard events
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (showFeedBackModal) return; // Agar modal open hai toh event listener add nahi hoga
+  // useEffect(() => {
+  //   if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
+  //   const handleKeyPress = (e) => {
 
-      if (e.key === "ArrowRight") {
-        nextQuestion();
-        return;
-      }
+  //     if (e.key === "ArrowRight") {
+  //       nextQuestion();
+  //       return;
+  //     }
 
-      if (e.key === "ArrowLeft") {
-        prevQuestion();
-        return;
-      }
+  //     if (e.key === "ArrowLeft") {
+  //       prevQuestion();
+  //       return;
+  //     }
 
-      if (e.key === " ") {
-        e.preventDefault();
+  //     if (e.key === " ") {
+  //       e.preventDefault();
 
-        if (isAnswered && !answerChecked) {
-          handleCheckAnswer();
-          setAnswerChecked(true);
-        } else if (answerChecked) {
-          nextQuestion();
-          setAnswerChecked(false);
-        }
+  //       if (isAnswered && !answerChecked) {
+  //         handleCheckAnswer();
+  //         setAnswerChecked(true);
+  //       } else if (answerChecked) {
+  //         nextQuestion();
+  //         setAnswerChecked(false);
+  //       }
 
-        return;
-      }
+  //       return;
+  //     }
 
-      if (attempted[currentIndex] !== null) return;
+  //     if (attempted[currentIndex] !== null) return;
 
-      const key = e.key.toUpperCase();
-      const validKeys = ["Q", "W", "E", "R", "T"];
-      const keyIndex = validKeys.indexOf(key);
+  //     const key = e.key.toUpperCase();
+  //     const validKeys = ["Q", "W", "E", "R", "T"];
+  //     const keyIndex = validKeys.indexOf(key);
 
-      if (
-        keyIndex !== -1 &&
-        keyIndex < mockData[currentIndex]?.answersArray.length
-      ) {
-        const answer = mockData[currentIndex].answersArray[keyIndex];
+  //     if (
+  //       keyIndex !== -1 &&
+  //       keyIndex < mockData[currentIndex]?.answersArray.length
+  //     ) {
+  //       const answer = mockData[currentIndex].answersArray[keyIndex];
 
-        handleAnswerSelect(answer);
-        setIsAnswered(true);
-        dispatch(setResult({ attempted }));
-      }
-    };
+  //       handleAnswerSelect(answer);
+  //       setIsAnswered(true);
+  //       dispatch(setResult({ attempted }));
+  //     }
+  //   };
 
-    document.addEventListener("keydown", handleKeyPress);
-    return () => document.removeEventListener("keydown", handleKeyPress);
-  }, [currentIndex, attempted, mockData, isAnswered, showFeedBackModal]);
+  //   document.addEventListener("keydown", handleKeyPress);
+  //   return () => document.removeEventListener("keydown", handleKeyPress);
+  // }, [
+  //   currentIndex,
+  //   attempted,
+  //   mockData,
+  //   isAnswered,
+  //   showFeedBackModal,
+  //   isAIExpanded,
+  // ]);
 
   useEffect(() => {
     if (review) {
@@ -570,6 +592,16 @@ const MockTestQuestion = () => {
       // setIsAccordionVisible(true)
     }
   }, [review]);
+    useEffect(() => {
+      const handleKeyPress = (event) => {
+        if (event.key === "Enter" && review === true) {
+          navigation("/dashboard");
+        }
+      };
+  
+      document.addEventListener("keydown", handleKeyPress);
+      return () => document.removeEventListener("keydown", handleKeyPress);
+    }, [navigation]);
 
   useEffect(() => {
     if (mockData?.length > 0) {
@@ -1021,21 +1053,25 @@ const MockTestQuestion = () => {
                       }}
                     >
                       Back to Dashboard
-                      <span className="rounded-[4px] bg-white px-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#60B0FA]">
+                      <span className="flex items-center gap-1 rounded-[4px] bg-white px-[4px] py-[2px] transition-all duration-300 ease-in-out group-hover:bg-[#60B0FA]">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"
-                          height="24"
+                          height="20"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-space text-black transition-all duration-300 ease-in-out group-hover:text-white"
+                          className="lucide lucide-corner-down-left text-black transition-all duration-300 ease-in-out group-hover:text-white"
                         >
-                          <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+                          <polyline points="9 10 4 15 9 20" />
+                          <path d="M20 4v7a4 4 0 0 1-4 4H4" />
                         </svg>
+                        <span className="text-[12px] font-semibold text-black group-hover:text-white">
+                          Enter
+                        </span>
                       </span>
                     </button>
                   </div>
