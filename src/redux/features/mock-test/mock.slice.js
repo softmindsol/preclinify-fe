@@ -10,6 +10,7 @@ const modulesSlice = createSlice({
         presentationData: [],
         modules: [], // Stores modules fetched from modulesNew
         presentationMcqs: [],
+        paperId:[],
         loading: false,
         error: null,
     },

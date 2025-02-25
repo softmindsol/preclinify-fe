@@ -5,13 +5,15 @@ export const fetchMockTest = createAsyncThunk(
   "modules/fetchMockTest",
   async (_, { rejectWithValue }) => {
     try {
-      const { data, error } = await supabase.from("mockTable").select("*"); // Fetch only the 'id' column
+      const { data, error } = await supabase.from("mockTable").select("*"); // Fetch all columns
 
       if (error) {
         return rejectWithValue(error.message);
       }
 
-      const ids = data.map((item) => item.moduleId);
+      // Extract unique paperIds
+      const ids = [...new Set(data.map((item) => item.paperId))];
+
 
       return ids;
     } catch (error) {
@@ -19,6 +21,7 @@ export const fetchMockTest = createAsyncThunk(
     }
   },
 );
+;
 
 export const fetchMockTestByPresentationId = createAsyncThunk(
   "modules/fetchMockTestByPresentationId",
@@ -63,6 +66,7 @@ export const fetchTotalMockQuestion = createAsyncThunk(
   async ({ ids }, { rejectWithValue }) => {
     try {
       const categoryIds = ids.map((item) => item.categoryId);
+      console.log("categoryIds: ", categoryIds);
 
       const { data, error } = await supabase
         .from("mockTable")
@@ -112,6 +116,7 @@ export const fetchMockTestById = createAsyncThunk(
       if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
         return rejectWithValue("Invalid moduleIds");
       }
+      console.log("moduleIds:", moduleIds);
 
       let moduleLimits;
 
@@ -139,7 +144,7 @@ export const fetchMockTestById = createAsyncThunk(
         let query = supabase
           .from("mockTable")
           .select("*")
-          .eq("moduleId", moduleId);
+          .eq("paperId", moduleId);
 
         // Apply limit only if it's defined
         if (limit !== null) {
@@ -159,6 +164,7 @@ export const fetchMockTestById = createAsyncThunk(
       const results = await Promise.all(promises); // Wait for all requests to complete
 
       const combinedData = results.flat(); // Flatten the array of arrays into a single array
+      console.log("combinedData:", combinedData);
 
       return combinedData; // Return the combined data
     } catch (error) {

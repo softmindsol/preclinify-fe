@@ -93,7 +93,7 @@ const MockTestQuestion = () => {
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage,
   );
-  const userId = useSelector((state) => state.user.userId);
+  const userId = localStorage.getItem("userId");
   const [selectedFilter, setSelectedFilter] = useState("All"); // Default is 'All'
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // State to toggle submenu visibility
   const isTimerMode = useSelector((state) => state.mode);
@@ -1056,7 +1056,7 @@ const MockTestQuestion = () => {
                 </button>
               </div>
             )}
-            {isAccordionVisible && <DiscussionBoard />}
+            {/* {isAccordionVisible && <DiscussionBoard />} */}
             {isAccordionVisible && (
               <Article
                 article={article}
