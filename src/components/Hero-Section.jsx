@@ -5,6 +5,7 @@ import Slider from "./Slider";
 
 const Hero = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const userId = localStorage.getItem("userId");
 
   const answers = [
     { id: "q", text: "Preclinify" },
@@ -35,11 +36,14 @@ const Hero = () => {
             <span className="font-bold">MLA. SAQ. AI patients</span>{" "}
             <span className="font-medium">and much much more...</span>
           </p>
-          <Link to={"/signup"}>
+           {!userId && (
+            <Link to={"/signup"}>
             <button className="mt-4 rounded-[12px] bg-[#FF9741] px-5 py-3 text-[14px] font-extrabold text-white shadow-orangeBlur transition hover:shadow-lg sm:text-[16px]">
               Sign Up Now
             </button>
           </Link>
+           )}
+          
         </div>
       </div>
 

@@ -13,7 +13,6 @@ const Navbar = () => {
     setIsOpen((prevState) => !prevState);
   };
   const userId = localStorage.getItem("userId");
-  console.log("userId:", userId);
 
   return (
     <div className="fixed left-0 right-0 top-0 z-50 mx-auto mt-6 max-w-[95%] rounded-[24px] border border-[#E5E5E5] bg-white p-5 shadow-[0px_4px_10px_rgba(0,0,0,0.1)]">

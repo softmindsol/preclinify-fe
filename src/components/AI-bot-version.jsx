@@ -145,7 +145,7 @@ const AINewVersion = () => {
       await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
 
       // Now call handleSendText
-      // handleSendText(e);
+      handleSendText(e);
     } catch (error) {
       console.error("Error updating tokens:", error);
     }
