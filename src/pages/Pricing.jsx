@@ -18,6 +18,7 @@ const Pricing = () => {
   const currentPlan = useSelector((state) => state?.subscription?.plan);
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
+  console.log("currentPlan:", currentPlan);
 
   const pricingPlans = {
     termly: [
@@ -106,7 +107,7 @@ const Pricing = () => {
 
   // Function to handle the subscription
   const handleSubscription = async (planSlug) => {
-    if (currentPlan?.plan?.length !== 0) {
+    if (currentPlan !== null) {
       // handleManageSubscription({ customer: subscription[0]?.customer });
       setManagePackageModal(true);
 
