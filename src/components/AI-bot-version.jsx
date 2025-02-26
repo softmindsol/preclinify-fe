@@ -308,7 +308,7 @@ const AINewVersion = () => {
                 {!plan ? (
                   <p className="text-[14px]">Free</p>
                 ) : (
-                  <p className="text-[14px]">{plan}</p>
+                  <p className="text-[14px]">{plan.plan}</p>
                 )}
               </div>
             </div>
