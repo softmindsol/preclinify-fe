@@ -107,7 +107,7 @@ const Pricing = () => {
 
   // Function to handle the subscription
   const handleSubscription = async (planSlug) => {
-    if (currentPlan !== null && currentPlan !== undefined) {
+    if (currentPlan !== null) {
       // handleManageSubscription({ customer: subscription[0]?.customer });
       setManagePackageModal(true);
 
