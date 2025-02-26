@@ -15,17 +15,17 @@ const Pricing = () => {
       {
         title: "The OSCE plan",
         price: 35,
-        monthlyPrice: (35 / 4).toFixed(2),
+        monthlyPrice: (35 / 3).toFixed(2),
         "plan-slug": PlanSlug("The OSCE plan", 3),
         features: [
           "Station specific OSCE scenarios",
-          "60 hours of OSCE bot access",
+          "Access to our custom simulated AI patients",
         ],
       },
       {
         title: "The Full Package",
         price: 45,
-        monthlyPrice: (45 / 4).toFixed(2),
+        monthlyPrice: (45 / 3).toFixed(2),
         "plan-slug": PlanSlug("The Full Package", 3),
         hasDiscount: true,
         discount: 20, // 20% discount for Termly
@@ -33,10 +33,10 @@ const Pricing = () => {
           "Everything in OSCE",
           "MLA + Clinical Bank",
           "SAQ question bank",
-          "Pre-clinical",
-          "Data interpretation",
-          "Question generation",
-          "Tutor Bot",
+          // "Pre-clinical",
+          // "Data interpretation",
+          // "Question generation",
+          "Custom AI Tutor Bot",
         ],
       },
     ],
@@ -49,7 +49,7 @@ const Pricing = () => {
         "plan-slug": PlanSlug("The OSCE plan", 12),
         features: [
           "Station specific OSCE scenarios",
-          "60 hours of OSCE bot access",
+          "Access to our custom simulated AI patients",
         ],
       },
       {
@@ -64,10 +64,10 @@ const Pricing = () => {
           "Everything in OSCE",
           "MLA + Clinical Bank",
           "SAQ question bank",
-          "Pre-clinical",
-          "Data interpretation",
-          "Question generation",
-          "Tutor Bot",
+          // "Pre-clinical",
+          // "Data interpretation",
+          // "Question generation",
+          "Custom AI Tutor Bot",
         ],
       },
       {
@@ -94,7 +94,8 @@ const Pricing = () => {
       toast.success("You are being redirected to the payment gateway");
       // Send the plan slug to the backend via an Axios POST request
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/subscribe?plan=${planSlug}&userId=${userId}` );
+        `${process.env.REACT_APP_BACKEND_URL}/subscribe?plan=${planSlug}&userId=${userId}`,
+      );
 
       if (response.status === 200) {
         // Handle success (maybe show a success message to the user)
@@ -129,7 +130,10 @@ const Pricing = () => {
           </p>
         </div>
         <div className="mt-2 text-[16px] font-medium text-[#71717A]">
-          <p>Save with an annual plan</p>
+          <p>
+            psst.. save at least <span className="text-[#FF9741]"> 50% </span>
+            with an annual plan
+          </p>
         </div>
 
         <div>
@@ -155,14 +159,14 @@ const Pricing = () => {
                         </span>
                       </span>
                     </div>
-                    {plan.hasDiscount && (
+                    {/* {plan.hasDiscount && (
                       <div className="mt-3 inline-flex items-center rounded-full bg-white/20 px-3 py-1">
                         <Tag size={14} className="mr-2" />
                         <span className="text-sm">
                           {`Save up to ${plan.discount}% ${isAnnual ? "annually" : "termly"}`}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                   <div
                     className={`space-y-2 p-8 ${plan.title === "The OSCE plan" ? "text-[16px] lg:text-[18px]" : "text-[14px] lg:text-[16px]"}`}

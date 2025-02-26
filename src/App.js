@@ -47,13 +47,13 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
-        <Route path="/pricing" element={<Pricing />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/checkout-success" element={<CheckoutSuccess />} />
         <Route path="/checkout-cancelled" element={<CheckoutCancel />} />
         {/* <Route path='/personal-info' element={<PersonalInformation />} /> */}
+        <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>  } />
 
         <Route
           path="/setting"

@@ -127,7 +127,7 @@ const ShortQuestion = () => {
   const userAnswers = useSelector((state) => state?.userAnswers?.answers);
   const beakerRef = useRef(null);
 
-  console.log("sqa:", sqa);
+  console.log("sqa:", sqa[currentIndex]?.id);
 
   const beakerToggledHandler = () => {
     setBeakerToggle(!beakerToggle);
@@ -1135,6 +1135,9 @@ const ShortQuestion = () => {
         <FeedbackModal
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
+          userId={userId}
+          questionStem={sqa[currentIndex]}
+          leadQuestion={sqa[currentIndex].leadQuestion}
         />
       )}
       <div

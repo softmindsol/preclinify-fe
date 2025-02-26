@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "./common/Logo";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DashboardModal from "./common/DashboardModal";
 import FeedbackModal from "./common/Feedback";
@@ -11,7 +11,11 @@ import {
   fetchOSCEDataById,
   fetchOSCEPromptById,
 } from "../redux/features/osce-static/osce-static.service";
-import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
+import {
+  fetchSubscriptions,
+  incrementUsedTokens,
+} from "../redux/features/subscription/subscription.service";
+import { toast } from "sonner";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -58,6 +62,7 @@ const AINewVersion = () => {
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
+  console.log("stopRecording:", stopRecording);
 
   const handlerOpenDashboardModal = () => {
     setIsDashboardModalOpen(!isDashboardModalOpen);
@@ -69,7 +74,6 @@ const AINewVersion = () => {
   };
   const fetchAIResponse = async (userText) => {
     const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API;
-    console.log("OPENAI_API_KEY:", OPENAI_API_KEY);
 
     try {
       const response = await fetch(
@@ -81,7 +85,7 @@ const AINewVersion = () => {
             Authorization: `Bearer ${OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
-            model: "gpt-4",
+            model: "gpt-4o",
             audio: { voice: "alloy", format: "wav" },
             messages: [
               {
@@ -100,7 +104,9 @@ const AINewVersion = () => {
       return "Could you please repeat that?";
     }
   };
-
+  const reportHandler = () => {
+    setShowFeedBackModal(!showFeedBackModal);
+  };
   const handleSendText = async (e) => {
     e.preventDefault();
     if (inputText.trim() === "") return;
@@ -123,6 +129,27 @@ const AINewVersion = () => {
     ]);
   };
 
+  const handlerToken = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Wait for incrementUsedTokens to complete
+      await dispatch(
+        incrementUsedTokens({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
+      ).unwrap();
+
+      // Now fetch updated subscription data
+      await dispatch(
+        fetchSubscriptions({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
+      ).unwrap();
+
+      // Now call handleSendText
+      // handleSendText(e);
+    } catch (error) {
+      console.error("Error updating tokens:", error);
+    }
+  };
+
   //   const handleSubmit = (e) => {
   //     e  .preventDefault();
   //     if (inputText.trim() !== "") {
@@ -131,6 +158,32 @@ const AINewVersion = () => {
   //       setInputText(""); // Clear input field
   //     }
   //   };
+
+  const handleMicClick = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (subscription[0]?.total_tokens === subscription[0]?.used_tokens)
+        return toast.error("You Have exceeded your limit");
+      // First, increment used tokens
+      await dispatch(
+        incrementUsedTokens({
+          userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2",
+        }),
+      ).unwrap();
+
+      // Then, fetch updated subscription data
+      await dispatch(
+        fetchSubscriptions({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
+      ).unwrap();
+
+      // Finally, start or stop recording
+      isRecording ? stopRecording() : initWebRTC();
+    } catch (error) {
+      console.error("Error updating tokens:", error);
+    }
+  };
+
   const finishReviewHandler = async () => {
     try {
       await dispatch(insertOSCEBotData({ chatFeedback })).unwrap();
@@ -199,7 +252,9 @@ const AINewVersion = () => {
       });
   }, [id, dispatch]);
   useEffect(() => {
-    dispatch(fetchSubscriptions());
+    dispatch(
+      fetchSubscriptions({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
+    );
   }, []);
   return (
     <div className="w-full">
@@ -248,6 +303,24 @@ const AINewVersion = () => {
                 {timerActive ? "Pause Timer" : "Start Timer"}
               </button>
             </div>
+          </div>
+          <div className="w-[90%] text-center text-[14px] font-semibold text-[#52525B]">
+            {subscription[0]?.total_tokens === subscription[0]?.used_tokens ? (
+              <div className="space-y-2">
+                <p className="text-[#FF453A]">You have exceed your limit</p>
+                  <button className="rounded-[8px] border border-[#FF453A] w-[50%] py-1 text-[12px] text-[#FF453A] transition-all duration-150 hover:bg-[#FF453A] hover:text-white">
+                <Link to="/pricing">
+                    Buy Token
+                </Link>
+                  </button>
+              </div>
+            ) : (
+              <p>
+                You have {""}
+                {subscription[0]?.total_tokens - subscription[0]?.used_tokens}
+                {""} uses remaining.
+              </p>
+            )}
           </div>
 
           <div className="mb-10">
@@ -397,7 +470,8 @@ const AINewVersion = () => {
                   className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
                 >
                   <form
-                    onSubmit={handleSendText}
+                    // onSubmit={handleSendText}
+                    onSubmit={handlerToken}
                     className="flex items-center justify-center gap-2"
                   >
                     <input
@@ -462,28 +536,48 @@ const AINewVersion = () => {
               </main>
               <div className="h-[30vh] rounded-[8px] bg-white p-5">
                 <div className="flex w-full flex-col items-center justify-center gap-2">
-                  {
-                    <button
-                      onClick={isRecording ? stopRecording : initWebRTC}
-                      className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] bg-[#3CC8A1] transition-all duration-300 hover:bg-[#34b38f] ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
-                    >
-                      <audio ref={audioRef} className="hidden" />
-                      <img
-                        src="/assets/mic.svg"
-                        width={30}
-                        height={30}
-                        className="flex cursor-pointer items-center justify-center"
-                        alt=""
-                      />
-                    </button>
-                  }
+                  <button
+                    disabled={
+                      subscription[0]?.total_tokens ===
+                      subscription[0]?.used_tokens
+                    }
+                    onClick={handleMicClick}
+                    className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
+                      subscription[0]?.total_tokens ===
+                      subscription[0]?.used_tokens
+                        ? "bg-gray-400 disabled:cursor-not-allowed"
+                        : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
+                    } ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
+                  >
+                    <audio ref={audioRef} className="hidden" />
+                    <img
+                      src="/assets/mic.svg"
+                      width={30}
+                      height={30}
+                      className={`flex items-center justify-center ${
+                        subscription[0]?.total_tokens ===
+                        subscription[0]?.used_tokens
+                          ? "cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                      alt=""
+                    />
+                  </button>
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
-
+      {showFeedBackModal && (
+        <FeedbackModal
+          showFeedBackModal={showFeedBackModal}
+          setShowFeedBackModal={setShowFeedBackModal}
+          userId={userId}
+          questionStem={""}
+          leadQuestion={""}
+        />
+      )}
       {isDashboardModalOpen && (
         <DashboardModal
           setShowPopup={setIsDashboardModalOpen}

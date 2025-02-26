@@ -37,27 +37,35 @@ const Navbar = () => {
               <li className="cursor-pointer hover:text-[#28A079]">Home</li>
             </NavLink>
 
-            <NavLink to="/pricing">
-              <li className="cursor-pointer hover:text-[#28A079]">Pricing</li>
-            </NavLink>
-{
-    userId ? 
-      <NavLink to={`/dashboard`}>
-        <li className="cursor-pointer hover:text-[#28A079]">Dashboard</li>
-      </NavLink>: <NavLink to={"/login"}>
-              <li className="cursor-pointer hover:text-[#28A079]">Log In</li>
-            </NavLink>
-    
-}
-           
+            {userId ? (
+              <>
+                {" "}
+                <NavLink to="/pricing">
+                  <li className="cursor-pointer hover:text-[#28A079]">
+                    Pricing
+                  </li>
+                </NavLink>
+                <NavLink to={`/dashboard`}>
+                  <li className="cursor-pointer hover:text-[#28A079]">
+                    Dashboard
+                  </li>
+                </NavLink>
+              </>
+            ) : (
+              <NavLink to={"/login"}>
+                <li className="cursor-pointer hover:text-[#28A079]">Log In</li>
+              </NavLink>
+            )}
           </ul>
 
           {/* Sign-Up Button */}
-        { !userId &&  <Link to="/signup">
-            <button className="rounded-[12px] bg-[#FFE6D4] px-6 py-2 font-extrabold text-[#FF7A28] transition-all hover:bg-[#FFDAC4]">
-              Sign Up Now
-            </button>
-          </Link>}
+          {!userId && (
+            <Link to="/signup">
+              <button className="rounded-[12px] bg-[#FFE6D4] px-6 py-2 font-extrabold text-[#FF7A28] transition-all hover:bg-[#FFDAC4]">
+                Sign Up Now
+              </button>
+            </Link>
+          )}
         </div>
       </div>
 

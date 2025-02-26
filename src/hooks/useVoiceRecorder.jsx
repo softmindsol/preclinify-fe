@@ -14,18 +14,15 @@ const useVoiceRecorder = (AIPrompt) => {
 console.log("prompt:", prompt);
 
       // Fetch Ephemeral Key for WebRTC Session
- const tokenResponse = await fetch(
-   `http://localhost:7001/session`,
-   {
-     method: "POST", // POST request to send data
-     headers: {
-       "Content-Type": "application/json", // Telling backend that body contains JSON
-     },
-     body: JSON.stringify({
-       prompt: AIPrompt, // AI Prompt pass kar rahe hain
-     }),
+ const tokenResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/session`, {
+   method: "POST", // POST request to send data
+   headers: {
+     "Content-Type": "application/json", // Telling backend that body contains JSON
    },
- );
+   body: JSON.stringify({
+     prompt: AIPrompt, // AI Prompt pass kar rahe hain
+   }),
+ });
       const data = await tokenResponse.json();
       const EPHEMERAL_KEY = data.client_secret.value;
       const baseUrl = "https://api.openai.com/v1/realtime";
