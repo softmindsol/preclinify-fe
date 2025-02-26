@@ -8,7 +8,7 @@ import { TbBaselineDensityMedium } from "react-icons/tb";
 // import component 👇
 import { RxCross2 } from "react-icons/rx";
 
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import supabase from "../config/helper";
 import { setDarkMode } from "../redux/features/dark-mode/dark-mode.slice";
 import { useDispatch, useSelector } from "react-redux";
@@ -159,21 +159,21 @@ const Setting = () => {
                 <p className="whitespace-nowrap text-[12px] text-[#71717A] dark:text-white sm:text-[14px]">
                   Your current subscription package.
                 </p>
-                <div className="mt-2 flex items-center justify-between">
+                {/* <div className="mt-2 flex items-center justify-between">
                   <span className="text-[12px] font-medium dark:text-white sm:text-[14px]">
                     Platinum
                   </span>
-                </div>
+                </div> */}
               </div>
               <button className="rounded-[6px] border-[1px] border-[#3CC8A1] px-2 py-1 text-[12px] font-medium text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white sm:text-[14px]">
-                Change Plan
+                <Link to="/pricing"> Change Plan</Link>
               </button>
             </div>
           </div>
 
           <div>
             <div className="mt-5 flex items-center gap-x-20 sm:mt-0 sm:gap-x-40">
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <div className="flex items-center gap-x-2">
                   <FaRobot />
                   <p className="text-[14px] font-medium text-[#000000] dark:text-white sm:text-[16px]">
@@ -185,14 +185,14 @@ const Setting = () => {
                   Your remaining credit for OSCE
                 </p>
                 <div className="mt-2 flex items-center justify-between">
-                  {/* <span className="text-[12px] font-semibold dark:text-white sm:text-[14px]">
+                  <span className="text-[12px] font-semibold dark:text-white sm:text-[14px]">
                     6969
-                  </span> */}
+                  </span>
                 </div>
-              </div>
-              <button className="rounded-[6px] border-[1px] border-[#3CC8A1] px-2 py-1 text-[12px] text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white sm:text-[14px]">
+              </div> */}
+              {/* <button className="rounded-[6px] border-[1px] border-[#3CC8A1] px-2 py-1 text-[12px] text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white sm:text-[14px]">
                 Purchase Credit
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
