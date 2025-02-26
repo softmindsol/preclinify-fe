@@ -44,7 +44,6 @@ const AINewVersion = () => {
   const { subscriptions, plan, loader } = useSelector(
     (state) => state?.subscription,
   );
-  const plan = useSelector((state) => state?.subscription?.plan);
 
   const [finishReview, setFinishReview] = useState(false);
   const {
