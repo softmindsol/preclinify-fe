@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/common/Navbar";
 import { CheckCircle, Tag } from "lucide-react";
 import PlanSlug from "../utils/PlanSlug";
 import axios from "axios";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
+import ManageModal from "../components/common/ManageModal";
 
 const Pricing = () => {
   const userId = localStorage.getItem("userId");
+  const [managePackageModal, setManagePackageModal] = useState(false);
+  const subscription = useSelector(
+    (state) => state?.subscription?.subscriptions,
+  );
+
+  const plan = useSelector((state) => state?.subscription?.plan);
   const [isAnnual, setIsAnnual] = useState(false);
+  const dispatch = useDispatch();
 
   const pricingPlans = {
     termly: [
@@ -90,6 +99,12 @@ const Pricing = () => {
 
   // Function to handle the subscription
   const handleSubscription = async (planSlug) => {
+    if (plan?.plan?.length !== 0) {
+      // handleManageSubscription({ customer: subscription[0]?.customer });
+      setManagePackageModal(true);
+
+      return;
+    }
     try {
       toast.success("You are being redirected to the payment gateway");
       // Send the plan slug to the backend via an Axios POST request
@@ -99,6 +114,25 @@ const Pricing = () => {
 
       if (response.status === 200) {
         // Handle success (maybe show a success message to the user)
+        window.location.href = response.data.url;
+      }
+    } catch (error) {
+      console.error("Error with subscription:", error);
+      // Handle error (maybe show an alert or message to the user)
+    }
+  };
+
+  // Function to handle the subscription
+  const handleManageSubscription = async (customerId) => {
+    try {
+      toast.success("You are being redirected to the manage subscription page");
+      // Send the plan slug to the backend via an Axios POST request
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/customers/${customerId}`,
+      );
+      if (response.status === 200) {
+        // Handle success (maybe show a success message to the user)
         window.location.href = response.data.url; // Redirect user to Stripe checkout page
       }
     } catch (error) {
@@ -106,6 +140,10 @@ const Pricing = () => {
       // Handle error (maybe show an alert or message to the user)
     }
   };
+
+  useEffect(() => {
+    dispatch(fetchSubscriptions({ userId }));
+  }, []);
 
   return (
     <div className="">
@@ -197,6 +235,14 @@ const Pricing = () => {
             ))}
           </div>
         </div>
+
+        {managePackageModal && (
+          <ManageModal
+            managePackageModal={managePackageModal}
+            setManagePackageModal={setManagePackageModal}
+            handleManageSubscription={handleManageSubscription}
+          />
+        )}
       </div>
     </div>
   );

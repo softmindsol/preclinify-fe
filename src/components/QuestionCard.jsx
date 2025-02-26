@@ -1257,7 +1257,7 @@ const QuestionCard = () => {
               handleBackToDashboard={handleBackToDashboard}
               setShowPopup={setShowPopup}
             />
-          )}
+          )} 
 
           {showFeedBackModal && (
             <FeedbackModal
