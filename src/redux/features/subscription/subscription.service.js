@@ -18,11 +18,10 @@ export const fetchSubscriptions = createAsyncThunk(
             if (!subscriptions || subscriptions.length === 0) {
                 return rejectWithValue("No subscriptions found.");
             }
-            console.log("subscriptions:", subscriptions);
+           
 
             // Extract planId from the subscription
             const planId = subscriptions[0]?.plan;
-            console.log("planId:", planId);
 
             if (!planId) {
                 return rejectWithValue("No planId found in subscription.");
@@ -38,9 +37,9 @@ export const fetchSubscriptions = createAsyncThunk(
 
             if (planError) {
                 return rejectWithValue(planError.message);
-            }
+            } 
 
-            console.log("plan:", plan);
+         
 
             // Return both subscription and plan details
             return { subscriptions, plan };

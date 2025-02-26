@@ -41,12 +41,12 @@ const AINewVersion = () => {
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
-  const subscription = useSelector(
-    (state) => state?.subscription?.subscriptions,
+  const { subscriptions, plan, loader } = useSelector(
+    (state) => state?.subscription,
   );
-  const plan = useSelector((state) => state?.subscription?.plan);
+  // const plan = useSelector((state) => state?.subscription?.plan);
 
-  console.log("plan:", plan);
+  console.log("subscriptions, plan,loading", subscriptions, plan, loader);
 
   const [finishReview, setFinishReview] = useState(false);
   const {
@@ -164,7 +164,7 @@ const AINewVersion = () => {
     e.preventDefault();
 
     try {
-      if (subscription[0]?.total_tokens === subscription[0]?.used_tokens)
+      if (subscriptions[0]?.total_tokens === subscriptions[0]?.used_tokens)
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
       await dispatch(
@@ -238,7 +238,7 @@ const AINewVersion = () => {
       generateSummaryAndFeedback();
     }
   }, [transcript]); // Trigger whenever the transcript updates
-  console.log("subscription:", subscription);
+  console.log("subscription:", subscriptions);
 
   useEffect(() => {
     dispatch(fetchOSCEPromptById(id))
@@ -306,18 +306,36 @@ const AINewVersion = () => {
             </div>
           </div>
           <div className="w-[90%] text-center text-[14px] font-semibold text-[#52525B]">
-            {subscription[0]?.total_tokens === subscription[0]?.used_tokens ? (
+            {subscriptions[0]?.total_tokens ===
+            subscriptions[0]?.used_tokens ? (
               <div className="space-y-2">
-                <p className="text-[#FF453A]">You have exceed your limit</p>
+                <p className="text-[#FF453A]">
+                  You have exceeded your token limit
+                </p>
                 <button className="w-[50%] rounded-[8px] border border-[#FF453A] py-1 text-[12px] text-[#FF453A] transition-all duration-150 hover:bg-[#FF453A] hover:text-white">
-                  <Link to="/pricing">Buy Token</Link>
+                  <Link to="/pricing">Buy Tokens</Link>
                 </button>
               </div>
             ) : (
               <p>
-                You have {""}
-                {subscription[0]?.total_tokens - subscription[0]?.used_tokens}
-                {""} uses remaining.
+                {loader ? (
+                  <span className="flex items-center justify-center">
+                    <div className="loading"></div>
+                  </span>
+                ) : (
+                  <span>
+                    {" "}
+                    You have{" "}
+                    {subscriptions[0]?.total_tokens -
+                      subscriptions[0]?.used_tokens}{" "}
+                    {subscriptions[0]?.total_tokens -
+                      subscriptions[0]?.used_tokens ===
+                    1
+                      ? "Token"
+                      : "Tokens"}{" "}
+                    remaining.
+                  </span>
+                )}
               </p>
             )}
           </div>
@@ -537,13 +555,13 @@ const AINewVersion = () => {
                 <div className="flex w-full flex-col items-center justify-center gap-2">
                   <button
                     disabled={
-                      subscription[0]?.total_tokens ===
-                      subscription[0]?.used_tokens
+                      subscriptions[0]?.total_tokens ===
+                      subscriptions[0]?.used_tokens
                     }
                     onClick={handleMicClick}
                     className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
-                      subscription[0]?.total_tokens ===
-                      subscription[0]?.used_tokens
+                      subscriptions[0]?.total_tokens ===
+                      subscriptions[0]?.used_tokens
                         ? "bg-gray-400 disabled:cursor-not-allowed"
                         : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
                     } ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
@@ -554,8 +572,8 @@ const AINewVersion = () => {
                       width={30}
                       height={30}
                       className={`flex items-center justify-center ${
-                        subscription[0]?.total_tokens ===
-                        subscription[0]?.used_tokens
+                        subscriptions[0]?.total_tokens ===
+                        subscriptions[0]?.used_tokens
                           ? "cursor-not-allowed"
                           : "cursor-pointer"
                       }`}
