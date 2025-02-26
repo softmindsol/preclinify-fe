@@ -45,6 +45,8 @@ const AINewVersion = () => {
     (state) => state?.subscription,
   );
 
+  console.log("subscriptions:", subscriptions);
+
   const [finishReview, setFinishReview] = useState(false);
   const {
     isRecording,
@@ -173,10 +175,9 @@ const AINewVersion = () => {
       ).unwrap();
 
       // Then, fetch updated subscription data
-      if(isRecording){
-         await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      if (isRecording) {
+        await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       }
-     
 
       // Finally, start or stop recording
       isRecording ? stopRecording() : initWebRTC();
@@ -240,7 +241,6 @@ const AINewVersion = () => {
       generateSummaryAndFeedback();
     }
   }, [transcript]); // Trigger whenever the transcript updates
-  console.log("subscription:", subscriptions);
 
   useEffect(() => {
     dispatch(fetchOSCEPromptById(id))
@@ -255,7 +255,8 @@ const AINewVersion = () => {
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
   }, []);
-  console.log("plan?.plan:", plan?.plan);
+  console.log("plan:",plan);
+  
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -304,7 +305,7 @@ const AINewVersion = () => {
               </button>
               <div className="mt-5 text-[#52525B]">
                 <p className="text-[16px] font-bold">Current Plan</p>
-                {plan === null ? (
+                {!plan ? (
                   <p className="text-[14px]">Free</p>
                 ) : (
                   <p className="text-[14px]">{plan}</p>
