@@ -15,13 +15,14 @@ const Pricing = () => {
     (state) => state?.subscription?.subscriptions,
   );
 
-  const plan = useSelector((state) => state?.subscription?.plan);
+  const currentPlan = useSelector((state) => state?.subscription?.plan);
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
 
   const pricingPlans = {
     termly: [
       {
+        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
         title: "The OSCE plan",
         price: 35,
         monthlyPrice: (35 / 3).toFixed(2),
@@ -32,6 +33,8 @@ const Pricing = () => {
         ],
       },
       {
+        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_3,
+
         title: "The Full Package",
         price: 45,
         monthlyPrice: (45 / 3).toFixed(2),
@@ -51,6 +54,8 @@ const Pricing = () => {
     ],
     annual: [
       {
+        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_12,
+
         title: "The OSCE plan",
         price: 50,
         oldPrice: 8.75, // Old price for Annual
@@ -62,6 +67,7 @@ const Pricing = () => {
         ],
       },
       {
+        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_12,
         title: "The Full Package",
         price: 65,
         oldPrice: 11.25, // Old price for Annual
@@ -80,6 +86,7 @@ const Pricing = () => {
         ],
       },
       {
+        planId: process.env.REACT_APP_PRICE_PASS_GUARANTEE_12,
         title: "The Pass Guarantee",
         price: 1280,
         showTotalOnly: true,
@@ -99,7 +106,7 @@ const Pricing = () => {
 
   // Function to handle the subscription
   const handleSubscription = async (planSlug) => {
-    if (plan?.plan?.length !== 0) {
+    if (currentPlan?.plan?.length !== 0) {
       // handleManageSubscription({ customer: subscription[0]?.customer });
       setManagePackageModal(true);
 
@@ -223,12 +230,21 @@ const Pricing = () => {
                   </div>
 
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
-                    <button
-                      onClick={() => handleSubscription(plan["plan-slug"])} // Call subscription handler
-                      className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-transparent text-[16px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white"
-                    >
-                      Get Access
-                    </button>
+                    {currentPlan?.planId === plan?.planId ? (
+                      <button
+                        disabled
+                        className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-[#30b58f] text-[16px] font-semibold text-white transition-all duration-200"
+                      >
+                        Current Plan
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleSubscription(plan["plan-slug"])} // Call subscription handler
+                        className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-transparent text-[16px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white"
+                      >
+                        Get Access
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
