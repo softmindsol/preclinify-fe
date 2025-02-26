@@ -46,8 +46,6 @@ const AINewVersion = () => {
   );
   const plan = useSelector((state) => state?.subscription?.plan);
 
-  console.log("plan:", plan);
-
   const [finishReview, setFinishReview] = useState(false);
   const {
     isRecording,
@@ -77,7 +75,8 @@ const AINewVersion = () => {
       navigate("/dashboard");
     }
   };
-  const fetchAIResponse = async (userText) => {
+
+  const fetchAIResponse = async (conversationHistory) => {
     const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API;
 
     try {
@@ -91,17 +90,11 @@ const AINewVersion = () => {
           },
           body: JSON.stringify({
             model: "gpt-4o",
-            audio: { voice: "alloy", format: "wav" },
-            messages: [
-              {
-                role: "system",
-                content: instruction,
-              },
-              { role: "user", content: userText },
-            ],
+            messages: conversationHistory, // Send full chat history including system instruction
           }),
         },
       );
+
       const data = await response.json();
       return data.choices[0].message.content;
     } catch (error) {
@@ -109,14 +102,15 @@ const AINewVersion = () => {
       return "Could you please repeat that?";
     }
   };
+
   const reportHandler = () => {
     setShowFeedBackModal(!showFeedBackModal);
   };
+
   const handleSendText = async (e) => {
     e.preventDefault();
     if (inputText.trim() === "") return;
 
-    // Add user's input to the transcript
     setTranscript((prevTranscript) => [
       ...prevTranscript,
       { fromAI: false, text: inputText }, // User's message
@@ -124,10 +118,25 @@ const AINewVersion = () => {
 
     setInputText("");
     setIsLoading(true);
-    const aiResponse = await fetchAIResponse(inputText);
+
+    const conversationHistory = transcript.map((message) => ({
+      role: message.fromAI ? "assistant" : "user",
+      content: message.text,
+    }));
+
+    if (
+      conversationHistory.length === 0 ||
+      conversationHistory[0].role !== "system"
+    ) {
+      conversationHistory.unshift({ role: "system", content: instruction });
+    }
+
+    conversationHistory.push({ role: "user", content: inputText });
+
+    const aiResponse = await fetchAIResponse(conversationHistory);
+
     setIsLoading(false);
 
-    // Add AI's response to the transcript
     setTranscript((prevTranscript) => [
       ...prevTranscript,
       { fromAI: true, text: aiResponse }, // AI's message
@@ -138,27 +147,11 @@ const AINewVersion = () => {
     e.preventDefault();
 
     try {
-      // Wait for incrementUsedTokens to complete
-      await dispatch(incrementUsedTokens({ userId: userId })).unwrap();
-
-      // Now fetch updated subscription data
-      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
-
-      // Now call handleSendText
       handleSendText(e);
     } catch (error) {
       console.error("Error updating tokens:", error);
     }
   };
-
-  //   const handleSubmit = (e) => {
-  //     e  .preventDefault();
-  //     if (inputText.trim() !== "") {
-  //       sendTextMessage(inputText);
-  //       setTranscript((prev) => [...prev, { fromAI: false, text: inputText }]);
-  //       setInputText(""); // Clear input field
-  //     }
-  //   };
 
   const handleMicClick = async (e) => {
     e.preventDefault();
@@ -469,8 +462,8 @@ const AINewVersion = () => {
                   className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
                 >
                   <form
-                    // onSubmit={handleSendText}
-                    onSubmit={handlerToken}
+                    onSubmit={handleSendText}
+                    // onSubmit={handlerToken}
                     className="flex items-center justify-center gap-2"
                   >
                     <input
