@@ -134,14 +134,10 @@ const AINewVersion = () => {
 
     try {
       // Wait for incrementUsedTokens to complete
-      await dispatch(
-        incrementUsedTokens({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
-      ).unwrap();
+      await dispatch(incrementUsedTokens({ userId: userId })).unwrap();
 
       // Now fetch updated subscription data
-      await dispatch(
-        fetchSubscriptions({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
-      ).unwrap();
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
 
       // Now call handleSendText
       // handleSendText(e);
@@ -168,14 +164,12 @@ const AINewVersion = () => {
       // First, increment used tokens
       await dispatch(
         incrementUsedTokens({
-          userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2",
+          userId: userId,
         }),
       ).unwrap();
 
       // Then, fetch updated subscription data
-      await dispatch(
-        fetchSubscriptions({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
-      ).unwrap();
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
 
       // Finally, start or stop recording
       isRecording ? stopRecording() : initWebRTC();
@@ -252,9 +246,7 @@ const AINewVersion = () => {
       });
   }, [id, dispatch]);
   useEffect(() => {
-    dispatch(
-      fetchSubscriptions({ userId: "5e7b6eb5-3e84-447a-8725-3e5a24c23db2" }),
-    );
+    dispatch(fetchSubscriptions({ userId }));
   }, []);
   return (
     <div className="w-full">
