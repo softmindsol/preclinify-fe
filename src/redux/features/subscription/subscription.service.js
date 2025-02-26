@@ -1,18 +1,49 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../../../config/helper";
+
 export const fetchSubscriptions = createAsyncThunk(
     "subscriptions/fetchAll",
     async ({ userId }, { rejectWithValue }) => {
         try {
-            const { data, error } = await supabase.from("subscription").select("*").eq("userId", userId);
+            // Fetch subscription data based on userId
+            const { data: subscriptions, error: subscriptionError } = await supabase
+                .from("subscription")
+                .select("*")
+                .eq("userId", userId);
 
-            if (error) {
-                return rejectWithValue(error.message);
+            if (subscriptionError) {
+                return rejectWithValue(subscriptionError.message);
             }
 
+            if (!subscriptions || subscriptions.length === 0) {
+                return rejectWithValue("No subscriptions found.");
+            }
+            console.log("subscriptions:", subscriptions);
 
+            // Extract planId from the subscription
+            const planId = subscriptions[0]?.plan;
+            console.log("planId:", planId);
 
-            return data; // Return the fetched subscription data
+            if (!planId) {
+                return rejectWithValue("No planId found in subscription.");
+            }
+
+            // Fetch the corresponding plan details from the plans table
+            const { data: plan, error: planError } = await supabase
+                .from("plans")
+                .select("*")
+                .eq("planId", planId)
+                .limit(1)
+                .maybeSingle(); // Avoids error if multiple/no rows
+
+            if (planError) {
+                return rejectWithValue(planError.message);
+            }
+
+            console.log("plan:", plan);
+
+            // Return both subscription and plan details
+            return { subscriptions, plan };
         } catch (error) {
             return rejectWithValue(error.message);
         }
