@@ -2,19 +2,16 @@ import React, { useEffect } from "react";
 import Logo from "./Logo";
 import { Link, NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubscriptions } from "./../../redux/features/subscription/subscription.service";
+import { fetchSubscriptions } from "../../redux/features/subscription/subscription.service";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId");
-
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
-  const currentPlan = useSelector((state) => state?.subscription?.plan);
-  console.log("🚀 ~ Sidebar ~ currentPlan:", currentPlan);
 
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
-  }, []);
+  }, [dispatch, userId]);
 
   return (
     <div
