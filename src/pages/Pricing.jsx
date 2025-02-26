@@ -130,7 +130,10 @@ const Pricing = () => {
           </p>
         </div>
         <div className="mt-2 text-[16px] font-medium text-[#71717A]">
-          <p>Save with an annual plan</p>
+          <p>
+            psst.. save at least <span className="text-[#FF9741]"> 50% </span>
+            with an annual plan
+          </p>
         </div>
 
         <div>
@@ -156,14 +159,14 @@ const Pricing = () => {
                         </span>
                       </span>
                     </div>
-                    {plan.hasDiscount && (
+                    {/* {plan.hasDiscount && (
                       <div className="mt-3 inline-flex items-center rounded-full bg-white/20 px-3 py-1">
                         <Tag size={14} className="mr-2" />
                         <span className="text-sm">
                           {`Save up to ${plan.discount}% ${isAnnual ? "annually" : "termly"}`}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                   <div
                     className={`space-y-2 p-8 ${plan.title === "The OSCE plan" ? "text-[16px] lg:text-[18px]" : "text-[14px] lg:text-[16px]"}`}
