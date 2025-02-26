@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+CU:wght@100..400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+CU:wght@100..400&display=swap");
 body {
   background-color: #f4f4f5;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   overflow-y: auto;
 }
 
@@ -22,20 +22,39 @@ html {
   scroll-behavior: smooth;
 }
 
+/* HTML: */
+.loading {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  aspect-ratio: 4;
+  background: radial-gradient(circle closest-side, #000 90%, #0000) 0 /
+    calc(100% / 3) 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: l1 1s steps(4) infinite;
+}
+@keyframes l1 {
+  to {
+    clip-path: inset(0 -34% 0 0);
+  }
+}
+
 /* Add this CSS to your styles */
-input[type='radio'] {
+input[type="radio"] {
   appearance: none; /* Remove default styling */
   width: 20px; /* Set width */
   height: 20px; /* Set height */
-  border: 2px solid #ccc; /* Border color */
+  border: 2px solid #000000; /* Border color */
   border-radius: 50%; /* Make it circular */
   cursor: pointer; /* Change cursor */
   position: relative; /* Position relative for the pseudo-element */
 }
 
 /* Create a pseudo-element for the inner circle */
-input[type='radio']::before {
-  content: ''; /* Required for pseudo-elements */
+input[type="radio"]::before {
+  content: ""; /* Required for pseudo-elements */
   position: absolute; /* Position it absolutely */
   top: 50%; /* Adjust to create padding */
   left: 50%; /* Adjust to create padding */
@@ -48,12 +67,12 @@ input[type='radio']::before {
 }
 
 /* Change the background color when checked */
-input[type='radio']:checked::before {
+input[type="radio"]:checked::before {
   background-color: #3cc8a1; /* Change background color when checked */
 }
 
 /* Change border color when checked */
-input[type='radio']:checked {
+input[type="radio"]:checked {
   border: 2px solid #3cc8a1; /* Change border color when checked */
 }
 

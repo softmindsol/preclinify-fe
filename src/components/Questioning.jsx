@@ -79,6 +79,8 @@ const Questioning = () => {
   const recentSession = useSelector(
     (state) => state.recentSession.recentSessions,
   );
+  console.log("planType:", planType);
+
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
   const {
@@ -952,9 +954,9 @@ const Questioning = () => {
 
         {/* Table Header */}
         <div
-          className={`${planType === "Osce" && "pointer-events-auto relative z-50 bg-gray-900 bg-opacity-70"}`}
+          className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 bg-gray-900 bg-opacity-70"}`}
         >
-          {planType === "Osce" && (
+          {(planType === "Osce" || planType === undefined) && (
             <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
               <p className="rounded-md bg-gray-800 px-6 py-8 text-3xl font-semibold text-white">
                 To get this feature, upgrade your plan

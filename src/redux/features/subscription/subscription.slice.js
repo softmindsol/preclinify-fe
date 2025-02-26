@@ -19,6 +19,8 @@ const subscriptionSlice = createSlice({
       })
       .addCase(fetchSubscriptions.fulfilled, (state, action) => {
         state.loading = false;
+        console.log("action.payload.subscriptions:", action.payload);
+        
         state.subscriptions = action.payload.subscriptions; // Store subscription data
         state.plan = action.payload.plan; // Store plan details
       })
