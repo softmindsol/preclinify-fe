@@ -19,7 +19,7 @@ const Pricing = () => {
         "plan-slug": PlanSlug("The OSCE plan", 3),
         features: [
           "Station specific OSCE scenarios",
-          "60 hours of OSCE bot access",
+          "Access to our custom simulated AI patients",
         ],
       },
       {
@@ -33,10 +33,10 @@ const Pricing = () => {
           "Everything in OSCE",
           "MLA + Clinical Bank",
           "SAQ question bank",
-          "Pre-clinical",
-          "Data interpretation",
-          "Question generation",
-          "Tutor Bot",
+          // "Pre-clinical",
+          // "Data interpretation",
+          // "Question generation",
+          "Custom AI Tutor Bot",
         ],
       },
     ],
@@ -49,7 +49,7 @@ const Pricing = () => {
         "plan-slug": PlanSlug("The OSCE plan", 12),
         features: [
           "Station specific OSCE scenarios",
-          "60 hours of OSCE bot access",
+          "Access to our custom simulated AI patients",
         ],
       },
       {
@@ -64,10 +64,10 @@ const Pricing = () => {
           "Everything in OSCE",
           "MLA + Clinical Bank",
           "SAQ question bank",
-          "Pre-clinical",
-          "Data interpretation",
-          "Question generation",
-          "Tutor Bot",
+          // "Pre-clinical",
+          // "Data interpretation",
+          // "Question generation",
+          "Custom AI Tutor Bot",
         ],
       },
       {
@@ -94,7 +94,8 @@ const Pricing = () => {
       toast.success("You are being redirected to the payment gateway");
       // Send the plan slug to the backend via an Axios POST request
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/subscribe?plan=${planSlug}&userId=${userId}` );
+        `${process.env.REACT_APP_BACKEND_URL}/subscribe?plan=${planSlug}&userId=${userId}`,
+      );
 
       if (response.status === 200) {
         // Handle success (maybe show a success message to the user)
