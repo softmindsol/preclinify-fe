@@ -151,7 +151,7 @@ const Pricing = () => {
 
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
-  }, []);
+  }, [dispatch, userId]);
 
   return (
     <div className="">
