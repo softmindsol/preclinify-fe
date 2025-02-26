@@ -40,7 +40,6 @@ const Register = () => {
       displayName: Yup.string().required("Name is Required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      // Check if all checkboxes are checked
       if (!termsChecked || !emailUpdatesChecked || !smsUpdatesChecked) {
         toast.error(
           "Please agree to the terms and conditions and check the other options.",
@@ -48,10 +47,10 @@ const Register = () => {
         setSubmitting(false);
         return;
       }
-
+    
       try {
         // Supabase auth register
-        const { user, error } = await supabase.auth.signUp({
+        const { data : user, error } = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
           options: {
@@ -61,10 +60,32 @@ const Register = () => {
             },
           },
         });
-
+    
         if (error) {
           toast.error("Error occurred while registering");
         } else {
+          // Add 15 tokens in the subscription collection
+          const { data, insertError } = await supabase
+            .from("subscription")
+            .insert([
+              {
+                userId: user?.user?.id,
+                customer_email: values.email,
+                customer_name: values.displayName,
+                total_tokens: 15, // Adding 15 tokens on registration
+                used_tokens: 0,
+                created_at: new Date(),
+              },
+            ]);
+    
+          if (insertError) {
+            console.error("Error adding tokens:", insertError);
+            toast.error("Failed to initialize subscription tokens.");
+          } else {
+            toast.success("Subscription initialized with 15 tokens.");
+          }
+    
+          // Fetch user phone number and navigate to verification page
           await dispatch(
             fetchUserPhoneNumber({
               email: values.email,
@@ -81,8 +102,8 @@ const Register = () => {
         toast.error("An error occurred. Please try again!");
       } finally {
         setSubmitting(false);
-      }
-    },
+      }
+    }
   });
 
   return (
