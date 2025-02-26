@@ -46,7 +46,7 @@ const AINewVersion = () => {
   );
   // const plan = useSelector((state) => state?.subscription?.plan);
 
-  console.log("subscriptions, plan,loading", subscriptions, plan, loader);
+  console.log(" plan",plan);
 
   const [finishReview, setFinishReview] = useState(false);
   const {
@@ -138,11 +138,11 @@ const AINewVersion = () => {
     e.preventDefault();
 
     try {
-      // Wait for incrementUsedTokens to complete
-      await dispatch(incrementUsedTokens({ userId: userId })).unwrap();
+      // // Wait for incrementUsedTokens to complete
+      // await dispatch(incrementUsedTokens({ userId: userId })).unwrap();
 
-      // Now fetch updated subscription data
-      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      // // Now fetch updated subscription data
+      // await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
 
       // Now call handleSendText
       handleSendText(e);
@@ -253,6 +253,7 @@ const AINewVersion = () => {
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
   }, []);
+  console.log("plan?.plan:", plan?.plan);
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -301,7 +302,11 @@ const AINewVersion = () => {
               </button>
               <div className="mt-5 text-[#52525B]">
                 <p className="text-[16px] font-bold">Current Plan</p>
-                <p className="text-[14px]">{plan?.plan}</p>
+                {plan === null ? (
+                  <p className="text-[14px]">Free</p>
+                ) : (
+                  <p className="text-[14px]">{plan}</p>
+                )}
               </div>
             </div>
           </div>
