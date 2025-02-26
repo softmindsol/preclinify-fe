@@ -60,10 +60,11 @@ const Register = () => {
             },
           },
         });
-    
+        
         if (error) {
           toast.error("Error occurred while registering");
         } else {
+          console.log("🚀 ~ onSubmit: ~ user:", user)
           // Add 15 tokens in the subscription collection
           const { data, insertError } = await supabase
             .from("subscription")
