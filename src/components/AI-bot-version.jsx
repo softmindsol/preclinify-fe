@@ -173,7 +173,10 @@ const AINewVersion = () => {
       ).unwrap();
 
       // Then, fetch updated subscription data
-      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      if(isRecording){
+         await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      }
+     
 
       // Finally, start or stop recording
       isRecording ? stopRecording() : initWebRTC();
