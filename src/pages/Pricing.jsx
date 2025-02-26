@@ -15,7 +15,7 @@ const Pricing = () => {
       {
         title: "The OSCE plan",
         price: 35,
-        monthlyPrice: (35 / 4).toFixed(2),
+        monthlyPrice: (35 / 3).toFixed(2),
         "plan-slug": PlanSlug("The OSCE plan", 3),
         features: [
           "Station specific OSCE scenarios",
@@ -25,7 +25,7 @@ const Pricing = () => {
       {
         title: "The Full Package",
         price: 45,
-        monthlyPrice: (45 / 4).toFixed(2),
+        monthlyPrice: (45 / 3).toFixed(2),
         "plan-slug": PlanSlug("The Full Package", 3),
         hasDiscount: true,
         discount: 20, // 20% discount for Termly
