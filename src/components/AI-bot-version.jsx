@@ -41,7 +41,13 @@ const AINewVersion = () => {
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
-  const subscription = useSelector((state) => state?.subscription?.data);
+  const subscription = useSelector(
+    (state) => state?.subscription?.subscriptions,
+  );
+  const plan = useSelector((state) => state?.subscription?.plan);
+
+  console.log("plan:", plan);
+
   const [finishReview, setFinishReview] = useState(false);
   const {
     isRecording,
@@ -62,7 +68,6 @@ const AINewVersion = () => {
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
-  console.log("stopRecording:", stopRecording);
 
   const handlerOpenDashboardModal = () => {
     setIsDashboardModalOpen(!isDashboardModalOpen);
@@ -294,17 +299,19 @@ const AINewVersion = () => {
               >
                 {timerActive ? "Pause Timer" : "Start Timer"}
               </button>
+              <div className="mt-5 text-[#52525B]">
+                <p className="text-[16px] font-bold">Current Plan</p>
+                <p className="text-[14px]">{plan?.plan}</p>
+              </div>
             </div>
           </div>
           <div className="w-[90%] text-center text-[14px] font-semibold text-[#52525B]">
             {subscription[0]?.total_tokens === subscription[0]?.used_tokens ? (
               <div className="space-y-2">
                 <p className="text-[#FF453A]">You have exceed your limit</p>
-                  <button className="rounded-[8px] border border-[#FF453A] w-[50%] py-1 text-[12px] text-[#FF453A] transition-all duration-150 hover:bg-[#FF453A] hover:text-white">
-                <Link to="/pricing">
-                    Buy Token
-                </Link>
-                  </button>
+                <button className="w-[50%] rounded-[8px] border border-[#FF453A] py-1 text-[12px] text-[#FF453A] transition-all duration-150 hover:bg-[#FF453A] hover:text-white">
+                  <Link to="/pricing">Buy Token</Link>
+                </button>
               </div>
             ) : (
               <p>
