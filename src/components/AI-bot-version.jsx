@@ -16,6 +16,7 @@ import {
   incrementUsedTokens,
 } from "../redux/features/subscription/subscription.service";
 import { toast } from "sonner";
+import VirtualPatientGuide from "./common/VirtualOsceModal";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -44,8 +45,11 @@ const AINewVersion = () => {
   const { subscriptions, plan, loader } = useSelector(
     (state) => state?.subscription,
   );
-
-  console.log("subscriptions:", subscriptions);
+  const transcriptRef = useRef(null);
+  const virtualPatient = useSelector(
+    (state) => state?.virtualPatient?.isModalOpen,
+  );
+  console.log("virtualPatient:", virtualPatient);
 
   const [finishReview, setFinishReview] = useState(false);
   const {
@@ -212,7 +216,7 @@ const AINewVersion = () => {
   useEffect(() => {
     let timerInterval;
 
-    if (timerActive) {
+    if (timerActive && !virtualPatient) {
       timerInterval = setInterval(() => {
         if (seconds === 0 && minutes === 0) {
           clearInterval(timerInterval);
@@ -235,13 +239,18 @@ const AINewVersion = () => {
     }
 
     return () => clearInterval(timerInterval);
-  }, [timerActive, minutes, seconds, navigate]);
+  }, [timerActive, minutes, seconds, navigate, virtualPatient]);
   useEffect(() => {
     if (transcript.length > 0) {
       generateSummaryAndFeedback();
     }
   }, [transcript]); // Trigger whenever the transcript updates
 
+  useEffect(() => {
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+    }
+  }, [transcript]);
   useEffect(() => {
     dispatch(fetchOSCEPromptById(id))
       .unwrap()
@@ -255,8 +264,7 @@ const AINewVersion = () => {
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
   }, []);
-  console.log("plan:",plan);
-  
+
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -445,11 +453,14 @@ const AINewVersion = () => {
         </div>
 
         {/* Content */}
-        <div className={`${darkModeRedux ? "dark" : ""}`}>
+        <div className={`${darkModeRedux ? "dark" : ""} `}>
           {activeTab === "text" && (
             <div>
               <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
-                <div className="transcript h-full overflow-y-auto pr-4">
+                <div
+                  className="transcript h-full overflow-y-auto pr-4"
+                  ref={transcriptRef}
+                >
                   {transcript.map((entry, index) => (
                     <div
                       key={index}
@@ -476,7 +487,7 @@ const AINewVersion = () => {
                           </div>
                         )}
                         <span
-                          className={`ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
+                          className={`my-2 ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
                         >
                           {entry.text}
                         </span>
@@ -503,7 +514,7 @@ const AINewVersion = () => {
                       type="text"
                       value={inputText}
                       onChange={handleInputChange}
-                      className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
+                      className="z-0 h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
                       placeholder="What’s brought you in today? (press spacebar to speak)"
                     />
                     <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
@@ -517,8 +528,11 @@ const AINewVersion = () => {
 
           {activeTab === "voice" && (
             <div className="">
-              <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
-                <div className="transcript h-full overflow-y-auto pr-4">
+              <main className="relative z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+                <div
+                  className="transcript h-full overflow-y-auto pr-4"
+                  ref={transcriptRef}
+                >
                   {transcript.map((entry, index) => (
                     <div
                       key={index}
@@ -609,6 +623,7 @@ const AINewVersion = () => {
           handleBackToDashboard={handleBackToDashboard}
         />
       )}
+      <div className="">{virtualPatient && <VirtualPatientGuide />}</div>
     </div>
   );
 };

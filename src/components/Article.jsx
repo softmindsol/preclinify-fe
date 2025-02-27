@@ -66,7 +66,7 @@ const Article = ({ article, id }) => {
           {headings.map((heading, index) => (
             <li
               key={index}
-              className="text-[14px] text-[#71717A] hover:text-green-600"
+              className="text-[14px] text-[#71717A] hover:text-[#3CC8A1]"
             >
               <a href={`#${heading.text.toLowerCase().replace(/ /g, "-")}`}>
                 {heading.text}

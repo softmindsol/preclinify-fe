@@ -57,7 +57,7 @@ const FeedbackModal = ({
 `; // Extra newline to separate feedback area
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex z-40 items-center justify-center bg-black bg-opacity-50">
       <div className="w-[800px] rounded-lg bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold">Give Your Feedback</h2>
         <textarea

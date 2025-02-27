@@ -95,7 +95,7 @@ const Register = () => {
           );
           navigate("/verify-email");
           toast.success(
-            "Registration Successful! Check your email and verify it.",
+            "Registration Successfully! Check your email and verify it.",
           );
         }
       } catch (error) {

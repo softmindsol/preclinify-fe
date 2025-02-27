@@ -936,29 +936,30 @@ const Questioning = () => {
   }, [state]);
 
   return (
-    <div className={`w-full lg:flex ${darkModeRedux ? "dark" : ""}`}>
+    <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
         <Sidebar />
       </div>
-
-      <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A] lg:ml-[260px] xl:ml-[250px]">
-        <div className="flex items-center justify-between bg-white p-5 lg:hidden">
-          <div className="">
-            <img src="/assets/small-logo.png" alt="" />
-          </div>
-
-          <div className="" onClick={toggleDrawer}>
-            <TbBaselineDensityMedium />
-          </div>
+      <div className="flex items-center justify-between bg-white p-5 lg:hidden">
+        <div className="">
+          <img src="/assets/small-logo.png" alt="" />
         </div>
 
-        {/* Table Header */}
-        <div
-          className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 bg-gray-900 bg-opacity-70"}`}
-        >
+        <div className="" onClick={toggleDrawer}>
+          <TbBaselineDensityMedium />
+        </div>
+      </div>
+      <div
+        className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70 lg:ml-[260px] xl:ml-[250px]"}`}
+      >
+        <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
+          {/* drawer */}
+
+          {/* Table Header */}
+
           {(planType === "Osce" || planType === undefined) && (
             <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-              <p className="rounded-md bg-gray-800 px-6 py-8 text-3xl font-semibold text-white">
+              <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
                 To get this feature, upgrade your plan
               </p>
             </div>

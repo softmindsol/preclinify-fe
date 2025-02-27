@@ -20,6 +20,7 @@ import {
   fetchUserInformation,
   insertOrUpdateUserInformation,
 } from "../redux/features/personal-info/personal-info.service";
+import { logoutUser } from "../redux/features/logout/logout.service";
 
 const Setting = () => {
   const navigate = useNavigate();
@@ -40,18 +41,22 @@ const Setting = () => {
   const userId = localStorage.getItem("userId");
   const profile = useSelector((state) => state?.personalInfo?.userInfo);
   // Logout function
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut().then(() => {
-        localStorage.removeItem("userId");
-        dispatch(clearUserId());
-        toast.success("User logged out successfully");
-        navigate("/login");
-      });
-    } catch (error) {
-      toast.error("Something went wrong while Logout!");
-    }
-  };
+const handleLogout = async () => {
+  try {
+    await dispatch(logoutUser()).unwrap(); // Wait for logout to complete successfully
+
+    // Remove user data and update Redux state
+    localStorage.removeItem("userId");
+    dispatch(clearUserId());
+
+    // Show success message and redirect
+    toast.success("User logged out successfully");
+    navigate("/login");
+  } catch (error) {
+    toast.error("Logout failed: " + error);
+  }
+};
+
 
   const toggleDarkMode = () => {
     setMode((prevMode) => !prevMode);
@@ -307,6 +312,8 @@ const Setting = () => {
                 <option value="Year 2">Year 2</option>
                 <option value="Year 3">Year 3</option>
                 <option value="Year 4">Year 4</option>
+                <option value="Year 5">Year 5</option>
+                <option value="Year 6">Year 6</option>
               </select>
             </div>
           </div>
