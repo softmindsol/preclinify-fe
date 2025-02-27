@@ -45,6 +45,7 @@ const AINewVersion = () => {
   const { subscriptions, plan, loader } = useSelector(
     (state) => state?.subscription,
   );
+  const transcriptRef = useRef(null);
   const virtualPatient = useSelector(
     (state) => state?.virtualPatient?.isModalOpen,
   );
@@ -245,6 +246,11 @@ const AINewVersion = () => {
     }
   }, [transcript]); // Trigger whenever the transcript updates
 
+  useEffect(() => {
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+    }
+  }, [transcript]);
   useEffect(() => {
     dispatch(fetchOSCEPromptById(id))
       .unwrap()
@@ -451,7 +457,10 @@ const AINewVersion = () => {
           {activeTab === "text" && (
             <div>
               <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
-                <div className="transcript h-full overflow-y-auto pr-4">
+                <div
+                  className="transcript h-full overflow-y-auto pr-4"
+                  ref={transcriptRef}
+                >
                   {transcript.map((entry, index) => (
                     <div
                       key={index}
@@ -478,7 +487,7 @@ const AINewVersion = () => {
                           </div>
                         )}
                         <span
-                          className={`ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
+                          className={`my-2 ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
                         >
                           {entry.text}
                         </span>
@@ -520,7 +529,10 @@ const AINewVersion = () => {
           {activeTab === "voice" && (
             <div className="">
               <main className="relative z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
-                <div className="transcript h-full overflow-y-auto pr-4">
+                <div
+                  className="transcript h-full overflow-y-auto pr-4"
+                  ref={transcriptRef}
+                >
                   {transcript.map((entry, index) => (
                     <div
                       key={index}
