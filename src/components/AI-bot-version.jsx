@@ -215,7 +215,7 @@ const AINewVersion = () => {
   useEffect(() => {
     let timerInterval;
 
-    if (timerActive) {
+    if (timerActive && !virtualPatient) {
       timerInterval = setInterval(() => {
         if (seconds === 0 && minutes === 0) {
           clearInterval(timerInterval);
@@ -238,7 +238,7 @@ const AINewVersion = () => {
     }
 
     return () => clearInterval(timerInterval);
-  }, [timerActive, minutes, seconds, navigate]);
+  }, [timerActive, minutes, seconds, navigate, virtualPatient]);
   useEffect(() => {
     if (transcript.length > 0) {
       generateSummaryAndFeedback();
@@ -611,9 +611,7 @@ const AINewVersion = () => {
           handleBackToDashboard={handleBackToDashboard}
         />
       )}
-      <div className="">
-        {virtualPatient && <VirtualPatientGuide />}
-      </div>
+      <div className="">{virtualPatient && <VirtualPatientGuide />}</div>
     </div>
   );
 };

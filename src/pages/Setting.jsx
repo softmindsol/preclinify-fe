@@ -312,6 +312,8 @@ const handleLogout = async () => {
                 <option value="Year 2">Year 2</option>
                 <option value="Year 3">Year 3</option>
                 <option value="Year 4">Year 4</option>
+                <option value="Year 5">Year 5</option>
+                <option value="Year 6">Year 6</option>
               </select>
             </div>
           </div>
