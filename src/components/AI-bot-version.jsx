@@ -255,8 +255,8 @@ const AINewVersion = () => {
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
   }, []);
-  console.log("plan:",plan);
-  
+  console.log("plan:", plan);
+
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -445,7 +445,7 @@ const AINewVersion = () => {
         </div>
 
         {/* Content */}
-        <div className={`${darkModeRedux ? "dark" : ""}`}>
+        <div className={`${darkModeRedux ? "dark" : ""} `}>
           {activeTab === "text" && (
             <div>
               <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
@@ -503,7 +503,7 @@ const AINewVersion = () => {
                       type="text"
                       value={inputText}
                       onChange={handleInputChange}
-                      className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
+                      className="z-0 h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
                       placeholder="What’s brought you in today? (press spacebar to speak)"
                     />
                     <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
@@ -517,7 +517,7 @@ const AINewVersion = () => {
 
           {activeTab === "voice" && (
             <div className="">
-              <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="relative z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div className="transcript h-full overflow-y-auto pr-4">
                   {transcript.map((entry, index) => (
                     <div

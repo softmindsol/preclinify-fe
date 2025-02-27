@@ -15,7 +15,7 @@ export const insertExamDate = createAsyncThunk(
       if (upsertError) {
         return rejectWithValue(upsertError.message);
       }
-
+ 
       return newRecord;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -44,7 +44,9 @@ export const fetchDaysUntilExam = createAsyncThunk(
       const examDate = dayjs(data.exam_date);
       const currentDate = dayjs();
       const daysLeft = examDate.diff(currentDate, "day"); // Get difference in days
-
+      if (currentDate - daysLeft===0){
+        return { daysLeft :0}
+      }
       return daysLeft;
     } catch (error) {
       return rejectWithValue(error.message);

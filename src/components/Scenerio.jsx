@@ -300,7 +300,7 @@ const Scenarios = () => {
                       onKeyDown={handleKeyPress}
                     />
                   </div>
-                  <svg
+                  {/* <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
@@ -321,7 +321,7 @@ const Scenarios = () => {
                     <line x1="14" x2="14" y1="2" y2="6" />
                     <line x1="8" x2="8" y1="10" y2="14" />
                     <line x1="16" x2="16" y1="18" y2="22" />
-                  </svg>
+                  </svg> */}
                 </div>
               </div>
 

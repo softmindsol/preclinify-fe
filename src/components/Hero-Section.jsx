@@ -36,14 +36,13 @@ const Hero = () => {
             <span className="font-bold">MLA. SAQ. AI patients</span>{" "}
             <span className="font-medium">and much much more...</span>
           </p>
-           {!userId && (
+          {!userId && (
             <Link to={"/signup"}>
-            <button className="mt-4 rounded-[12px] bg-[#FF9741] px-5 py-3 text-[14px] font-extrabold text-white shadow-orangeBlur transition hover:shadow-lg sm:text-[16px]">
-              Sign Up Now
-            </button>
-          </Link>
-           )}
-          
+              <button className="mt-4 rounded-[12px] bg-[#FF9741] px-5 py-3 text-[14px] font-extrabold text-white shadow-orangeBlur transition hover:shadow-lg sm:text-[16px]">
+                Sign Up Now
+              </button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -154,7 +153,7 @@ const Hero = () => {
               • Understand how to <span className="font-bold">improve</span>
             </li>
             <li>
-              • Focus your learning,
+              • Focus your learning, {''}
               <span className="font-bold">save time</span>
             </li>
           </ul>
@@ -201,7 +200,7 @@ const Hero = () => {
             </li>
             <li>• Fully speech to speech AI simulated patients</li>
             <li>
-              • Have an idea for a feature? DM us
+              • Have an idea for a feature? DM us {""}
               <a
                 href="#"
                 target="_blank"
@@ -210,7 +209,7 @@ const Hero = () => {
               >
                 @Preclinify
               </a>
-              <span>on Instagram</span>
+              {""} <span>on Instagram</span>
             </li>
           </ul>
         </div>

@@ -20,6 +20,7 @@ import {
   fetchUserInformation,
   insertOrUpdateUserInformation,
 } from "../redux/features/personal-info/personal-info.service";
+import { logoutUser } from "../redux/features/logout/logout.service";
 
 const Setting = () => {
   const navigate = useNavigate();
@@ -40,18 +41,22 @@ const Setting = () => {
   const userId = localStorage.getItem("userId");
   const profile = useSelector((state) => state?.personalInfo?.userInfo);
   // Logout function
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut().then(() => {
-        localStorage.removeItem("userId");
-        dispatch(clearUserId());
-        toast.success("User logged out successfully");
-        navigate("/login");
-      });
-    } catch (error) {
-      toast.error("Something went wrong while Logout!");
-    }
-  };
+const handleLogout = async () => {
+  try {
+    await dispatch(logoutUser()).unwrap(); // Wait for logout to complete successfully
+
+    // Remove user data and update Redux state
+    localStorage.removeItem("userId");
+    dispatch(clearUserId());
+
+    // Show success message and redirect
+    toast.success("User logged out successfully");
+    navigate("/login");
+  } catch (error) {
+    toast.error("Logout failed: " + error);
+  }
+};
+
 
   const toggleDarkMode = () => {
     setMode((prevMode) => !prevMode);
