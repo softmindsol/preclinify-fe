@@ -16,6 +16,7 @@ import {
   incrementUsedTokens,
 } from "../redux/features/subscription/subscription.service";
 import { toast } from "sonner";
+import VirtualPatientGuide from "./common/VirtualOsceModal";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -44,8 +45,10 @@ const AINewVersion = () => {
   const { subscriptions, plan, loader } = useSelector(
     (state) => state?.subscription,
   );
-
-  console.log("subscriptions:", subscriptions);
+  const virtualPatient = useSelector(
+    (state) => state?.virtualPatient?.isModalOpen,
+  );
+  console.log("virtualPatient:", virtualPatient);
 
   const [finishReview, setFinishReview] = useState(false);
   const {
@@ -255,7 +258,6 @@ const AINewVersion = () => {
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
   }, []);
-  console.log("plan:", plan);
 
   return (
     <div className="w-full">
@@ -609,6 +611,9 @@ const AINewVersion = () => {
           handleBackToDashboard={handleBackToDashboard}
         />
       )}
+      <div className="">
+        {virtualPatient && <VirtualPatientGuide />}
+      </div>
     </div>
   );
 };

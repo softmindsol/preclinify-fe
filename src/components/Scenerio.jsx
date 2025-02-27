@@ -13,6 +13,7 @@ import {
 } from "../redux/features/osce-static/osce-static.service";
 import MobileBar from "./common/Drawer";
 import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
+import { toggleModal } from "../redux/features/osce-bot/virtual.modal.slice";
 
 const Scenarios = () => {
   const { data = [], loading } = useSelector((state) => state.osce);
@@ -27,31 +28,8 @@ const Scenarios = () => {
   const [activeTab, setActiveTab] = useState("static");
   const categoryRef = useRef(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        localStorage.removeItem("minutes");
-        localStorage.removeItem("seconds");
-
-        const osceData = await dispatch(fetchOSCEData()).unwrap();
-        const moduleNames = osceData.map((item) => item.module);
-
-        dispatch(fetchModules(moduleNames))
-          .unwrap()
-          .then((res) => {
-            setModule(res);
-          })
-          .catch((err) => {
-            console.error("Fetch Modules Error:", err);
-          });
-      } catch (err) {
-        console.error("Error:", err);
-      }
-    };
-
-    fetchData();
-  }, [dispatch]);
-
+  
+  
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -115,6 +93,35 @@ const Scenarios = () => {
 
     return matchesCategory && matchesFilters && matchesSearchQuery;
   });
+
+  useEffect(()=>{
+    dispatch(toggleModal());
+  },[])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        localStorage.removeItem("minutes");
+        localStorage.removeItem("seconds");
+
+        const osceData = await dispatch(fetchOSCEData()).unwrap();
+        const moduleNames = osceData.map((item) => item.module);
+
+        dispatch(fetchModules(moduleNames))
+          .unwrap()
+          .then((res) => {
+            setModule(res);
+          })
+          .catch((err) => {
+            console.error("Fetch Modules Error:", err);
+          });
+      } catch (err) {
+        console.error("Error:", err);
+      }
+    };
+
+    fetchData();
+  }, [dispatch]);
+
 
   return (
     <div className={`min-h-screen md:flex ${darkModeRedux ? "dark" : ""}`}>
