@@ -949,37 +949,38 @@ const Questioning = () => {
           <TbBaselineDensityMedium />
         </div>
       </div>
-      <div
-        className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70 lg:ml-[260px] xl:ml-[250px]"}`}
-      >
-        <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
-          {/* drawer */}
+      <div className="w-full lg:ml-[260px] xl:ml-[250px]">
+        <div
+        className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70"}`}
+        >
+          <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
+            {/* drawer */}
 
-          {/* Table Header */}
+            {/* Table Header */}
 
-          {(planType === "Osce" || planType === undefined) && (
-            <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-              <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                To get this feature, upgrade your plan
-              </p>
-            </div>
-          )}
-          <div className="flex min-h-screen flex-col space-y-4 px-16 py-4 sm:m-10">
-            <div className="flex flex-col space-y-10">
-              <div className="h-[137px] p-4">
-                {/* Tab Section */}
-                <div className="flex items-center justify-between space-x-2 text-[12px] font-medium text-[#3F3F46] md:text-[16px]">
-                  <button
-                    className={`w-[100%] px-4 py-2 ${
-                      selectedTab === "Clinical"
-                        ? "bg-white text-black"
-                        : "bg-[#E4E4E7] text-gray-500"
-                    } rounded-[8px]`}
-                    onClick={() => handleTabChange("Clinical")}
-                  >
-                    Clinical
-                  </button>
-                  {/* <button
+            {(planType === "Osce" || planType === undefined) && (
+              <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
+                <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
+                  To get this feature, upgrade your plan
+                </p>
+              </div>
+            )}
+            <div className="flex min-h-screen flex-col space-y-4 px-16 py-4 sm:m-10">
+              <div className="flex flex-col space-y-10">
+                <div className="h-[137px] p-4">
+                  {/* Tab Section */}
+                  <div className="flex items-center justify-between space-x-2 text-[12px] font-medium text-[#3F3F46] md:text-[16px]">
+                    <button
+                      className={`w-[100%] px-4 py-2 ${
+                        selectedTab === "Clinical"
+                          ? "bg-white text-black"
+                          : "bg-[#E4E4E7] text-gray-500"
+                      } rounded-[8px]`}
+                      onClick={() => handleTabChange("Clinical")}
+                    >
+                      Clinical
+                    </button>
+                    {/* <button
                       className={`w-[50%] px-4 py-2 ${
                         selectedTab === "Pre-clinical"
                           ? "bg-white text-black"
@@ -989,218 +990,220 @@ const Questioning = () => {
                     >
                       Pre-clinical
                     </button> */}
-                </div>
-                {/* Search and Button Section */}
-                <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
-                  {/* Search Bar */}
-                  <div className="flex items-center gap-x-10 p-8">
-                    {selectedTab === "Clinical" && (
-                      <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
-                        Clinical
-                      </p>
-                    )}
-                    {/* {selectedTab === "Pre-clinical" && (
+                  </div>
+                  {/* Search and Button Section */}
+                  <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
+                    {/* Search Bar */}
+                    <div className="flex items-center gap-x-10 p-8">
+                      {selectedTab === "Clinical" && (
+                        <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
+                          Clinical
+                        </p>
+                      )}
+                      {/* {selectedTab === "Pre-clinical" && (
                         <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
                           Pre Clinical
                         </p>
                       )} */}
-                    <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
-                      <div className="group">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-search text-gray-500 transition-colors duration-200 group-hover:text-teal-500"
-                        >
-                          <circle cx="11" cy="11" r="8" />
-                          <path d="m21 21-4.3-4.3" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search for modules"
-                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                        className="ml-2 w-[200px] placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none dark:bg-[#1E1E2A] 2xl:w-[280px]"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center space-y-3 p-8 xl:flex-row xl:space-x-5 xl:space-y-0">
-                    <div className="relative w-[105px]">
-                      {selectedTab === "Clinical" ? (
-                        <select
-                          className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
-                          value={selectedOption} // Bind the selected value to state
-                          onChange={handleSelectChange} // Trigger the handler on change
-                        >
-                          <option value="SBA">SBA</option>
-                          <option value="SAQ">SAQ</option>
-                          <option value="Mock">Mock</option>
-                        </select>
-                      ) : (
-                        <select
-                          className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
-                          value={selectedPreClinicalOption} // Bind the selected value to state
-                          onChange={preClinicalHandler} // Trigger the handler on change
-                        >
-                          <option value="QuesGen">QuesGen</option>
-                        </select>
-                      )}
-                      <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-                        <svg
-                          className="h-4 w-4 text-gray-400"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    {/* Dropdown */}
-                    {/* Continue Button */}
-                    <button
-                      onClick={handleContinue}
-                      disabled={
-                        selectPresentation.length === 0 &&
-                        selectedModules.length === 0
-                      } // Disable the button if both arrays are empty
-                      className={`bg-[#3CC8A1] ${
-                        selectPresentation.length === 0 &&
-                        selectedModules.length === 0
-                          ? "cursor-not-allowed opacity-50"
-                          : "hover:bg-transparent hover:text-[#3CC8A1]"
-                      } rounded-md border-[1px] border-[#3CC8A1] px-6 py-2 text-[12px] font-semibold text-white transition-all md:text-[14px] 2xl:text-[16px]`}
-                    >
-                      Continue &gt;
-                    </button>
-                  </div>
-                </div>
-              </div>
-              {selectedTab === "Pre-clinical" && <FileUpload />}
-              {selectedTab === "Clinical" && (
-                <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
-                  <div className="mr-10 flex w-[35%] items-center justify-between">
-                    <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">
-                      Recent Sessions
-                    </p>
-                    <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48]" />
-                  </div>
-                  <div className="w-[65%] space-y-3">
-                    {localRecentSession.length > 0 ? (
-                      localRecentSession.map((sessionId, index) => {
-                        const categoryIds = sessionId
-                          .split(",")
-                          .map((id) => id.trim()); // Convert to array of strings
-                        // Find category names corresponding to the category IDs
-                        const categoryNames = categoryIds
-                          .map((id) => {
-                            const category = data.data.find(
-                              (item) => item.categoryId === parseInt(id),
-                            ); // Find the category by ID
-                            return category ? category.categoryName : null; // Return the category name or null if not found
-                          })
-                          .filter((name) => name !== null); // Filter out any null values
-                        // Return the JSX for each session
-                        return (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between gap-y-2"
+                      <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
+                        <div className="group">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-search text-gray-500 transition-colors duration-200 group-hover:text-teal-500"
                           >
-                            <div>
-                              <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                                {categoryNames.join(", ")}{" "}
-                                {/* Join category names into a single string */}
-                              </p>
-                              <p className="text-[12px] font-semibold text-[#D4D4D8] 2xl:text-[14px]">
-                                Recent Session
-                              </p>
-                            </div>
-                            <div>
-                              <button
-                                onClick={() => {
-                                  setSessionId(sessionId);
-                                  setIsSession(true);
-                                  handleContinue();
-                                }}
-                                className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
-                              >
-                                Continue &gt;
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <div className="flex items-center justify-center">
-                        <p>No Session</p>
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                          </svg>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Search for modules"
+                          onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+                          className="ml-2 w-[200px] placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none dark:bg-[#1E1E2A] 2xl:w-[280px]"
+                        />
                       </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-            {isLoading ? (
-              <Loader />
-            ) : (
-              <div className="ml-4 mr-4 rounded-[8px] bg-white px-10 py-8 text-[14px] text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white md:text-[16px]">
-                <div className="flex w-full flex-col justify-between pb-2 font-medium text-[#3F3F46] lg:flex-row lg:items-center">
-                  <div className="flex items-center gap-x-10 dark:text-white">
-                    <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
-                      <input
-                        type="checkbox"
-                        className="mr-2 size-4"
-                        checked={data?.data?.every((row) =>
-                          selectedModules.includes(row.categoryId),
-                        )} // Parent checkbox state
-                        onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
-                      />
-                      Select All
                     </div>
-                    {selectedOption !== "SAQ" && (
-                      <div className="flex items-center space-x-2 p-4">
-                        <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
-                          Sort By Presentation
-                        </span>
-                        <label className="relative inline-flex cursor-pointer items-center">
-                          <input
-                            type="checkbox"
-                            className="peer sr-only"
-                            onChange={handleToggle}
-                          />
-                          <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
-                        </label>
+                    <div className="flex flex-col items-center space-y-3 p-8 xl:flex-row xl:space-x-5 xl:space-y-0">
+                      <div className="relative w-[105px]">
+                        {selectedTab === "Clinical" ? (
+                          <select
+                            className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
+                            value={selectedOption} // Bind the selected value to state
+                            onChange={handleSelectChange} // Trigger the handler on change
+                          >
+                            <option value="SBA">SBA</option>
+                            <option value="SAQ">SAQ</option>
+                            <option value="Mock">Mock</option>
+                          </select>
+                        ) : (
+                          <select
+                            className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
+                            value={selectedPreClinicalOption} // Bind the selected value to state
+                            onChange={preClinicalHandler} // Trigger the handler on change
+                          >
+                            <option value="QuesGen">QuesGen</option>
+                          </select>
+                        )}
+                        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                          <svg
+                            className="h-4 w-4 text-gray-400"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                  <div className="3xl:text-[16px] flex items-center gap-x-5 text-right text-[14px] dark:text-white">
-                    <div className="hidden text-center sm:block">Progress</div>
-                    <div className="flex items-center gap-x-3">
-                      <div className="h-4 w-4 rounded-sm bg-[#3CC8A1]"></div>
-                      <p>Correct</p>
-                    </div>
-                    <div className="flex items-center gap-x-3">
-                      <div className="h-4 w-4 rounded-sm bg-[#FF453A]"></div>
-                      <p>Incorrect</p>
-                    </div>
-                    <div className="flex items-center gap-x-3">
-                      <div className="h-4 w-4 rounded-sm bg-[#E4E4E7]"></div>
-                      <p>Unanswered</p>
+                      {/* Dropdown */}
+                      {/* Continue Button */}
+                      <button
+                        onClick={handleContinue}
+                        disabled={
+                          selectPresentation.length === 0 &&
+                          selectedModules.length === 0
+                        } // Disable the button if both arrays are empty
+                        className={`bg-[#3CC8A1] ${
+                          selectPresentation.length === 0 &&
+                          selectedModules.length === 0
+                            ? "cursor-not-allowed opacity-50"
+                            : "hover:bg-transparent hover:text-[#3CC8A1]"
+                        } rounded-md border-[1px] border-[#3CC8A1] px-6 py-2 text-[12px] font-semibold text-white transition-all md:text-[14px] 2xl:text-[16px]`}
+                      >
+                        Continue &gt;
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div className="mb-5 mt-2 h-[1px] bg-[#A1A1AA]" />
-                <div>
-                  {/* {selectedTab === "Pre-clinical" &&
+                {selectedTab === "Pre-clinical" && <FileUpload />}
+                {selectedTab === "Clinical" && (
+                  <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
+                    <div className="mr-10 flex w-[35%] items-center justify-between">
+                      <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">
+                        Recent Sessions
+                      </p>
+                      <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48]" />
+                    </div>
+                    <div className="w-[65%] space-y-3">
+                      {localRecentSession.length > 0 ? (
+                        localRecentSession.map((sessionId, index) => {
+                          const categoryIds = sessionId
+                            .split(",")
+                            .map((id) => id.trim()); // Convert to array of strings
+                          // Find category names corresponding to the category IDs
+                          const categoryNames = categoryIds
+                            .map((id) => {
+                              const category = data.data.find(
+                                (item) => item.categoryId === parseInt(id),
+                              ); // Find the category by ID
+                              return category ? category.categoryName : null; // Return the category name or null if not found
+                            })
+                            .filter((name) => name !== null); // Filter out any null values
+                          // Return the JSX for each session
+                          return (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between gap-y-2"
+                            >
+                              <div>
+                                <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                                  {categoryNames.join(", ")}{" "}
+                                  {/* Join category names into a single string */}
+                                </p>
+                                <p className="text-[12px] font-semibold text-[#D4D4D8] 2xl:text-[14px]">
+                                  Recent Session
+                                </p>
+                              </div>
+                              <div>
+                                <button
+                                  onClick={() => {
+                                    setSessionId(sessionId);
+                                    setIsSession(true);
+                                    handleContinue();
+                                  }}
+                                  className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
+                                >
+                                  Continue &gt;
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <p>No Session</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {isLoading ? (
+                <Loader />
+              ) : (
+                <div className="ml-4 mr-4 rounded-[8px] bg-white px-10 py-8 text-[14px] text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white md:text-[16px]">
+                  <div className="flex w-full flex-col justify-between pb-2 font-medium text-[#3F3F46] lg:flex-row lg:items-center">
+                    <div className="flex items-center gap-x-10 dark:text-white">
+                      <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
+                        <input
+                          type="checkbox"
+                          className="mr-2 size-4"
+                          checked={data?.data?.every((row) =>
+                            selectedModules.includes(row.categoryId),
+                          )} // Parent checkbox state
+                          onChange={(e) => handleSelectAll(e.target.checked)} // Parent checkbox change handler
+                        />
+                        Select All
+                      </div>
+                      {selectedOption !== "SAQ" && (
+                        <div className="flex items-center space-x-2 p-4">
+                          <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
+                            Sort By Presentation
+                          </span>
+                          <label className="relative inline-flex cursor-pointer items-center">
+                            <input
+                              type="checkbox"
+                              className="peer sr-only"
+                              onChange={handleToggle}
+                            />
+                            <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                    <div className="3xl:text-[16px] flex items-center gap-x-5 text-right text-[14px] dark:text-white">
+                      <div className="hidden text-center sm:block">
+                        Progress
+                      </div>
+                      <div className="flex items-center gap-x-3">
+                        <div className="h-4 w-4 rounded-sm bg-[#3CC8A1]"></div>
+                        <p>Correct</p>
+                      </div>
+                      <div className="flex items-center gap-x-3">
+                        <div className="h-4 w-4 rounded-sm bg-[#FF453A]"></div>
+                        <p>Incorrect</p>
+                      </div>
+                      <div className="flex items-center gap-x-3">
+                        <div className="h-4 w-4 rounded-sm bg-[#E4E4E7]"></div>
+                        <p>Unanswered</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-5 mt-2 h-[1px] bg-[#A1A1AA]" />
+                  <div>
+                    {/* {selectedTab === "Pre-clinical" &&
                       (questionGenModule?.modules?.length > 0 ? (
                         questionGenModule.modules
                           .filter(
@@ -1234,384 +1237,387 @@ const Questioning = () => {
                           No modules available.
                         </div>
                       ))} */}
-                  {selectedTab === "Clinical" &&
-                    type === "SBA" &&
-                    isSortedByPresentation &&
-                    filterPresentations(searchQuery)?.map((row, id) => {
-                      const totals = moduleTotals[row.categoryId] || {
-                        totalCorrect: 0,
-                        totalIncorrect: 0,
-                        totalUnanswered: 0,
-                      };
-                      const totalQuestions =
-                        totals.totalCorrect +
-                        totals.totalIncorrect +
-                        totals.totalUnanswered;
-                      // Calculate widths based on total counts
-                      const correctWidth =
-                        totalQuestions > 0
-                          ? (totals.totalCorrect / totalQuestions) * 100
-                          : 0;
-                      const incorrectWidth =
-                        totalQuestions > 0
-                          ? (totals.totalIncorrect / totalQuestions) * 100
-                          : 0;
-                      const unansweredWidth =
-                        totalQuestions > 0
-                          ? (totals.totalUnanswered / totalQuestions) * 100
-                          : 0;
-                      return (
-                        <div
-                          key={row.presentationId}
-                          className="grid items-center py-3 md:grid-cols-2"
-                        >
-                          <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                            <label className="flex cursor-pointer items-center hover:opacity-85">
-                              <input
-                                type="checkbox"
-                                className="custom-checkbox mr-2 hover:opacity-70"
-                                checked={selectPresentation.includes(
-                                  row.presentationId,
-                                )}
-                                onChange={() =>
-                                  handleCheckboxChangePresentation(
+                    {selectedTab === "Clinical" &&
+                      type === "SBA" &&
+                      isSortedByPresentation &&
+                      filterPresentations(searchQuery)?.map((row, id) => {
+                        const totals = moduleTotals[row.categoryId] || {
+                          totalCorrect: 0,
+                          totalIncorrect: 0,
+                          totalUnanswered: 0,
+                        };
+                        const totalQuestions =
+                          totals.totalCorrect +
+                          totals.totalIncorrect +
+                          totals.totalUnanswered;
+                        // Calculate widths based on total counts
+                        const correctWidth =
+                          totalQuestions > 0
+                            ? (totals.totalCorrect / totalQuestions) * 100
+                            : 0;
+                        const incorrectWidth =
+                          totalQuestions > 0
+                            ? (totals.totalIncorrect / totalQuestions) * 100
+                            : 0;
+                        const unansweredWidth =
+                          totalQuestions > 0
+                            ? (totals.totalUnanswered / totalQuestions) * 100
+                            : 0;
+                        return (
+                          <div
+                            key={row.presentationId}
+                            className="grid items-center py-3 md:grid-cols-2"
+                          >
+                            <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                              <label className="flex cursor-pointer items-center hover:opacity-85">
+                                <input
+                                  type="checkbox"
+                                  className="custom-checkbox mr-2 hover:opacity-70"
+                                  checked={selectPresentation.includes(
                                     row.presentationId,
-                                  )
-                                }
-                              />
-                              {row.presentationName}
-                            </label>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1">
-                            {/* Green */}
-                            <div
-                              className="h-[19px] rounded-l-md bg-[#3CC8A1] sm:h-[27px]"
-                              style={{ width: `${correctWidth}%` }}
-                            ></div>
-                            {/* Red */}
-                            <div
-                              className="h-[19px] bg-[#FF453A] sm:h-[27px]"
-                              style={{ width: `${incorrectWidth}%` }}
-                            ></div>
-                            {/* Gray */}
-                            <div
-                              className="h-[19px] rounded-r-md bg-[#E4E4E7] sm:h-[27px]"
-                              style={{ width: `${unansweredWidth}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  {selectedTab === "Clinical" &&
-                    isSortedByPresentation &&
-                    type === "Mock" &&
-                    filterMockPresentations(searchQuery)?.map((row, id) => {
-                      const totals = moduleTotals[row.categoryId] || {
-                        totalCorrect: 0,
-                        totalIncorrect: 0,
-                        totalUnanswered: 0,
-                      };
-                      const totalQuestions =
-                        totals.totalCorrect +
-                        totals.totalIncorrect +
-                        totals.totalUnanswered;
-                      // Calculate widths based on total counts
-                      const correctWidth =
-                        totalQuestions > 0
-                          ? (totals.totalCorrect / totalQuestions) * 100
-                          : 0;
-                      const incorrectWidth =
-                        totalQuestions > 0
-                          ? (totals.totalIncorrect / totalQuestions) * 100
-                          : 0;
-                      const unansweredWidth =
-                        totalQuestions > 0
-                          ? (totals.totalUnanswered / totalQuestions) * 100
-                          : 0;
-                      return (
-                        <div
-                          key={row.presentationId}
-                          className="grid items-center py-3 md:grid-cols-2"
-                        >
-                          <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                            <label className="flex cursor-pointer items-center hover:opacity-85">
-                              <input
-                                type="checkbox"
-                                className="custom-checkbox mr-2 hover:opacity-70"
-                                checked={selectPresentation.includes(
-                                  row.presentationId,
-                                )}
-                                onChange={() =>
-                                  handleCheckboxChangePresentation(
-                                    row.presentationId,
-                                  )
-                                }
-                              />
-                              {row.presentationName}
-                            </label>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1">
-                            {/* Green */}
-                            <div
-                              className="h-[19px] rounded-l-md bg-[#3CC8A1] sm:h-[27px]"
-                              style={{ width: `${correctWidth}%` }}
-                            ></div>
-                            {/* Red */}
-                            <div
-                              className="h-[19px] bg-[#FF453A] sm:h-[27px]"
-                              style={{ width: `${incorrectWidth}%` }}
-                            ></div>
-                            {/* Gray */}
-                            <div
-                              className="h-[19px] rounded-r-md bg-[#E4E4E7] sm:h-[27px]"
-                              style={{ width: `${unansweredWidth}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  {selectedTab === "Clinical" &&
-                    !isSortedByPresentation &&
-                    type === "SBA" &&
-                    filteredSBAModules?.map((row) => {
-                      const moduleData = SBADataLength?.find(
-                        (module) => module.categoryId === row.categoryId,
-                      );
-                      const totalQuestions = moduleData
-                        ? moduleData.questions.length
-                        : 0;
-                      // Ensure moduleTotals is always an array
-                      const moduleTotalsArray = Array.isArray(moduleTotals)
-                        ? moduleTotals
-                        : Object.values(moduleTotals || {});
-                      // Get the totals for correct and incorrect answers
-                      const moduleTotal = moduleTotalsArray.find(
-                        (m) => String(m.moduleId) === String(row.categoryId),
-                      ) || { totalCorrect: 0, totalIncorrect: 0 };
-                      const { totalCorrect, totalIncorrect } = moduleTotal;
-                      // Calculate percentage for progress bar
-                      const correctPercentage = totalQuestions
-                        ? (totalCorrect / totalQuestions) * 100
-                        : 0;
-                      const incorrectPercentage = totalQuestions
-                        ? (totalIncorrect / totalQuestions) * 100
-                        : 0;
-                      return (
-                        <div
-                          key={row.categoryId}
-                          className="grid items-center py-3 md:grid-cols-2"
-                        >
-                          {/* Category Name and Checkbox */}
-                          <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                            <label className="flex cursor-pointer items-center hover:opacity-85">
-                              <input
-                                type="checkbox"
-                                className="mr-2 size-4 rounded-none text-gray-800"
-                                checked={selectedModules.includes(
-                                  row.categoryId,
-                                )}
-                                onChange={() =>
-                                  handleCheckboxChange(row.categoryId)
-                                }
-                              />
-                              {row.categoryName}
-                            </label>
-                          </div>
-                          {/* Progress Bar and Total Questions */}
-                          <div className="flex w-full items-center justify-center space-x-2">
-                            {/* Progress Bar */}
-                            <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
-                              {/* Green Section (Correct Answers) */}
-                              <span
-                                className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
-                                style={{ width: `${correctPercentage}%` }}
-                              >
-                                {totalCorrect > 0 && (
-                                  <span>{totalCorrect}</span>
-                                )}
-                              </span>
-                              {/* Red Section (Incorrect Answers) */}
-                              <span
-                                className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
-                                style={{ width: `${incorrectPercentage}%` }}
-                              >
-                                {totalIncorrect > 0 && (
-                                  <span>{totalIncorrect}</span>
-                                )}
-                              </span>
+                                  )}
+                                  onChange={() =>
+                                    handleCheckboxChangePresentation(
+                                      row.presentationId,
+                                    )
+                                  }
+                                />
+                                {row.presentationName}
+                              </label>
                             </div>
-                            {/* Total Questions */}
-                            {/* <span className="text-sm text-gray-700 dark:text-white">
+                            <div className="flex items-center justify-center space-x-1">
+                              {/* Green */}
+                              <div
+                                className="h-[19px] rounded-l-md bg-[#3CC8A1] sm:h-[27px]"
+                                style={{ width: `${correctWidth}%` }}
+                              ></div>
+                              {/* Red */}
+                              <div
+                                className="h-[19px] bg-[#FF453A] sm:h-[27px]"
+                                style={{ width: `${incorrectWidth}%` }}
+                              ></div>
+                              {/* Gray */}
+                              <div
+                                className="h-[19px] rounded-r-md bg-[#E4E4E7] sm:h-[27px]"
+                                style={{ width: `${unansweredWidth}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    {selectedTab === "Clinical" &&
+                      isSortedByPresentation &&
+                      type === "Mock" &&
+                      filterMockPresentations(searchQuery)?.map((row, id) => {
+                        const totals = moduleTotals[row.categoryId] || {
+                          totalCorrect: 0,
+                          totalIncorrect: 0,
+                          totalUnanswered: 0,
+                        };
+                        const totalQuestions =
+                          totals.totalCorrect +
+                          totals.totalIncorrect +
+                          totals.totalUnanswered;
+                        // Calculate widths based on total counts
+                        const correctWidth =
+                          totalQuestions > 0
+                            ? (totals.totalCorrect / totalQuestions) * 100
+                            : 0;
+                        const incorrectWidth =
+                          totalQuestions > 0
+                            ? (totals.totalIncorrect / totalQuestions) * 100
+                            : 0;
+                        const unansweredWidth =
+                          totalQuestions > 0
+                            ? (totals.totalUnanswered / totalQuestions) * 100
+                            : 0;
+                        return (
+                          <div
+                            key={row.presentationId}
+                            className="grid items-center py-3 md:grid-cols-2"
+                          >
+                            <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                              <label className="flex cursor-pointer items-center hover:opacity-85">
+                                <input
+                                  type="checkbox"
+                                  className="custom-checkbox mr-2 hover:opacity-70"
+                                  checked={selectPresentation.includes(
+                                    row.presentationId,
+                                  )}
+                                  onChange={() =>
+                                    handleCheckboxChangePresentation(
+                                      row.presentationId,
+                                    )
+                                  }
+                                />
+                                {row.presentationName}
+                              </label>
+                            </div>
+                            <div className="flex items-center justify-center space-x-1">
+                              {/* Green */}
+                              <div
+                                className="h-[19px] rounded-l-md bg-[#3CC8A1] sm:h-[27px]"
+                                style={{ width: `${correctWidth}%` }}
+                              ></div>
+                              {/* Red */}
+                              <div
+                                className="h-[19px] bg-[#FF453A] sm:h-[27px]"
+                                style={{ width: `${incorrectWidth}%` }}
+                              ></div>
+                              {/* Gray */}
+                              <div
+                                className="h-[19px] rounded-r-md bg-[#E4E4E7] sm:h-[27px]"
+                                style={{ width: `${unansweredWidth}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    {selectedTab === "Clinical" &&
+                      !isSortedByPresentation &&
+                      type === "SBA" &&
+                      filteredSBAModules?.map((row) => {
+                        const moduleData = SBADataLength?.find(
+                          (module) => module.categoryId === row.categoryId,
+                        );
+                        const totalQuestions = moduleData
+                          ? moduleData.questions.length
+                          : 0;
+                        // Ensure moduleTotals is always an array
+                        const moduleTotalsArray = Array.isArray(moduleTotals)
+                          ? moduleTotals
+                          : Object.values(moduleTotals || {});
+                        // Get the totals for correct and incorrect answers
+                        const moduleTotal = moduleTotalsArray.find(
+                          (m) => String(m.moduleId) === String(row.categoryId),
+                        ) || { totalCorrect: 0, totalIncorrect: 0 };
+                        const { totalCorrect, totalIncorrect } = moduleTotal;
+                        // Calculate percentage for progress bar
+                        const correctPercentage = totalQuestions
+                          ? (totalCorrect / totalQuestions) * 100
+                          : 0;
+                        const incorrectPercentage = totalQuestions
+                          ? (totalIncorrect / totalQuestions) * 100
+                          : 0;
+                        return (
+                          <div
+                            key={row.categoryId}
+                            className="grid items-center py-3 md:grid-cols-2"
+                          >
+                            {/* Category Name and Checkbox */}
+                            <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                              <label className="flex cursor-pointer items-center hover:opacity-85">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2 size-4 rounded-none text-gray-800"
+                                  checked={selectedModules.includes(
+                                    row.categoryId,
+                                  )}
+                                  onChange={() =>
+                                    handleCheckboxChange(row.categoryId)
+                                  }
+                                />
+                                {row.categoryName}
+                              </label>
+                            </div>
+                            {/* Progress Bar and Total Questions */}
+                            <div className="flex w-full items-center justify-center space-x-2">
+                              {/* Progress Bar */}
+                              <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
+                                {/* Green Section (Correct Answers) */}
+                                <span
+                                  className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
+                                  style={{ width: `${correctPercentage}%` }}
+                                >
+                                  {totalCorrect > 0 && (
+                                    <span>{totalCorrect}</span>
+                                  )}
+                                </span>
+                                {/* Red Section (Incorrect Answers) */}
+                                <span
+                                  className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
+                                  style={{ width: `${incorrectPercentage}%` }}
+                                >
+                                  {totalIncorrect > 0 && (
+                                    <span>{totalIncorrect}</span>
+                                  )}
+                                </span>
+                              </div>
+                              {/* Total Questions */}
+                              {/* <span className="text-sm text-gray-700 dark:text-white">
                                 {totalQuestions}
                               </span> */}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  {selectedTab === "Clinical" &&
-                    !isSortedByPresentation &&
-                    type === "SAQ" &&
-                    filteredSAQModules?.map((row) => {
-                      // Find the count of questions for the current categoryId
-                      const moduleData = sqa?.counts?.[row.categoryId] || 0; // Get the count directly from sqa.counts
-                      const totalQuestions = moduleData; // Directly use the count from sqa.counts
-                      // Ensure moduleTotals is always an array
-                      const moduleTotalsArray = Array.isArray(saqModuleTotals)
-                        ? saqModuleTotals
-                        : Object.values(saqModuleTotals || {});
-                      // Get the totals for correct, incorrect, and partial answers
-                      const moduleTotal = moduleTotalsArray.find(
-                        (m) => String(m.moduleId) === String(row.categoryId),
-                      ) || {
-                        totalCorrect: 0,
-                        totalIncorrect: 0,
-                        totalPartial: 0,
-                      };
-                      const { totalCorrect, totalIncorrect, totalPartial } =
-                        moduleTotal;
-                      // Calculate percentage for progress bar
-                      const correctPercentage = totalQuestions
-                        ? (totalCorrect / totalQuestions) * 100
-                        : 0;
-                      const incorrectPercentage = totalQuestions
-                        ? (totalIncorrect / totalQuestions) * 100
-                        : 0;
-                      const partialPercentage = totalQuestions
-                        ? (totalPartial / totalQuestions) * 100
-                        : 0;
-                      return (
-                        <div
-                          key={row.categoryId} // Use moduleId as the key
-                          className="grid items-center py-3 md:grid-cols-2"
-                        >
-                          <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                            <label className="flex cursor-pointer items-center hover:opacity-85">
-                              <input
-                                type="checkbox"
-                                className="mr-2 size-4 rounded-none text-gray-800"
-                                checked={selectedModules.includes(
-                                  row.categoryId,
-                                )}
-                                onChange={() =>
-                                  handleCheckboxChange(row.categoryId)
-                                }
-                              />
-                              {row.categoryName}
-                            </label>
-                          </div>
-                          {/* Progress Bar and Total Questions */}
-                          <div className="flex w-full items-center justify-center space-x-2">
-                            {/* Progress Bar */}
-                            <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
-                              {/* Green Section (Correct Answers) */}
-                              <span
-                                className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
-                                style={{ width: `${correctPercentage}%` }}
-                              >
-                                {totalCorrect > 0 && (
-                                  <span>{totalCorrect}</span>
-                                )}
-                              </span>
-                              {/* Orange Section (Partial Answers) */}
-                              <span
-                                className="flex items-center justify-center bg-[#FFA500] text-xs text-white"
-                                style={{ width: `${partialPercentage}%` }}
-                              >
-                                {totalPartial > 0 && (
-                                  <span>{totalPartial}</span>
-                                )}
-                              </span>
-                              {/* Red Section (Incorrect Answers) */}
-                              <span
-                                className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
-                                style={{ width: `${incorrectPercentage}%` }}
-                              >
-                                {totalIncorrect > 0 && (
-                                  <span>{totalIncorrect}</span>
-                                )}
-                              </span>
                             </div>
-                            {/* Display total questions next to the progress bar */}
-                            {/* <span className="ml-2 text-sm text-gray-600">
+                          </div>
+                        );
+                      })}
+                    {selectedTab === "Clinical" &&
+                      !isSortedByPresentation &&
+                      type === "SAQ" &&
+                      filteredSAQModules?.map((row) => {
+                        // Find the count of questions for the current categoryId
+                        const moduleData = sqa?.counts?.[row.categoryId] || 0; // Get the count directly from sqa.counts
+                        const totalQuestions = moduleData; // Directly use the count from sqa.counts
+                        // Ensure moduleTotals is always an array
+                        const moduleTotalsArray = Array.isArray(saqModuleTotals)
+                          ? saqModuleTotals
+                          : Object.values(saqModuleTotals || {});
+                        // Get the totals for correct, incorrect, and partial answers
+                        const moduleTotal = moduleTotalsArray.find(
+                          (m) => String(m.moduleId) === String(row.categoryId),
+                        ) || {
+                          totalCorrect: 0,
+                          totalIncorrect: 0,
+                          totalPartial: 0,
+                        };
+                        const { totalCorrect, totalIncorrect, totalPartial } =
+                          moduleTotal;
+                        // Calculate percentage for progress bar
+                        const correctPercentage = totalQuestions
+                          ? (totalCorrect / totalQuestions) * 100
+                          : 0;
+                        const incorrectPercentage = totalQuestions
+                          ? (totalIncorrect / totalQuestions) * 100
+                          : 0;
+                        const partialPercentage = totalQuestions
+                          ? (totalPartial / totalQuestions) * 100
+                          : 0;
+                        return (
+                          <div
+                            key={row.categoryId} // Use moduleId as the key
+                            className="grid items-center py-3 md:grid-cols-2"
+                          >
+                            <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                              <label className="flex cursor-pointer items-center hover:opacity-85">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2 size-4 rounded-none text-gray-800"
+                                  checked={selectedModules.includes(
+                                    row.categoryId,
+                                  )}
+                                  onChange={() =>
+                                    handleCheckboxChange(row.categoryId)
+                                  }
+                                />
+                                {row.categoryName}
+                              </label>
+                            </div>
+                            {/* Progress Bar and Total Questions */}
+                            <div className="flex w-full items-center justify-center space-x-2">
+                              {/* Progress Bar */}
+                              <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
+                                {/* Green Section (Correct Answers) */}
+                                <span
+                                  className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
+                                  style={{ width: `${correctPercentage}%` }}
+                                >
+                                  {totalCorrect > 0 && (
+                                    <span>{totalCorrect}</span>
+                                  )}
+                                </span>
+                                {/* Orange Section (Partial Answers) */}
+                                <span
+                                  className="flex items-center justify-center bg-[#FFA500] text-xs text-white"
+                                  style={{ width: `${partialPercentage}%` }}
+                                >
+                                  {totalPartial > 0 && (
+                                    <span>{totalPartial}</span>
+                                  )}
+                                </span>
+                                {/* Red Section (Incorrect Answers) */}
+                                <span
+                                  className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
+                                  style={{ width: `${incorrectPercentage}%` }}
+                                >
+                                  {totalIncorrect > 0 && (
+                                    <span>{totalIncorrect}</span>
+                                  )}
+                                </span>
+                              </div>
+                              {/* Display total questions next to the progress bar */}
+                              {/* <span className="ml-2 text-sm text-gray-600">
                                 {totalQuestions} Questions
                               </span> */}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  {selectedTab === "Clinical" &&
-                    !isSortedByPresentation &&
-                    type === "Mock" &&
-                    mockTestIds?.map((row) => {
-                      const moduleData = mockModuleTotals?.find(
-                        (module) => module?.paperId === row,
-                      );
-                      const totalQuestions = moduleData; // Directly use the count from sqa.counts
-                      // const totalQuestions = moduleData
-                      //   ? moduleData.questions.length
-                      //   : 0;
-                      console.log("totalQuestions:", totalQuestions);
-                      // Ensure moduleTotals is always an array
-                      const moduleTotalsArray = Array.isArray(mockModuleTotals)
-                        ? mockModuleTotals
-                        : Object.values(mockModuleTotals || {});
-                      // Get the totals for correct and incorrect answers
-                      const moduleTotal = moduleTotalsArray.find(
-                        (m) => String(m.paperId) === String(row),
-                      ) || { totalCorrect: 0, totalIncorrect: 0 };
-                      const { totalCorrect, totalIncorrect } = moduleTotal;
-                      // Calculate percentage for progress bar
-                      const correctPercentage = totalQuestions
-                        ? (totalCorrect / totalQuestions) * 100
-                        : 0;
-                      const incorrectPercentage = totalQuestions
-                        ? (totalIncorrect / totalQuestions) * 100
-                        : 0;
-                      return (
-                        <div
-                          key={row.categoryId}
-                          className="grid items-center py-3 md:grid-cols-2"
-                        >
-                          <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                            <label className="flex cursor-pointer items-center hover:opacity-85">
-                              <input
-                                type="checkbox"
-                                className="mr-2 size-4 rounded-none text-gray-800"
-                                checked={selectedModules.includes(row)}
-                                onChange={() => handleCheckboxChange(row)}
-                              />
-                              Paper {row}
-                            </label>
-                          </div>
-                          {/* Progress Bar and Total Questions */}
-                          <div className="flex w-full items-center justify-center space-x-2">
-                            <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
-                              <span
-                                className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
-                                style={{ width: `${correctPercentage}%` }}
-                              >
-                                {totalCorrect > 0 && (
-                                  <span>{totalCorrect}</span>
-                                )}
-                              </span>
-                              <span
-                                className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
-                                style={{ width: `${incorrectPercentage}%` }}
-                              >
-                                {totalIncorrect > 0 && (
-                                  <span>{totalIncorrect}</span>
-                                )}
-                              </span>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    {selectedTab === "Clinical" &&
+                      !isSortedByPresentation &&
+                      type === "Mock" &&
+                      mockTestIds?.map((row) => {
+                        const moduleData = mockModuleTotals?.find(
+                          (module) => module?.paperId === row,
+                        );
+                        const totalQuestions = moduleData; // Directly use the count from sqa.counts
+                        // const totalQuestions = moduleData
+                        //   ? moduleData.questions.length
+                        //   : 0;
+                        console.log("totalQuestions:", totalQuestions);
+                        // Ensure moduleTotals is always an array
+                        const moduleTotalsArray = Array.isArray(
+                          mockModuleTotals,
+                        )
+                          ? mockModuleTotals
+                          : Object.values(mockModuleTotals || {});
+                        // Get the totals for correct and incorrect answers
+                        const moduleTotal = moduleTotalsArray.find(
+                          (m) => String(m.paperId) === String(row),
+                        ) || { totalCorrect: 0, totalIncorrect: 0 };
+                        const { totalCorrect, totalIncorrect } = moduleTotal;
+                        // Calculate percentage for progress bar
+                        const correctPercentage = totalQuestions
+                          ? (totalCorrect / totalQuestions) * 100
+                          : 0;
+                        const incorrectPercentage = totalQuestions
+                          ? (totalIncorrect / totalQuestions) * 100
+                          : 0;
+                        return (
+                          <div
+                            key={row.categoryId}
+                            className="grid items-center py-3 md:grid-cols-2"
+                          >
+                            <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                              <label className="flex cursor-pointer items-center hover:opacity-85">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2 size-4 rounded-none text-gray-800"
+                                  checked={selectedModules.includes(row)}
+                                  onChange={() => handleCheckboxChange(row)}
+                                />
+                                Paper {row}
+                              </label>
+                            </div>
+                            {/* Progress Bar and Total Questions */}
+                            <div className="flex w-full items-center justify-center space-x-2">
+                              <div className="flex h-[19px] w-full overflow-hidden rounded-md bg-[#E4E4E7] sm:h-[27px]">
+                                <span
+                                  className="flex items-center justify-center bg-[#3CC8A1] text-xs text-white"
+                                  style={{ width: `${correctPercentage}%` }}
+                                >
+                                  {totalCorrect > 0 && (
+                                    <span>{totalCorrect}</span>
+                                  )}
+                                </span>
+                                <span
+                                  className="flex items-center justify-center bg-[#FF453A] text-xs text-white"
+                                  style={{ width: `${incorrectPercentage}%` }}
+                                >
+                                  {totalIncorrect > 0 && (
+                                    <span>{totalIncorrect}</span>
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        </div>{" "}
       </div>
       <MobileBar
         toggleDrawer={toggleDrawer}
