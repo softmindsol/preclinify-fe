@@ -65,7 +65,7 @@ const Register = () => {
           toast.error("Error occurred while registering");
         } else {
           console.log("🚀 ~ onSubmit: ~ user:", user)
-          // Add 15 tokens in the subscription collection
+          // Add 5 tokens in the subscription collection
           const { data, insertError } = await supabase
             .from("subscription")
             .insert([
@@ -73,7 +73,7 @@ const Register = () => {
                 userId: user?.user?.id,
                 customer_email: values.email,
                 customer_name: values.displayName,
-                total_tokens: 15, // Adding 15 tokens on registration
+                total_tokens: 5, // Adding 15 tokens on registration
                 used_tokens: 0,
                 created_at: new Date(),
               },
