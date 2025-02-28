@@ -84,3 +84,57 @@ export const insertSAQResult = createAsyncThunk(
     }
   },
 );
+
+
+
+// fetch SBA
+
+export const fetchDailyWork = createAsyncThunk(
+  "work/fetchDailyWork",
+  async ({ userId, selectedModules }, { rejectWithValue }) => {
+    try {
+      console.log("Fetching daily work for user:", userId);
+
+
+      let query = supabase
+        .from("resultsHistory")
+        .select("moduleId, isCorrect, userId")
+        .eq("userId", userId);
+
+      const modules = selectedModules?.map(module => module.categoryId)
+
+      if (selectedModules?.length) {
+        query = query.in("moduleId", modules);
+      }
+
+
+      const { data, error } = await query;
+
+
+      if (error) throw error;
+
+      // Compute totals
+      const totalsByModule = data.reduce((acc, curr) => {
+        const { moduleId, isCorrect } = curr;
+
+        if (!acc[moduleId]) {
+          acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
+        }
+
+        if (Boolean(isCorrect)) {
+          acc[moduleId].totalCorrect += 1;
+        } else {
+          acc[moduleId].totalIncorrect += 1;
+        }
+
+        return acc;
+      }, {});
+
+
+      return Object.values(totalsByModule);
+    } catch (err) {
+      console.error("Error fetching daily work:", err);
+      return rejectWithValue(err.message);
+    }
+  }
+);
