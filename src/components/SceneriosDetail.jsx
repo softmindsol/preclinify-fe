@@ -12,6 +12,8 @@ import MarkdownRender from "./markdown-render";
 
 const SceneriosDetail = () => {
   const [minutes, setMinutes] = useState(8); // Starting minute
+  const [timerInput, setTimerInput] = useState(8); // Default to 8 minutes
+
   const [seconds, setSeconds] = useState(0); // Starting second
   const [timerActive, setTimerActive] = useState(false); // Timer active state
   const navigate = useNavigate(); // Initialize useNavigate hook
@@ -172,14 +174,14 @@ const SceneriosDetail = () => {
           </div>
         </div>
 
-        <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
+        {/* <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
           <p>Set timer</p>
           <div className="mt-2 flex h-[32px] w-[208px] items-center justify-between rounded-[6px] border border-[#D4D4D8] p-2 2xl:w-[99%]">
             <p className="text-[12px] font-bold text-[#A1A1AA]">Minutes</p>
             <p className="text-[12px] font-bold text-[#A1A1AA]">8</p>
           </div>
-        </div>
-
+        </div> */}
+        {/* 
         <div className="mt-10 flex flex-col items-center justify-center">
           <div
             className={`h-[96px] w-[90%] rounded-[8px] ${
@@ -191,6 +193,31 @@ const SceneriosDetail = () => {
               {minutes < 10 ? `0${minutes}` : minutes}:
               {seconds < 10 ? `0${seconds}` : seconds}
             </p>
+          </div>
+        </div> */}
+        <div className="mt-10 flex flex-col items-center justify-center">
+          <div
+            className={`h-[96px] w-[90%] rounded-[8px] ${timerActive ? "bg-[#3CC8A1]" : "bg-[#FF9741]"} text-center text-[#ffff]`}
+          >
+            <p className="mt-3 text-[12px]">Timer</p>
+            <p className="text-[36px] font-black">
+              {minutes < 10 ? `0${minutes}` : minutes}:
+              {seconds < 10 ? `0${seconds}` : seconds}
+            </p>
+          </div>
+        </div>
+        <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
+          <p>Set timer</p>
+          <div className="mt-2 flex h-[32px] w-[208px] items-center justify-between rounded-[6px] border border-[#D4D4D8] p-2 2xl:w-[99%]">
+            <p className="text-[12px] font-bold text-[#A1A1AA]">Minutes</p>
+            <input
+              type="number"
+              className="w-10 bg-transparent text-[12px] font-bold text-[#A1A1AA] outline-none"
+              defaultValue="8"
+              onChange={(e) => {
+                setMinutes(e.target.value);
+              }}
+            />
           </div>
         </div>
 
@@ -208,7 +235,12 @@ const SceneriosDetail = () => {
         </div>
 
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-          <div className="mb-4 flex items-center justify-center gap-x-2 font-semibold text-[#D4D4D8]">
+          <div
+            onClick={() => {
+              navigate("/dashboard");
+            }}
+            className="mb-4 flex items-center justify-center gap-x-2 font-semibold text-[#3CC8A1] cursor-pointer"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -482,8 +514,6 @@ const SceneriosDetail = () => {
           setShowPopup={setShowPopup}
         />
       )}
-
-      
     </div>
   );
 };

@@ -13,7 +13,7 @@ import {
 } from "../redux/features/osce-static/osce-static.service";
 import MobileBar from "./common/Drawer";
 import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
-import { toggleModal } from "../redux/features/osce-bot/virtual.modal.slice";
+import { openModal, toggleModal } from "../redux/features/osce-bot/virtual.modal.slice";
 
 const Scenarios = () => {
   const { data = [], loading } = useSelector((state) => state.osce);
@@ -28,8 +28,6 @@ const Scenarios = () => {
   const [activeTab, setActiveTab] = useState("static");
   const categoryRef = useRef(null);
 
-  
-  
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -94,9 +92,9 @@ const Scenarios = () => {
     return matchesCategory && matchesFilters && matchesSearchQuery;
   });
 
-  useEffect(()=>{
-    dispatch(toggleModal());
-  },[])
+  useEffect(() => {
+    dispatch(openModal());
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -121,7 +119,6 @@ const Scenarios = () => {
 
     fetchData();
   }, [dispatch]);
-
 
   return (
     <div className={`min-h-screen md:flex ${darkModeRedux ? "dark" : ""}`}>

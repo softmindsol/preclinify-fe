@@ -17,6 +17,7 @@ import {
 } from "../redux/features/subscription/subscription.service";
 import { toast } from "sonner";
 import VirtualPatientGuide from "./common/VirtualOsceModal";
+import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -49,7 +50,6 @@ const AINewVersion = () => {
   const virtualPatient = useSelector(
     (state) => state?.virtualPatient?.isModalOpen,
   );
-  console.log("virtualPatient:", virtualPatient);
 
   const [finishReview, setFinishReview] = useState(false);
   const {
@@ -263,6 +263,8 @@ const AINewVersion = () => {
   }, [id, dispatch]);
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
+
+    // dispatch(openModal());
   }, []);
 
   return (
@@ -456,7 +458,7 @@ const AINewVersion = () => {
         <div className={`${darkModeRedux ? "dark" : ""} `}>
           {activeTab === "text" && (
             <div>
-              <main className="relative mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div
                   className="transcript h-full overflow-y-auto pr-4"
                   ref={transcriptRef}
@@ -514,7 +516,7 @@ const AINewVersion = () => {
                       type="text"
                       value={inputText}
                       onChange={handleInputChange}
-                      className="z-0 h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
+                      className=" h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
                       placeholder="What’s brought you in today? (press spacebar to speak)"
                     />
                     <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
@@ -528,7 +530,7 @@ const AINewVersion = () => {
 
           {activeTab === "voice" && (
             <div className="">
-              <main className="relative z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div
                   className="transcript h-full overflow-y-auto pr-4"
                   ref={transcriptRef}
