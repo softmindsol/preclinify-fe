@@ -53,7 +53,7 @@ function App() {
         <Route path="/checkout-success" element={<CheckoutSuccess />} />
         <Route path="/checkout-cancelled" element={<CheckoutCancel />} />
         {/* <Route path='/personal-info' element={<PersonalInformation />} /> */}
-        <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>  } />
+        <Route path="/pricing" element={<Pricing /> } />
 
         <Route
           path="/setting"

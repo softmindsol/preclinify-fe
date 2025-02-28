@@ -107,7 +107,11 @@ const Pricing = () => {
 
   // Function to handle the subscription
   const handleSubscription = async (planSlug) => {
-        if (currentPlan !== null && currentPlan !== undefined) {
+    if (!userId) {
+      toast.error("Please login to subscribe to a plan");
+      return;
+    }
+    if (currentPlan !== null && currentPlan !== undefined) {
       // handleManageSubscription({ customer: subscription[0]?.customer });
       setManagePackageModal(true);
 
@@ -231,7 +235,8 @@ const Pricing = () => {
                   </div>
 
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
-                    {currentPlan?.planId === plan?.planId ? (
+                    {userId && currentPlan?.planId === plan?.planId ? (
+                      // User is logged in and this is their current plan
                       <button
                         disabled
                         className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-[#30b58f] text-[16px] font-semibold text-white transition-all duration-200"
@@ -239,8 +244,9 @@ const Pricing = () => {
                         Current Plan
                       </button>
                     ) : (
+                      // Either user is not logged in OR this is not their current plan
                       <button
-                        onClick={() => handleSubscription(plan["plan-slug"])} // Call subscription handler
+                        onClick={() => handleSubscription(plan["plan-slug"])}
                         className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-transparent text-[16px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white"
                       >
                         Get Access
