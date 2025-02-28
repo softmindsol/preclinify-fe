@@ -296,7 +296,13 @@ const AINewVersion = () => {
 
             <div className="mt-10 flex flex-col items-center justify-center">
               <div
-                className={`h-[96px] w-[90%] rounded-[8px] ${timerActive ? "bg-[#3CC8A1]" : "bg-[#FF9741]"} text-center text-[#ffff]`}
+                className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${
+                  minutes === 0 && seconds < 60
+                    ? "bg-[#FF453A]" // Red when timer is below 1 minute
+                    : timerActive
+                      ? "bg-[#3CC8A1]"
+                      : "bg-[#FF9741]"
+                }`}
               >
                 <p className="mt-3 text-[12px]">Timer</p>
                 <p className="text-[36px] font-black">
@@ -309,10 +315,17 @@ const AINewVersion = () => {
             <div className="p-5 text-center">
               <button
                 onClick={() => setTimerActive(!timerActive)}
-                className={`w-[90%] rounded-[6px] ${timerActive ? "border border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1]" : "border border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741]"} h-[32px] text-[12px] transition-all duration-200 hover:text-white`}
+                className={`h-[32px] w-[90%] rounded-[6px] text-[12px] transition-all duration-200 hover:text-white ${
+                  minutes === 0 && seconds < 60
+                    ? "border border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000]" // Red when timer < 1 min
+                    : timerActive
+                      ? "border border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1]"
+                      : "border border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741]"
+                }`}
               >
                 {timerActive ? "Pause Timer" : "Start Timer"}
               </button>
+
               <div className="mt-5 text-[#52525B]">
                 <p className="text-[16px] font-bold">Current Plan</p>
                 {!plan ? (
@@ -516,7 +529,7 @@ const AINewVersion = () => {
                       type="text"
                       value={inputText}
                       onChange={handleInputChange}
-                      className=" h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
+                      className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
                       placeholder="What’s brought you in today? (press spacebar to speak)"
                     />
                     <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
