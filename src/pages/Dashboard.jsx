@@ -486,8 +486,8 @@ const Dashboard = () => {
                           .filter((name) => name !== null); // Filter out any null values
                         const truncateCategoryNames = (names) => {
                           const joinedNames = names.join(", ");
-                          return joinedNames.length > 15
-                            ? `${joinedNames.slice(0, 15)}+...`
+                          return joinedNames.length > 10
+                            ? `${joinedNames.slice(0, 10)}+...`
                             : joinedNames;
                         };
                         // Return the JSX for each session
