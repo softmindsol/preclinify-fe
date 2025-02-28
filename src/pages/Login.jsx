@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup"; // For validation schema
@@ -6,8 +6,12 @@ import supabase from "../config/helper";
 import Logo from "../components/common/Logo";
 import { toast } from "sonner"; // Import the toast module
 import { resendVerificationEmail } from "../utils/authUtils";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
+  const userId = localStorage.getItem("userId");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Formik setup
@@ -30,8 +34,9 @@ const Login = () => {
         });
 
         localStorage.setItem("authToken", data.session.access_token); // Store token if needed
-
         if (data?.session) {
+          dispatch(fetchSubscriptions({ userId }));
+
           navigate("/dashboard");
           toast.success("Logged in successfully!"); // Show success toast
         }
@@ -54,7 +59,9 @@ const Login = () => {
       }
     },
   });
-
+  // useEffect(() => {
+  //   dispatch(fetchSubscriptions({ userId }));
+  // }, [navigate]);
   return (
     <div className="flex w-full items-center overflow-hidden">
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">

@@ -10,7 +10,7 @@ import "react-modern-drawer/dist/index.css";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { logoutUser } from "../../redux/features/logout/logout.service";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearUserId } from "../../redux/features/user-id/userId.slice";
 // import {
 //   ArchiveBoxXMarkIcon,
@@ -20,6 +20,7 @@ import { clearUserId } from "../../redux/features/user-id/userId.slice";
 //   TrashIcon,
 // } from '@heroicons/react/16/solid'
 const Navbar = () => {
+  const currentPlan = useSelector((state) => state?.subscription?.plan);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const toggleDrawer = () => {
@@ -40,7 +41,12 @@ const Navbar = () => {
       toast.error("Logout failed: " + error);
     }
   };
-
+  const handleDashboard = (e) => {
+    if (!currentPlan) {
+      e.preventDefault(); // Prevent navigation
+      toast.error("You need a plan to access the dashboard!");
+    }
+  };
   return (
     <div className="fixed left-0 right-0 top-0 z-50 mx-auto mt-6 max-w-[95%] rounded-[24px] border border-[#E5E5E5] bg-white p-5 shadow-[0px_4px_10px_rgba(0,0,0,0.1)]">
       <div className="flex items-center justify-between">
@@ -70,11 +76,11 @@ const Navbar = () => {
             {userId ? (
               <>
                 {" "}
-                <NavLink to={`/dashboard`}>
-                  <li className="cursor-pointer hover:text-[#28A079]">
-                    Dashboard
-                  </li>
-                </NavLink>
+                <NavLink onClick={handleDashboard} to="/dashboard">
+      <li className="cursor-pointer hover:text-[#28A079]">
+        Dashboard
+      </li>
+    </NavLink>
               </>
             ) : (
               <NavLink to={"/login"}>
