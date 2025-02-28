@@ -37,6 +37,7 @@
     "react-slick": "^0.30.2",
     "recharts": "^2.15.0",
     "redux-persist": "^6.0.0",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "slick-carousel": "^1.8.1",
     "sonner": "^1.7.1",

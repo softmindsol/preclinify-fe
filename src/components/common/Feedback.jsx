@@ -22,7 +22,7 @@ const FeedbackModal = ({
       toast.error("Please provide feedback before submitting.");
       return;
     }
-
+ 
     // if (!questionStem?.id) {
     //   toast.error("Invalid question ID.");
     //   return;
@@ -43,6 +43,8 @@ const FeedbackModal = ({
         setShowFeedBackModal(false);
       }
     } catch (error) {
+      console.log(error);
+      
       toast.error("Failed to submit feedback.");
     } finally {
       setLoading(false);

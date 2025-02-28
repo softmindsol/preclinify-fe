@@ -197,7 +197,13 @@ const SceneriosDetail = () => {
         </div> */}
         <div className="mt-10 flex flex-col items-center justify-center">
           <div
-            className={`h-[96px] w-[90%] rounded-[8px] ${timerActive ? "bg-[#3CC8A1]" : "bg-[#FF9741]"} text-center text-[#ffff]`}
+            className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${
+              minutes === 0 && seconds < 60
+                ? "bg-[#FF453A]" // Red when timer is below 1 minute
+                : timerActive
+                  ? "bg-[#3CC8A1]"
+                  : "bg-[#FF9741]"
+            }`}
           >
             <p className="mt-3 text-[12px]">Timer</p>
             <p className="text-[36px] font-black">
@@ -224,11 +230,13 @@ const SceneriosDetail = () => {
         <div className="p-5 text-center">
           <button
             onClick={() => setTimerActive(!timerActive)}
-            className={`w-[90%] rounded-[6px] ${
-              timerActive
-                ? "border border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1]"
-                : "border border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741]"
-            } h-[32px] text-[12px] transition-all duration-200 hover:text-white`}
+            className={`h-[32px] w-[90%] rounded-[6px] text-[12px] transition-all duration-200 hover:text-white ${
+              minutes === 0 && seconds < 60
+                ? "border border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000]" // Red when timer < 1 min
+                : timerActive
+                  ? "border border-[#3CC8A1] text-[#3CC8A1] hover:bg-[#3CC8A1]"
+                  : "border border-[#FF9741] text-[#FF9741] hover:bg-[#FF9741]"
+            }`}
           >
             {timerActive ? "Pause Timer" : "Start Timer"}
           </button>
@@ -239,7 +247,7 @@ const SceneriosDetail = () => {
             onClick={() => {
               navigate("/dashboard");
             }}
-            className="mb-4 flex items-center justify-center gap-x-2 font-semibold text-[#3CC8A1] cursor-pointer"
+            className="mb-4 flex cursor-pointer items-center justify-center gap-x-2 font-semibold text-[#3CC8A1]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -506,6 +514,9 @@ const SceneriosDetail = () => {
         <FeedbackModal
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
+          userId={""}
+          questionStem={""}
+          leadQuestion={""}
         />
       )}
       {showPopup && (
