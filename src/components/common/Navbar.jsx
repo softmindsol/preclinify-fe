@@ -26,20 +26,20 @@ const Navbar = () => {
     setIsOpen((prevState) => !prevState);
   };
   const userId = localStorage.getItem("userId");
-  
-const logout = async () => {
-  try {
-    await dispatch(logoutUser()).unwrap();
- localStorage.removeItem("userId");
-    dispatch(clearUserId());
-    toast.success("User logged out successfully!");
 
-    // Reload the page after logout
-    window.location.reload();
-  } catch (error) {
-    toast.error("Logout failed: " + error);
-  }
-};
+  const logout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      localStorage.removeItem("userId");
+      dispatch(clearUserId());
+      toast.success("User logged out successfully!");
+
+      // Reload the page after logout
+      window.location.reload();
+    } catch (error) {
+      toast.error("Logout failed: " + error);
+    }
+  };
 
   return (
     <div className="fixed left-0 right-0 top-0 z-50 mx-auto mt-6 max-w-[95%] rounded-[24px] border border-[#E5E5E5] bg-white p-5 shadow-[0px_4px_10px_rgba(0,0,0,0.1)]">
@@ -62,15 +62,14 @@ const logout = async () => {
             <NavLink to="/">
               <li className="cursor-pointer hover:text-[#28A079]">Home</li>
             </NavLink>
-
+            <NavLink to="/pricing">
+              <li className="cursor-pointer hover:text-[#28A079]">
+                Pricing
+              </li>
+            </NavLink>
             {userId ? (
               <>
                 {" "}
-                <NavLink to="/pricing">
-                  <li className="cursor-pointer hover:text-[#28A079]">
-                    Pricing
-                  </li>
-                </NavLink>
                 <NavLink to={`/dashboard`}>
                   <li className="cursor-pointer hover:text-[#28A079]">
                     Dashboard
