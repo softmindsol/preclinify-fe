@@ -36,6 +36,7 @@ import {
   fetchUnattemptedQuestions,
 } from "../redux/features/filter-question/filter-question.service";
 import { fetchAllResultSaq } from "../redux/features/filter-question/filter-saq-question.service";
+import { fetchDailyWork } from "../redux/features/all-results/result.sba.service";
 
 const SetupSessionModal = ({
   isOpenSetUpSessionModal,
@@ -79,8 +80,10 @@ const SetupSessionModal = ({
   const FiltershortQuestions = useSelector(
     (state) => state?.FiltershortQuestions?.results,
   ); // Debounced dispatch handler
+  const data = useSelector((state) => state.module);
 
- 
+  const filteredSBAModules = data.data.filter((module) => module);
+
   const debouncedDispatch = useCallback(
     debounce((value) => {
       dispatch(setLimit(value));
@@ -145,7 +148,9 @@ const SetupSessionModal = ({
           }),
         )
           .unwrap()
-          .then((res) => {})
+          .then((res) => {
+            
+          })
           .catch((err) => {
             console.error(err);
           });
@@ -271,7 +276,7 @@ const SetupSessionModal = ({
           fetchIncorrectCorrectShortQuestionByModules({
             moduleIds: filterQuestion.selectedModules,
             limit: limit,
-            userId
+            userId,
           }),
         )
           .unwrap()
@@ -279,8 +284,7 @@ const SetupSessionModal = ({
           .catch((err) => {
             console.log("previously correctIncorrect error", err);
           });
-      } 
-      else if (filterQuestion?.previouslyCorrectQuestion) {
+      } else if (filterQuestion?.previouslyCorrectQuestion) {
         dispatch(
           fetchCorrectShortQuestionByModules({
             moduleIds: filterQuestion.selectedModules,
@@ -328,7 +332,14 @@ const SetupSessionModal = ({
   useEffect(() => {
     dispatch(changeMode({ mode: modeType, timer }));
     dispatch(setLimit());
-  }, [modeType, timer, dispatch]);
+    dispatch(
+      fetchDailyWork({
+        userId,
+        selectedModules: filteredSBAModules,
+      }),
+    );
+    
+  }, [modeType, timer, dispatch, filterQuestion.selectedModules]);
 
   return (
     <div

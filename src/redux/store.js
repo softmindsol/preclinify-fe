@@ -32,12 +32,14 @@ import streakReducer from "./features/streak/streak.slice";
 import SaqfilterQuestionReducer from "./features/filter-question/filter-saq-question.slice";
 import FiltershortQuestionsReducer from './features/filter-question/filter-saq-question.slice'
 import subscriptionReducer from './features/subscription/subscription.slice';
-import virtualPatientReducer from './features/osce-bot/virtual.modal.slice'
+import virtualPatientReducer from './features/osce-bot/virtual.modal.slice';
+import SBAResultReducer from './features/all-results/results.sba.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: "root",
   storage, // LocalStorage for modules and mcqsQuestion
   whitelist: [
+    "SBAResult",
     "FiltershortQuestionsReducer",
     "Mockpresentation",
     "presentations",
@@ -72,6 +74,7 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  SBAResult : SBAResultReducer,
   virtualPatient: virtualPatientReducer,
   subscription: subscriptionReducer,
   FiltershortQuestions: FiltershortQuestionsReducer,

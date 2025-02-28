@@ -69,6 +69,7 @@ import {
 } from "../redux/features/MockPresentation/presentationMock.slice";
 import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
 import MobileBar from "./common/Drawer";
+import { fetchDailyWork } from "../redux/features/all-results/result.sba.service";
 
 const Questioning = () => {
   const planType = useSelector((state) => state?.subscription?.plan?.type);
@@ -79,7 +80,6 @@ const Questioning = () => {
   const recentSession = useSelector(
     (state) => state.recentSession.recentSessions,
   );
-  console.log("planType:", planType);
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
@@ -115,17 +115,21 @@ const Questioning = () => {
   const [isSortedByPresentation, setIsSortedByPresentation] = useState(false);
   const [saqModule, setSAQModule] = useState([]);
   const SBADataLength = useSelector(
-    (state) => state?.mcqsQuestion?.mcqsByModulesData,
+    (state) => state?.mcqsQuestion?.totalSBAQuestionData,
   );
-  const userId = useSelector((state) => state.user.userId);
+  const userId = localStorage.getItem("userId");
+
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
   );
-
+  const SBAResult = useSelector((state) => state?.SBAResult?.moduleTotals);
   const [selectPresentation, setSelectPresentation] = useState([]);
   const filteredSBAModules = data.data.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+  console.log(" SBADataLength:", SBADataLength);
+  console.log("filteredSBAModules:", filteredSBAModules);
+
   const filteredMockModules = modules.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -151,6 +155,7 @@ const Questioning = () => {
     dispatch(setSBAPresentationValue(!isSortedByPresentation));
     dispatch(setMockPresentationValue(!isSortedByPresentation));
   };
+  console.log("sessionIsOpen", isOpenSetUpSessionModal);
 
   const cleanedPresentations = presentations?.map((presentation) => ({
     ...presentation,
@@ -278,6 +283,14 @@ const Questioning = () => {
 
   function handleContinue() {
     setIsOpenSetUpSessionModal(true);
+    // setIsLoading(true);
+    // dispatch(
+    //   fetchDailyWork({ userId, selectedModules: filteredSBAModules }),
+    // ).unwrap();
+
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    // }, 2000);
   }
 
   useEffect(() => {
@@ -779,53 +792,55 @@ const Questioning = () => {
   useEffect(
     () => {
       if (selectedOption !== "SBA") return;
-      const fetchDailyWork = async () => {
-        console.log("SBA selected", selectedOption);
+      // const fetchDailyWork = async () => {
+      //   console.log("SBA selected", selectedOption);
 
-        try {
-          const query = supabase
-            .from("resultsHistory")
-            .select("moduleId, isCorrect, userId")
-            .eq("userId", userId);
+      //   try {
+      //     const query = supabase
+      //       .from("resultsHistory")
+      //       .select("moduleId, isCorrect, userId")
+      //       .eq("userId", userId);
 
-          if (selectedModules?.length) {
-            query.in("moduleId", selectedModules);
-          }
+      //     if (selectedModules?.length) {
+      //       query.in("moduleId", selectedModules);
+      //     }
 
-          const { data, error } = await query;
+      //     const { data, error } = await query;
 
-          if (error) throw error;
+      //     if (error) throw error;
 
-          // Compute totals
-          const totalsByModule = data.reduce((acc, curr) => {
-            const { moduleId, isCorrect } = curr;
+      //     // Compute totals
+      //     const totalsByModule = data.reduce((acc, curr) => {
+      //       const { moduleId, isCorrect } = curr;
 
-            if (!acc[moduleId]) {
-              acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
-            }
+      //       if (!acc[moduleId]) {
+      //         acc[moduleId] = { moduleId, totalCorrect: 0, totalIncorrect: 0 };
+      //       }
 
-            if (Boolean(isCorrect)) {
-              acc[moduleId].totalCorrect += 1;
-            } else {
-              acc[moduleId].totalIncorrect += 1;
-            }
+      //       if (Boolean(isCorrect)) {
+      //         acc[moduleId].totalCorrect += 1;
+      //       } else {
+      //         acc[moduleId].totalIncorrect += 1;
+      //       }
 
-            return acc;
-          }, {});
+      //       return acc;
+      //     }, {});
 
-          console.log("totalsByModule:", totalsByModule);
-          setModuleTotals(Object.values(totalsByModule));
-        } catch (err) {
-          console.error("Error fetching daily work:", err);
-        }
-      };
+      //     console.log("totalsByModule:", totalsByModule);
+      //     setModuleTotals(Object.values(totalsByModule));
+      //   } catch (err) {
+      //     console.error("Error fetching daily work:", err);
+      //   }
+      // };
 
-      if (userId) {
-        fetchDailyWork();
-      }
+      // if (userId) {
+      // fetchDailyWork();
+      dispatch(fetchDailyWork({ userId, selectedModules: filteredSBAModules }));
+
+      // }
     },
     [userId, selectedTab],
-    selectedModules,
+    // selectedModules,
   ); // Run only once
 
   useEffect(() => {
@@ -868,7 +883,6 @@ const Questioning = () => {
 
     if (userId) fetchDailyWork();
   }, [selectedOption, userId]); // Handle selectedModules properly
-  console.log("MockModuleTotals:", mockModuleTotals);
 
   useEffect(() => {
     const fetchDailyWork = async () => {
@@ -919,8 +933,6 @@ const Questioning = () => {
   useEffect(() => {
     dispatch(setSelectedSBAModule(selectedModules));
   }, [dispatch, selectedModules]);
-  console.log("selectedModule:", selectedModules);
-  console.log("selectedOption:", selectedOption);
 
   useEffect(() => {
     if (state) {
@@ -951,7 +963,7 @@ const Questioning = () => {
       </div>
       <div className="w-full lg:ml-[260px] xl:ml-[250px]">
         <div
-        className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70"}`}
+          className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70"}`}
         >
           <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
             {/* drawer */}
@@ -1380,13 +1392,16 @@ const Questioning = () => {
                         const moduleData = SBADataLength?.find(
                           (module) => module.categoryId === row.categoryId,
                         );
+                        console.log("moduleData:", moduleData);
+
                         const totalQuestions = moduleData
                           ? moduleData.questions.length
                           : 0;
                         // Ensure moduleTotals is always an array
-                        const moduleTotalsArray = Array.isArray(moduleTotals)
-                          ? moduleTotals
-                          : Object.values(moduleTotals || {});
+
+                        const moduleTotalsArray = Array.isArray(SBAResult)
+                          ? SBAResult
+                          : Object.values(SBAResult || {});
                         // Get the totals for correct and incorrect answers
                         const moduleTotal = moduleTotalsArray.find(
                           (m) => String(m.moduleId) === String(row.categoryId),
@@ -1399,6 +1414,8 @@ const Questioning = () => {
                         const incorrectPercentage = totalQuestions
                           ? (totalIncorrect / totalQuestions) * 100
                           : 0;
+                        // console.log("moduleTotalsArray:", moduleTotalsArray);
+
                         return (
                           <div
                             key={row.categoryId}

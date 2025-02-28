@@ -8,6 +8,7 @@ const mcqsSlice = createSlice({
         mcqsByModulesData: [], // Store data fetched by fetchMcqsByModules
         loading: false,  // To track loading state
         error: null,    // To store error message, if any
+        totalSBAQuestionData: [], // To store total SBA questions data
     }, 
     reducers: {
         // Reducer to reset the state
@@ -28,7 +29,7 @@ const mcqsSlice = createSlice({
             .addCase(fetchMcqsQuestion.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload; // Save fetched data
-            })
+            }) 
             .addCase(fetchMcqsQuestion.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload; // Save error message
@@ -40,7 +41,7 @@ const mcqsSlice = createSlice({
             .addCase(fetchTotalSBAQuestion.fulfilled, (state, action) => {
                 state.loading = false;
                 
-                state.mcqsByModulesData = action.payload;
+                state.totalSBAQuestionData = action.payload;
             })
             .addCase(fetchTotalSBAQuestion.rejected, (state, action) => {
                 state.loading = false;
