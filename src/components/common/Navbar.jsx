@@ -75,18 +75,18 @@ const Navbar = () => {
             </NavLink>
             {userId ? (
               <>
-                {" "}
-                <NavLink onClick={handleDashboard} to="/dashboard">
-      <li className="cursor-pointer hover:text-[#28A079]">
-        Dashboard
-      </li>
-    </NavLink>
+                {currentPlan && (
+                  <NavLink onClick={handleDashboard} to="/dashboard">
+                    <li className="cursor-pointer hover:text-[#28A079]">Dashboard</li>
+                  </NavLink>
+                )}
               </>
             ) : (
-              <NavLink to={"/login"}>
+              <NavLink to="/login">
                 <li className="cursor-pointer hover:text-[#28A079]">Log In</li>
               </NavLink>
             )}
+
           </ul>
 
           {/* Sign-Up Button */}
