@@ -70,6 +70,7 @@ import {
 import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
 import MobileBar from "./common/Drawer";
 import { fetchDailyWork } from "../redux/features/all-results/result.sba.service";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 
 const Questioning = () => {
   const planType = useSelector((state) => state?.subscription?.plan?.type);
@@ -80,7 +81,7 @@ const Questioning = () => {
   const recentSession = useSelector(
     (state) => state.recentSession.recentSessions,
   );
-  console.log("planType:", planType);
+console.log("");
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
@@ -947,6 +948,10 @@ const Questioning = () => {
       setSelectedPreClinicalOption(state);
     }
   }, [state]);
+
+   useEffect(() => {
+      dispatch(fetchSubscriptions({ userId }));
+    }, [dispatch, userId]);
 
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
