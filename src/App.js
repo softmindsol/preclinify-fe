@@ -150,8 +150,7 @@ function App() {
           element={
             <ProtectedRoute>
               <AINewVersion />
-              {/* <OSCEAI /> */}
-              {/* { <AudioStreamingClient   />} */}
+        
             </ProtectedRoute>
           }
         />

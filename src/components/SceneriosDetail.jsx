@@ -243,7 +243,7 @@ const SceneriosDetail = () => {
         </div>
 
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-          <div
+          {/* <div
             onClick={() => {
               navigate("/dashboard");
             }}
@@ -264,8 +264,8 @@ const SceneriosDetail = () => {
               <path d="M20 6 9 17l-5-5" />
             </svg>
             <p>Finish and Review</p>
-          </div>
-          <hr className="2xl:w-[300px]" />
+          </div> */}
+          <hr className="w-[240px]" />
           <div
             onClick={handleShowPopup}
             className="mt-3 flex cursor-pointer items-center justify-center gap-x-2 whitespace-nowrap font-semibold text-[#FF453A] hover:opacity-70"

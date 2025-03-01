@@ -41,22 +41,21 @@ const Setting = () => {
   const userId = localStorage.getItem("userId");
   const profile = useSelector((state) => state?.personalInfo?.userInfo);
   // Logout function
-const handleLogout = async () => {
-  try {
-    await dispatch(logoutUser()).unwrap(); // Wait for logout to complete successfully
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap(); // Wait for logout to complete successfully
 
-    // Remove user data and update Redux state
-    localStorage.removeItem("userId");
-    dispatch(clearUserId());
+      // Remove user data and update Redux state
+      localStorage.removeItem("userId");
+      dispatch(clearUserId());
 
-    // Show success message and redirect
-    toast.success("User logged out successfully");
-    navigate("/login");
-  } catch (error) {
-    toast.error("Logout failed: " + error);
-  }
-};
-
+      // Show success message and redirect
+      toast.success("User logged out successfully");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Logout failed: " + error);
+    }
+  };
 
   const toggleDarkMode = () => {
     setMode((prevMode) => !prevMode);
@@ -117,7 +116,7 @@ const handleLogout = async () => {
         {/* General Section */}
         <ExamCountdown />
 
-        <div className="mb-6 space-y-3 bg-white p-4 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white lg:rounded-md">
+        {/* <div className="mb-6 space-y-3 bg-white p-4 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white lg:rounded-md">
           <p className="text-[14px] font-semibold text-[#000000] dark:text-white sm:text-[16px]">
             Appearance
           </p>
@@ -144,7 +143,7 @@ const handleLogout = async () => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Billing Section */}
         <div className="mb-6 bg-white p-4 text-[#000000] shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white lg:rounded-md">
