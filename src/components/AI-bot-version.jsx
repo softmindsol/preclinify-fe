@@ -21,7 +21,7 @@ import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 
 const AINewVersion = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("text");
+  const [activeTab, setActiveTab] = useState("voice");
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -172,11 +172,14 @@ const AINewVersion = () => {
       if (subscriptions[0]?.total_tokens === subscriptions[0]?.used_tokens)
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
+     
+     if (isRecording) {
       await dispatch(
         incrementUsedTokens({
           userId: userId,
         }),
       ).unwrap();
+     } 
 
       // Then, fetch updated subscription data
       if (isRecording) {
@@ -189,6 +192,7 @@ const AINewVersion = () => {
       console.error("Error updating tokens:", error);
     }
   };
+  
 
   const finishReviewHandler = async () => {
     try {
