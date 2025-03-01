@@ -73,7 +73,12 @@ import { fetchDailyWork } from "../redux/features/all-results/result.sba.service
 import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 
 const Questioning = () => {
-  const planType = useSelector((state) => state?.subscription?.plan?.type);
+  // const planType = useSelector((state) => state?.subscriptions?.plan);
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
+ 
+
   const location = useLocation();
   const { state } = location;
   const sqa = useSelector((state) => state?.SQA || []);
@@ -81,7 +86,6 @@ const Questioning = () => {
   const recentSession = useSelector(
     (state) => state.recentSession.recentSessions,
   );
-console.log("");
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
@@ -129,8 +133,6 @@ console.log("");
   const filteredSBAModules = data.data.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-  console.log(" SBADataLength:", SBADataLength);
-  console.log("filteredSBAModules:", filteredSBAModules);
 
   const filteredMockModules = modules.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -157,7 +159,6 @@ console.log("");
     dispatch(setSBAPresentationValue(!isSortedByPresentation));
     dispatch(setMockPresentationValue(!isSortedByPresentation));
   };
-  console.log("sessionIsOpen", isOpenSetUpSessionModal);
 
   const cleanedPresentations = presentations?.map((presentation) => ({
     ...presentation,
@@ -949,9 +950,9 @@ console.log("");
     }
   }, [state]);
 
-   useEffect(() => {
-      dispatch(fetchSubscriptions({ userId }));
-    }, [dispatch, userId]);
+  useEffect(() => {
+    dispatch(fetchSubscriptions({ userId }));
+  }, [dispatch, userId]);
 
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
@@ -1398,7 +1399,7 @@ console.log("");
                         const moduleData = SBADataLength?.find(
                           (module) => module.categoryId === row.categoryId,
                         );
-                        console.log("moduleData:", moduleData);
+                        // console.log("moduleData:", moduleData);
 
                         const totalQuestions = moduleData
                           ? moduleData.questions.length
