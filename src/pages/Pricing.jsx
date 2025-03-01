@@ -16,9 +16,11 @@ const Pricing = () => {
   const subscription = useSelector(
     (state) => state?.subscription?.subscriptions,
   );
-
   const currentPlan = useSelector((state) => state?.subscription?.plan);
-  console.log("🚀 ~ Pricing ~ currentPlan:", currentPlan);
+
+  console.log("userId:", userId);
+  console.log("currentPlan:", currentPlan);
+
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
 
