@@ -14,7 +14,7 @@ function CheckoutSuccess() {
         <p className="text-gray-600 my-2">Thank you for completing your subscription payment. You're now subscribed to your selected plan.</p>
         <p>Enjoy your premium content!</p>
         <div className="py-10">
-          <Link to="/" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg">
+          <Link to="/dashboard" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg">
             Manage Subscription
           </Link>
         </div>
