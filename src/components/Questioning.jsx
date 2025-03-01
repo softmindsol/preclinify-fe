@@ -80,6 +80,7 @@ const Questioning = () => {
   const recentSession = useSelector(
     (state) => state.recentSession.recentSessions,
   );
+  console.log("planType:", planType);
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);

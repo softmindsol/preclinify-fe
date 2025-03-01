@@ -39,12 +39,12 @@ export const fetchDaysUntilExam = createAsyncThunk(
 
       if (!data || !data.exam_date) {
         return rejectWithValue("No exam date found");
-      }
+      } 
 
       const examDate = dayjs(data.exam_date);
       const currentDate = dayjs();
       const daysLeft = examDate.diff(currentDate, "day"); // Get difference in days
-      return { daysLeft: daysLeft <= 0 ? 0 : daysLeft };
+      return  daysLeft <= 0 ? 0 : daysLeft;
     } catch (error) {
       return rejectWithValue(error.message);
     }
