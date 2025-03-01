@@ -27,21 +27,21 @@ export const fetchSubscriptions = createAsyncThunk(
             if (!planId) {
                 return { subscriptions, planId };
             }
-            const addNewline = (str) => str + "\n";
 
 
             // Fetch the corresponding plan details from the plans table
             const { data: plan, error: planError } = await supabase
                 .from("plans")
                 .select("*")
-                .eq("planId", addNewline(planId))
-                .limit(1)
-                .maybeSingle(); // Avoids error if multiple/no rows
+            .eq("planId", planId)
+            .limit(1)
+            .maybeSingle(); // Avoids error if multiple/no rows
 
 
             if (planError) {
                 return rejectWithValue(planError.message);
             }
+            console.log("plan:", plan);
 
 
 
