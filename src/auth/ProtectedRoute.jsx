@@ -16,7 +16,6 @@ const ProtectedRoute = ({ children }) => {
         setUser(data.session.user);
       }
       setLoading(false);
-      console.log("protected", data);
     };
 
     checkUser();
