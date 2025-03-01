@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 
 function CheckoutSuccess() {
   const userId = localStorage.getItem("userId");
-  console.log(userId);
 
   const dispatch = useDispatch();
   useEffect(() => {

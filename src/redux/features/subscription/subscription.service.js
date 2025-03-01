@@ -23,10 +23,10 @@ export const fetchSubscriptions = createAsyncThunk(
 
             // Extract planId from the subscription
             const planId = subscriptions[0]?.plan;
-            // console.log(" subscriptions, planId:", subscriptions, planId);
+            console.log(" subscriptions, planId:", subscriptions, planId);
 
             if (!planId) {
-                   return { subscriptions, planId };
+                return { subscriptions, planId };
             }
 
             // Fetch the corresponding plan details from the plans table
