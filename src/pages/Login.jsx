@@ -32,9 +32,8 @@ const Login = () => {
           email: values.email,
           password: values.password,
         });
-        console.log("data:", data);
         localStorage.setItem("userId", data?.user?.id);
-        localStorage.setItem("authToken", data.session.access_token); // Store token if needed
+        localStorage.setItem("authToken", data?.session?.access_token); // Store token if needed
         if (data?.session) {
           dispatch(fetchSubscriptions({ userId }));
 

@@ -44,7 +44,7 @@ export const fetchDaysUntilExam = createAsyncThunk(
       const examDate = dayjs(data.exam_date);
       const currentDate = dayjs();
       const daysLeft = examDate.diff(currentDate, "day"); // Get difference in days
-      if (currentDate - daysLeft===0){
+      if (currentDate - daysLeft<=0){
         return { daysLeft :0}
       }
       return daysLeft;
