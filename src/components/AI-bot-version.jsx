@@ -21,7 +21,7 @@ import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 
 const AINewVersion = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("text");
+  const [activeTab, setActiveTab] = useState("voice");
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
