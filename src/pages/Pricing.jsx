@@ -26,7 +26,7 @@ const Pricing = () => {
     termly: [
       {
         planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
-        title: "The OSCE plan",
+        title: "The OSCE plan", 
         price: 35,
         monthlyPrice: (35 / 3).toFixed(2),
         "plan-slug": PlanSlug("The OSCE plan", 3),
@@ -238,7 +238,7 @@ const Pricing = () => {
                   </div>
 
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
-                    {userId && currentPlan?.planId === plan?.planId ? (
+                    {userId && currentPlan === plan?.planId ? (
                       // User is logged in and this is their current plan
                       <button
                         disabled
