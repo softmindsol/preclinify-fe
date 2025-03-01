@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import supabase from "../../../config/helper";
-import { parse } from "date-fns";
 
 export const fetchSubscriptions = createAsyncThunk(
     "subscriptions/fetchAll",
@@ -20,36 +19,34 @@ export const fetchSubscriptions = createAsyncThunk(
                 return rejectWithValue("No subscriptions found.");
             }
 
-            console.log("subscriptions:", subscriptions);
+            // console.log("subscriptions:", subscriptions);
 
             // Extract planId from the subscription
             const planId = subscriptions[0]?.plan;
-            console.log("planId:", planId);
 
             if (!planId) {
                 return { subscriptions, planId };
             }
+            const addNewline = (str) => str + "\n";
+
 
             // Fetch the corresponding plan details from the plans table
-            const { data: plans, error: planError } = await supabase
+            const { data: plan, error: planError } = await supabase
                 .from("plans")
                 .select("*")
-            // .eq("planId", planId.toString())
-            console.log("plans:", plans);
-            const removeNewline = (str) => str.replace(/\n/g, "");
-            const planID = plans.find((plan) => removeNewline(plan.planId) == planId)
-            console.log("planID:", planID);
+                .eq("planId", addNewline(planId))
+                .limit(1)
+                .maybeSingle(); // Avoids error if multiple/no rows
 
 
             if (planError) {
                 return rejectWithValue(planError.message);
             }
 
-            console.log("planID:", planID);
 
 
             // Return both subscription and plan details
-            return { subscriptions, planID };
+            return { subscriptions, plan };
         } catch (error) {
             return rejectWithValue(error.message);
         }
