@@ -164,7 +164,7 @@ const Pricing = () => {
     <div className="">
       <Navbar />
       <div className="mt-[500px] flex h-screen flex-col items-center justify-center lg:mt-24 2xl:mt-32">
-        <div className="pt-5 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
+        <div className="pt-7 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>
         </div>
