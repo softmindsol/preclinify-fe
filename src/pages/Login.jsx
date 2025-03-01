@@ -57,7 +57,7 @@ const Login = () => {
         //     navigate('/dashboard'); // Redirect to the dashboard or another page
         // }
       } catch (error) {
-        setErrors({ email: "An error occurred. Please try again." });
+        setErrors({ email: "Invalid Login Credentials!" });
       } finally {
         setSubmitting(false); // Stop the loader once API call is done
       }

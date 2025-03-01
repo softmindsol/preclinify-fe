@@ -60,7 +60,6 @@ const Dashboard = () => {
     incorrect: [],
     days: [],
   });
-  console.log("examDuration:", examDuration);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
