@@ -157,19 +157,24 @@ const Navbar = () => {
               </li>
             </NavLink>
 
-            <li className="cursor-pointer font-medium hover:text-[#28A079]">
+            {/* <li className="cursor-pointer font-medium hover:text-[#28A079]">
               Textbook
-            </li>
-            <NavLink to={"/login"}>
-              <li className="cursor-pointer font-medium hover:text-[#28A079]">
-                Log In
-              </li>
-            </NavLink>
-            <Link to="/signup">
-              <button className="rounded-[12px] bg-[#FFE6D4] px-6 py-2 font-bold text-[#FF7A28] transition-all hover:bg-[#FFDAC4]">
-                Sign Up Now
-              </button>
-            </Link>
+            </li> */}
+
+            {!userId && (
+              <>
+                <NavLink to={"/login"}>
+                  <li className="cursor-pointer font-medium hover:text-[#28A079]">
+                    Log In
+                  </li>
+                </NavLink>
+                <Link to="/signup">
+                  <button className="rounded-[12px] bg-[#FFE6D4] px-6 py-2 font-bold text-[#FF7A28] transition-all hover:bg-[#FFDAC4]">
+                    Sign Up Now
+                  </button>
+                </Link>
+              </>
+            )}
           </ul>
         </div>
       </Drawer>
