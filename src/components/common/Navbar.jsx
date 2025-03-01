@@ -27,6 +27,7 @@ const Navbar = () => {
     setIsOpen((prevState) => !prevState);
   };
   const userId = localStorage.getItem("userId");
+  console.log("userId:", userId);
 
   const logout = async () => {
     try {
@@ -69,15 +70,15 @@ const Navbar = () => {
               <li className="cursor-pointer hover:text-[#28A079]">Home</li>
             </NavLink>
             <NavLink to="/pricing">
-              <li className="cursor-pointer hover:text-[#28A079]">
-                Pricing
-              </li>
+              <li className="cursor-pointer hover:text-[#28A079]">Pricing</li>
             </NavLink>
             {userId ? (
               <>
                 {currentPlan && (
                   <NavLink onClick={handleDashboard} to="/dashboard">
-                    <li className="cursor-pointer hover:text-[#28A079]">Dashboard</li>
+                    <li className="cursor-pointer hover:text-[#28A079]">
+                      Dashboard
+                    </li>
                   </NavLink>
                 )}
               </>
@@ -86,7 +87,6 @@ const Navbar = () => {
                 <li className="cursor-pointer hover:text-[#28A079]">Log In</li>
               </NavLink>
             )}
-
           </ul>
 
           {/* Sign-Up Button */}

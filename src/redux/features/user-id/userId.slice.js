@@ -9,7 +9,7 @@ const userSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {
+  reducers: { 
     clearUserId: (state) => {
       state.userId = null;
       state.userInfo = {};

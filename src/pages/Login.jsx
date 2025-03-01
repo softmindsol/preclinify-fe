@@ -32,18 +32,18 @@ const Login = () => {
           email: values.email,
           password: values.password,
         });
-
+        console.log("data:", data);
+        localStorage.setItem("userId", data?.user?.id);
         localStorage.setItem("authToken", data.session.access_token); // Store token if needed
         if (data?.session) {
           dispatch(fetchSubscriptions({ userId }));
-        
+
           toast.success("Logged in successfully!"); // Show success toast
-        
+
           setTimeout(() => {
             navigate("/dashboard");
           }, 1000); // 2-second delay before navigating
         }
-        
 
         // navigate('/dashboard'); // Redirect to the dashboard or another page
         // if (error) {
