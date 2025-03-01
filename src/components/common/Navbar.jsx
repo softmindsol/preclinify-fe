@@ -161,6 +161,36 @@ const Navbar = () => {
               Textbook
             </li> */}
 
+            {userId && (
+              <div className="">
+                <Menu>
+                  <MenuButton className="inline-flex items-center gap-2 rounded-md bg-gray-800 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
+                    Menu
+                    {/* <ChevronDownIcon className="size-4 fill-white/60" /> */}
+                  </MenuButton>
+
+                  <MenuItems
+                    transition
+                    anchor="bottom end"
+                    className="z-50 mt-1 w-52 origin-top-right rounded-xl border border-white/5 bg-gray-200 p-1 text-sm/6 text-[#3F3F46] transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+                  >
+                    <div className="h-px bg-white/5" />
+
+                    <MenuItem>
+                      <button
+                        onClick={logout}
+                        className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-white/10"
+                      >
+                        {/* <TrashIcon className="size-4 fill-white/30" /> */}
+                        Logout
+                        <kbd className="ml-auto hidden font-sans text-xs text-white/50 group-data-[focus]:inline"></kbd>
+                      </button>
+                    </MenuItem>
+                  </MenuItems>
+                </Menu>
+              </div>
+            )}
+
             {!userId && (
               <>
                 <NavLink to={"/login"}>
