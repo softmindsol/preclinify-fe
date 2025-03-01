@@ -19,11 +19,11 @@ export const fetchSubscriptions = createAsyncThunk(
                 return rejectWithValue("No subscriptions found.");
             }
 
-            console.log("subscriptions:", subscriptions);
+            // console.log("subscriptions:", subscriptions);
 
             // Extract planId from the subscription
             const planId = subscriptions[0]?.plan;
-            console.log(" subscriptions, planId:", subscriptions, planId);
+            // console.log(" subscriptions, planId:", subscriptions, planId);
 
             if (!planId) {
                    return { subscriptions, planId };
@@ -56,7 +56,6 @@ export const incrementUsedTokens = createAsyncThunk(
     "subscriptions/incrementUsedTokens",
     async ({ userId }, { rejectWithValue }) => {
         try {
-            console.log("userId:", userId);
 
             if (!userId) {
                 console.log("UserId is required");
