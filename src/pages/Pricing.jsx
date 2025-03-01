@@ -16,9 +16,11 @@ const Pricing = () => {
   const subscription = useSelector(
     (state) => state?.subscription?.subscriptions,
   );
-
   const currentPlan = useSelector((state) => state?.subscription?.plan);
-  console.log("🚀 ~ Pricing ~ currentPlan:", currentPlan);
+
+  console.log("userId:", userId);
+  console.log("currentPlan:", currentPlan);
+
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
 
@@ -26,7 +28,7 @@ const Pricing = () => {
     termly: [
       {
         planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
-        title: "The OSCE plan", 
+        title: "The OSCE plan",
         price: 35,
         monthlyPrice: (35 / 3).toFixed(2),
         "plan-slug": PlanSlug("The OSCE plan", 3),
@@ -164,7 +166,7 @@ const Pricing = () => {
     <div className="">
       <Navbar />
       <div className="mt-[500px] flex h-screen flex-col items-center justify-center lg:mt-24 2xl:mt-32">
-        <div className="pt-7 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
+        <div className="pt-16 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>
         </div>

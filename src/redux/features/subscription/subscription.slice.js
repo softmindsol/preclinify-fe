@@ -6,7 +6,7 @@ const subscriptionSlice = createSlice({
   initialState: {
     subscriptions: [],
     plan: null,
-    planType: null,
+    planType:null,
     loading: false,
     error: null,
     type: "osce",

@@ -23,17 +23,18 @@ export const fetchSubscriptions = createAsyncThunk(
 
             // Extract planId from the subscription
             const planId = subscriptions[0]?.plan;
-            console.log("planId:", planId);
 
             if (!planId) {
                 return { subscriptions, planId };
             }
+            const addNewline = (str) => str + "\n";
+
 
             // Fetch the corresponding plan details from the plans table
             const { data: plan, error: planError } = await supabase
                 .from("plans")
                 .select("*")
-                .eq("planId", planId)
+                .eq("planId", addNewline(planId))
                 .limit(1)
                 .maybeSingle(); // Avoids error if multiple/no rows
 
@@ -42,7 +43,6 @@ export const fetchSubscriptions = createAsyncThunk(
                 return rejectWithValue(planError.message);
             }
 
-            console.log("plan:", plan);
 
 
             // Return both subscription and plan details
