@@ -19,11 +19,11 @@ const subscriptionSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchSubscriptions.fulfilled, (state, action) => {
-        state.loading = false;        
-        state.subscriptions = action.payload.subscriptions; // Store subscription data
-        state.plan = action.payload?.plan?.planId; // Store plan details
-        state.planType = action.payload?.plan?.type; // Store plan details
-        
+        state.loading = false;
+        state.subscriptions = action?.payload?.subscriptions; // Store subscription data
+        state.plan = action?.payload?.plan?.planId; // Store plan details
+        state.planType = action?.payload?.plan?.type; // Store plan details
+
       })
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.loading = false;
