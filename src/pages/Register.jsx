@@ -40,10 +40,8 @@ const Register = () => {
       displayName: Yup.string().required("Name is Required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      if (!termsChecked || !emailUpdatesChecked || !smsUpdatesChecked) {
-        toast.error(
-          "Please agree to the terms and conditions and check the other options.",
-        );
+      if (!termsChecked) {
+        toast.error("Please agree to the terms and conditions.");
         setSubmitting(false);
         return;
       }
@@ -297,12 +295,7 @@ const Register = () => {
             <div>
               <button
                 type="submit"
-                disabled={
-                  formik.isSubmitting ||
-                  !termsChecked ||
-                  !emailUpdatesChecked ||
-                  !smsUpdatesChecked
-                }
+              
                 className="h-[50px] w-full rounded-[8px] bg-[#FFE9D6] text-[14px] font-medium text-[#FF9741] transition-all duration-150 hover:bg-[#e3863a] hover:text-white sm:text-[16px]"
               >
                 {formik.isSubmitting ? "Loading..." : "Sign Up"}
