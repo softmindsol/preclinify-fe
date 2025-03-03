@@ -305,7 +305,7 @@ const Dashboard = () => {
 
                   <div className="flex flex-col items-center space-y-3 md:flex-row md:gap-x-3 md:space-y-0">
                     <div className="items-center justify-center rounded-[6px] bg-[#FFFFFF] px-7 py-2 dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
-                      {examDuration === 0 ? (
+                      {examDuration <= 0 ? (
                         <div className="text-center">
                           <p className="text-[16px] font-medium text-[#71717A]">
                             Set your exam date

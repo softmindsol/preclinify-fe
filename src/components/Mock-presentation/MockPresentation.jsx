@@ -1131,6 +1131,7 @@ const MockPresentation = () => {
                 </div>
 
                 <QuestionNavigator
+                
                   attempted={attempted}
                   flaggedQuestions={flaggedQuestions}
                   visited={visited}

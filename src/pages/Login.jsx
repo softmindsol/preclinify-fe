@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup"; // For validation schema
@@ -8,11 +8,13 @@ import { toast } from "sonner"; // Import the toast module
 import { resendVerificationEmail } from "../utils/authUtils";
 import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 import { useDispatch } from "react-redux";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Login = () => {
   const userId = localStorage.getItem("userId");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   // Formik setup
   const formik = useFormik({
@@ -26,6 +28,13 @@ const Login = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
+      if (userId) {
+        // If userId exists, show a toast and prevent login
+        toast.error(
+          "Please log out from the current session before logging in.",
+        );
+        return; // Prevent login if userId exists
+      }
       try {
         // Use Supabase auth to log in
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -65,6 +74,8 @@ const Login = () => {
   // useEffect(() => {
   //   dispatch(fetchSubscriptions({ userId }));
   // }, [navigate]);
+
+ 
   return (
     <div className="flex w-full items-center overflow-hidden">
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">
@@ -102,7 +113,7 @@ const Login = () => {
               </div>
             ) : null}
           </div>
-          <div>
+          <div className="relative">
             <label
               htmlFor="password"
               className="text-[14px] font-medium text-[#3CC8A1] sm:text-[16px]"
@@ -111,7 +122,7 @@ const Login = () => {
             </label>
             <br />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               value={formik.values.password}
               onChange={formik.handleChange}
@@ -120,6 +131,12 @@ const Login = () => {
               className="mt-2 h-[50px] w-[100%] rounded-[8px] border-[2px] border-black p-5 placeholder:text-[14px] sm:w-[430px] md:placeholder:text-[16px]"
               required
             />
+            <span
+              className="absolute right-3 top-12 cursor-pointer text-gray-600"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </span>
             {formik.touched.password && formik.errors.password ? (
               <div className="text-[14px] text-red-500 sm:text-[16px]">
                 {formik.errors.password}

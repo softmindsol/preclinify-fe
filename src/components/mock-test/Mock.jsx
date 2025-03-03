@@ -473,18 +473,17 @@ const MockTestQuestion = () => {
 
   // Add this useEffect hook to handle keyboard events
   useEffect(() => {
-        if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
+    if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
     const handleKeyPress = (e) => {
+      if (e.key === "ArrowRight") {
+        nextQuestion();
+        return;
+      }
 
-       if (e.key === "ArrowRight") {
-         nextQuestion();
-         return;
-       }
-
-       if (e.key === "ArrowLeft") {
-         prevQuestion();
-         return;
-       }
+      if (e.key === "ArrowLeft") {
+        prevQuestion();
+        return;
+      }
 
       // Prevent spacebar from scrolling the page
       if (e.key === " ") {
@@ -592,16 +591,16 @@ const MockTestQuestion = () => {
       // setIsAccordionVisible(true)
     }
   }, [review]);
-    useEffect(() => {
-      const handleKeyPress = (event) => {
-        if (event.key === "Enter" && review === true) {
-          navigation("/dashboard");
-        }
-      };
-  
-      document.addEventListener("keydown", handleKeyPress);
-      return () => document.removeEventListener("keydown", handleKeyPress);
-    }, [navigation]);
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter" && review === true) {
+        navigation("/dashboard");
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+  }, [navigation]);
 
   useEffect(() => {
     if (mockData?.length > 0) {
@@ -797,11 +796,15 @@ const MockTestQuestion = () => {
                             ? "bg-[#DCFCE7]"
                             : "bg-[#FEE2E2]"
                           : "";
+                      console.log(
+                        "isSelected && !isAccordionOpen[currentIndex]:",
+                        isSelected && !isAccordionOpen[currentIndex],
+                      );
 
                       return (
                         <div
                           className={`rounded-md ${
-                            isSelected
+                           ( isSelected && !isAccordionOpen[currentIndex])
                               ? "border border-[#3CC8A1] bg-[#FAFAFA]"
                               : "border border-white bg-white hover:border hover:border-[#3CC8A1]"
                           }`}
@@ -847,8 +850,8 @@ const MockTestQuestion = () => {
                                     isButtonClicked ||
                                     attempted[currentIndex] !== null
                                       ? isCorrectAnswer
-                                        ? "border border-green-500 bg-green-100"
-                                        : "border border-red-500 bg-red-100"
+                                        ? "border border-[#3CC8A1] bg-green-100"
+                                        : "border border-[#EF4444] bg-red-100"
                                       : "border border-gray-300 bg-gray-100"
                                   }`}
                                 >
@@ -1103,6 +1106,9 @@ const MockTestQuestion = () => {
               <FeedbackModal
                 showFeedBackModal={showFeedBackModal}
                 setShowFeedBackModal={setShowFeedBackModal}
+                userId={userId}
+                questionStem={mockData[currentIndex]}
+                leadQuestion={mockData[currentIndex].leadQuestion}
               />
             )}
           </div>
@@ -1190,6 +1196,7 @@ const MockTestQuestion = () => {
                 </div>
 
                 <QuestionNavigator
+                  currentIndex={currentIndex+1}
                   attempted={attempted}
                   flaggedQuestions={flaggedQuestions}
                   visited={visited}
@@ -1346,12 +1353,12 @@ const MockTestQuestion = () => {
           setShowPopup={setShowPopup}
         />
       )}
-      {showFeedBackModal && (
+      {/* {showFeedBackModal && (
         <FeedbackModal
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
         />
-      )}
+      )} */}
 
       <Drawer
         open={isOpen}
@@ -1410,6 +1417,7 @@ const MockTestQuestion = () => {
           </div>
 
           <QuestionNavigator
+            currentIndex={currentIndex}
             attempted={attempted}
             flaggedQuestions={flaggedQuestions}
             visited={visited}

@@ -68,13 +68,13 @@ const ExamCountdown = () => {
         Tracks the time remaining until your exam day.
       </p>
 
-      {confirmedDate && (
+      {/* {confirmedDate && (
         <p className="mt-2 text-[14px] font-semibold text-[#3F3F46] dark:text-white">
           {daysRemaining > 0
             ? `📅 ${daysRemaining} days remaining until your exam.`
             : "🎉 Exam day is today!"}
         </p>
-      )}
+      )} */}
     </div>
   );
 };
