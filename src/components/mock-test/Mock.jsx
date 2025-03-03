@@ -473,18 +473,17 @@ const MockTestQuestion = () => {
 
   // Add this useEffect hook to handle keyboard events
   useEffect(() => {
-        if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
+    if (showFeedBackModal || isAIExpanded) return; // Agar modal open hai toh event listener add nahi hoga
     const handleKeyPress = (e) => {
+      if (e.key === "ArrowRight") {
+        nextQuestion();
+        return;
+      }
 
-       if (e.key === "ArrowRight") {
-         nextQuestion();
-         return;
-       }
-
-       if (e.key === "ArrowLeft") {
-         prevQuestion();
-         return;
-       }
+      if (e.key === "ArrowLeft") {
+        prevQuestion();
+        return;
+      }
 
       // Prevent spacebar from scrolling the page
       if (e.key === " ") {
@@ -592,16 +591,16 @@ const MockTestQuestion = () => {
       // setIsAccordionVisible(true)
     }
   }, [review]);
-    useEffect(() => {
-      const handleKeyPress = (event) => {
-        if (event.key === "Enter" && review === true) {
-          navigation("/dashboard");
-        }
-      };
-  
-      document.addEventListener("keydown", handleKeyPress);
-      return () => document.removeEventListener("keydown", handleKeyPress);
-    }, [navigation]);
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter" && review === true) {
+        navigation("/dashboard");
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+  }, [navigation]);
 
   useEffect(() => {
     if (mockData?.length > 0) {
