@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
- 
+
 const FeedbackModal = ({
   showFeedBackModal,
   setShowFeedBackModal,
@@ -16,13 +16,14 @@ const FeedbackModal = ({
     // Only update the feedback, keeping the top part unchanged
     setFeedback(e.target.value);
   };
+  console.log(questionStem);
 
   const handleFeedBack = async () => {
     if (!feedback.trim()) {
       toast.error("Please provide feedback before submitting.");
       return;
     }
- 
+
     // if (!questionStem?.id) {
     //   toast.error("Invalid question ID.");
     //   return;
@@ -44,7 +45,7 @@ const FeedbackModal = ({
       }
     } catch (error) {
       console.log(error);
-      
+
       toast.error("Failed to submit feedback.");
     } finally {
       setLoading(false);
@@ -59,7 +60,7 @@ const FeedbackModal = ({
 `; // Extra newline to separate feedback area
 
   return (
-    <div className="fixed inset-0 flex z-40 items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-[800px] rounded-lg bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold">Give Your Feedback</h2>
         <textarea
