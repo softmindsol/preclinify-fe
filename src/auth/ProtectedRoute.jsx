@@ -29,9 +29,9 @@ const ProtectedRoute = ({ children }) => {
   }
 
   // If user is logged in but has no current plan → Redirect to pricing
-  if (user && currentPlan == null) {
-    return <Navigate to="/pricing" replace />;
-  }
+  // if (user && currentPlan == null) {
+  //   return <Navigate to="/pricing" replace />;
+  // }
 
   // Otherwise, show the protected content
   return children;

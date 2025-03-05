@@ -37,6 +37,7 @@ import {
 } from "../redux/features/filter-question/filter-question.service";
 import { fetchAllResultSaq } from "../redux/features/filter-question/filter-saq-question.service";
 import { fetchDailyWork } from "../redux/features/all-results/result.sba.service";
+import { fetchMcqsQuestionFreeBank } from "../redux/features/free-trial-bank/free-trial-bank.service";
 
 const SetupSessionModal = ({
   isOpenSetUpSessionModal,
@@ -50,6 +51,9 @@ const SetupSessionModal = ({
   const darkModeRedux = useSelector((state) => state?.darkMode?.isDarkMode);
   const isLoading = useSelector(
     (state) => state?.loading?.[fetchMcqsByModules.typePrefix],
+  );
+  const isLoadingFreeTrial = useSelector(
+    (state) => state?.loading?.[fetchMcqsQuestionFreeBank.typePrefix],
   );
   const isLoadingShortQuestion = useSelector(
     (state) => state?.loading?.[fetchShortQuestionByModules.typePrefix],
@@ -81,6 +85,11 @@ const SetupSessionModal = ({
     (state) => state?.FiltershortQuestions?.results,
   ); // Debounced dispatch handler
   const data = useSelector((state) => state.module);
+  const { freeTrialType } = useSelector(
+    (state) => state?.FreeTrialMcqsQuestion,
+  );
+
+  console.log("freeTrialType:", freeTrialType);
 
   const filteredSBAModules = data.data.filter((module) => module);
 
@@ -124,6 +133,10 @@ const SetupSessionModal = ({
       navigation("/sba-presentation");
     } else if (type === "SBA" && !isLoading) {
       navigation("/question-card");
+    } else if (type === "Trial" && freeTrialType === "SBATrialBank") {
+      navigation("/question-card");
+    } else if (type === "Trial" && freeTrialType === "SAQTrialBank") {
+      navigation("/short-question");
     } else if (type === "Mock" && presentationMock) {
       navigation("/mock-presentation");
     } else if (typeQues === "QuesGen" && !isQuesGenLoading) {
@@ -132,6 +145,8 @@ const SetupSessionModal = ({
       navigation("/mock-test");
     }
   };
+
+  console.log("type:", type);
 
   useEffect(() => {
     if (type === "SBA" && !isLoading) {
@@ -148,9 +163,7 @@ const SetupSessionModal = ({
           }),
         )
           .unwrap()
-          .then((res) => {
-            
-          })
+          .then((res) => {})
           .catch((err) => {
             console.error(err);
           });
@@ -338,7 +351,6 @@ const SetupSessionModal = ({
         selectedModules: filteredSBAModules,
       }),
     );
-    
   }, [modeType, timer, dispatch, filterQuestion.selectedModules]);
 
   return (

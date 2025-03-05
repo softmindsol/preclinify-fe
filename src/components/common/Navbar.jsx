@@ -43,10 +43,10 @@ const Navbar = () => {
     }
   };
   const handleDashboard = (e) => {
-    if (!currentPlan) {
-      e.preventDefault(); // Prevent navigation
-      toast.error("You need a plan to access the dashboard!");
-    }
+    // if (!currentPlan) {
+    //   e.preventDefault(); // Prevent navigation
+    //   toast.error("You need a plan to access the dashboard!");
+    // }
   };
 
   console.log(currentPlan);
@@ -77,13 +77,13 @@ const Navbar = () => {
             </NavLink>
             {userId ? (
               <>
-                {currentPlan && (
+                {/* {currentPlan && ( */}
                   <NavLink onClick={handleDashboard} to="/dashboard">
                     <li className="cursor-pointer hover:text-[#28A079]">
                       Dashboard
                     </li>
                   </NavLink>
-                )}
+                {/* )} */}
               </>
             ) : (
               <NavLink to="/login">

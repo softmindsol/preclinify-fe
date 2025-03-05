@@ -52,9 +52,23 @@ const calculateTimeForQuestions = (numQuestions) => {
   return totalTimeInSeconds; // Return total time in seconds
 };
 const ShortQuestion = () => {
-  const FiltershortQuestions = useSelector(
-    (state) => state?.FiltershortQuestions?.results,
+  const freeTrialData = useSelector(
+    (state) => state?.shortQuestionsFreeTrial?.data,
   );
+  const PaidPlan = useSelector((state) => state?.FiltershortQuestions?.results);
+  // const FiltershortQuestions = useSelector(
+  //   (state) => state?.FiltershortQuestions?.results,
+  // );
+
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
+  const FiltershortQuestions =
+    subscriptions[0]?.plan === null ? freeTrialData : PaidPlan;
+
+  console.log("subscriptions[0]?.plan:", subscriptions[0]?.plan);
+  console.log("PaidPlan:", PaidPlan);
+
   const sqa = useSelector((state) => state?.SQA?.organizedData || []);
   const attempted = useSelector((state) => state.attempts?.attempts);
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
@@ -127,7 +141,6 @@ const ShortQuestion = () => {
   const userAnswers = useSelector((state) => state?.userAnswers?.answers);
   const beakerRef = useRef(null);
 
-  console.log("sqa:", sqa[currentIndex]?.id);
 
   const beakerToggledHandler = () => {
     setBeakerToggle(!beakerToggle);
@@ -215,6 +228,7 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState("");
     nextQuestion();
+    if (subscriptions[0].plan !== null) {
     dispatch(
       insertSAQResult({
         isCorrect: false,
@@ -226,7 +240,7 @@ const ShortQuestion = () => {
         parentId: FiltershortQuestions[parentIndex]?.id,
         childrenId: FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
       }),
-    );
+    )}
   }, [
     FiltershortQuestions,
     parentIndex,
@@ -247,6 +261,7 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState("");
     nextQuestion();
+    if (subscriptions[0].plan !== null) {
     dispatch(
       insertSAQResult({
         isCorrect: false,
@@ -259,7 +274,7 @@ const ShortQuestion = () => {
 
         childrenId: FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
       }),
-    );
+    )}
   }, [
     FiltershortQuestions,
     parentIndex,
@@ -280,19 +295,22 @@ const ShortQuestion = () => {
     setTestCheckAnswer(false);
     setUserAnswerState("");
     nextQuestion();
-    dispatch(
-      insertSAQResult({
-        isCorrect: true,
-        isIncorrect: false,
-        isPartial: false,
-        questionId: FiltershortQuestions[parentIndex]?.id,
-        userId,
-        moduleId: FiltershortQuestions[parentIndex]?.categoryId,
-        parentId: FiltershortQuestions[parentIndex]?.id,
+    if (subscriptions[0].plan !== null) {
+      dispatch(
+        insertSAQResult({
+          isCorrect: true,
+          isIncorrect: false,
+          isPartial: false,
+          questionId: FiltershortQuestions[parentIndex]?.id,
+          userId,
+          moduleId: FiltershortQuestions[parentIndex]?.categoryId,
+          parentId: FiltershortQuestions[parentIndex]?.id,
 
-        childrenId: FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
-      }),
-    );
+          childrenId:
+            FiltershortQuestions[parentIndex]?.children[childIndex]?.id,
+        }),
+      );
+    }
   }, [
     FiltershortQuestions,
     parentIndex,
