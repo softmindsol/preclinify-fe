@@ -14,10 +14,10 @@ fi
 # Check if the PM2 process exists
 if pm2 list | grep -q 'preclinify-fe'; then
     echo "Restarting existing PM2 process..."
-    pm2 restart preclinify-fe || { echo "Failed to restart PM2 process."; exit 1; }
+    pm2 restart preclinify-fe-staging || { echo "Failed to restart PM2 process."; exit 1; }
 else
     echo "Creating new PM2 process..."
-    pm2 start npm --name "preclinify-fe" -- run start || { echo "Failed to create PM2 process."; exit 1; }
+    pm2 start npm --name "preclinify-fe-staging" -- run start:staging || { echo "Failed to create PM2 process."; exit 1; }
 fi
 
 # Restart Nginx to apply changes
