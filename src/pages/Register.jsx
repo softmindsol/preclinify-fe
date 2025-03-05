@@ -43,7 +43,9 @@ const Register = () => {
         .min(10, "Phone number must be at least 10 digits")
         .max(15, "Phone number must not exceed 15 digits")
         .required("Required"),
-      displayName: Yup.string().required("Name is Required"),
+      displayName: Yup.string()
+  .matches(/^[a-zA-Z\s]+$/, "Name must only contain letters and spaces")
+  .required("Name is Required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       if (!termsChecked) {
@@ -68,7 +70,6 @@ const Register = () => {
         if (error) {
           toast.error("Error occurred while registering");
         } else {
-          // console.log("🚀 ~ onSubmit: ~ user:", user)
           // Add 5 tokens in the subscription collection
           const { data, insertError } = await supabase
             .from("subscription")

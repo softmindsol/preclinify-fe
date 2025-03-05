@@ -43,7 +43,7 @@ const AINewVersion = () => {
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
   const userId = localStorage.getItem("userId");
-  const { subscriptions, plan, loader } = useSelector(
+  const { subscriptions, plan, loader, completePlanData } = useSelector(
     (state) => state?.subscription,
   );
   const transcriptRef = useRef(null);
@@ -172,14 +172,14 @@ const AINewVersion = () => {
       if (subscriptions[0]?.total_tokens === subscriptions[0]?.used_tokens)
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
-     
-     if (isRecording) {
-      await dispatch(
-        incrementUsedTokens({
-          userId: userId,
-        }),
-      ).unwrap();
-     } 
+
+      if (isRecording) {
+        await dispatch(
+          incrementUsedTokens({
+            userId: userId,
+          }),
+        ).unwrap();
+      }
 
       // Then, fetch updated subscription data
       if (isRecording) {
@@ -192,7 +192,6 @@ const AINewVersion = () => {
       console.error("Error updating tokens:", error);
     }
   };
-  
 
   const finishReviewHandler = async () => {
     try {
@@ -335,7 +334,7 @@ const AINewVersion = () => {
                 {!plan ? (
                   <p className="text-[14px]">Free</p>
                 ) : (
-                  <p className="text-[14px]">{plan.plan}</p>
+                  <p className="text-[14px]">{completePlanData.plan}</p>
                 )}
               </div>
             </div>

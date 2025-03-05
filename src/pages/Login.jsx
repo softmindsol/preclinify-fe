@@ -40,7 +40,7 @@ const Login = () => {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
-        });
+        }); 
         localStorage.setItem("userId", data?.user?.id);
         localStorage.setItem("authToken", data?.session?.access_token); // Store token if needed
         if (data?.session) {

@@ -72,7 +72,17 @@ const QuestionCard = () => {
   const [border, setBorder] = useState(true);
   const mcqsAccuracy = useSelector((state) => state?.accuracy?.accuracy);
   const [showPopup, setShowPopup] = useState(false);
-  const data = useSelector((state) => state?.filterQuestion?.results || []);
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
+  const freeTrialData = useSelector(
+    (state) => state?.FreeTrialMcqsQuestion?.freeTrialData || [],
+  );
+
+  const PaidPlan = useSelector((state) => state?.filterQuestion?.results || []);
+  const data = subscriptions[0]?.plan === null ? freeTrialData : PaidPlan;
+  
+  
   const result = useSelector((state) => state.result);
   const [currentPage, setCurrentPage] = useState(0);
   const [isReviewEnabled, setIsReviewEnabled] = useState(false);
@@ -213,15 +223,17 @@ const QuestionCard = () => {
               setArticle(res);
             });
         }
-
-        dispatch(
-          insertResult({
-            isCorrect,
-            questionId: data[currentIndex].id,
-            userId,
-            moduleId: data[currentIndex].moduleId,
-          }),
-        );
+if (subscriptions[0].plan!==null){
+dispatch(
+  insertResult({
+    isCorrect,
+    questionId: data[currentIndex].id,
+    userId,
+    moduleId: data[currentIndex].moduleId,
+  }),
+);
+}
+  
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });
@@ -1257,7 +1269,7 @@ const QuestionCard = () => {
               handleBackToDashboard={handleBackToDashboard}
               setShowPopup={setShowPopup}
             />
-          )} 
+          )}
 
           {showFeedBackModal && (
             <FeedbackModal

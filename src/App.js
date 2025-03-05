@@ -39,7 +39,22 @@ import Declaimer from "./pages/Declaimer";
 
 function App() {
   const { theme } = useContext(ThemeContext);
+  // useEffect(() => {
+  //   const { data: authListener } = supabase.auth.onAuthStateChange(
+  //     async (event, session) => {
+  //       console.log("event:", event);
+  //       if (event === "SIGNED_IN") {
+  //         console.log("User signed out");
+  //       } else if (session) {
+  //         console.log("User session updated:", session);
+  //       }
+  //     }
+  //   );
 
+  //   return () => {
+  //     authListener.subscription?.unsubscribe();
+  //   };
+  // }, []);
   return (
     <div className={`App`}>
       <Routes>
@@ -53,7 +68,7 @@ function App() {
         <Route path="/checkout-success" element={<CheckoutSuccess />} />
         <Route path="/checkout-cancelled" element={<CheckoutCancel />} />
         {/* <Route path='/personal-info' element={<PersonalInformation />} /> */}
-        <Route path="/pricing" element={<Pricing /> } />
+        <Route path="/pricing" element={<Pricing />} />
 
         <Route
           path="/setting"
@@ -150,7 +165,7 @@ function App() {
           element={
             <ProtectedRoute>
               <AINewVersion />
-        
+
             </ProtectedRoute>
           }
         />
@@ -173,25 +188,25 @@ function App() {
         <Route
           path="/privacy-policy"
           element={
-        
-              <Privacy />
-            
+
+            <Privacy />
+
           }
-        /> 
+        />
         <Route
           path="/term-and-condition"
           element={
-           
+
             <TermCondition />
-          
+
           }
         />
         <Route
           path="/disclaimer"
           element={
-           
-              <Declaimer />
-   
+
+            <Declaimer />
+
           }
         />
       </Routes>

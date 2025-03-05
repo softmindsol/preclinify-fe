@@ -254,19 +254,18 @@ const Dashboard = () => {
     (streak) => streak?.totalIncorrect,
   );
 
-  useEffect(() => {
-    if (currentPlan === null || currentPlan === undefined) {
-      setDashboardLoading(true);
-      const timeout = setTimeout(() => {
-        navigate("/pricing");
-        toast.error("You need a plan to access the dashboard!");
-        setDashboardLoading(false);
-      }, 500);
+  // useEffect(() => {
+  //   if (currentPlan === null || currentPlan === undefined) {
+  //     setDashboardLoading(true);
+  //     const timeout = setTimeout(() => {
+  //       navigate("/pricing");
+  //       toast.error("You need a plan to access the dashboard!");
+  //       setDashboardLoading(false);
+  //     }, 500);
 
-      return () => clearTimeout(timeout); // Cleanup timeout on unmount
-    }
-  }, [navigate, currentPlan]);
-  console.log("examDuration:", examDuration);
+  //     return () => clearTimeout(timeout); // Cleanup timeout on unmount
+  //   }
+  // }, [navigate, currentPlan]);
 
   return (
     <>
