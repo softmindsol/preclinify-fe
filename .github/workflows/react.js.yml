@@ -2,7 +2,7 @@ name: Preclinify React CI/CD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "staging" ]
 
 jobs:
   pull_latest_changes:
@@ -17,8 +17,8 @@ jobs:
     - name: Pull latest changes
       run: |
         git reset --hard
-        git checkout master
-        git pull origin master
+        git checkout staging
+        git pull origin staging
 
   install_dependencies:
     runs-on: preclinify-fe
@@ -57,7 +57,7 @@ jobs:
       
     - name: Notify Slack (Deployment Started)
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"🚀 *Deployment started!* Starting the deployment for `Preclinify FE`."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"🚀 *Deployment started!* Starting the deployment for `Preclinify FE Staging`."}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: Deploy using deploy.sh script
       run: |
@@ -67,9 +67,9 @@ jobs:
     - name: Notify Slack (Deployment Completed)
       if: success()
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"🎉 *Deployment complete!* `Preclinify FE` has been deployed successfully."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"🎉 *Deployment complete!* `Preclinify FE Staging` has been deployed successfully."}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: Notify Slack (Deployment Failed)
       if: failure()
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ *Deployment failed!* There was an issue deploying `Preclinify FE`. Investigating now."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ *Deployment failed!* There was an issue deploying `Preclinify FE Staging`. Investigating now."}' ${{ secrets.SLACK_WEBHOOK_URL }}
