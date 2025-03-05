@@ -124,7 +124,7 @@ const Scenarios = () => {
 
     fetchData();
   }, [dispatch]);
-  console.log("subscriptions:", subscriptions[0].plan);
+  console.log("subscriptions:", subscriptions[0]?.plan);
 
   return (
     <div className={`min-h-screen md:flex ${darkModeRedux ? "dark" : ""}`}>
