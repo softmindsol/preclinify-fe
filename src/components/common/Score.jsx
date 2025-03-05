@@ -46,6 +46,9 @@ const Score = () => {
   const typeQues = useSelector(
     (state) => state.mode?.questionMode?.selectedPreClinicalOption,
   );
+ const { freeTrialType } = useSelector(
+    (state) => state?.FreeTrialMcqsQuestion,
+  );
 
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
@@ -70,7 +73,7 @@ const Score = () => {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
-
+ 
   const handleQuestionReview = () => {
     dispatch(setQuestionReview(true));
 
@@ -80,6 +83,10 @@ const Score = () => {
       navigation("/sba-presentation");
     } else if (type === "SBA" && !isLoading) {
       navigation("/question-card");
+    } else if (type === "Trial" && freeTrialType === "SBATrialBank") {
+      navigation("/question-card");
+    } else if (type === "Trial" && freeTrialType === "SAQTrialBank") {
+      navigation("/short-question");
     } else if (type === "Mock" && presentationMock) {
       navigation("/mock-presentation");
     } else if (typeQues === "QuesGen" && !isQuesGenLoading) {

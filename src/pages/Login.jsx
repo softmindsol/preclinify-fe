@@ -28,19 +28,19 @@ const Login = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
-      if (userId) {
-        // If userId exists, show a toast and prevent login
-        toast.error(
-          "Please log out from the current session before logging in.",
-        );
-        return; // Prevent login if userId exists
-      }
+      // if (userId) {
+      //   // If userId exists, show a toast and prevent login
+      //   toast.error(
+      //     "Please log out from the current session before logging in.",
+      //   );
+      //   return; // Prevent login if userId exists
+      // }
       try {
         // Use Supabase auth to log in
         const { data, error } = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
-        }); 
+        });
         localStorage.setItem("userId", data?.user?.id);
         localStorage.setItem("authToken", data?.session?.access_token); // Store token if needed
         if (data?.session) {
@@ -49,7 +49,8 @@ const Login = () => {
           toast.success("Logged in successfully!"); // Show success toast
 
           setTimeout(() => {
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true });
+            //  navigate("/", { replace: true });
           }, 1000); // 2-second delay before navigating
         }
 
@@ -75,7 +76,6 @@ const Login = () => {
   //   dispatch(fetchSubscriptions({ userId }));
   // }, [navigate]);
 
- 
   return (
     <div className="flex w-full items-center overflow-hidden">
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">
