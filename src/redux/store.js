@@ -33,12 +33,16 @@ import SaqfilterQuestionReducer from "./features/filter-question/filter-saq-ques
 import FiltershortQuestionsReducer from './features/filter-question/filter-saq-question.slice'
 import subscriptionReducer from './features/subscription/subscription.slice';
 import virtualPatientReducer from './features/osce-bot/virtual.modal.slice';
-import SBAResultReducer from './features/all-results/results.sba.slice'
+import SBAResultReducer from './features/all-results/results.sba.slice';
+import FreeTrialMcqsQuestionReducer from './features/free-trial-bank/free-trial-bank.slice'
+import shortQuestionsFreeTrialReducer from './features/free-trial-bank/free-trial-saq.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: "root",
   storage, // LocalStorage for modules and mcqsQuestion
   whitelist: [
+    "shortQuestionsFreeTrial",
+    "FreeTrialMcqsQuestion",
     "SBAResult",
     "FiltershortQuestionsReducer",
     "Mockpresentation",
@@ -74,6 +78,8 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  shortQuestionsFreeTrial: shortQuestionsFreeTrialReducer,
+  FreeTrialMcqsQuestion: FreeTrialMcqsQuestionReducer,
   SBAResult : SBAResultReducer,
   virtualPatient: virtualPatientReducer,
   subscription: subscriptionReducer,

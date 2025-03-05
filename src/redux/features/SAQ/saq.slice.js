@@ -10,7 +10,7 @@ import {
 const initialState = {
   shortQuestions: [],
   modules: [],
-  attempts: [],
+  attempts: [], 
   counts: {},
   sqaChildren: [],
   organizedData: [], 

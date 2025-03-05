@@ -494,7 +494,6 @@ export const fetchShortQuestionsWithChildren = createAsyncThunk(
         children: saqChildData.filter((child) => child.parentQuestionId === parent.id),
       }));
 
-      console.log("All Data:", combinedData);
 
       return combinedData;
     } catch (error) {
@@ -531,7 +530,6 @@ export const fetchFilteredCorrecUnAnsweredShortQuestions = createAsyncThunk(
       if (resultError) {
         throw new Error(`Error fetching resultHistorySaq: ${resultError.message}`);
       }
-      console.log("resultHistory:", resultHistory);
 
       // ✅ Extracting questionIds and childrenIds from resultHistorySaq
       const excludedParentIds = resultHistory.map((item) => item.questionId);
@@ -583,7 +581,6 @@ export const fetchFilteredCorrecUnAnsweredShortQuestions = createAsyncThunk(
         children: saqChildData.filter((child) => child.parentQuestionId === parent.id),
       }));
 
-      console.log("Filtered Data (excluding resultHistorySaq records):", combinedData);
 
       return combinedData;
     } catch (error) {

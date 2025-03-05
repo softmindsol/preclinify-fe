@@ -27,8 +27,16 @@ const Pricing = () => {
   const pricingPlans = {
     termly: [
       {
+        // planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+        title: "The Trial Plan",
+        price: "Free",
+        monthlyPrice: "Free",
+        // "plan-slug": PlanSlug("The OSCE plan", 3),
+        features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
+      },
+      {
         planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
-        title: "The OSCE plan",
+        title: "The OSCE Plan",
         price: 35,
         monthlyPrice: (35 / 3).toFixed(2),
         "plan-slug": PlanSlug("The OSCE plan", 3),
@@ -58,6 +66,14 @@ const Pricing = () => {
       },
     ],
     annual: [
+      {
+        // planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+        title: "The Trial Plan",
+        price: "Free",
+        monthlyPrice: "Free",
+        // "plan-slug": PlanSlug("The OSCE plan", 3),
+        features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
+      },
       {
         planId: process.env.REACT_APP_PRICE_OSCE_PLAN_12,
 
@@ -207,12 +223,18 @@ const Pricing = () => {
                           £{plan.oldPrice}
                         </span>
                       )}
-                      <span className="text-4xl">
-                        £{plan.showTotalOnly ? plan.price : plan.monthlyPrice}
-                        <span className="text-lg font-normal">
-                          /{plan.showTotalOnly ? "year" : "month"}
+                      {plan.price === "Free" ? (
+                        <span className="text-[40px] font-black uppercase ">
+                          {plan.showTotalOnly ? plan.price : plan.monthlyPrice}
                         </span>
-                      </span>
+                      ) : (
+                        <span className="text-4xl">
+                          £{plan.showTotalOnly ? plan.price : plan.monthlyPrice}
+                          <span className="text-lg font-normal">
+                            /{plan.showTotalOnly ? "year" : "month"}
+                          </span>
+                        </span>
+                      )}
                     </div>
                     {/* {plan.hasDiscount && (
                       <div className="mt-3 inline-flex items-center rounded-full bg-white/20 px-3 py-1">
