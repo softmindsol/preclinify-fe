@@ -10,6 +10,7 @@ import {
   fetchUserPhoneNumber,
   insertOrUpdateUserInformation,
 } from "../redux/features/personal-info/personal-info.service";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ const Register = () => {
   const [termsChecked, setTermsChecked] = useState(false);
   const [emailUpdatesChecked, setEmailUpdatesChecked] = useState(false);
   const [smsUpdatesChecked, setSmsUpdatesChecked] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   // Formik setup
   // Formik setup
   const formik = useFormik({
@@ -36,21 +38,23 @@ const Register = () => {
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Required"),
-      phone: Yup.string().required("Required"),
+      phone: Yup.string()
+        .matches(/^\+?[0-9]+$/, "Phone number must contain only digits")
+        .min(10, "Phone number must be at least 10 digits")
+        .max(15, "Phone number must not exceed 15 digits")
+        .required("Required"),
       displayName: Yup.string().required("Name is Required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      if (!termsChecked || !emailUpdatesChecked || !smsUpdatesChecked) {
-        toast.error(
-          "Please agree to the terms and conditions and check the other options.",
-        );
+      if (!termsChecked) {
+        toast.error("Please agree to the terms and conditions.");
         setSubmitting(false);
         return;
       }
-    
+
       try {
         // Supabase auth register
-        const { data : user, error } = await supabase.auth.signUp({
+        const { data: user, error } = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
           options: {
@@ -60,7 +64,7 @@ const Register = () => {
             },
           },
         });
-        
+
         if (error) {
           toast.error("Error occurred while registering");
         } else {
@@ -78,14 +82,14 @@ const Register = () => {
                 created_at: new Date(),
               },
             ]);
-    
+
           if (insertError) {
             console.error("Error adding tokens:", insertError);
             toast.error("Failed to initialize subscription tokens.");
           } else {
             toast.success("Subscription initialized with 15 tokens.");
           }
-    
+
           // Fetch user phone number and navigate to verification page
           await dispatch(
             fetchUserPhoneNumber({
@@ -103,8 +107,8 @@ const Register = () => {
         toast.error("An error occurred. Please try again!");
       } finally {
         setSubmitting(false);
-      }
-    }
+      }
+    },
   });
 
   return (
@@ -164,7 +168,7 @@ const Register = () => {
             ) : null}
           </div>
 
-          <div>
+          <div className="relative">
             <label
               htmlFor="password"
               className="text-[14px] font-medium text-[#3CC8A1] sm:text-[16px]"
@@ -173,7 +177,7 @@ const Register = () => {
             </label>
             <br />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               placeholder="Enter your Password..."
               value={formik.values.password}
@@ -181,12 +185,18 @@ const Register = () => {
               onBlur={formik.handleBlur}
               className="mt-2 h-[50px] w-full rounded-[8px] border-[2px] border-black p-5 placeholder:text-[14px] md:placeholder:text-[16px]"
             />
+            <span
+              className="absolute right-3 top-12 cursor-pointer text-gray-600"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </span>
             {formik.touched.password && formik.errors.password ? (
               <div className="text-red-500">{formik.errors.password}</div>
             ) : null}
           </div>
 
-          <div>
+          <div className="relative mt-4">
             <label
               htmlFor="confirmPassword"
               className="text-[14px] font-medium text-[#3CC8A1] sm:text-[16px]"
@@ -195,7 +205,7 @@ const Register = () => {
             </label>
             <br />
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               id="confirmPassword"
               placeholder="Enter your Confirm Password..."
               value={formik.values.confirmPassword}
@@ -203,6 +213,16 @@ const Register = () => {
               onBlur={formik.handleBlur}
               className="mt-2 h-[50px] w-full rounded-[8px] border-[2px] border-black p-5 placeholder:text-[14px] md:placeholder:text-[16px]"
             />
+            <span
+              className="absolute right-3 top-12 cursor-pointer text-gray-600"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? (
+                <FiEyeOff size={18} />
+              ) : (
+                <FiEye size={18} />
+              )}
+            </span>
             {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
               <div className="text-red-500">
                 {formik.errors.confirmPassword}
@@ -297,12 +317,6 @@ const Register = () => {
             <div>
               <button
                 type="submit"
-                disabled={
-                  formik.isSubmitting ||
-                  !termsChecked ||
-                  !emailUpdatesChecked ||
-                  !smsUpdatesChecked
-                }
                 className="h-[50px] w-full rounded-[8px] bg-[#FFE9D6] text-[14px] font-medium text-[#FF9741] transition-all duration-150 hover:bg-[#e3863a] hover:text-white sm:text-[16px]"
               >
                 {formik.isSubmitting ? "Loading..." : "Sign Up"}

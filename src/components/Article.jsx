@@ -25,7 +25,7 @@ const Article = ({ article, id }) => {
   const headings = extractHeadings(textbookContent);
 
   return (
-    <div className="mx-auto flex w-[900px] flex-col md:flex-row">
+    <div className="mx-auto mt-8 flex w-[900px] flex-col md:flex-row">
       {/* Main Content */}
       <div className="mx-7 flex-1 rounded-[8px] bg-white p-5">
         <h1 className="mb-4 text-3xl text-[30px] font-bold text-[#3F3F46]">

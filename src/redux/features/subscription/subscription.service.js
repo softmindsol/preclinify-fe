@@ -19,28 +19,29 @@ export const fetchSubscriptions = createAsyncThunk(
                 return rejectWithValue("No subscriptions found.");
             }
 
-            console.log("subscriptions:", subscriptions);
+            // console.log("subscriptions:", subscriptions);
 
             // Extract planId from the subscription
             const planId = subscriptions[0]?.plan;
-            console.log(" subscriptions, planId:", subscriptions, planId);
 
             if (!planId) {
-                   return { subscriptions, planId };
+                return { subscriptions, planId };
             }
+
 
             // Fetch the corresponding plan details from the plans table
             const { data: plan, error: planError } = await supabase
                 .from("plans")
                 .select("*")
-                .eq("planId", planId)
-                .limit(1)
-                .maybeSingle(); // Avoids error if multiple/no rows
+            .eq("planId", planId)
+            .limit(1)
+            .maybeSingle(); // Avoids error if multiple/no rows
 
 
             if (planError) {
                 return rejectWithValue(planError.message);
             }
+            console.log("plan:", plan);
 
 
 
@@ -56,7 +57,6 @@ export const incrementUsedTokens = createAsyncThunk(
     "subscriptions/incrementUsedTokens",
     async ({ userId }, { rejectWithValue }) => {
         try {
-            console.log("userId:", userId);
 
             if (!userId) {
                 console.log("UserId is required");

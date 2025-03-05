@@ -6,6 +6,7 @@ const subscriptionSlice = createSlice({
   initialState: {
     subscriptions: [],
     plan: null,
+    planType:null,
     loading: false,
     error: null,
     type: "osce",
@@ -19,10 +20,10 @@ const subscriptionSlice = createSlice({
       })
       .addCase(fetchSubscriptions.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("action.payload.subscriptions:", action.payload);
-        
-        state.subscriptions = action.payload.subscriptions; // Store subscription data
-        state.plan = action.payload.plan; // Store plan details
+        state.subscriptions = action?.payload?.subscriptions; // Store subscription data
+        state.plan = action?.payload?.plan?.planId; // Store plan details
+        state.planType = action?.payload?.plan?.type; // Store plan details
+
       })
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.loading = false;

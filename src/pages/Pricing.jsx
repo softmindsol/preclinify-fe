@@ -7,16 +7,20 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 import ManageModal from "../components/common/ManageModal";
+import { useNavigate } from "react-router-dom";
 
 const Pricing = () => {
   const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
   const [managePackageModal, setManagePackageModal] = useState(false);
   const subscription = useSelector(
     (state) => state?.subscription?.subscriptions,
   );
-
   const currentPlan = useSelector((state) => state?.subscription?.plan);
-  console.log("🚀 ~ Pricing ~ currentPlan:", currentPlan);
+
+  console.log("userId:", userId);
+  console.log("currentPlan:", currentPlan);
+
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
 
@@ -108,7 +112,8 @@ const Pricing = () => {
   // Function to handle the subscription
   const handleSubscription = async (planSlug) => {
     if (!userId) {
-      toast.error("Please login to subscribe to a plan");
+      toast.error("Please sign up to continue with the subscription.");
+      navigate("/signup");
       return;
     }
     if (currentPlan !== null && currentPlan !== undefined) {
@@ -161,7 +166,7 @@ const Pricing = () => {
     <div className="">
       <Navbar />
       <div className="mt-[500px] flex h-screen flex-col items-center justify-center lg:mt-24 2xl:mt-32">
-        <div className="text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
+        <div className="pt-16 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>
         </div>
@@ -235,7 +240,7 @@ const Pricing = () => {
                   </div>
 
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
-                    {userId && currentPlan?.planId === plan?.planId ? (
+                    {userId && currentPlan === plan?.planId ? (
                       // User is logged in and this is their current plan
                       <button
                         disabled

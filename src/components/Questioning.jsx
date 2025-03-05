@@ -70,9 +70,15 @@ import {
 import { setSelectedSBAModule } from "../redux/features/filter-question/filter-question.slice";
 import MobileBar from "./common/Drawer";
 import { fetchDailyWork } from "../redux/features/all-results/result.sba.service";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 
 const Questioning = () => {
-  const planType = useSelector((state) => state?.subscription?.plan?.type);
+  // const planType = useSelector((state) => state?.subscriptions?.plan);
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
+ 
+
   const location = useLocation();
   const { state } = location;
   const sqa = useSelector((state) => state?.SQA || []);
@@ -127,8 +133,6 @@ const Questioning = () => {
   const filteredSBAModules = data.data.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-  console.log(" SBADataLength:", SBADataLength);
-  console.log("filteredSBAModules:", filteredSBAModules);
 
   const filteredMockModules = modules.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -155,7 +159,6 @@ const Questioning = () => {
     dispatch(setSBAPresentationValue(!isSortedByPresentation));
     dispatch(setMockPresentationValue(!isSortedByPresentation));
   };
-  console.log("sessionIsOpen", isOpenSetUpSessionModal);
 
   const cleanedPresentations = presentations?.map((presentation) => ({
     ...presentation,
@@ -947,6 +950,10 @@ const Questioning = () => {
     }
   }, [state]);
 
+  useEffect(() => {
+    dispatch(fetchSubscriptions({ userId }));
+  }, [dispatch, userId]);
+
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
@@ -1392,7 +1399,7 @@ const Questioning = () => {
                         const moduleData = SBADataLength?.find(
                           (module) => module.categoryId === row.categoryId,
                         );
-                        console.log("moduleData:", moduleData);
+                        // console.log("moduleData:", moduleData);
 
                         const totalQuestions = moduleData
                           ? moduleData.questions.length

@@ -41,15 +41,14 @@ export const fetchDaysUntilExam = createAsyncThunk(
         return rejectWithValue("No exam date found");
       }
 
-      const examDate = dayjs(data.exam_date);
-      const currentDate = dayjs();
-      const daysLeft = examDate.diff(currentDate, "day"); // Get difference in days
-      if (currentDate - daysLeft===0){
-        return { daysLeft :0}
-      }
+      // Convert exam date and current date to start of the day
+      const examDate = dayjs(data.exam_date).startOf("day");
+      const currentDate = dayjs().startOf("day");
+
+      const daysLeft = examDate.diff(currentDate, "day"); // Get exact days difference
       return daysLeft;
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  },
+  }
 );
