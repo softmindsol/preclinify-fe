@@ -89,7 +89,6 @@ const SetupSessionModal = ({
     (state) => state?.FreeTrialMcqsQuestion,
   );
 
-  console.log("freeTrialType:", freeTrialType);
 
   const filteredSBAModules = data.data.filter((module) => module);
 

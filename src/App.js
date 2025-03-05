@@ -39,22 +39,7 @@ import Declaimer from "./pages/Declaimer";
 
 function App() {
   const { theme } = useContext(ThemeContext);
-  // useEffect(() => {
-  //   const { data: authListener } = supabase.auth.onAuthStateChange(
-  //     async (event, session) => {
-  //       console.log("event:", event);
-  //       if (event === "SIGNED_IN") {
-  //         console.log("User signed out");
-  //       } else if (session) {
-  //         console.log("User session updated:", session);
-  //       }
-  //     }
-  //   );
 
-  //   return () => {
-  //     authListener.subscription?.unsubscribe();
-  //   };
-  // }, []);
   return (
     <div className={`App`}>
       <Routes>
