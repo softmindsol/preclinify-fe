@@ -77,14 +77,14 @@ import {
   fetchShortQuestionFreeTrial,
   fetchShortQuestionsWithChildrenFreeTrial,
 } from "../redux/features/free-trial-bank/free-trial-saq.service";
+import ShowPopup from "./common/ShowPopup";
 
 const Questioning = () => {
   // const planType = useSelector((state) => state?.subscriptions?.plan);
   const { subscriptions, plan, loader, planType } = useSelector(
     (state) => state?.subscription,
   );
-  console.log("planType:", planType);
-  console.log("plan:", plan);
+ 
 
   const location = useLocation();
   const { state } = location;
@@ -133,6 +133,7 @@ const Questioning = () => {
     (state) => state?.mcqsQuestion?.totalSBAQuestionData,
   );
   const userId = localStorage.getItem("userId");
+  const [showPlanPopup, setShowPlanPopup] = useState(false);
 
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
@@ -165,9 +166,21 @@ const Questioning = () => {
     (state) => state.presentations.presentations,
   );
   const handleToggle = () => {
+
     setIsSortedByPresentation((prev) => !prev);
     dispatch(setSBAPresentationValue(!isSortedByPresentation));
     dispatch(setMockPresentationValue(!isSortedByPresentation));
+      if (
+                                plan === undefined ||
+                                planType === null ||
+                                planType === undefined
+                              ) {
+                                setShowPlanPopup(true);
+                              }
+                              console.log(
+                                "handleChange on change",
+                                selectedOption,
+                              );
   };
 
   const cleanedPresentations = presentations?.map((presentation) => ({
@@ -202,7 +215,21 @@ const Questioning = () => {
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+     
+                              // if (
+                              //   plan === undefined ||
+                              //   planType === null ||
+                              //   planType === undefined
+                              // ) {
+                              //   setShowPlanPopup(true);
+                              // }
+                              // console.log(
+                              //   "handleChange on change",
+                              //   selectedOption,
+                              // );
+                  
   };
+  
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -1028,22 +1055,10 @@ const Questioning = () => {
         </div>
       </div>
       <div className="w-full lg:ml-[260px] xl:ml-[250px]">
-        <div
-        // className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70"}`}
-        >
+        <div>
           <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
-            {/* drawer */}
-
             {/* Table Header */}
 
-            {/* {(planType === "Osce" || planType === undefined) &&
-              type !== "Trial" && (
-                <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-                  <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                    To get this feature, upgrade your plan
-                  </p>
-                </div>
-              )} */}
             <div className="flex min-h-screen flex-col space-y-4 px-16 py-4 sm:m-10">
               <div className="flex flex-col space-y-10">
                 <div className="h-[137px] p-4">
@@ -1118,7 +1133,10 @@ const Questioning = () => {
                             value={selectedOption} // Bind the selected value to state
                             onChange={handleSelectChange} // Trigger the handler on change
                           >
-                       {(planType === "Osce" || planType === undefined) && <option value="Trial">Trial</option>}
+                            {(planType === "Osce" ||
+                              planType === undefined) && (
+                              <option value="Trial">Trial</option>
+                            )}
                             <option value="SBA">SBA</option>
                             <option value="SAQ">SAQ</option>
                             <option value="Mock">Mock</option>
@@ -1171,12 +1189,51 @@ const Questioning = () => {
                 </div>
                 {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
-                  {(planType === "Osce" || planType === undefined) &&
+                  {(planType === "Osce" || plan===undefined ||planType === undefined) &&
                     type !== "Trial" && (
-                      <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center rounded-3xl bg-black/40 ">
-                        <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                          To get this feature, upgrade your plan
-                        </p>
+                    
+                      <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
+                        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A]">
+                          <div className="text-center">
+                            {/* Icon */}
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#3CC8A1]/10">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-[#3CC8A1]"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              </svg>
+                            </div>
+
+                            {/* Title */}
+                            <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+                              Upgrade Your Plan
+                            </h3>
+
+                            {/* Description */}
+                            <p className="mb-6 text-gray-600 dark:text-gray-300">
+                              To access this feature, please upgrade your plan.
+                            </p>
+
+                            {/* Buttons */}
+                            <div className="flex justify-center gap-4">
+                              <Link
+                                to="/pricing"
+                                className="rounded-md bg-[#3CC8A1] px-6 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#34b08c]"
+                              >
+                                Buy Plan
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                   {selectedTab === "Clinical" && (
