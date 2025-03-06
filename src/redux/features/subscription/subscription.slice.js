@@ -12,7 +12,16 @@ const subscriptionSlice = createSlice({
     error: null,
     type: "osce",
   },
-  reducers: {},
+  reducers: {
+    resetPlan:(state,action)=>{
+      state.subscriptions = [];
+      state.plan = null;
+      state.planType = null;
+      state.completePlanData = [];
+      state.loading = false;
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSubscriptions.pending, (state) => {
@@ -32,5 +41,7 @@ const subscriptionSlice = createSlice({
       });
   },
 });
+export const { resetPlan } = subscriptionSlice.actions;
+
 
 export default subscriptionSlice.reducer;

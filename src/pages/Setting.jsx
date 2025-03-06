@@ -21,6 +21,7 @@ import {
   insertOrUpdateUserInformation,
 } from "../redux/features/personal-info/personal-info.service";
 import { logoutUser } from "../redux/features/logout/logout.service";
+import { resetPlan } from "../redux/features/subscription/subscription.slice";
 
 const Setting = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const Setting = () => {
       // Remove user data and update Redux state
       localStorage.removeItem("userId");
       dispatch(clearUserId());
-
+dispatch(resetPlan());
       // Show success message and redirect
       toast.success("User logged out successfully");
       navigate("/login");

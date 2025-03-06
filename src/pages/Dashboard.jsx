@@ -30,7 +30,7 @@ import Loader from "../components/common/Loader";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const currentPlan = useSelector((state) => state?.subscription?.plan) || null;
+  const currentPlan = useSelector((state) => state?.subscription) || null;
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [workEntries, setWorkEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,15 +42,15 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [localRecentSession, setLocalRecentSession] = useState([]);
-  const data = useSelector((state) => state.module);
+  const data = useSelector((state) => state?.module);
   const [isOpenSetUpSessionModal, setIsOpenSetUpSessionModal] = useState(false);
-  const { limit } = useSelector((state) => state.limit);
+  const { limit } = useSelector((state) => state?.limit);
   const [isLoading, setIsLoading] = useState(false);
   const [isSession, setIsSession] = useState(false);
   const [sessionId, setSessionId] = useState([]);
-  const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
+  const darkModeRedux = useSelector((state) => state?.darkMode?.isDarkMode);
   const examDuration = useSelector((state) => state?.examDates?.examDate);
-  const profile = useSelector((state) => state.personalInfo.userInfo);
+  const profile = useSelector((state) => state?.personalInfo?.userInfo);
   const profileLoading = useSelector((state) => state?.personalInfo?.loading);
   const userId = localStorage.getItem("userId");
   const streaks = useSelector((state) => state?.streak?.streak) || [];
