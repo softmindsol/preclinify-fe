@@ -172,15 +172,15 @@ const Scenarios = () => {
 
           {activeTab === "static" ? (
             <div
-              className={`${subscriptions[0].plan === null && "pointer-events-auto relative z-50 w-full  bg-opacity-70"}`}
+              // className={`${plan === null && "pointer-events-auto relative z-50 w-full  bg-opacity-70"}`}
             >
-              {(planType === null || planType === undefined) && (
+              {/* {(planType === null || planType === undefined) && (
                 <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
                   <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
                     To get this feature, upgrade your plan
                   </p>
                 </div>
-              )}
+              )} */}
               <div className="rounded-[8px] bg-white p-5 dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
                 <div className="flex items-center justify-center">
                   <div className="mb-6 grid justify-items-center gap-4 sm:grid-cols-2 2xl:grid-cols-4">
