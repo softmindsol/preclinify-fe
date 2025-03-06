@@ -53,7 +53,6 @@ const formik = useFormik({
         dispatch(fetchSubscriptions({ userId: data?.user?.id }))
           .unwrap()
           .then((res) => {
-            console.log("res:", res);
             
             setSubmitting(true);
             if (res?.subscriptions[0]?.plan===null) {
