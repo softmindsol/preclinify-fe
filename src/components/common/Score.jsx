@@ -214,7 +214,8 @@ const Score = () => {
             <div className="mb-5 flex flex-col-reverse md:flex-col">
               <div className="flex flex-col-reverse space-y-3 md:flex-col">
                 <div className="mt-2 md:mt-5">
-                  {type === "SAQ" ? (
+                  {type === "SAQ" ||
+                  (type === "Trial" && freeTrialType === "SAQTrialBank") ? (
                     <p className="text-base font-semibold text-[#3F3F46] dark:text-white lg:text-lg">
                       Total Attempted: {saqTotalAttempted}
                     </p>
@@ -224,7 +225,8 @@ const Score = () => {
                     </p>
                   )}
                 </div>
-                {type === "SAQ" ? (
+                {type === "SAQ" ||
+                (type === "Trial" && freeTrialType === "SAQTrialBank") ? (
                   <div className="flex flex-col items-center justify-between gap-x-12 text-base font-medium text-[#3F3F46] dark:text-white md:flex-row lg:text-lg">
                     <p className="whitespace-nowrap">
                       Correct:<span>{sqacorrect || 0}</span>
