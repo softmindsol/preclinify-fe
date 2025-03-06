@@ -329,11 +329,14 @@ const Dashboard = () => {
                     </div>
                     <div className="h-[81px] rounded-[6px] bg-[#FFFFFF] px-4 py-2.5 text-center text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
                       <div className="flex h-full items-center justify-center gap-x-4">
-                        <img
-                          src="https://images.unsplash.com/photo-1719937051124-91c677bc58fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D"
-                          alt="aaaa"
-                          className="h-10 w-10 rounded-full md:h-14 md:w-14"
-                        />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3CC8A1] md:h-14 md:w-14">
+                          <img
+                            src="/assets/profile.png"
+                            alt="profile_picture"
+                            className="flex items-center justify-center"
+                          />
+                        </div>
+
                         <div className="">
                           <p className="text-[14px] font-semibold text-[#52525B] dark:text-white xl:text-[18px]">
                             {profileLoading ? (

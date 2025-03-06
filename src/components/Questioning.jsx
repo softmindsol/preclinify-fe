@@ -83,6 +83,8 @@ const Questioning = () => {
   const { subscriptions, plan, loader, planType } = useSelector(
     (state) => state?.subscription,
   );
+  console.log("planType:", planType);
+  console.log("plan:", plan);
 
   const location = useLocation();
   const { state } = location;
@@ -115,7 +117,7 @@ const Questioning = () => {
   const [moduleId, setModuleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const [selectedOption, setSelectedOption] = useState("SBA");
+  const [selectedOption, setSelectedOption] = useState(planType===undefined ?"Trial":"SBA");
   const [selectedPreClinicalOption, setSelectedPreClinicalOption] =
     useState("QuesGen");
   const [recentSessions, setRecentSessions] = useState([]);
@@ -1116,10 +1118,10 @@ const Questioning = () => {
                             value={selectedOption} // Bind the selected value to state
                             onChange={handleSelectChange} // Trigger the handler on change
                           >
+                       {(planType === "Osce" || planType === undefined) && <option value="Trial">Trial</option>}
                             <option value="SBA">SBA</option>
                             <option value="SAQ">SAQ</option>
                             <option value="Mock">Mock</option>
-                            <option value="Trial">Trial</option>
                           </select>
                         ) : (
                           <select
