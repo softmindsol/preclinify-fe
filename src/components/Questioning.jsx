@@ -1417,14 +1417,7 @@ const Questioning = () => {
                           ))}
 
                         <div className="">
-                          {/* {(planType === "Osce" || planType === undefined) &&
-                        type !== "Trial" && (
-                          <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-                            <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                              To get this feature, upgrade your plan
-                            </p>
-                          </div>
-                        )} */}
+                          
                           {selectedTab === "Clinical" &&
                             type === "SBA" &&
                             isSortedByPresentation &&
