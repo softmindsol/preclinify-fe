@@ -72,9 +72,9 @@ const Navbar = () => {
             <NavLink to="/">
               <li className="cursor-pointer hover:text-[#28A079]">Home</li>
             </NavLink>
-            <NavLink to="/pricing">
+            { !userId && <NavLink to="/pricing">
               <li className="cursor-pointer hover:text-[#28A079]">Pricing</li>
-            </NavLink>
+            </NavLink>}
             {userId ? (
               <>
                 {/* {currentPlan && ( */}

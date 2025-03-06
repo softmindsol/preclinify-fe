@@ -29,8 +29,8 @@ const Sidebar = () => {
         {[
           { id: "/dashboard", name: "Dashboard", icon: "house" },
           { id: "/questioning", name: "Practice", icon: "dumbbell" },
-          // { id: "/performance", name: "Performance", icon: "chart-line" },
           { id: "/osce", name: "OSCE", icon: "bed" },
+          { id: "/pricing", name: "Pricing", icon: "gem" },
         ].map((item, index) => (
           <div key={index}>
             <NavLink
@@ -65,10 +65,11 @@ const Sidebar = () => {
                     <path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z" />
                   </>
                 )}
-                {item.icon === "chart-line" && (
+                {item.icon === "gem" && (
                   <>
-                    <path d="M3 3v16a2 2 0 0 0 2 2h16" />
-                    <path d="m19 9-5 5-4-4-3 3" />
+                    <path d="M6 3h12l4 6-10 13L2 9Z" />
+        <path d="M11 3 8 9l4 13 4-13-3-6" />
+        <path d="M2 9h20" />
                   </>
                 )}
                 {item.icon === "git-merge" && (
