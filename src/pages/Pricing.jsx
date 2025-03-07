@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 import ManageModal from "../components/common/ManageModal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Pricing = () => {
   const userId = localStorage.getItem("userId");
@@ -17,9 +17,6 @@ const Pricing = () => {
     (state) => state?.subscription?.subscriptions,
   );
   const currentPlan = useSelector((state) => state?.subscription?.plan);
-
-  console.log("userId:", userId);
-  console.log("currentPlan:", currentPlan);
 
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
@@ -180,9 +177,33 @@ const Pricing = () => {
 
   return (
     <div className="">
-      <Navbar />
-      <div className="mt-[500px] flex h-screen flex-col items-center justify-center lg:mt-24 2xl:mt-32">
-        <div className="pt-16 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
+      {/* <Navbar /> */}
+      {userId && (
+        <Link to={"/dashboard"}>
+          <div className="ml-10 mt-10 flex cursor-pointer items-center gap-x-3 text-[#52525B] hover:text-[#171719]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-left"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            <p className="text-[16px] font-semibold">Back to Dashboard</p>
+          </div>
+        </Link>
+      )}
+
+      <div
+        className={`flex flex-col items-center justify-center ${userId ? "mt-0" : "mt-10"}`}
+      >
+        <div className="text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>
         </div>
@@ -215,7 +236,7 @@ const Pricing = () => {
                 className="relative mb-8 mt-5 rounded-[16px] transition hover:shadow-greenBlur"
               >
                 <div className="h-[500px] w-[270px] rounded-[16px] border-[1px] border-[#3CC8A1] lg:h-[590px] lg:w-[310px]">
-                  <div className="rounded-tl-[14px] rounded-tr-[14px] bg-[#3CC8A1] p-8 text-center text-white">
+                  <div className="max-h-[140px] rounded-tl-[14px] rounded-tr-[14px] bg-[#3CC8A1] p-8 text-center text-white">
                     <h3 className="mb-2 text-xl font-semibold">{plan.title}</h3>
                     <div className="font-bold">
                       {plan.oldPrice && (
@@ -224,7 +245,7 @@ const Pricing = () => {
                         </span>
                       )}
                       {plan.price === "Free" ? (
-                        <span className="text-[40px] font-black uppercase ">
+                        <span className="text-[40px] font-black uppercase">
                           {plan.showTotalOnly ? plan.price : plan.monthlyPrice}
                         </span>
                       ) : (

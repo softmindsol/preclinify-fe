@@ -8,7 +8,20 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId");
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
 
+  const navItems = [
+    { id: "/dashboard", name: "Dashboard", icon: "house" },
+    { id: "/questioning", name: "Practice", icon: "dumbbell" },
+    { id: "/osce", name: "OSCE", icon: "bed" },
+  ];
+
+  // **Only show pricing if plan is null or undefined**
+  if (!plan) {
+    navItems.push({ id: "/pricing", name: "Pricing", icon: "gem" });
+  }
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
@@ -26,12 +39,7 @@ const Sidebar = () => {
 
       {/* Menu Items */}
       <nav className="w-full space-y-8 text-[#3F3F46]">
-        {[
-          { id: "/dashboard", name: "Dashboard", icon: "house" },
-          { id: "/questioning", name: "Practice", icon: "dumbbell" },
-          { id: "/osce", name: "OSCE", icon: "bed" },
-          { id: "/pricing", name: "Pricing", icon: "gem" },
-        ].map((item, index) => (
+        {navItems.map((item, index) => (
           <div key={index}>
             <NavLink
               to={item.id}
@@ -68,8 +76,8 @@ const Sidebar = () => {
                 {item.icon === "gem" && (
                   <>
                     <path d="M6 3h12l4 6-10 13L2 9Z" />
-        <path d="M11 3 8 9l4 13 4-13-3-6" />
-        <path d="M2 9h20" />
+                    <path d="M11 3 8 9l4 13 4-13-3-6" />
+                    <path d="M2 9h20" />
                   </>
                 )}
                 {item.icon === "git-merge" && (

@@ -28,43 +28,40 @@ const Login = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
-      // if (userId) {
-      //   // If userId exists, show a toast and prevent login
-      //   toast.error(
-      //     "Please log out from the current session before logging in.",
-      //   );
-      //   return; // Prevent login if userId exists
-      // }
       try {
         // Use Supabase auth to log in
         const { data, error } = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
         });
-        localStorage.setItem("userId", data?.user?.id);
-        localStorage.setItem("authToken", data?.session?.access_token); // Store token if needed
-        if (data?.session) {
-          dispatch(fetchSubscriptions({ userId }));
 
-          toast.success("Logged in successfully!"); // Show success toast
-
-          setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-            //  navigate("/", { replace: true });
-          }, 1000); // 2-second delay before navigating
+        if (error || !data?.user) {
+          setErrors({ email: "Invalid Login Credentials!" });
+          return;
         }
 
-        // navigate('/dashboard'); // Redirect to the dashboard or another page
-        // if (error) {
-        //     toast.error(error.message);
-        //     await resendVerificationEmail(values.email);
-        //     setErrors({ email: error.message }); // Set error message for email field
-        // } else {
-        //     // On success, store the session (if needed)
-        //     localStorage.setItem('authToken', data.session.access_token); // Store token if needed
-        //     toast.success('Logged in successfully!'); // Show success toast
-        //     navigate('/dashboard'); // Redirect to the dashboard or another page
-        // }
+        const userId = data.user.id;
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("authToken", data.session.access_token); // Store token if needed
+
+
+        // // **Check if the user is new**
+        // const createdAt = new Date(data.user.created_at);
+        // const now = new Date();
+        // const isNewUser = (now - createdAt) / (1000 * 60) < 10; // Less than 10 minutes old
+
+        // Fetch subscriptions (if needed)
+        dispatch(fetchSubscriptions({ userId }));
+
+        toast.success("Logged in successfully!"); // Show success toast
+ navigate("/dashboard", { replace: true });
+        // setTimeout(() => {
+        //   if (isNewUser) {
+        //     navigate("/pricing", { replace: true }); // Redirect new users to pricing page
+        //   } else {
+        //     // Redirect existing users to dashboard
+        //   }
+        // }, 1000); // Delay before navigating
       } catch (error) {
         setErrors({ email: "Invalid Login Credentials!" });
       } finally {
@@ -72,9 +69,7 @@ const Login = () => {
       }
     },
   });
-  // useEffect(() => {
-  //   dispatch(fetchSubscriptions({ userId }));
-  // }, [navigate]);
+
 
   return (
     <div className="flex w-full items-center overflow-hidden">

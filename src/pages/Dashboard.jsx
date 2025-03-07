@@ -60,6 +60,9 @@ const Dashboard = () => {
     incorrect: [],
     days: [],
   });
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -266,7 +269,6 @@ const Dashboard = () => {
   //     return () => clearTimeout(timeout); // Cleanup timeout on unmount
   //   }
   // }, [navigate, currentPlan]);
-
   return (
     <>
       {dashboardLoading ? (
@@ -355,7 +357,9 @@ const Dashboard = () => {
 
                 <div className="mt-8 space-y-6 md:mt-0">
                   <div className="flex w-full flex-col items-center justify-center gap-x-6 md:flex-row">
-                    <div className="xs:w-[420px] h-[430px] w-[95%] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] xl:w-[610px] 2xl:w-[745px]">
+                    <div
+                      className={`h-[430px] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] ${plan === undefined || plan === null ? "w-[100%]" : "xs:w-[420px] w-[95%] xl:w-[610px] 2xl:w-[745px]"} `}
+                    >
                       <div className="flex items-end justify-end">
                         <div className="relative mb-5 w-[180px]">
                           <DatePicker
@@ -490,69 +494,73 @@ const Dashboard = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="xs:w-[445px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
-                      <div className="p-5 text-center text-sm font-bold text-[#52525B] xl:text-lg">
-                        <p className="dark:text-white">Quick Start</p>
-                      </div>
-                      <div className="border-b-2"></div>
-                      <div className="flex flex-col items-center justify-between gap-y-8 px-4 py-7">
-                        {localRecentSession.length > 0 ? (
-                          localRecentSession.map((sessionId, index) => {
-                            const categoryIds = sessionId
-                              .split(",")
-                              .map((id) => id.trim()); // Convert to array of strings
+                    {plan !== undefined && plan !== null && (
+                      <div className="xs:w-[445px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
+                        <div className="p-5 text-center text-sm font-bold text-[#52525B] xl:text-lg">
+                          <p className="dark:text-white">Quick Start</p>
+                        </div>
+                        <div className="border-b-2"></div>
+                        <div className="flex flex-col items-center justify-between gap-y-8 px-4 py-7">
+                          {localRecentSession.length > 0 ? (
+                            localRecentSession.map((sessionId, index) => {
+                              const categoryIds = sessionId
+                                .split(",")
+                                .map((id) => id.trim()); // Convert to array of strings
 
-                            // Find category names corresponding to the category IDs
-                            const categoryNames = categoryIds
-                              .map((id) => {
-                                const category = data.data.find(
-                                  (item) => item.categoryId === parseInt(id),
-                                ); // Find the category by ID
-                                return category ? category.categoryName : null; // Return the category name or null if not found
-                              })
-                              .filter((name) => name !== null); // Filter out any null values
-                            const truncateCategoryNames = (names) => {
-                              const joinedNames = names.join(", ");
-                              return joinedNames.length > 10
-                                ? `${joinedNames.slice(0, 10)}+...`
-                                : joinedNames;
-                            };
-                            // Return the JSX for each session
-                            return (
-                              <div
-                                key={index}
-                                className="flex w-full items-center justify-between"
-                              >
-                                <div>
-                                  <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white md:text-[16px]">
-                                    {truncateCategoryNames(categoryNames)}
-                                  </p>
-                                  <p className="text-[12px] font-semibold text-[#D4D4D8] dark:text-white md:text-[14px]">
-                                    Recent Session
-                                  </p>
+                              // Find category names corresponding to the category IDs
+                              const categoryNames = categoryIds
+                                .map((id) => {
+                                  const category = data.data.find(
+                                    (item) => item.categoryId === parseInt(id),
+                                  ); // Find the category by ID
+                                  return category
+                                    ? category.categoryName
+                                    : null; // Return the category name or null if not found
+                                })
+                                .filter((name) => name !== null); // Filter out any null values
+                              const truncateCategoryNames = (names) => {
+                                const joinedNames = names.join(", ");
+                                return joinedNames.length > 10
+                                  ? `${joinedNames.slice(0, 10)}+...`
+                                  : joinedNames;
+                              };
+                              // Return the JSX for each session
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex w-full items-center justify-between"
+                                >
+                                  <div>
+                                    <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white md:text-[16px]">
+                                      {truncateCategoryNames(categoryNames)}
+                                    </p>
+                                    <p className="text-[12px] font-semibold text-[#D4D4D8] dark:text-white md:text-[14px]">
+                                      Recent Session
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <button
+                                      onClick={() => {
+                                        setSessionId(sessionId);
+                                        setIsSession(true);
+                                        handleContinue();
+                                      }}
+                                      className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
+                                    >
+                                      Continue &gt;
+                                    </button>
+                                  </div>
                                 </div>
-                                <div>
-                                  <button
-                                    onClick={() => {
-                                      setSessionId(sessionId);
-                                      setIsSession(true);
-                                      handleContinue();
-                                    }}
-                                    className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
-                                  >
-                                    Continue &gt;
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <div className="flex items-center justify-center">
-                            <p>No Session.</p>
-                          </div>
-                        )}
+                              );
+                            })
+                          ) : (
+                            <div className="flex items-center justify-center">
+                              <p>No Session.</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="flex w-full flex-col items-center justify-center gap-x-5 gap-y-1 md:flex-row-reverse">
