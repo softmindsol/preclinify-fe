@@ -18,9 +18,6 @@ const Pricing = () => {
   );
   const currentPlan = useSelector((state) => state?.subscription?.plan);
 
-  console.log("userId:", userId);
-  console.log("currentPlan:", currentPlan);
-
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
 
@@ -181,26 +178,31 @@ const Pricing = () => {
   return (
     <div className="">
       {/* <Navbar /> */}
-      <Link to={"/dashboard"}>
-        <div className="ml-10 mt-10 flex cursor-pointer items-center gap-x-3 text-[#52525B] hover:text-[#171719]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-chevron-left"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-          <p className="text-[16px] font-semibold">Back to Dashboard</p>
-        </div>
-      </Link>
-      <div className="flex flex-col items-center justify-center">
+      {userId && (
+        <Link to={"/dashboard"}>
+          <div className="ml-10 mt-10 flex cursor-pointer items-center gap-x-3 text-[#52525B] hover:text-[#171719]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-left"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            <p className="text-[16px] font-semibold">Back to Dashboard</p>
+          </div>
+        </Link>
+      )}
+
+      <div
+        className={`flex flex-col items-center justify-center ${userId ? "mt-0" : "mt-10"}`}
+      >
         <div className="text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>

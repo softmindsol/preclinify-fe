@@ -44,25 +44,24 @@ const Login = () => {
         localStorage.setItem("userId", userId);
         localStorage.setItem("authToken", data.session.access_token); // Store token if needed
 
-        console.log("Logged in user:", data.user);
 
-        // **Check if the user is new**
-        const createdAt = new Date(data.user.created_at);
-        const now = new Date();
-        const isNewUser = (now - createdAt) / (1000 * 60) < 10; // Less than 10 minutes old
+        // // **Check if the user is new**
+        // const createdAt = new Date(data.user.created_at);
+        // const now = new Date();
+        // const isNewUser = (now - createdAt) / (1000 * 60) < 10; // Less than 10 minutes old
 
         // Fetch subscriptions (if needed)
         dispatch(fetchSubscriptions({ userId }));
 
         toast.success("Logged in successfully!"); // Show success toast
-
-        setTimeout(() => {
-          if (isNewUser) {
-            navigate("/pricing", { replace: true }); // Redirect new users to pricing page
-          } else {
-            navigate("/dashboard", { replace: true }); // Redirect existing users to dashboard
-          }
-        }, 1000); // Delay before navigating
+ navigate("/dashboard", { replace: true });
+        // setTimeout(() => {
+        //   if (isNewUser) {
+        //     navigate("/pricing", { replace: true }); // Redirect new users to pricing page
+        //   } else {
+        //     // Redirect existing users to dashboard
+        //   }
+        // }, 1000); // Delay before navigating
       } catch (error) {
         setErrors({ email: "Invalid Login Credentials!" });
       } finally {

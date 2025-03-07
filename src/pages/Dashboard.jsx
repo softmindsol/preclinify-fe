@@ -269,7 +269,6 @@ const Dashboard = () => {
   //     return () => clearTimeout(timeout); // Cleanup timeout on unmount
   //   }
   // }, [navigate, currentPlan]);
-  console.log("plan:", plan);
   return (
     <>
       {dashboardLoading ? (

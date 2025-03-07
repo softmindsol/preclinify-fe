@@ -18,6 +18,8 @@ import {
 import { toast } from "sonner";
 import VirtualPatientGuide from "./common/VirtualOsceModal";
 import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
+import { TbBaselineDensityMedium } from "react-icons/tb";
+import AIBotSidebar from "./common/AIBotSidebar";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -46,6 +48,8 @@ const AINewVersion = () => {
   const { subscriptions, plan, loader, completePlanData } = useSelector(
     (state) => state?.subscription,
   );
+    const [isOpen, setIsOpen] = useState(false);
+  
   const transcriptRef = useRef(null);
   const virtualPatient = useSelector(
     (state) => state?.virtualPatient?.isModalOpen,
@@ -107,6 +111,10 @@ const AINewVersion = () => {
       return "Could you please repeat that?";
     }
   };
+
+    const toggleDrawer = () => {
+      setIsOpen((prevState) => !prevState);
+    };
 
   const reportHandler = () => {
     setShowFeedBackModal(!showFeedBackModal);
@@ -360,7 +368,6 @@ const AINewVersion = () => {
                   <span>
                     {" "}
                     You have{" "}
-                    
                     {subscriptions[0]?.total_tokens -
                       subscriptions[0]?.used_tokens}{" "}
                     {subscriptions[0]?.total_tokens -
@@ -449,8 +456,17 @@ const AINewVersion = () => {
           </div>
         </div>
       </div>
+      {/* Sidebar responsive */}
+      <div className="flex items-center justify-between bg-white p-5 lg:hidden">
+        <div className="">
+          <img src="/assets/small-logo.png" alt="" />
+        </div>
 
-      <div className="ml-[250px] mt-5">
+        <div className="" onClick={toggleDrawer}>
+          <TbBaselineDensityMedium />
+        </div>
+      </div>
+      <div className="lg:ml-[250px] mt-5">
         {/* Tabs */}
         <div className="flex space-x-4 border-b border-gray-300 pb-2">
           <button
@@ -643,6 +659,29 @@ const AINewVersion = () => {
         />
       )}
       <div className="">{virtualPatient && <VirtualPatientGuide />}</div>
+      <AIBotSidebar
+        toggleDrawer={toggleDrawer}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        setMinutes={setMinutes}
+        minutes={minutes}
+        seconds={seconds}
+        timerActive={timerActive}
+        setTimerActive={setTimerActive}
+        plan={plan}
+        completePlanData={completePlanData}
+        subscriptions={subscriptions}
+        loader={loader}
+        handleFeedBack={handleFeedBack}
+        userId={userId}
+        showFeedBackModal={showFeedBackModal}
+        setShowFeedBackModal={setShowFeedBackModal}
+        isPatientOn={isPatientOn}
+        isRecording={isRecording}
+        finishReviewHandler={finishReviewHandler}
+        handlerOpenDashboardModal={handlerOpenDashboardModal}
+        FeedbackModal={FeedbackModal}
+      />
     </div>
   );
 };

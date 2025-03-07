@@ -36,9 +36,7 @@ const ProtectedRoute = ({ children, redirectIfAuthenticated = false }) => {
     return <Navigate to="/" replace />;
   }
 
-  // if(user){
-  //     return <Navigate to="/dashboard" replace />;
-  // }
+
   // 🔴 If user is not logged in, redirect to login
   if (!user && !redirectIfAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
