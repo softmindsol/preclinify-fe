@@ -30,16 +30,20 @@ const ProtectedRoute = ({ children, redirectIfAuthenticated = false }) => {
   }, []);
 
   if (loading) return <Loader />;
-
+ 
   // 🟢 If user is logged in, redirect from login/signup to home
   if (user && redirectIfAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
+  // if(user){
+  //     return <Navigate to="/dashboard" replace />;
+  // }
   // 🔴 If user is not logged in, redirect to login
   if (!user && !redirectIfAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
+
 
   return children;
 };

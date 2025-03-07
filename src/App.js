@@ -38,8 +38,15 @@ import TermCondition from "./pages/TermCondition";
 import Declaimer from "./pages/Declaimer";
 
 function App() {
+  const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
-
+  const location = useLocation();
+  const userId = localStorage.getItem("userId"); // Ya cookies se check karein
+  useEffect(() => {
+    if (userId && location.pathname === "/") {
+      navigate("/dashboard", { replace: true }); // Redirect to dashboard
+    }
+  }, [navigate, location.pathname]);
   return (
     <div className={`App`}>
       <Routes>
