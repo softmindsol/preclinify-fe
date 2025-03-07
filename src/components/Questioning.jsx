@@ -1032,7 +1032,6 @@ const Questioning = () => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
-  console.log("localRecentSession:", localRecentSession);
 
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
@@ -1180,11 +1179,12 @@ const Questioning = () => {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> 
                 {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
                   {(planType === "Osce" ||
                     plan === undefined ||
+                     plan === null ||
                     planType === undefined) &&
                     type !== "Trial" && (
                       <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">

@@ -360,6 +360,7 @@ const AINewVersion = () => {
                   <span>
                     {" "}
                     You have{" "}
+                    
                     {subscriptions[0]?.total_tokens -
                       subscriptions[0]?.used_tokens}{" "}
                     {subscriptions[0]?.total_tokens -

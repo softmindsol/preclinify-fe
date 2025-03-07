@@ -4,7 +4,6 @@ import { Link, NavLink } from "react-router-dom";
 const Footer = () => {
   const userId = localStorage.getItem("userId");
 
-  console.log(userId);
 
   return (
     <div className="mt-20 text-[12px] sm:text-[14px] md:mt-40 lg:text-[16px]">
