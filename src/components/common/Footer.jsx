@@ -2,31 +2,42 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
 const Footer = () => {
+  const userId = localStorage.getItem("userId");
+
+  console.log(userId);
+
   return (
     <div className="mt-20 text-[12px] sm:text-[14px] md:mt-40 lg:text-[16px]">
       <div className="flex items-center justify-center gap-x-10 px-2 font-medium text-[#3F3F46] sm:ml-16 sm:gap-x-14 md:justify-start lg:gap-x-20">
         <div className="space-y-1.5">
-          <p className="cursor-pointer hover:text-[#3CC8A1]">
-            <NavLink to="/login">Login</NavLink>{" "}
-          </p>
-          <p className="cursor-pointer hover:text-[#3CC8A1]">
-            {" "}
-            <NavLink to="/register"> Sign-up</NavLink>
-          </p>
-          <p className="cursor-pointer hover:text-[#3CC8A1]">
-            {" "}
-            <NavLink to="/contact-us">Contact Us</NavLink>{" "}
-          </p>
-          <p className="cursor-pointer hover:text-[#3CC8A1]">
-            {" "}
-            <NavLink to="/about-us"> About Us</NavLink>{" "}
-          </p>
+          <NavLink to="/login">
+            <p className="cursor-pointer hover:text-[#3CC8A1]">Login</p>
+          </NavLink>
+
+          <NavLink to="/register">
+            <p className="cursor-pointer hover:text-[#3CC8A1]">Sign-up</p>
+          </NavLink>
+
+          <NavLink to="/contact-us">
+            <p className="cursor-pointer hover:text-[#3CC8A1]">Contact Us</p>
+          </NavLink>
+
+          <NavLink to="/about-us">
+            <p className="cursor-pointer hover:text-[#3CC8A1]">About Us</p>
+          </NavLink>
         </div>
         <div className="space-y-1.5">
+          {userId && (
+            <Link to="/dashboard">
+              {" "}
+              <p className=""> Dashboard</p>
+            </Link>
+          )}
           <Link to="#">
             {" "}
-            <p className=""> Dashboard</p>
+            <p className="">Refund Policy</p>
           </Link>
+
           <Link to="/term-and-condition">
             <p className="">Terms and Condition</p>
           </Link>
@@ -39,10 +50,11 @@ const Footer = () => {
           <p className="cursor-pointer hover:text-[#3CC8A1]">
             <NavLink to={"/pricing"}>Pricing</NavLink>{" "}
           </p>
-          <p className="">Refund Policy</p>
-          <p className="">FAQs</p>
+          <Link to="#">
+            <p className="">FAQs</p>
+          </Link>
+
           <NavLink to="/disclaimer">
-            {" "}
             <p className="">Disclaimer</p>
           </NavLink>
         </div>

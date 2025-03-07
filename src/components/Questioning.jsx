@@ -84,7 +84,6 @@ const Questioning = () => {
   const { subscriptions, plan, loader, planType } = useSelector(
     (state) => state?.subscription,
   );
- 
 
   const location = useLocation();
   const { state } = location;
@@ -117,7 +116,9 @@ const Questioning = () => {
   const [moduleId, setModuleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const [selectedOption, setSelectedOption] = useState(planType===undefined ?"Trial":"SBA");
+  const [selectedOption, setSelectedOption] = useState(
+    planType === undefined ? "Trial" : "SBA",
+  );
   const [selectedPreClinicalOption, setSelectedPreClinicalOption] =
     useState("QuesGen");
   const [recentSessions, setRecentSessions] = useState([]);
@@ -166,21 +167,13 @@ const Questioning = () => {
     (state) => state.presentations.presentations,
   );
   const handleToggle = () => {
-
     setIsSortedByPresentation((prev) => !prev);
     dispatch(setSBAPresentationValue(!isSortedByPresentation));
     dispatch(setMockPresentationValue(!isSortedByPresentation));
-      if (
-                                plan === undefined ||
-                                planType === null ||
-                                planType === undefined
-                              ) {
-                                setShowPlanPopup(true);
-                              }
-                              console.log(
-                                "handleChange on change",
-                                selectedOption,
-                              );
+    if (plan === undefined || planType === null || planType === undefined) {
+      setShowPlanPopup(true);
+    }
+    console.log("handleChange on change", selectedOption);
   };
 
   const cleanedPresentations = presentations?.map((presentation) => ({
@@ -215,21 +208,20 @@ const Questioning = () => {
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
-     
-                              // if (
-                              //   plan === undefined ||
-                              //   planType === null ||
-                              //   planType === undefined
-                              // ) {
-                              //   setShowPlanPopup(true);
-                              // }
-                              // console.log(
-                              //   "handleChange on change",
-                              //   selectedOption,
-                              // );
-                  
+
+    // if (
+    //   plan === undefined ||
+    //   planType === null ||
+    //   planType === undefined
+    // ) {
+    //   setShowPlanPopup(true);
+    // }
+    // console.log(
+    //   "handleChange on change",
+    //   selectedOption,
+    // );
   };
-  
+
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -1040,6 +1032,8 @@ const Questioning = () => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
+  console.log("localRecentSession:", localRecentSession);
+
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
@@ -1189,9 +1183,10 @@ const Questioning = () => {
                 </div>
                 {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
-                  {(planType === "Osce" || plan===undefined ||planType === undefined) &&
+                  {(planType === "Osce" ||
+                    plan === undefined ||
+                    planType === undefined) &&
                     type !== "Trial" && (
-                    
                       <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
                         <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A]">
                           <div className="text-center">
@@ -1236,65 +1231,70 @@ const Questioning = () => {
                         </div>
                       </div>
                     )}
-                  {selectedTab === "Clinical" && (
-                    <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
-                      <div className="mr-10 flex w-[35%] items-center justify-between">
-                        <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">
-                          Recent Sessions
-                        </p>
-                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48]" />
-                      </div>
-                      <div className="w-[65%] space-y-3">
-                        {localRecentSession.length > 0 ? (
-                          localRecentSession.map((sessionId, index) => {
-                            const categoryIds = sessionId
-                              .split(",")
-                              .map((id) => id.trim()); // Convert to array of strings
-                            // Find category names corresponding to the category IDs
-                            const categoryNames = categoryIds
-                              .map((id) => {
-                                const category = data.data.find(
-                                  (item) => item.categoryId === parseInt(id),
-                                ); // Find the category by ID
-                                return category ? category.categoryName : null; // Return the category name or null if not found
-                              })
-                              .filter((name) => name !== null); // Filter out any null values
-                            // Return the JSX for each session
-                            return (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between gap-y-2"
-                              >
-                                <div>
-                                  <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                                    {categoryNames.join(", ")}{" "}
-                                    {/* Join category names into a single string */}
-                                  </p>
-                                  <p className="text-[12px] font-semibold text-[#D4D4D8] 2xl:text-[14px]">
-                                    Recent Session
-                                  </p>
+                  {selectedTab === "Clinical" && type !== "Trial" && (
+                    <div className="relative">
+                     
+                      <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
+                        <div className="mr-10 flex w-[35%] items-center justify-between">
+                          <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">
+                            Recent Sessions
+                          </p>
+                          <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48]" />
+                        </div>
+                        <div className="w-[65%] space-y-3">
+                          {localRecentSession.length > 0 ? (
+                            localRecentSession.map((sessionId, index) => {
+                              const categoryIds = sessionId
+                                .split(",")
+                                .map((id) => id.trim()); // Convert to array of strings
+                              // Find category names corresponding to the category IDs
+                              const categoryNames = categoryIds
+                                .map((id) => {
+                                  const category = data.data.find(
+                                    (item) => item.categoryId === parseInt(id),
+                                  ); // Find the category by ID
+                                  return category
+                                    ? category.categoryName
+                                    : null; // Return the category name or null if not found
+                                })
+                                .filter((name) => name !== null); // Filter out any null values
+                              // Return the JSX for each session
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between gap-y-2"
+                                >
+                                  <div>
+                                    <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                                      {categoryNames.join(", ")}{" "}
+                                      {/* Join category names into a single string */}
+                                    </p>
+                                    <p className="text-[12px] font-semibold text-[#D4D4D8] 2xl:text-[14px]">
+                                      Recent Session
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <button
+                                      onClick={() => {
+                                        setSessionId(sessionId);
+                                        setIsSession(true);
+                                        handleContinue();
+                                      }}
+                                      className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
+                                    >
+                                      Continue &gt;
+                                    </button>
+                                  </div>
                                 </div>
-                                <div>
-                                  <button
-                                    onClick={() => {
-                                      setSessionId(sessionId);
-                                      setIsSession(true);
-                                      handleContinue();
-                                    }}
-                                    className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
-                                  >
-                                    Continue &gt;
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <div className="flex items-center justify-center">
-                            <p>No Session</p>
-                          </div>
-                        )}
-                      </div>
+                              );
+                            })
+                          ) : (
+                            <div className="flex items-center justify-center">
+                              <p>No Recent Session</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>{" "}
                     </div>
                   )}
 
@@ -1417,7 +1417,6 @@ const Questioning = () => {
                           ))}
 
                         <div className="">
-                          
                           {selectedTab === "Clinical" &&
                             type === "SBA" &&
                             isSortedByPresentation &&
