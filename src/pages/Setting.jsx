@@ -334,9 +334,9 @@ dispatch(resetPlan());
             >
               Log out
             </button>
-            <button className="ark:border-[1px] w-[156px] rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[14px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-white dark:text-white dark:hover:border-[#FF9741]">
+            {/* <button className="ark:border-[1px] w-[156px] rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[14px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-white dark:text-white dark:hover:border-[#FF9741]">
               Reset Password
-            </button>
+            </button> */}
 
             {/* <button className="w-[152px] rounded-[6px] border-[1px] border-[#FF453A] bg-[#FF453A] px-2.5 py-1 text-[14px] font-semibold text-[#ffff] transition-all duration-200 hover:bg-transparent hover:text-[#FF453A]">
               Delete Account

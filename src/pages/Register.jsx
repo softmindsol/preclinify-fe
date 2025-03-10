@@ -71,25 +71,25 @@ const Register = () => {
           toast.error("Error occurred while registering");
         } else {
           // Add 5 tokens in the subscription collection
-          const { data, insertError } = await supabase
-            .from("subscription")
-            .insert([
-              {
-                userId: user?.user?.id,
-                customer_email: values.email,
-                customer_name: values.displayName,
-                total_tokens: 5, // Adding 15 tokens on registration
-                used_tokens: 0,
-                created_at: new Date(),
-              },
-            ]);
+          // const { data, insertError } = await supabase
+          //   .from("subscription")
+          //   .insert([
+          //     {
+          //       userId: user?.user?.id,
+          //       customer_email: values.email,
+          //       customer_name: values.displayName,
+          //       total_tokens: 5, // Adding 15 tokens on registration
+          //       used_tokens: 0,
+          //       created_at: new Date(),
+          //     },
+          //   ]);
 
-          if (insertError) {
-            console.error("Error adding tokens:", insertError);
-            toast.error("Failed to initialize subscription tokens.");
-          } else {
-            toast.success("Subscription initialized with 15 tokens.");
-          }
+          // if (insertError) {
+          //   console.error("Error adding tokens:", insertError);
+          //   toast.error("Failed to initialize subscription tokens.");
+          // } else {
+          //   toast.success("Subscription initialized with 15 tokens.");
+          // }
 
           // Fetch user phone number and navigate to verification page
           await dispatch(
