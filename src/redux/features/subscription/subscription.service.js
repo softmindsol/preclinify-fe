@@ -33,15 +33,14 @@ export const fetchSubscriptions = createAsyncThunk(
             const { data: plan, error: planError } = await supabase
                 .from("plans")
                 .select("*")
-            .eq("planId", planId)
-            .limit(1)
-            .maybeSingle(); // Avoids error if multiple/no rows
+                .eq("planId", planId)
+                .limit(1)
+                .maybeSingle(); // Avoids error if multiple/no rows
 
 
             if (planError) {
                 return rejectWithValue(planError.message);
             }
-            console.log("plan:", plan);
 
 
 
@@ -96,3 +95,42 @@ export const incrementUsedTokens = createAsyncThunk(
         }
     }
 );
+
+
+
+export const getUserById = createAsyncThunk(
+    'user/getUserById',
+    async ({ userId }, { rejectWithValue }) => {
+        try {
+            const { data, error } = await supabase.auth.getUser();
+            if (error) throw error;
+            console.log("data:", data);
+
+            return data;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    }
+);
+
+
+export const getUserIDSubscriptionTable = createAsyncThunk(
+    "subscriptions/getUserIDSubscriptionTable",
+    async ({ userId }, { rejectWithValue }) => {
+        try {
+            // Supabase API call
+            const { data, error } = await supabase
+                .from("subscription") // Replace with your actual table name
+                .select("*")
+                .eq("userId", userId); // Assuming `user_id` is the column name
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)

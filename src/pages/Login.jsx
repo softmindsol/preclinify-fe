@@ -6,8 +6,8 @@ import supabase from "../config/helper";
 import Logo from "../components/common/Logo";
 import { toast } from "sonner"; // Import the toast module
 import { resendVerificationEmail } from "../utils/authUtils";
-import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
-import { useDispatch } from "react-redux";
+import { fetchSubscriptions, getUserIDSubscriptionTable } from "../redux/features/subscription/subscription.service";
+import { useDispatch, useSelector } from "react-redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Login = () => {
@@ -15,61 +15,62 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+ 
 
   // Formik setup
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email address").required("Required"),
-      password: Yup.string().required("Required"),
-    }),
-    onSubmit: async (values, { setSubmitting, setErrors }) => {
-      try {
-        // Use Supabase auth to log in
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: values.email,
-          password: values.password,
-        });
+ const formik = useFormik({
+   initialValues: {
+     email: "",
+     password: "",
+     rememberMe: false,
+   },
+   validationSchema: Yup.object({
+     email: Yup.string().email("Invalid email address").required("Required"),
+     password: Yup.string().required("Required"),
+   }),
+   onSubmit: async (values, { setSubmitting, setErrors }) => {
+     try {
+       // Use Supabase auth to log in
+       const { data, error } = await supabase.auth.signInWithPassword({
+         email: values.email,
+         password: values.password,
+       });
 
-        if (error || !data?.user) {
-          setErrors({ email: "Invalid Login Credentials!" });
-          return;
-        }
+       if (error || !data?.user) {
+         setErrors({ email: "Invalid Login Credentials!" });
+         return;
+       }
 
-        const userId = data.user.id;
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("authToken", data.session.access_token); // Store token if needed
+       const userId = data?.user?.id;
+       localStorage.setItem("userId", userId);
+       localStorage.setItem("authToken", data.session.access_token); // Store token if needed
 
+       // Fetch subscriptions and check response
+       dispatch(getUserIDSubscriptionTable({ userId }))
+         .unwrap()
+         .then((res) => {
+           console.log("response login", res);
 
-        // // **Check if the user is new**
-        // const createdAt = new Date(data.user.created_at);
-        // const now = new Date();
-        // const isNewUser = (now - createdAt) / (1000 * 60) < 10; // Less than 10 minutes old
+           // Redirect based on subscription response
+           if (Array.isArray(res) && res.length === 0) {
+             navigate("/pricing", { replace: true });
+           } else {
+             navigate("/dashboard", { replace: true });
+           }
 
-        // Fetch subscriptions (if needed)
-        dispatch(fetchSubscriptions({ userId }));
-
-        toast.success("Logged in successfully!"); // Show success toast
- navigate("/dashboard", { replace: true });
-        // setTimeout(() => {
-        //   if (isNewUser) {
-        //     navigate("/pricing", { replace: true }); // Redirect new users to pricing page
-        //   } else {
-        //     // Redirect existing users to dashboard
-        //   }
-        // }, 1000); // Delay before navigating
-      } catch (error) {
-        setErrors({ email: "Invalid Login Credentials!" });
-      } finally {
-        setSubmitting(false); // Stop the loader once API call is done
-      }
-    },
-  });
-
+           toast.success("Logged in successfully!");
+         })
+         .catch((error) => {
+           console.error("Error fetching subscriptions:", error);
+           toast.error("Failed to fetch subscriptions.");
+         });
+     } catch (error) {
+       setErrors({ email: "Invalid Login Credentials!" });
+     } finally {
+       setSubmitting(false); // Stop the loader once API call is done
+     }
+   },
+ });
 
   return (
     <div className="flex w-full items-center overflow-hidden">
