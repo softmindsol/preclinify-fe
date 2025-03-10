@@ -36,6 +36,7 @@ import virtualPatientReducer from './features/osce-bot/virtual.modal.slice';
 import SBAResultReducer from './features/all-results/results.sba.slice';
 import FreeTrialMcqsQuestionReducer from './features/free-trial-bank/free-trial-bank.slice'
 import shortQuestionsFreeTrialReducer from './features/free-trial-bank/free-trial-saq.slice'
+import textbookReducer from './features/textbook/textbook.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: "root",
@@ -78,6 +79,7 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  textbook: textbookReducer,
   shortQuestionsFreeTrial: shortQuestionsFreeTrialReducer,
   FreeTrialMcqsQuestion: FreeTrialMcqsQuestionReducer,
   SBAResult : SBAResultReducer,

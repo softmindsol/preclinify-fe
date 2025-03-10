@@ -12,6 +12,17 @@ import {
 } from "../redux/features/personal-info/personal-info.service";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
+export const checkEmailExists = async (email) => {
+  const { data, error } = await supabase.auth.admin.listUsers();
+
+  if (error) {
+    console.error("Error checking users:", error);
+    return false;
+  }
+
+  return data.users.some((user) => user.email === email);
+};
+
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,6 +66,13 @@ const Register = () => {
       }
 
       try {
+        // 1️⃣ Pehle check karein ke email already exist to nahi
+          const emailExists = await checkEmailExists(values.email);
+
+          if (emailExists) {
+            toast.error("This email is already registered. Please log in.");
+            return;
+          } 
         // Supabase auth register
         const { data: user, error } = await supabase.auth.signUp({
           email: values.email,
@@ -70,27 +88,6 @@ const Register = () => {
         if (error) {
           toast.error("Error occurred while registering");
         } else {
-          // Add 5 tokens in the subscription collection
-          // const { data, insertError } = await supabase
-          //   .from("subscription")
-          //   .insert([
-          //     {
-          //       userId: user?.user?.id,
-          //       customer_email: values.email,
-          //       customer_name: values.displayName,
-          //       total_tokens: 5, // Adding 15 tokens on registration
-          //       used_tokens: 0,
-          //       created_at: new Date(),
-          //     },
-          //   ]);
-
-          // if (insertError) {
-          //   console.error("Error adding tokens:", insertError);
-          //   toast.error("Failed to initialize subscription tokens.");
-          // } else {
-          //   toast.success("Subscription initialized with 15 tokens.");
-          // }
-
           // Fetch user phone number and navigate to verification page
           await dispatch(
             fetchUserPhoneNumber({
