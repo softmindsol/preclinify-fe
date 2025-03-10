@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchSubscriptions } from "./subscription.service";
+import { fetchSubscriptions, getUserById } from "./subscription.service";
 
 const subscriptionSlice = createSlice({
   name: "subscriptions",
@@ -8,11 +8,22 @@ const subscriptionSlice = createSlice({
     plan: null,
     planType: null,
     completePlanData: [],
+    userData:null,
     loading: false,
     error: null,
     type: "osce",
   },
-  reducers: {},
+  reducers: {
+    resetPlan:(state,action)=>{
+      state.subscriptions = [];
+      state.plan = null;
+      state.planType = null;
+      state.completePlanData = [];
+      state.userData=null;
+      state.loading = false;
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSubscriptions.pending, (state) => {
@@ -29,8 +40,22 @@ const subscriptionSlice = createSlice({
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getUserById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userData = action.payload;
+      })
+      .addCase(getUserById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
+export const { resetPlan } = subscriptionSlice.actions;
+
 
 export default subscriptionSlice.reducer;

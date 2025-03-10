@@ -5,9 +5,13 @@ import PlanSlug from "../utils/PlanSlug";
 import axios from "axios";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
+import {
+  fetchSubscriptions,
+  getUserById,
+} from "../redux/features/subscription/subscription.service";
 import ManageModal from "../components/common/ManageModal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import supabase from "../config/helper";
 
 const Pricing = () => {
   const userId = localStorage.getItem("userId");
@@ -16,9 +20,15 @@ const Pricing = () => {
   const subscription = useSelector(
     (state) => state?.subscription?.subscriptions,
   );
-  const currentPlan = useSelector((state) => state?.subscription?.plan);
+  const userData = useSelector((state) => state?.subscription?.userData?.user);
+  const currentPlan = useSelector(
+    (state) => state?.subscription?.subscriptions[0]?.plan,
+  );
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
 
-  console.log("userId:", userId);
+  console.log("subscriptions:", subscriptions);
   console.log("currentPlan:", currentPlan);
 
   const [isAnnual, setIsAnnual] = useState(false);
@@ -27,11 +37,11 @@ const Pricing = () => {
   const pricingPlans = {
     termly: [
       {
-        // planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+        planId: null,
         title: "The Trial Plan",
         price: "Free",
         monthlyPrice: "Free",
-        // "plan-slug": PlanSlug("The OSCE plan", 3),
+        "plan-slug": PlanSlug("The Trial plan", 3),
         features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
       },
       {
@@ -67,11 +77,11 @@ const Pricing = () => {
     ],
     annual: [
       {
-        // planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+        planId: null,
         title: "The Trial Plan",
         price: "Free",
         monthlyPrice: "Free",
-        // "plan-slug": PlanSlug("The OSCE plan", 3),
+        "plan-slug": PlanSlug("The Trial plan", 3),
         features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
       },
       {
@@ -126,12 +136,21 @@ const Pricing = () => {
   };
 
   // Function to handle the subscription
-  const handleSubscription = async (planSlug) => {
+  const handleSubscription = async (planSlug, planId) => {
     if (!userId) {
       toast.error("Please sign up to continue with the subscription.");
       navigate("/signup");
       return;
     }
+    // Check if the selected plan is the free plan
+    if (
+      planId === null &&
+      planSlug === PlanSlug("The Trial Plan", 3)
+    ) {
+      await freePlanHandler();
+      return;
+    }
+
     if (currentPlan !== null && currentPlan !== undefined) {
       // handleManageSubscription({ customer: subscription[0]?.customer });
       setManagePackageModal(true);
@@ -174,15 +193,66 @@ const Pricing = () => {
     }
   };
 
+  const freePlanHandler = async () => {
+    const { data, insertError } = await supabase.from("subscription").insert([
+      {
+        userId: userId,
+        customer_email: userData?.user_metadata?.email,
+        customer_name: userData?.user_metadata?.displayName,
+        total_tokens: 5, // Adding 15 tokens on registration
+        used_tokens: 0,
+        created_at: new Date(),
+      },
+    ]);
+
+    if (insertError) {
+      console.error("Error adding tokens:", insertError);
+      toast.error("Failed to initialize subscription tokens.");
+    } else {
+      navigate("/dashboard");
+      toast.success("Subscription initialized with 5 tokens.");
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchSubscriptions({ userId }));
+    if (userId) {
+      dispatch(getUserById({ userId })) // userId pass karna zaroori hai
+        .unwrap()
+        .then((res) => {})
+        .catch((error) => {});
+      dispatch(fetchSubscriptions({ userId }));
+    }
   }, [dispatch, userId]);
 
   return (
     <div className="">
-      <Navbar />
-      <div className="mt-[500px] flex h-screen flex-col items-center justify-center lg:mt-24 2xl:mt-32">
-        <div className="pt-16 text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
+      {/* <Navbar /> */}
+      {userId && subscriptions.length > 0 && (
+        <Link to={"/dashboard"}>
+          <div className="ml-10 mt-10 flex cursor-pointer items-center gap-x-3 text-[#52525B] hover:text-[#171719]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-left"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            <p className="text-[16px] font-semibold">Back to Dashboard</p>
+          </div>
+        </Link>
+      )}
+
+      <div
+        className={`flex flex-col items-center justify-center ${userId ? "mt-0" : "mt-10"}`}
+      >
+        <div className="text-center text-[24px] font-semibold text-[#52525B] lg:text-[36px]">
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>
         </div>
@@ -215,7 +285,7 @@ const Pricing = () => {
                 className="relative mb-8 mt-5 rounded-[16px] transition hover:shadow-greenBlur"
               >
                 <div className="h-[500px] w-[270px] rounded-[16px] border-[1px] border-[#3CC8A1] lg:h-[590px] lg:w-[310px]">
-                  <div className="rounded-tl-[14px] rounded-tr-[14px] bg-[#3CC8A1] p-8 text-center text-white">
+                  <div className="max-h-[140px] rounded-tl-[14px] rounded-tr-[14px] bg-[#3CC8A1] p-8 text-center text-white">
                     <h3 className="mb-2 text-xl font-semibold">{plan.title}</h3>
                     <div className="font-bold">
                       {plan.oldPrice && (
@@ -224,7 +294,7 @@ const Pricing = () => {
                         </span>
                       )}
                       {plan.price === "Free" ? (
-                        <span className="text-[40px] font-black uppercase ">
+                        <span className="text-[40px] font-black uppercase">
                           {plan.showTotalOnly ? plan.price : plan.monthlyPrice}
                         </span>
                       ) : (
@@ -261,7 +331,7 @@ const Pricing = () => {
                     </div>
                   </div>
 
-                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
+                  {/* <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
                     {userId && currentPlan === plan?.planId ? (
                       // User is logged in and this is their current plan
                       <button
@@ -273,7 +343,31 @@ const Pricing = () => {
                     ) : (
                       // Either user is not logged in OR this is not their current plan
                       <button
-                        onClick={() => handleSubscription(plan["plan-slug"])}
+                        onClick={() =>
+                          handleSubscription(plan["plan-slug"], plan.planId)
+                        }
+                        className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-transparent text-[16px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white"
+                      >
+                        Get Access
+                      </button>
+                    )}
+                  </div> */}
+
+                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
+                    {userId && currentPlan === plan?.planId ? (
+                      // User is logged in and this is their current plan OR currentPlan is null and this is the free plan
+                      <button
+                        disabled
+                        className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-[#30b58f] text-[16px] font-semibold text-white transition-all duration-200"
+                      >
+                        Current Plan
+                      </button>
+                    ) : (
+                      // Either user is not logged in OR this is not their current plan
+                      <button
+                        onClick={() =>
+                          handleSubscription(plan["plan-slug"], plan.planId)
+                        }
                         className="h-[40px] w-[232px] rounded-[8px] border-[1px] border-[#3CC8A1] bg-transparent text-[16px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white"
                       >
                         Get Access

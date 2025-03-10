@@ -21,6 +21,7 @@ import {
   insertOrUpdateUserInformation,
 } from "../redux/features/personal-info/personal-info.service";
 import { logoutUser } from "../redux/features/logout/logout.service";
+import { resetPlan } from "../redux/features/subscription/subscription.slice";
 
 const Setting = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const Setting = () => {
       // Remove user data and update Redux state
       localStorage.removeItem("userId");
       dispatch(clearUserId());
-
+dispatch(resetPlan());
       // Show success message and redirect
       toast.success("User logged out successfully");
       navigate("/login");
@@ -333,9 +334,9 @@ const Setting = () => {
             >
               Log out
             </button>
-            <button className="ark:border-[1px] w-[156px] rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[14px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-white dark:text-white dark:hover:border-[#FF9741]">
+            {/* <button className="ark:border-[1px] w-[156px] rounded-[6px] border-[1px] border-[#FF9741] px-2.5 py-1 text-[14px] font-semibold text-[#FF9741] transition-all duration-200 hover:bg-[#FF9741] hover:text-white dark:border-white dark:text-white dark:hover:border-[#FF9741]">
               Reset Password
-            </button>
+            </button> */}
 
             {/* <button className="w-[152px] rounded-[6px] border-[1px] border-[#FF453A] bg-[#FF453A] px-2.5 py-1 text-[14px] font-semibold text-[#ffff] transition-all duration-200 hover:bg-transparent hover:text-[#FF453A]">
               Delete Account

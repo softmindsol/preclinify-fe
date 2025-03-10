@@ -38,23 +38,15 @@ import TermCondition from "./pages/TermCondition";
 import Declaimer from "./pages/Declaimer";
 
 function App() {
+  const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
-  // useEffect(() => {
-  //   const { data: authListener } = supabase.auth.onAuthStateChange(
-  //     async (event, session) => {
-  //       console.log("event:", event);
-  //       if (event === "SIGNED_IN") {
-  //         console.log("User signed out");
-  //       } else if (session) {
-  //         console.log("User session updated:", session);
-  //       }
-  //     }
-  //   );
-
-  //   return () => {
-  //     authListener.subscription?.unsubscribe();
-  //   };
-  // }, []);
+  const location = useLocation();
+  const userId = localStorage.getItem("userId"); // Ya cookies se check karein
+  useEffect(() => {
+    if (userId && location.pathname === "/") {
+      navigate("/dashboard", { replace: true }); // Redirect to dashboard
+    }
+  }, [navigate, location.pathname]);
   return (
     <div className={`App`}>
       <Routes>

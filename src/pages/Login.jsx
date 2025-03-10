@@ -6,8 +6,8 @@ import supabase from "../config/helper";
 import Logo from "../components/common/Logo";
 import { toast } from "sonner"; // Import the toast module
 import { resendVerificationEmail } from "../utils/authUtils";
-import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
-import { useDispatch } from "react-redux";
+import { fetchSubscriptions, getUserIDSubscriptionTable } from "../redux/features/subscription/subscription.service";
+import { useDispatch, useSelector } from "react-redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Login = () => {
@@ -15,67 +15,63 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+ 
 
   // Formik setup
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email address").required("Required"),
-      password: Yup.string().required("Required"),
-    }),
-    onSubmit: async (values, { setSubmitting, setErrors }) => {
-      if (userId) {
-        // If userId exists, show a toast and prevent login
-        toast.error(
-          "Please log out from the current session before logging in.",
-        );
-        return; // Prevent login if userId exists
-      }
-      try {
-        // Use Supabase auth to log in
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: values.email,
-          password: values.password,
-        }); 
-        localStorage.setItem("userId", data?.user?.id);
-        localStorage.setItem("authToken", data?.session?.access_token); // Store token if needed
-        if (data?.session) {
-          dispatch(fetchSubscriptions({ userId }));
+ const formik = useFormik({
+   initialValues: {
+     email: "",
+     password: "",
+     rememberMe: false,
+   },
+   validationSchema: Yup.object({
+     email: Yup.string().email("Invalid email address").required("Required"),
+     password: Yup.string().required("Required"),
+   }),
+   onSubmit: async (values, { setSubmitting, setErrors }) => {
+     try {
+       // Use Supabase auth to log in
+       const { data, error } = await supabase.auth.signInWithPassword({
+         email: values.email,
+         password: values.password,
+       });
 
-          toast.success("Logged in successfully!"); // Show success toast
+       if (error || !data?.user) {
+         setErrors({ email: "Invalid Login Credentials!" });
+         return;
+       }
 
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1000); // 2-second delay before navigating
-        }
+       const userId = data?.user?.id;
+       localStorage.setItem("userId", userId);
+       localStorage.setItem("authToken", data.session.access_token); // Store token if needed
 
-        // navigate('/dashboard'); // Redirect to the dashboard or another page
-        // if (error) {
-        //     toast.error(error.message);
-        //     await resendVerificationEmail(values.email);
-        //     setErrors({ email: error.message }); // Set error message for email field
-        // } else {
-        //     // On success, store the session (if needed)
-        //     localStorage.setItem('authToken', data.session.access_token); // Store token if needed
-        //     toast.success('Logged in successfully!'); // Show success toast
-        //     navigate('/dashboard'); // Redirect to the dashboard or another page
-        // }
-      } catch (error) {
-        setErrors({ email: "Invalid Login Credentials!" });
-      } finally {
-        setSubmitting(false); // Stop the loader once API call is done
-      }
-    },
-  });
-  // useEffect(() => {
-  //   dispatch(fetchSubscriptions({ userId }));
-  // }, [navigate]);
+       // Fetch subscriptions and check response
+       dispatch(getUserIDSubscriptionTable({ userId }))
+         .unwrap()
+         .then((res) => {
+           console.log("response login", res);
 
- 
+           // Redirect based on subscription response
+           if (Array.isArray(res) && res.length === 0) {
+             navigate("/pricing", { replace: true });
+           } else {
+             navigate("/dashboard", { replace: true });
+           }
+
+           toast.success("Logged in successfully!");
+         })
+         .catch((error) => {
+           console.error("Error fetching subscriptions:", error);
+           toast.error("Failed to fetch subscriptions.");
+         });
+     } catch (error) {
+       setErrors({ email: "Invalid Login Credentials!" });
+     } finally {
+       setSubmitting(false); // Stop the loader once API call is done
+     }
+   },
+ });
+
   return (
     <div className="flex w-full items-center overflow-hidden">
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-y-5 bg-[#FFFFFF] lg:w-[50%]">

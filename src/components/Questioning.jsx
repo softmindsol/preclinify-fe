@@ -77,6 +77,7 @@ import {
   fetchShortQuestionFreeTrial,
   fetchShortQuestionsWithChildrenFreeTrial,
 } from "../redux/features/free-trial-bank/free-trial-saq.service";
+import ShowPopup from "./common/ShowPopup";
 
 const Questioning = () => {
   // const planType = useSelector((state) => state?.subscriptions?.plan);
@@ -115,7 +116,9 @@ const Questioning = () => {
   const [moduleId, setModuleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const [selectedOption, setSelectedOption] = useState("SBA");
+  const [selectedOption, setSelectedOption] = useState(
+    planType === undefined ? "Trial" : "SBA",
+  );
   const [selectedPreClinicalOption, setSelectedPreClinicalOption] =
     useState("QuesGen");
   const [recentSessions, setRecentSessions] = useState([]);
@@ -131,6 +134,7 @@ const Questioning = () => {
     (state) => state?.mcqsQuestion?.totalSBAQuestionData,
   );
   const userId = localStorage.getItem("userId");
+  const [showPlanPopup, setShowPlanPopup] = useState(false);
 
   const presentationSBA = useSelector(
     (state) => state?.SBAPresentation?.isSBAPresentation,
@@ -166,6 +170,10 @@ const Questioning = () => {
     setIsSortedByPresentation((prev) => !prev);
     dispatch(setSBAPresentationValue(!isSortedByPresentation));
     dispatch(setMockPresentationValue(!isSortedByPresentation));
+    if (plan === undefined || planType === null || planType === undefined) {
+      setShowPlanPopup(true);
+    }
+    console.log("handleChange on change", selectedOption);
   };
 
   const cleanedPresentations = presentations?.map((presentation) => ({
@@ -200,7 +208,20 @@ const Questioning = () => {
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+
+    // if (
+    //   plan === undefined ||
+    //   planType === null ||
+    //   planType === undefined
+    // ) {
+    //   setShowPlanPopup(true);
+    // }
+    // console.log(
+    //   "handleChange on change",
+    //   selectedOption,
+    // );
   };
+
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -1011,6 +1032,7 @@ const Questioning = () => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
+
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
@@ -1026,22 +1048,10 @@ const Questioning = () => {
         </div>
       </div>
       <div className="w-full lg:ml-[260px] xl:ml-[250px]">
-        <div
-        // className={`${(planType === "Osce" || planType === undefined) && "pointer-events-auto relative z-50 w-full bg-gray-900 bg-opacity-70"}`}
-        >
+        <div>
           <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
-            {/* drawer */}
-
             {/* Table Header */}
 
-            {/* {(planType === "Osce" || planType === undefined) &&
-              type !== "Trial" && (
-                <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-                  <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                    To get this feature, upgrade your plan
-                  </p>
-                </div>
-              )} */}
             <div className="flex min-h-screen flex-col space-y-4 px-16 py-4 sm:m-10">
               <div className="flex flex-col space-y-10">
                 <div className="h-[137px] p-4">
@@ -1116,10 +1126,13 @@ const Questioning = () => {
                             value={selectedOption} // Bind the selected value to state
                             onChange={handleSelectChange} // Trigger the handler on change
                           >
+                            {(planType === "Osce" ||
+                              planType === undefined) && (
+                              <option value="Trial">Trial</option>
+                            )}
                             <option value="SBA">SBA</option>
                             <option value="SAQ">SAQ</option>
                             <option value="Mock">Mock</option>
-                            <option value="Trial">Trial</option>
                           </select>
                         ) : (
                           <select
@@ -1166,76 +1179,122 @@ const Questioning = () => {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> 
                 {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
-                  {(planType === "Osce" || planType === undefined) &&
+                  {(planType === "Osce" ||
+                    plan === undefined ||
+                     plan === null ||
+                    planType === undefined) &&
                     type !== "Trial" && (
-                      <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center rounded-3xl bg-black/40 ">
-                        <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                          To get this feature, upgrade your plan
-                        </p>
+                      <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
+                        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A]">
+                          <div className="text-center">
+                            {/* Icon */}
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#3CC8A1]/10">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-[#3CC8A1]"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                />
+                              </svg>
+                            </div>
+
+                            {/* Title */}
+                            <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+                              Upgrade Your Plan
+                            </h3>
+
+                            {/* Description */}
+                            <p className="mb-6 text-gray-600 dark:text-gray-300">
+                              To access this feature, please upgrade your plan.
+                            </p>
+
+                            {/* Buttons */}
+                            <div className="flex justify-center gap-4">
+                              <Link
+                                to="/pricing"
+                                className="rounded-md bg-[#3CC8A1] px-6 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#34b08c]"
+                              >
+                                Buy Plan
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
-                  {selectedTab === "Clinical" && (
-                    <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
-                      <div className="mr-10 flex w-[35%] items-center justify-between">
-                        <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">
-                          Recent Sessions
-                        </p>
-                        <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48]" />
-                      </div>
-                      <div className="w-[65%] space-y-3">
-                        {localRecentSession.length > 0 ? (
-                          localRecentSession.map((sessionId, index) => {
-                            const categoryIds = sessionId
-                              .split(",")
-                              .map((id) => id.trim()); // Convert to array of strings
-                            // Find category names corresponding to the category IDs
-                            const categoryNames = categoryIds
-                              .map((id) => {
-                                const category = data.data.find(
-                                  (item) => item.categoryId === parseInt(id),
-                                ); // Find the category by ID
-                                return category ? category.categoryName : null; // Return the category name or null if not found
-                              })
-                              .filter((name) => name !== null); // Filter out any null values
-                            // Return the JSX for each session
-                            return (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between gap-y-2"
-                              >
-                                <div>
-                                  <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                                    {categoryNames.join(", ")}{" "}
-                                    {/* Join category names into a single string */}
-                                  </p>
-                                  <p className="text-[12px] font-semibold text-[#D4D4D8] 2xl:text-[14px]">
-                                    Recent Session
-                                  </p>
+                  {selectedTab === "Clinical" && type !== "Trial" && (
+                    <div className="relative">
+                     
+                      <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
+                        <div className="mr-10 flex w-[35%] items-center justify-between">
+                          <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">
+                            Recent Sessions
+                          </p>
+                          <div className="h-[212px] w-[1px] bg-[#A1A1AA] dark:bg-[#3A3A48]" />
+                        </div>
+                        <div className="w-[65%] space-y-3">
+                          {localRecentSession.length > 0 ? (
+                            localRecentSession.map((sessionId, index) => {
+                              const categoryIds = sessionId
+                                .split(",")
+                                .map((id) => id.trim()); // Convert to array of strings
+                              // Find category names corresponding to the category IDs
+                              const categoryNames = categoryIds
+                                .map((id) => {
+                                  const category = data.data.find(
+                                    (item) => item.categoryId === parseInt(id),
+                                  ); // Find the category by ID
+                                  return category
+                                    ? category.categoryName
+                                    : null; // Return the category name or null if not found
+                                })
+                                .filter((name) => name !== null); // Filter out any null values
+                              // Return the JSX for each session
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between gap-y-2"
+                                >
+                                  <div>
+                                    <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                                      {categoryNames.join(", ")}{" "}
+                                      {/* Join category names into a single string */}
+                                    </p>
+                                    <p className="text-[12px] font-semibold text-[#D4D4D8] 2xl:text-[14px]">
+                                      Recent Session
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <button
+                                      onClick={() => {
+                                        setSessionId(sessionId);
+                                        setIsSession(true);
+                                        handleContinue();
+                                      }}
+                                      className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
+                                    >
+                                      Continue &gt;
+                                    </button>
+                                  </div>
                                 </div>
-                                <div>
-                                  <button
-                                    onClick={() => {
-                                      setSessionId(sessionId);
-                                      setIsSession(true);
-                                      handleContinue();
-                                    }}
-                                    className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
-                                  >
-                                    Continue &gt;
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <div className="flex items-center justify-center">
-                            <p>No Session</p>
-                          </div>
-                        )}
-                      </div>
+                              );
+                            })
+                          ) : (
+                            <div className="flex items-center justify-center">
+                              <p>No Recent Session</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>{" "}
                     </div>
                   )}
 
@@ -1358,14 +1417,6 @@ const Questioning = () => {
                           ))}
 
                         <div className="">
-                          {/* {(planType === "Osce" || planType === undefined) &&
-                        type !== "Trial" && (
-                          <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-                            <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                              To get this feature, upgrade your plan
-                            </p>
-                          </div>
-                        )} */}
                           {selectedTab === "Clinical" &&
                             type === "SBA" &&
                             isSortedByPresentation &&

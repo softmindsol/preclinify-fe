@@ -10,9 +10,9 @@ const VirtualPatientGuide = () => {
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative z-50 h-[70%] w-[50%] rounded-lg bg-white p-6 shadow-md">
+      <div className="relative z-50 w-[90%] rounded-lg bg-white p-6 shadow-md md:w-[50%] 2xl:h-[75%]">
         <div>
-          <h1 className="mb-6 text-[48px] font-extrabold text-[#3F3F46]">
+          <h1 className="3xl:mb-6 mb-3 text-[18px] font-extrabold text-[#3F3F46] sm:text-[26px] 2xl:text-[48px]">
             How to get the most out of the virtual patients
           </h1>
           {/* Decorative wave SVG */}
@@ -21,10 +21,12 @@ const VirtualPatientGuide = () => {
             {/* Step 1 */}
             <div className="flex items-center">
               <div className="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
-                <span className="text-[48px] font-black text-[#3F3F46]">1</span>
+                <span className="3xl:text-[48px] text-[18px] font-black text-[#3F3F46] sm:text-[32px] xl:text-[38px]">
+                  1
+                </span>
               </div>
               <div>
-                <h2 className="text-[#3F3F46]">
+                <h2 className="text-[12px] text-[#3F3F46] md:text-[14px] xl:text-[16px]">
                   <b>Introduce yourself</b>{" "}
                   <span>
                     by saying "Hi I'm Doctor (name), how may I help you today?"
@@ -36,10 +38,12 @@ const VirtualPatientGuide = () => {
             {/* Step 2 */}
             <div className="flex items-center">
               <div className="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
-                <span className="text-[48px] font-black text-[#3F3F46]">2</span>
+                <span className="3xl:text-[48px] text-[18px] font-black text-[#3F3F46] sm:text-[32px] xl:text-[38px]">
+                  2
+                </span>
               </div>
               <div>
-                <h2 className="text-[#3F3F46]">
+                <h2 className="text-[12px] text-[#3F3F46] xl:text-[16px]">
                   Go through the consultation. Once finished say{" "}
                   <b>"please give me questions as an examiner"</b>
                 </h2>
@@ -49,10 +53,12 @@ const VirtualPatientGuide = () => {
             {/* Step 3 */}
             <div className="flex">
               <div className="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
-                <span className="text-[48px] font-black text-[#3F3F46]">3</span>
+                <span className="3xl:text-[48px] text-[18px] font-black text-[#3F3F46] sm:text-[32px] xl:text-[38px]">
+                  3
+                </span>
               </div>
               <div>
-                <h2 className="text-[#3F3F46]">
+                <h2 className="text-[12px] text-[#3F3F46] xl:text-[16px]">
                   Once done, <b>ask for feedback!</b> Ask what you had missed as
                   per the mark-scheme.
                 </h2>
@@ -61,10 +67,10 @@ const VirtualPatientGuide = () => {
           </div>
           {/* Note section */}
           <div className="mt-8 flex items-center gap-x-4">
-            <h3 className="mb-2 text-[24px] font-extrabold text-[#3F3F46]">
+            <h3 className="3xl:text-[48px] mb-2 text-[18px] font-black text-[#3F3F46] sm:text-[26px] xl:text-[38px]">
               NB:
             </h3>
-            <ul className="space-y-2 text-[#3F3F46]">
+            <ul className="space-y-2 text-[12px] text-[#3F3F46] xl:text-[16px]">
               <li>
                 Please ensure you <span className="font-bold">only</span> press
                 the mic once to get started. Multiple clicks will reduce your
@@ -79,7 +85,7 @@ const VirtualPatientGuide = () => {
           <div className="flex items-center justify-center">
             <button
               onClick={handleClosePatientModal}
-              className="mt-8 w-[60%] rounded-md bg-[#FFE9D6] px-4 py-3 font-medium text-[#FF9741] transition duration-200 hover:bg-[#FF9741] hover:text-white"
+              className="3xl:px-4 3xl:py-3 mt-8 w-[60%] rounded-md bg-[#FFE9D6] sm:px-3 p-2 sm:py-2 text-[12px] sm:text-[14px] font-medium text-[#FF9741] transition duration-200 hover:bg-[#FF9741] hover:text-white 2xl:text-[16px]"
             >
               Send My Patient In!
             </button>

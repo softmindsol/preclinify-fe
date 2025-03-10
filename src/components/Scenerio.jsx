@@ -17,6 +17,7 @@ import {
   openModal,
   toggleModal,
 } from "../redux/features/osce-bot/virtual.modal.slice";
+import ShowPopup from "./common/ShowPopup";
 
 const Scenarios = () => {
   const { data = [], loading } = useSelector((state) => state.osce);
@@ -33,6 +34,7 @@ const Scenarios = () => {
   const { subscriptions, plan, loader, planType } = useSelector(
     (state) => state?.subscription,
   );
+  const [showPlanPopup, setShowPlanPopup] = useState(false);
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -124,7 +126,6 @@ const Scenarios = () => {
 
     fetchData();
   }, [dispatch]);
-  console.log("subscriptions:", subscriptions[0]?.plan);
 
   return (
     <div className={`min-h-screen md:flex ${darkModeRedux ? "dark" : ""}`}>
@@ -172,16 +173,7 @@ const Scenarios = () => {
           </div>
 
           {activeTab === "static" ? (
-            <div
-              className={`${subscriptions[0].plan === null && "pointer-events-auto relative z-50 w-full  bg-opacity-70"}`}
-            >
-              {(planType === null || planType === undefined) && (
-                <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/40">
-                  <p className="rounded-md bg-gray-800 px-6 py-8 text-xl font-semibold text-white md:text-3xl">
-                    To get this feature, upgrade your plan
-                  </p>
-                </div>
-              )}
+            <div>
               <div className="rounded-[8px] bg-white p-5 dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]">
                 <div className="flex items-center justify-center">
                   <div className="mb-6 grid justify-items-center gap-4 sm:grid-cols-2 2xl:grid-cols-4">
@@ -386,14 +378,19 @@ const Scenarios = () => {
                           <div
                             key={osce.id}
                             className="relative cursor-pointer rounded-[8px] border bg-[#F4F4F5] p-4 text-center shadow-md hover:opacity-75 dark:border-[#3A3A48] dark:bg-[#1E1E2A]"
-                          >
-                            <Link
-                              to={
-                                activeTab === "static"
-                                  ? `/static-scenerios-detail/${osce.id}`
-                                  : `/osce-ai-bot/${categoryName.replace(/\s+/g, "-")}`
+                            onClick={() => {
+                              if (
+                                plan === null ||
+                                planType === null ||
+                                planType === undefined
+                              ) {
+                                setShowPlanPopup(true);
                               }
-                            >
+                            }}
+                          >
+                            {plan === null ||
+                            planType === null ||
+                            planType === undefined ? (
                               <div className="flex h-full flex-col justify-between">
                                 <div>
                                   <p className="absolute right-2 top-1 text-[12px] font-semibold text-[#A1A1AA] dark:text-white lg:text-[14px]">
@@ -410,7 +407,32 @@ const Scenarios = () => {
                                   #{osce.id}
                                 </div>
                               </div>
-                            </Link>
+                            ) : (
+                              <Link
+                                to={
+                                  activeTab === "static"
+                                    ? `/static-scenerios-detail/${osce.id}`
+                                    : `/osce-ai-bot/${categoryName.replace(/\s+/g, "-")}`
+                                }
+                              >
+                                <div className="flex h-full flex-col justify-between">
+                                  <div>
+                                    <p className="absolute right-2 top-1 text-[12px] font-semibold text-[#A1A1AA] dark:text-white lg:text-[14px]">
+                                      {osce.category}
+                                    </p>
+                                    <div className="mt-3 text-[20px] font-bold text-[#3F3F46] dark:text-white">
+                                      {categoryName}
+                                    </div>
+                                    <div className="text-[16px] font-semibold text-[#A1A1AA] dark:text-white">
+                                      {osce.stationName}
+                                    </div>
+                                  </div>
+                                  <div className="text-[48px] font-bold text-[#52525B] dark:text-white">
+                                    #{osce.id}
+                                  </div>
+                                </div>
+                              </Link>
+                            )}
                           </div>
                         );
                       })
@@ -669,6 +691,7 @@ const Scenarios = () => {
           )}
         </div>
       </div>
+      {showPlanPopup && <ShowPopup setShowPlanPopup={setShowPlanPopup} />}
       <MobileBar
         toggleDrawer={toggleDrawer}
         isOpen={isOpen}
