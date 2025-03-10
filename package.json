@@ -47,7 +47,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:staging": "PORT=3001 REACT_APP_ENV=staging react-scripts start",
+    "start:production": "PORT=3000 REACT_APP_ENV=production react-scripts start",
     "build": "CI=false react-scripts build",
+    "build:staging": "CI=false REACT_APP_ENV=staging react-scripts build",
+    "build:production": "CI=false REACT_APP_ENV=production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
