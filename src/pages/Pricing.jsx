@@ -24,12 +24,12 @@ const Pricing = () => {
   const currentPlan = useSelector(
     (state) => state?.subscription?.subscriptions[0]?.plan,
   );
-    const { subscriptions, plan, loader, planType } = useSelector(
-      (state) => state?.subscription,
-    );
-  
-  console.log("userData:", userData);
+  const { subscriptions, plan, loader, planType } = useSelector(
+    (state) => state?.subscription,
+  );
+
   console.log("subscriptions:", subscriptions);
+  console.log("currentPlan:", currentPlan);
 
   const [isAnnual, setIsAnnual] = useState(false);
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const Pricing = () => {
   const pricingPlans = {
     termly: [
       {
-        planId: process.env.REACT_APP_FREE_PLAN_ID,
+        planId: null,
         title: "The Trial Plan",
         price: "Free",
         monthlyPrice: "Free",
@@ -77,7 +77,7 @@ const Pricing = () => {
     ],
     annual: [
       {
-        planId: process.env.REACT_APP_FREE_PLAN_ID,
+        planId: null,
         title: "The Trial Plan",
         price: "Free",
         monthlyPrice: "Free",
@@ -144,7 +144,7 @@ const Pricing = () => {
     }
     // Check if the selected plan is the free plan
     if (
-      planId === process.env.REACT_APP_FREE_PLAN_ID &&
+      planId === null &&
       planSlug === PlanSlug("The Trial Plan", 3)
     ) {
       await freePlanHandler();
@@ -204,13 +204,12 @@ const Pricing = () => {
         created_at: new Date(),
       },
     ]);
-    console.log("data:", data);
 
     if (insertError) {
       console.error("Error adding tokens:", insertError);
       toast.error("Failed to initialize subscription tokens.");
     } else {
-      navigate('/dashboard')
+      navigate("/dashboard");
       toast.success("Subscription initialized with 5 tokens.");
     }
   };
@@ -219,19 +218,16 @@ const Pricing = () => {
     if (userId) {
       dispatch(getUserById({ userId })) // userId pass karna zaroori hai
         .unwrap()
-        .then((res) => {
-          console.log("response login", res);
-        })
+        .then((res) => {})
         .catch((error) => {});
       dispatch(fetchSubscriptions({ userId }));
-      console.log("userId:", userId);
     }
   }, [dispatch, userId]);
 
   return (
     <div className="">
       {/* <Navbar /> */}
-      {(userId && subscriptions.length>0) && (
+      {userId && subscriptions.length > 0 && (
         <Link to={"/dashboard"}>
           <div className="ml-10 mt-10 flex cursor-pointer items-center gap-x-3 text-[#52525B] hover:text-[#171719]">
             <svg
@@ -358,10 +354,7 @@ const Pricing = () => {
                   </div> */}
 
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 transform">
-                    {userId &&
-                    (currentPlan === plan?.planId ||
-                      (currentPlan === null &&
-                        plan.planId === process.env.REACT_APP_FREE_PLAN_ID)) ? (
+                    {userId && currentPlan === plan?.planId ? (
                       // User is logged in and this is their current plan OR currentPlan is null and this is the free plan
                       <button
                         disabled
