@@ -1179,53 +1179,52 @@ const Questioning = () => {
                       </button>
                     </div>
                   </div>
-                </div> 
+                </div>
                 {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
                   {(planType === "Osce" ||
                     plan === undefined ||
-                     plan === null ||
+                    plan === null ||
                     planType === undefined) &&
                     type !== "Trial" && (
                       <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
-                        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A]">
-                          <div className="text-center">
-                            {/* Icon */}
-                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#3CC8A1]/10">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6 text-[#3CC8A1]"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                />
-                              </svg>
-                            </div>
+                        <div className="mt-[300px] h-full">
+                          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A] ">
+                            <div className="text-center">
+                              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#3CC8A1]/10">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6 text-[#3CC8A1]"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  strokeWidth={2}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                  />
+                                </svg>
+                              </div>
 
-                            {/* Title */}
-                            <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-                              Upgrade Your Plan
-                            </h3>
+                              <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+                                Upgrade Your Plan
+                              </h3>
 
-                            {/* Description */}
-                            <p className="mb-6 text-gray-600 dark:text-gray-300">
-                              To access this feature, please upgrade your plan.
-                            </p>
+                              <p className="mb-6 text-gray-600 dark:text-gray-300">
+                                To access this feature, please upgrade your
+                                plan.
+                              </p>
 
-                            {/* Buttons */}
-                            <div className="flex justify-center gap-4">
-                              <Link
-                                to="/pricing"
-                                className="rounded-md bg-[#3CC8A1] px-6 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#34b08c]"
-                              >
-                                Buy Plan
-                              </Link>
+                              <div className="flex justify-center gap-4">
+                                <Link
+                                  to="/pricing"
+                                  className="rounded-md bg-[#3CC8A1] px-6 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#34b08c]"
+                                >
+                                  Buy Plan
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1233,7 +1232,6 @@ const Questioning = () => {
                     )}
                   {selectedTab === "Clinical" && type !== "Trial" && (
                     <div className="relative">
-                     
                       <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
                         <div className="mr-10 flex w-[35%] items-center justify-between">
                           <p className="w-full text-center text-[12px] font-bold text-[#3F3F46] dark:text-white sm:text-[16px] 2xl:text-[18px]">

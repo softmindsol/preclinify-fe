@@ -35,7 +35,7 @@ const DeepChatAI = props => {
         }}
         directConnection={{ openAI: { key: process.env.REACT_APP_OPENAI_API } }}
       />
-    ),
+    ), 
     [dynamicStyle, darkModeRedux]
   );
 
