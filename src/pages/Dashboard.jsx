@@ -358,7 +358,7 @@ const Dashboard = () => {
                 <div className="mt-8 space-y-6 md:mt-0">
                   <div className="flex w-full flex-col items-center justify-center gap-x-6 md:flex-row">
                     <div
-                      className={`h-[430px] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] ${plan === undefined || plan === null ? "w-[100%]" : "xs:w-[420px] w-[95%] xl:w-[610px] 2xl:w-[745px]"} `}
+                      className={`h-[430px] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] xs:w-[420px] w-[95%] xl:w-[610px] 2xl:w-[745px] `}
                     >
                       <div className="flex items-end justify-end">
                         <div className="relative mb-5 w-[180px]">
@@ -494,7 +494,7 @@ const Dashboard = () => {
                         </p>
                       </div>
                     </div>
-                    {plan !== undefined && plan !== null && (
+                    {/* {plan !== undefined && plan !== null && ( */}
                       <div className="xs:w-[445px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
                         <div className="p-5 text-center text-sm font-bold text-[#52525B] xl:text-lg">
                           <p className="dark:text-white">Quick Start</p>
@@ -560,7 +560,7 @@ const Dashboard = () => {
                           )}
                         </div>
                       </div>
-                    )}
+                    {/* )} */}
                   </div>
 
                   <div className="flex w-full flex-col items-center justify-center gap-x-5 gap-y-1 md:flex-row-reverse">

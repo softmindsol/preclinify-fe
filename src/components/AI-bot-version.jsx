@@ -21,7 +21,7 @@ import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import AIBotSidebar from "./common/AIBotSidebar";
 import UpgradePlanModal from "./common/UpgradePlan";
-
+import { BeatLoader } from "react-spinners";
 const AINewVersion = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("voice");
@@ -69,7 +69,6 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const instruction = AIPrompt;
   const { chatFeedback, generateSummaryAndFeedback } =
     useSummaryAndFeedback(transcript);
-  console.log(chatFeedback);
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
   };
@@ -632,21 +631,25 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
                       subscriptions[0]?.used_tokens
                         ? "bg-gray-400 disabled:cursor-not-allowed"
                         : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
-                    } ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
+                    } `}
                   >
                     <audio ref={audioRef} className="hidden" />
-                    <img
-                      src="/assets/mic.svg"
-                      width={30}
-                      height={30}
-                      className={`flex items-center justify-center ${
-                        subscriptions[0]?.total_tokens <=
-                        subscriptions[0]?.used_tokens
-                          ? "cursor-not-allowed"
-                          : "cursor-pointer"
-                      }`}
-                      alt=""
-                    />
+                    {isRecording ? (
+                      <BeatLoader color="#110f0f" size={10} />
+                    ) : (
+                      <img
+                        src="/assets/mic.svg"
+                        width={30}
+                        height={30}
+                        className={`flex items-center justify-center ${
+                          subscriptions[0]?.total_tokens <=
+                          subscriptions[0]?.used_tokens
+                            ? "cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        alt=""
+                      />
+                    )}
                   </button>
                 </div>
               </div>
@@ -669,12 +672,12 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
           handleBackToDashboard={handleBackToDashboard}
         />
       )}
-    
-          {(virtualPatient) &&
-       ( subscriptions[0]?.used_tokens < subscriptions[0]?.total_tokens) && (
+
+      {virtualPatient &&
+        subscriptions[0]?.used_tokens < subscriptions[0]?.total_tokens && (
           <VirtualPatientGuide />
         )}
-    
+
       <AIBotSidebar
         toggleDrawer={toggleDrawer}
         isOpen={isOpen}
@@ -698,10 +701,12 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
         handlerOpenDashboardModal={handlerOpenDashboardModal}
         FeedbackModal={FeedbackModal}
       />
-   { ( subscriptions[0]?.used_tokens >= subscriptions[0]?.total_tokens) && (<UpgradePlanModal
-        isOpen={showUpgradeModal}
-        onClose={() => setShowUpgradeModal(false)}
-      />)}
+      {subscriptions[0]?.used_tokens >= subscriptions[0]?.total_tokens && (
+        <UpgradePlanModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+        />
+      )}
     </div>
   );
 };

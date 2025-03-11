@@ -1230,7 +1230,7 @@ const Questioning = () => {
                         </div>
                       </div>
                     )}
-                  {selectedTab === "Clinical" && type !== "Trial" && (
+                  {selectedTab === "Clinical" && (
                     <div className="relative">
                       <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
                         <div className="mr-10 flex w-[35%] items-center justify-between">
