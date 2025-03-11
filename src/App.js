@@ -36,6 +36,8 @@ import AudioStreamingClient from "./components/AudioStream";
 import { Privacy } from "./pages/Privacy";
 import TermCondition from "./pages/TermCondition";
 import Declaimer from "./pages/Declaimer";
+import Textbook from "./components/Textbook";
+import TextbookContent from "./components/TextbookContent";
 
 function App() {
   const navigate = useNavigate();
@@ -70,6 +72,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path='/textbook' element={<Textbook />} />
+        <Route path='/textbook-content' element={<TextbookContent />} />
+
         <Route
           path="/sba-presentation"
           element={

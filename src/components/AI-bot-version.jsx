@@ -20,7 +20,8 @@ import VirtualPatientGuide from "./common/VirtualOsceModal";
 import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import AIBotSidebar from "./common/AIBotSidebar";
-
+import UpgradePlanModal from "./common/UpgradePlan";
+import { BeatLoader } from "react-spinners";
 const AINewVersion = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("voice");
@@ -44,6 +45,7 @@ const AINewVersion = () => {
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
+const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const userId = localStorage.getItem("userId");
   const { subscriptions, plan, loader, completePlanData } = useSelector(
     (state) => state?.subscription,
@@ -67,7 +69,6 @@ const AINewVersion = () => {
   const instruction = AIPrompt;
   const { chatFeedback, generateSummaryAndFeedback } =
     useSummaryAndFeedback(transcript);
-  console.log(chatFeedback);
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
   };
@@ -278,6 +279,12 @@ const AINewVersion = () => {
     // dispatch(openModal());
   }, []);
 
+    useEffect(() => {
+      if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
+        setShowUpgradeModal(true);
+      }
+    }, [subscriptions]);
+
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -348,8 +355,7 @@ const AINewVersion = () => {
             </div>
           </div>
           <div className="w-[90%] text-center text-[14px] font-semibold text-[#52525B]">
-            {subscriptions[0]?.total_tokens ===
-            subscriptions[0]?.used_tokens ? (
+            {subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens ? (
               <div className="space-y-2">
                 <p className="text-[#FF453A]">
                   You have exceeded your token limit
@@ -366,13 +372,17 @@ const AINewVersion = () => {
                   </span>
                 ) : (
                   <span>
-                    {" "}
                     You have{" "}
-                    {subscriptions[0]?.total_tokens -
-                      subscriptions[0]?.used_tokens}{" "}
-                    {subscriptions[0]?.total_tokens -
-                      subscriptions[0]?.used_tokens ===
-                    1
+                    {Math.max(
+                      0,
+                      subscriptions[0]?.total_tokens -
+                        subscriptions[0]?.used_tokens,
+                    )}{" "}
+                    {Math.max(
+                      0,
+                      subscriptions[0]?.total_tokens -
+                        subscriptions[0]?.used_tokens,
+                    ) === 1
                       ? "Token"
                       : "Tokens"}{" "}
                     remaining.
@@ -466,7 +476,7 @@ const AINewVersion = () => {
           <TbBaselineDensityMedium />
         </div>
       </div>
-      <div className="lg:ml-[250px] mt-5">
+      <div className="mt-5 lg:ml-[250px]">
         {/* Tabs */}
         <div className="flex space-x-4 border-b border-gray-300 pb-2">
           <button
@@ -612,30 +622,34 @@ const AINewVersion = () => {
                 <div className="flex w-full flex-col items-center justify-center gap-2">
                   <button
                     disabled={
-                      subscriptions[0]?.total_tokens ===
+                      subscriptions[0]?.total_tokens <=
                       subscriptions[0]?.used_tokens
                     }
                     onClick={handleMicClick}
                     className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
-                      subscriptions[0]?.total_tokens ===
+                      subscriptions[0]?.total_tokens <=
                       subscriptions[0]?.used_tokens
                         ? "bg-gray-400 disabled:cursor-not-allowed"
                         : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
-                    } ${isRecording ? "scale-110 animate-pulse" : "scale-100"}`}
+                    } `}
                   >
                     <audio ref={audioRef} className="hidden" />
-                    <img
-                      src="/assets/mic.svg"
-                      width={30}
-                      height={30}
-                      className={`flex items-center justify-center ${
-                        subscriptions[0]?.total_tokens ===
-                        subscriptions[0]?.used_tokens
-                          ? "cursor-not-allowed"
-                          : "cursor-pointer"
-                      }`}
-                      alt=""
-                    />
+                    {isRecording ? (
+                      <BeatLoader color="#110f0f" size={10} />
+                    ) : (
+                      <img
+                        src="/assets/mic.svg"
+                        width={30}
+                        height={30}
+                        className={`flex items-center justify-center ${
+                          subscriptions[0]?.total_tokens <=
+                          subscriptions[0]?.used_tokens
+                            ? "cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        alt=""
+                      />
+                    )}
                   </button>
                 </div>
               </div>
@@ -658,7 +672,12 @@ const AINewVersion = () => {
           handleBackToDashboard={handleBackToDashboard}
         />
       )}
-      <div className="">{virtualPatient && <VirtualPatientGuide />}</div>
+
+      {virtualPatient &&
+        subscriptions[0]?.used_tokens < subscriptions[0]?.total_tokens && (
+          <VirtualPatientGuide />
+        )}
+
       <AIBotSidebar
         toggleDrawer={toggleDrawer}
         isOpen={isOpen}
@@ -682,6 +701,12 @@ const AINewVersion = () => {
         handlerOpenDashboardModal={handlerOpenDashboardModal}
         FeedbackModal={FeedbackModal}
       />
+      {subscriptions[0]?.used_tokens >= subscriptions[0]?.total_tokens && (
+        <UpgradePlanModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+        />
+      )}
     </div>
   );
 };

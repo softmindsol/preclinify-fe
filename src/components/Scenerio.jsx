@@ -29,7 +29,7 @@ const Scenarios = () => {
   const darkModeRedux = useSelector((state) => state.darkMode.isDarkMode);
   const [activeFilters, setActiveFilters] = useState([]);
   const [module, setModule] = useState([]);
-  const [activeTab, setActiveTab] = useState("static");
+  const [activeTab, setActiveTab] = useState("ai");
   const categoryRef = useRef(null);
   const { subscriptions, plan, loader, planType } = useSelector(
     (state) => state?.subscription,

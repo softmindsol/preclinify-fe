@@ -18,6 +18,7 @@ import {
   setActive,
   setAttempted,
 } from "../redux/features/attempts/attempts.slice";
+import ReactMarkdown from "react-markdown";
 import { setAttemptedShortQuestion } from "../redux/features/SAQ/saq.slice";
 import FeedbackModal from "./common/Feedback";
 import {
@@ -66,8 +67,7 @@ const ShortQuestion = () => {
   const FiltershortQuestions =
     subscriptions[0]?.plan === null ? freeTrialData : PaidPlan;
 
-  console.log("subscriptions[0]?.plan:", subscriptions[0]?.plan);
-  console.log("PaidPlan:", PaidPlan);
+
 
   const sqa = useSelector((state) => state?.SQA?.organizedData || []);
   const attempted = useSelector((state) => state.attempts?.attempts);
@@ -595,6 +595,9 @@ const ShortQuestion = () => {
     };
   }, []);
 
+
+  console.log("sqa[currentIndex]:", FiltershortQuestions[currentIndex]);
+
   if (reviewLoading) {
     return <Loader />;
   }
@@ -809,7 +812,13 @@ const ShortQuestion = () => {
                   value={userAnswer || userAnswers[currentIndex] || ""}
                   readOnly
                 />
-
+                <div className="my-2 h-[180px] w-full overflow-auto rounded-[6px] border border-[#3CC8A1] bg-white p-5 placeholder:font-semibold placeholder:text-[#3F3F46] lg:w-[720px]">
+                  <ReactMarkdown>
+                    {FiltershortQuestions[parentIndex]?.children[childIndex]
+                      ?.idealAnswer || ""}
+                  </ReactMarkdown>
+                </div>
+                {/* 
                 <textarea
                   className="mt-2 h-[180px] w-[100%] text-wrap rounded-[6px] border border-[#3CC8A1] p-5 placeholder:font-semibold placeholder:text-[#3F3F46] lg:w-[720px]"
                   placeholder="This is the user’s answer"
@@ -817,8 +826,8 @@ const ShortQuestion = () => {
                     FiltershortQuestions[parentIndex]?.children[childIndex]
                       ?.idealAnswer
                   }
-                  readOnly
-                />
+                  readOnly 
+                /> */}
               </div>
             )}
             <div></div>
@@ -1154,8 +1163,8 @@ const ShortQuestion = () => {
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
           userId={userId}
-          questionStem={sqa[currentIndex]}
-          leadQuestion={sqa[currentIndex].leadQuestion}
+          questionStem={FiltershortQuestions[currentIndex]}
+          leadQuestion={FiltershortQuestions[currentIndex]?.leadQuestion}
         />
       )}
       <div

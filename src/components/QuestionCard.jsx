@@ -36,6 +36,7 @@ import QuestionNavigator from "./QuestionNavigator";
 import { insertResult } from "../redux/features/all-results/result.sba.service";
 import Chatbot from "./chatbot";
 import Loader from "./common/Loader";
+import { fetchSubscriptions } from "../redux/features/subscription/subscription.service";
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60);
@@ -78,10 +79,12 @@ const QuestionCard = () => {
   const freeTrialData = useSelector(
     (state) => state?.FreeTrialMcqsQuestion?.freeTrialData || [],
   );
+  console.log("freeTrialData:", freeTrialData);
+  
 
   const PaidPlan = useSelector((state) => state?.filterQuestion?.results || []);
   const data = subscriptions[0]?.plan === null ? freeTrialData : PaidPlan;
-  
+
   
   const result = useSelector((state) => state.result);
   const [currentPage, setCurrentPage] = useState(0);
@@ -599,7 +602,9 @@ dispatch(
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
   }, [navigation]);
-
+  useEffect(() => {
+    dispatch(fetchSubscriptions({ userId }));
+  }, [dispatch, userId]);
   if (reviewLoading) {
     return <Loader />;
   }
