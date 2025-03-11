@@ -145,7 +145,6 @@ const SetupSessionModal = ({
     }
   };
 
-  console.log("type:", type);
 
   useEffect(() => {
     if (type === "SBA" && !isLoading) {
@@ -204,7 +203,7 @@ const SetupSessionModal = ({
         filterQuestion?.NotAnsweredQuestion &&
         filterQuestion?.previouslyIncorrectQuestion &&
         filterQuestion?.previouslyCorrectQuestion
-      ) {
+      ) { 
         dispatch(
           fetchAllResult({
             moduleId: filterQuestion.selectedModules,

@@ -41,7 +41,7 @@ import textbookReducer from './features/textbook/textbook.slice'
 const persistConfig = {
   key: "root",
   storage, // LocalStorage for modules and mcqsQuestion
-  whitelist: [
+  whitelist: [ 
     "shortQuestionsFreeTrial",
     "FreeTrialMcqsQuestion",
     "SBAResult",
@@ -57,6 +57,8 @@ const persistConfig = {
     "module",
     "osceBot",
     "mcqsQuestion",
+    "filterQuestion",
+    "FiltershortQuestions",
     "osce",
     "accuracy",
     "questionReview",
@@ -66,7 +68,8 @@ const persistConfig = {
     "limit",
     "mockModules",
     "SBApresentation",
-    "virtualPatient"
+    "virtualPatient",
+    "subscription"
   ],
   blackList: ["user", "personalInfo"],
 };

@@ -12,63 +12,60 @@ const ResetPassword = () => {
   const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const hashParams = new URLSearchParams(
-      window.location.hash.replace("#", "?"),
-    );
-    const queryParams = new URLSearchParams(window.location.search);
+useEffect(() => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const accessToken = queryParams.get("token");
 
-    const accessToken =
-      hashParams.get("access_token") || queryParams.get("token");
+  if (accessToken) {
+    setToken(accessToken);
+    localStorage.setItem("forget_token", accessToken);
+  } else {
+    setError("Token is missing or expired.");
+  }
+}, []);
 
-    if (accessToken) {
-      setToken(accessToken);
-      localStorage.setItem("forget_token", accessToken);
-    } else {
-      console.error("Access token is missing or invalid.");
+
+const handlePasswordUpdate = async (e) => {
+  e.preventDefault();
+  setMessage("");
+  setError("");
+
+  if (!password || !confirmPassword) {
+    setError("All fields are required.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  const storedToken = localStorage.getItem("forget_token");
+
+  if (!storedToken) {
+    setError("Token is missing or expired.");
+    return;
+  }
+
+  const { data, error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    setError(error.message);
+  } else {
+    setMessage("Password updated successfully! Redirecting to login...");
+    toast.success("Password updated successfully");
+    localStorage.removeItem("forget_token");
+    setTimeout(() => navigate("/login"), 3000);
+  }
+};
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    if (!data.session) {
+      setError("Session expired. Please request a new password reset.");
     }
-  }, []);
+  });
+}, []);
 
-  console.log("Extracted Token:", token);
-  console.log(
-    "Stored Token in LocalStorage:",
-    localStorage.getItem("forget_token"),
-  );
-
-  const handlePasswordUpdate = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
-
-    if (!password || !confirmPassword) {
-      setError("All fields are required.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    if (!token) {
-      setError("Token is missing or expired.");
-      return;
-    }
-
-    const { error } = await supabase.auth.updateUser(
-      { password },
-      { accessToken: token }, // Use token from state/localStorage
-    );
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setMessage("Password updated successfully! Redirecting to login...");
-      toast.success("Password updated successfully");
-      localStorage.removeItem("forget_token"); // Remove token after success
-      setTimeout(() => navigate("/login"), 3000);
-    }
-  };
 
   return (
     <div className="flex w-full items-center overflow-hidden">
