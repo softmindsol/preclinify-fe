@@ -11,12 +11,12 @@ const FeedbackModal = ({
 }) => {
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
+console.log("questionStem:", questionStem);
 
   const feedbackHandler = (e) => {
     // Only update the feedback, keeping the top part unchanged
     setFeedback(e.target.value);
   };
-  console.log(questionStem);
 
   const handleFeedBack = async () => {
     if (!feedback.trim()) {
@@ -24,10 +24,7 @@ const FeedbackModal = ({
       return;
     }
 
-    // if (!questionStem?.id) {
-    //   toast.error("Invalid question ID.");
-    //   return;
-    // }
+
 
     try {
       setLoading(true);
