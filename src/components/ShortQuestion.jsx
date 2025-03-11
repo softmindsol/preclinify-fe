@@ -67,8 +67,7 @@ const ShortQuestion = () => {
   const FiltershortQuestions =
     subscriptions[0]?.plan === null ? freeTrialData : PaidPlan;
 
-  console.log("subscriptions[0]?.plan:", subscriptions[0]?.plan);
-  console.log("PaidPlan:", PaidPlan);
+
 
   const sqa = useSelector((state) => state?.SQA?.organizedData || []);
   const attempted = useSelector((state) => state.attempts?.attempts);
@@ -595,6 +594,9 @@ const ShortQuestion = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+
+  console.log("sqa[currentIndex]:", FiltershortQuestions[currentIndex]);
 
   if (reviewLoading) {
     return <Loader />;
@@ -1161,8 +1163,8 @@ const ShortQuestion = () => {
           showFeedBackModal={showFeedBackModal}
           setShowFeedBackModal={setShowFeedBackModal}
           userId={userId}
-          questionStem={sqa[currentIndex]}
-          leadQuestion={sqa[currentIndex].leadQuestion}
+          questionStem={FiltershortQuestions[currentIndex]}
+          leadQuestion={FiltershortQuestions[currentIndex]?.leadQuestion}
         />
       )}
       <div
