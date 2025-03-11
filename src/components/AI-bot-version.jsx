@@ -20,6 +20,7 @@ import VirtualPatientGuide from "./common/VirtualOsceModal";
 import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import AIBotSidebar from "./common/AIBotSidebar";
+import UpgradePlanModal from "./common/UpgradePlan";
 
 const AINewVersion = () => {
   const { id } = useParams();
@@ -44,6 +45,7 @@ const AINewVersion = () => {
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
+const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const userId = localStorage.getItem("userId");
   const { subscriptions, plan, loader, completePlanData } = useSelector(
     (state) => state?.subscription,
@@ -278,6 +280,12 @@ const AINewVersion = () => {
     // dispatch(openModal());
   }, []);
 
+    useEffect(() => {
+      if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
+        setShowUpgradeModal(true);
+      }
+    }, [subscriptions]);
+
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -348,8 +356,7 @@ const AINewVersion = () => {
             </div>
           </div>
           <div className="w-[90%] text-center text-[14px] font-semibold text-[#52525B]">
-            {subscriptions[0]?.total_tokens <=
-            subscriptions[0]?.used_tokens ? (
+            {subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens ? (
               <div className="space-y-2">
                 <p className="text-[#FF453A]">
                   You have exceeded your token limit
@@ -662,7 +669,12 @@ const AINewVersion = () => {
           handleBackToDashboard={handleBackToDashboard}
         />
       )}
-      <div className="">{virtualPatient && <VirtualPatientGuide />}</div>
+    
+          {(virtualPatient) &&
+       ( subscriptions[0]?.used_tokens < subscriptions[0]?.total_tokens) && (
+          <VirtualPatientGuide />
+        )}
+    
       <AIBotSidebar
         toggleDrawer={toggleDrawer}
         isOpen={isOpen}
@@ -686,6 +698,10 @@ const AINewVersion = () => {
         handlerOpenDashboardModal={handlerOpenDashboardModal}
         FeedbackModal={FeedbackModal}
       />
+   { ( subscriptions[0]?.used_tokens >= subscriptions[0]?.total_tokens) && (<UpgradePlanModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      />)}
     </div>
   );
 };
