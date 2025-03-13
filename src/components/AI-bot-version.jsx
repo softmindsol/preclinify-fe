@@ -64,8 +64,11 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     setTranscript,
     audioRef,
     initWebRTC,
+   
     stopRecording,
   } = useVoiceRecorder(AIPrompt);
+console.log("transcript:",transcript);
+
   const instruction = AIPrompt;
   const { chatFeedback, generateSummaryAndFeedback } =
     useSummaryAndFeedback(transcript);
@@ -182,25 +185,31 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      if (isRecording) {
+    
         await dispatch(
           incrementUsedTokens({
             userId: userId,
           }),
         ).unwrap();
-      }
 
       // Then, fetch updated subscription data
-      if (isRecording) {
         await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
-      }
-
-      // Finally, start or stop recording
-      isRecording ? stopRecording() : initWebRTC();
+        initWebRTC();
+     
     } catch (error) {
       console.error("Error updating tokens:", error);
     }
   };
+
+  const stopRecordingHandler=()=>{
+    try {
+    stopRecording()
+    } catch (error) {
+      console.log("Error while triggering stop recording handler");
+      
+    }
+  
+  }
 
   const finishReviewHandler = async () => {
     try {
@@ -275,8 +284,6 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   }, [id, dispatch]);
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
-
-    // dispatch(openModal());
   }, []);
 
     useEffect(() => {
@@ -413,8 +420,7 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
                 </span>
                 <button
                   disabled
-                  className={`flex h-5 w-10 items-center ${isPatientOn || !isRecording ? "bg-[#28C3A6]" : "bg-[#F4F4F5]"} rounded-full p-1 transition duration-300 ${isPatientOn || !isRecording ? "justify-end" : "justify-start"}`}
-                  // onClick={() => setIsPatientOn(!isPatientOn)}
+                  className={`flex h-5 w-10 items-center ${!isRecording ? "bg-[#28C3A6]" : "bg-[#F4F4F5]"} rounded-full p-1 transition duration-300 ${!isRecording ? "justify-end" : "justify-start"}`}
                 >
                   <div className="h-4 w-4 rounded-full bg-white shadow-md"></div>
                 </button>
@@ -619,38 +625,79 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
                 </div>
               </main>
               <div className="h-[30vh] rounded-[8px] bg-white p-5">
-                <div className="flex w-full flex-col items-center justify-center gap-2">
-                  <button
-                    disabled={
-                      subscriptions[0]?.total_tokens <=
-                      subscriptions[0]?.used_tokens
-                    }
-                    onClick={handleMicClick}
-                    className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
-                      subscriptions[0]?.total_tokens <=
-                      subscriptions[0]?.used_tokens
-                        ? "bg-gray-400 disabled:cursor-not-allowed"
-                        : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
-                    } `}
+                <div className="flex h-full items-center justify-center gap-x-5">
+                  <div
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-gray-300 p-2"
+                    onClick={() => setActiveTab("text")}
                   >
-                    <audio ref={audioRef} className="hidden" />
-                    {isRecording ? (
-                      <BeatLoader color="#110f0f" size={10} />
-                    ) : (
-                      <img
-                        src="/assets/mic.svg"
-                        width={30}
-                        height={30}
-                        className={`flex items-center justify-center ${
-                          subscriptions[0]?.total_tokens <=
-                          subscriptions[0]?.used_tokens
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer"
-                        }`}
-                        alt=""
-                      />
-                    )}
-                  </button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-message-square"
+                    >
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <button
+                      disabled={
+                        subscriptions[0]?.total_tokens <=
+                        subscriptions[0]?.used_tokens
+                      }
+                      onClick={handleMicClick}
+                      className={`flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
+                        subscriptions[0]?.total_tokens <=
+                        subscriptions[0]?.used_tokens
+                          ? "bg-gray-400 disabled:cursor-not-allowed"
+                          : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
+                      } `}
+                    >
+                      <audio ref={audioRef} className="hidden" />
+                      {isRecording ? (
+                        <BeatLoader color="#110f0f" size={10} />
+                      ) : (
+                        <img
+                          src="/assets/mic.svg"
+                          width={30}
+                          height={30}
+                          className={`flex items-center justify-center ${
+                            subscriptions[0]?.total_tokens <=
+                            subscriptions[0]?.used_tokens
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                          alt=""
+                        />
+                      )}
+                    </button>
+                  </div>
+                  <div
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-gray-300 p-2"
+                    onClick={stopRecordingHandler}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-x"
+                    >
+                      <path d="M18 6 6 18" />
+                      <path d="m6 6 12 12" />
+                    </svg>
+                  </div>{" "}
                 </div>
               </div>
             </div>

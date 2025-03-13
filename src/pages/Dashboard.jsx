@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Sidebar from "../components/common/Sidebar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -28,6 +28,101 @@ import MobileBar from "../components/common/Drawer";
 import { toast } from "sonner";
 import Loader from "../components/common/Loader";
 
+// const calculateStreaks = (result) => {
+//   if (!result || result.length === 0) return [];
+
+//   // Sort dates in ascending order
+//   const sortedResults = [...result].sort(
+//     (a, b) => new Date(a.date) - new Date(b.date),
+//   );
+
+//   let streaks = [];
+//   let currentStreak = [];
+//   let lastDate = null;
+//   let allowedSkip = false; // Allow skipping one day
+
+//   for (const day of sortedResults) {
+//     if (day.count < 10) {
+//       // Streak breaks if count is less than 10
+//       currentStreak = [];
+//       lastDate = null;
+//       allowedSkip = false;
+//       continue;
+//     }
+
+//     const currentDate = new Date(day.date);
+
+//     if (!lastDate) {
+//       // First valid streak day
+//       currentStreak.push(day);
+//     } else {
+//       const gap = (currentDate - lastDate) / (1000 * 60 * 60 * 24); // Difference in days
+
+//       if (gap === 1) {
+//         // Consecutive day
+//         currentStreak.push(day);
+//       } else if (gap === 2 && !allowedSkip) {
+//         // Allow skipping one day
+//         currentStreak.push(day);
+//         allowedSkip = true;
+//       } else {
+//         // Gap > 2 days -> Streak breaks
+//         currentStreak = [day];
+//         allowedSkip = false;
+//       }
+//     }
+
+//     lastDate = currentDate;
+//     if (currentStreak.length > streaks.length) {
+//       streaks = [...currentStreak]; // Update longest streak
+//     }
+//   }
+
+//   return streaks.map((streak) => streak.date); // Return only streak dates
+// };
+
+
+
+const calculateStreaks = (result) => {
+  if (!result || result.length === 0) return { streakDays: [], streakCount: 0 };
+
+  // Sort dates in ascending order
+  const sortedResults = [...result].sort(
+    (a, b) => new Date(a.date) - new Date(b.date),
+  );
+
+  let streaks = [];
+  let currentStreak = [];
+  let lastDate = null;
+
+  for (const day of sortedResults) {
+    if (day.count < 10) {
+      // Streak breaks if count is less than 10
+      currentStreak = [];
+      lastDate = null;
+      continue;
+    }
+
+    const currentDate = new Date(day.date);
+    if (!lastDate || (currentDate - lastDate) / (1000 * 60 * 60 * 24) === 1) {
+      // If it's the first day OR consecutive day
+      currentStreak.push(day);
+    } else {
+      // Streak breaks if there is a gap
+      currentStreak = [day];
+    }
+
+    lastDate = currentDate;
+    if (currentStreak.length > streaks.length) {
+      streaks = [...currentStreak]; // Update longest streak
+    }
+  }
+
+  return {
+    streakDays: streaks.map((streak) => streak.date),
+    streakCount: streaks.length,
+  };
+};
 const Dashboard = () => {
   const navigate = useNavigate();
   const currentPlan = useSelector((state) => state?.subscription) || null;
@@ -63,7 +158,6 @@ const Dashboard = () => {
   const { subscriptions, plan, loader, planType } = useSelector(
     (state) => state?.subscription,
   );
-
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
@@ -167,6 +261,8 @@ const Dashboard = () => {
     count,
     colorClass: getColorClass(count),
   }));
+const { streakDays, streakCount } = useMemo(() => calculateStreaks(result), [result]);
+  // console.log("result", result);
 
   function handleContinue() {
     setIsOpenSetUpSessionModal(true);
@@ -257,18 +353,7 @@ const Dashboard = () => {
     (streak) => streak?.totalIncorrect,
   );
 
-  // useEffect(() => {
-  //   if (currentPlan === null || currentPlan === undefined) {
-  //     setDashboardLoading(true);
-  //     const timeout = setTimeout(() => {
-  //       navigate("/pricing");
-  //       toast.error("You need a plan to access the dashboard!");
-  //       setDashboardLoading(false);
-  //     }, 500);
-
-  //     return () => clearTimeout(timeout); // Cleanup timeout on unmount
-  //   }
-  // }, [navigate, currentPlan]);
+ 
   return (
     <>
       {dashboardLoading ? (
@@ -358,7 +443,7 @@ const Dashboard = () => {
                 <div className="mt-8 space-y-6 md:mt-0">
                   <div className="flex w-full flex-col items-center justify-center gap-x-6 md:flex-row">
                     <div
-                      className={`h-[430px] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] xs:w-[420px] w-[95%] xl:w-[610px] 2xl:w-[745px] `}
+                      className={`xs:w-[420px] h-[430px] w-[95%] rounded-lg bg-white p-5 text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:h-[520px] xl:w-[610px] 2xl:w-[745px]`}
                     >
                       <div className="flex items-end justify-end">
                         <div className="relative mb-5 w-[180px]">
@@ -399,51 +484,32 @@ const Dashboard = () => {
                           Current Streak
                         </p>
                         <p className="text-[18px] font-black text-[#FF9741] dark:text-white sm:text-[24px] xl:text-[32px]">
-                          {streaks?.streak || 0} Days
+                          {streakCount || 0} Days
                         </p>
                       </div>
-
                       <div className="flex justify-between gap-x-10">
                         <div className="mt-4 grid grid-cols-7 gap-[4px] xl:gap-2">
                           {days?.map((day, index) => {
-                            const target = day.workCount * 100;
-                            const workPercentage = Math.floor(
-                              Math.min((day.totalResult / target) * 100, 100),
-                            );
-
-                            // Find the matching result dynamically
                             const matchingResult = result.find(
                               (res) => res.date === day.date,
                             );
                             const bgColorClass = matchingResult
                               ? matchingResult.colorClass
                               : "bg-[#E4E4E7]";
-
-                            const currentDate = new Date()
-                              .toISOString()
-                              .split("T")[0];
-                            const isStreakDay =
-                              currentDate === streaks?.streakDate;
-
-                            const dayDateFormatted = new Date(day.date)
-                              .toISOString()
-                              .split("T")[0];
-                            const isCurrentDayStreak =
-                              dayDateFormatted === streaks?.streakDate;
+                           const isHighStreak = streakDays.includes(day.date);
 
                             return (
                               <div
                                 key={index}
-                                className={`xs:w-8 xs:h-8 relative flex h-6 w-6 items-center justify-center rounded-md text-white xl:h-12 xl:w-12 ${bgColorClass} ${isCurrentDayStreak ? "border-2 border-yellow-500" : ""}`}
+                                className={`xs:w-8 xs:h-8 relative flex h-6 w-6 items-center justify-center rounded-md text-white xl:h-12 xl:w-12 ${bgColorClass} `}
                               >
-                                {isCurrentDayStreak &&
-                                  streaks?.streak === 1 && (
-                                    <img
-                                      src="/assets/heat-icon.svg"
-                                      alt="heat icon"
-                                      className="object-fit absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                                    />
-                                  )}
+                                {isHighStreak && (
+                                  <img
+                                    src="/assets/heatmap.png"
+                                    alt=""
+                                    srcset=""
+                                  />
+                                )}
                               </div>
                             );
                           })}
@@ -495,71 +561,69 @@ const Dashboard = () => {
                       </div>
                     </div>
                     {/* {plan !== undefined && plan !== null && ( */}
-                      <div className="xs:w-[445px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
-                        <div className="p-5 text-center text-sm font-bold text-[#52525B] xl:text-lg">
-                          <p className="dark:text-white">Quick Start</p>
-                        </div>
-                        <div className="border-b-2"></div>
-                        <div className="flex flex-col items-center justify-between gap-y-8 px-4 py-7">
-                          {localRecentSession.length > 0 ? (
-                            localRecentSession.map((sessionId, index) => {
-                              const categoryIds = sessionId
-                                .split(",")
-                                .map((id) => id.trim()); // Convert to array of strings
-
-                              // Find category names corresponding to the category IDs
-                              const categoryNames = categoryIds
-                                .map((id) => {
-                                  const category = data.data.find(
-                                    (item) => item.categoryId === parseInt(id),
-                                  ); // Find the category by ID
-                                  return category
-                                    ? category.categoryName
-                                    : null; // Return the category name or null if not found
-                                })
-                                .filter((name) => name !== null); // Filter out any null values
-                              const truncateCategoryNames = (names) => {
-                                const joinedNames = names.join(", ");
-                                return joinedNames.length > 10
-                                  ? `${joinedNames.slice(0, 10)}+...`
-                                  : joinedNames;
-                              };
-                              // Return the JSX for each session
-                              return (
-                                <div
-                                  key={index}
-                                  className="flex w-full items-center justify-between"
-                                >
-                                  <div>
-                                    <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white md:text-[16px]">
-                                      {truncateCategoryNames(categoryNames)}
-                                    </p>
-                                    <p className="text-[12px] font-semibold text-[#D4D4D8] dark:text-white md:text-[14px]">
-                                      Recent Session
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <button
-                                      onClick={() => {
-                                        setSessionId(sessionId);
-                                        setIsSession(true);
-                                        handleContinue();
-                                      }}
-                                      className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
-                                    >
-                                      Continue &gt;
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })
-                          ) : (
-                            <div className="flex items-center justify-center">
-                              <p>No Session.</p>
-                            </div>
-                          )}
-                        </div>
+                    <div className="xs:w-[445px] mt-2 h-[430px] w-[95%] rounded-lg bg-white text-black shadow-md dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] md:mt-0 md:h-[520px] md:w-[280px] xl:w-[320px]">
+                      <div className="p-5 text-center text-sm font-bold text-[#52525B] xl:text-lg">
+                        <p className="dark:text-white">Quick Start</p>
                       </div>
+                      <div className="border-b-2"></div>
+                      <div className="flex flex-col items-center justify-between gap-y-8 px-4 py-7">
+                        {localRecentSession.length > 0 ? (
+                          localRecentSession.map((sessionId, index) => {
+                            const categoryIds = sessionId
+                              .split(",")
+                              .map((id) => id.trim()); // Convert to array of strings
+
+                            // Find category names corresponding to the category IDs
+                            const categoryNames = categoryIds
+                              .map((id) => {
+                                const category = data.data.find(
+                                  (item) => item.categoryId === parseInt(id),
+                                ); // Find the category by ID
+                                return category ? category.categoryName : null; // Return the category name or null if not found
+                              })
+                              .filter((name) => name !== null); // Filter out any null values
+                            const truncateCategoryNames = (names) => {
+                              const joinedNames = names.join(", ");
+                              return joinedNames.length > 10
+                                ? `${joinedNames.slice(0, 10)}+...`
+                                : joinedNames;
+                            };
+                            // Return the JSX for each session
+                            return (
+                              <div
+                                key={index}
+                                className="flex w-full items-center justify-between"
+                              >
+                                <div>
+                                  <p className="text-[14px] font-medium text-[#3F3F46] dark:text-white md:text-[16px]">
+                                    {truncateCategoryNames(categoryNames)}
+                                  </p>
+                                  <p className="text-[12px] font-semibold text-[#D4D4D8] dark:text-white md:text-[14px]">
+                                    Recent Session
+                                  </p>
+                                </div>
+                                <div>
+                                  <button
+                                    onClick={() => {
+                                      setSessionId(sessionId);
+                                      setIsSession(true);
+                                      handleContinue();
+                                    }}
+                                    className="rounded-[4px] border-[1px] border-[#FF9741] p-2 text-[12px] font-semibold text-[#FF9741] transition-all duration-200 ease-in-out hover:bg-gradient-to-r hover:from-[#FF9741] hover:to-[#FF5722] hover:text-white dark:border-white dark:text-white dark:hover:bg-gradient-to-r dark:hover:from-[#1E1E2A] dark:hover:to-[#3E3E55] dark:hover:text-[#FF9741] dark:hover:shadow-lg dark:hover:shadow-[#FF9741]/60 md:text-[16px]"
+                                  >
+                                    Continue &gt;
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="flex items-center justify-center">
+                            <p>No Session.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     {/* )} */}
                   </div>
 
