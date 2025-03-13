@@ -209,7 +209,7 @@ const AINewVersion = () => {
 
   const handleStartRecording = () => {
     if (!recognitionRef.current) return;
-
+ 
     if (isRecording) {
       // Stop recording if already active
       recognitionRef.current.stop();
