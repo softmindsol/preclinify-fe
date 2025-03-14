@@ -45,13 +45,13 @@ const AINewVersion = () => {
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const userId = localStorage.getItem("userId");
   const { subscriptions, plan, loader, completePlanData } = useSelector(
     (state) => state?.subscription,
   );
-    const [isOpen, setIsOpen] = useState(false);
-  
+  const [isOpen, setIsOpen] = useState(false);
+
   const transcriptRef = useRef(null);
   const virtualPatient = useSelector(
     (state) => state?.virtualPatient?.isModalOpen,
@@ -64,14 +64,19 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     setTranscript,
     audioRef,
     initWebRTC,
-   
+    isAISpeaking,
     stopRecording,
+    setIsAISpeaking,
+ 
   } = useVoiceRecorder(AIPrompt);
-console.log("transcript:",transcript);
+  console.log("transcript:", transcript);
+  console.log("isAISpeaking:", isAISpeaking);
 
   const instruction = AIPrompt;
-  const { chatFeedback, generateSummaryAndFeedback } =
-    useSummaryAndFeedback(transcript);
+  const { chatFeedback, generateSummaryAndFeedback } = useSummaryAndFeedback(
+    transcript,
+    setIsAISpeaking,
+  );
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
   };
@@ -116,9 +121,9 @@ console.log("transcript:",transcript);
     }
   };
 
-    const toggleDrawer = () => {
-      setIsOpen((prevState) => !prevState);
-    };
+  const toggleDrawer = () => {
+    setIsOpen((prevState) => !prevState);
+  };
 
   const reportHandler = () => {
     setShowFeedBackModal(!showFeedBackModal);
@@ -185,31 +190,27 @@ console.log("transcript:",transcript);
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-    
-        await dispatch(
-          incrementUsedTokens({
-            userId: userId,
-          }),
-        ).unwrap();
+      await dispatch(
+        incrementUsedTokens({
+          userId: userId,
+        }),
+      ).unwrap();
 
-      // Then, fetch updated subscription data
-        await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
-        initWebRTC();
-     
+      // // Then, fetch updated subscription data
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
     }
   };
 
-  const stopRecordingHandler=()=>{
+  const stopRecordingHandler = () => {
     try {
-    stopRecording()
+      stopRecording();
     } catch (error) {
       console.log("Error while triggering stop recording handler");
-      
     }
-  
-  }
+  };
 
   const finishReviewHandler = async () => {
     try {
@@ -219,6 +220,7 @@ console.log("transcript:",transcript);
       console.error("Error inserting OSCE Bot Data:", error);
     }
   };
+
 
   useEffect(() => {
     const savedMinutes = localStorage.getItem("minutes");
@@ -286,11 +288,11 @@ console.log("transcript:",transcript);
     dispatch(fetchSubscriptions({ userId }));
   }, []);
 
-    useEffect(() => {
-      if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
-        setShowUpgradeModal(true);
-      }
-    }, [subscriptions]);
+  useEffect(() => {
+    if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
+      setShowUpgradeModal(true);
+    }
+  }, [subscriptions]);
 
   return (
     <div className="w-full">

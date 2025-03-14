@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useSummaryAndFeedback = (transcript) => {
+const useSummaryAndFeedback = (transcript, setIsAISpeaking) => {
   const [chatFeedback, setChatFeedback] = useState({
     summary: "",
     feedback: "",
@@ -70,7 +70,7 @@ const useSummaryAndFeedback = (transcript) => {
         score: result.score,
         user_id: userId,
       });
-
+// setIsAISpeaking(false);
       return result;
     } catch (error) {
       console.error("Error generating summary and feedback:", error);
