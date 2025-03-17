@@ -8,8 +8,8 @@ import MobileBar from "./common/Drawer";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchModuleCategories } from "../redux/features/textbook/textbook.service";
 const Textbook = () => {
-  const { categoryName } = useSelector(
-    (state) => state?.textbook?.textbookModules,
+  const categoryName = useSelector(
+    (state) => state?.textbook?.textbookModules || [],
   );
   const { id } = useParams();
   const navigate = useNavigate(); // Hook to navigate programmatically
@@ -18,10 +18,11 @@ const Textbook = () => {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
-  console.log("categoryName:", categoryName);
+
+  console.log(categoryName);
 
   const [query, setQuery] = useState("");
-  const fuse = new Fuse(categoryName, {
+  const fuse = new Fuse(categoryName?.categoryName, {
     keys: ["categoryName"],
     threshold: 0.4,
   });
@@ -29,7 +30,7 @@ const Textbook = () => {
   // Perform fuzzy search
   const results = query
     ? fuse.search(query).map((result) => result.item)
-    : categoryName;
+    : categoryName?.categoryName;
 
   useEffect(() => {
     dispatch(fetchModuleCategories());
@@ -70,7 +71,7 @@ const Textbook = () => {
               <input
                 type="search"
                 placeholder="Search for anything"
-                className="w-full max-w-[400px] rounded-md p-2 pl-4"
+                className="w-full max-w-[400px] rounded-md p-2 pl-4 placeholder:text-[12px] placeholder:font-light"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)} // Update query state on input change
               />
@@ -85,16 +86,18 @@ const Textbook = () => {
           {/* Search Bar */}
 
           {/* Categories List */}
-          <div className="mt-6 bg-white p-5 shadow-md lg:rounded-md">
-            <ul className="divide-y divide-gray-200">
-              {results.length > 0 ? (
+          <div className="mt-6">
+            <ul className="divide-y divide-gray-300">
+              {results?.length > 0 ? (
                 results.map((category, index) => (
-                  <li
-                    key={index}
-                    className="cursor-pointer py-3 text-[14px] font-semibold text-[#000000] hover:bg-gray-100"
-                  >
-                    {category?.categoryName}
-                  </li>
+                  <Link to={`/textbook-content/${category?.categoryId}`}>
+                    <li
+                      key={index}
+                      className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000]"
+                    >
+                      {category?.categoryName}
+                    </li>
+                  </Link>
                 ))
               ) : (
                 <li className="py-3 text-gray-500">No results found</li>

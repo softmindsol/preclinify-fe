@@ -1,12 +1,15 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { closeModal } from "../../redux/features/osce-bot/virtual.modal.slice";
+import { setOSCEBotType } from "../../redux/features/osce-bot/osce-type.slice";
 
 const VirtualPatientGuide = () => {
   const dispatch = useDispatch();
 
-  const handleClosePatientModal = () => {
-    dispatch(closeModal());
+  const handleClosePatientModal = (type) => {
+    // dispatch(closeModal());
+    dispatch(setOSCEBotType({ type }));
+    console.log(type);
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -82,12 +85,18 @@ const VirtualPatientGuide = () => {
             </ul>
           </div>
           {/* Button */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center space-x-5">
             <button
-              onClick={handleClosePatientModal}
-              className="3xl:px-4 3xl:py-3 mt-8 w-[60%] rounded-md bg-[#FFE9D6] sm:px-3 p-2 sm:py-2 text-[12px] sm:text-[14px] font-medium text-[#FF9741] transition duration-200 hover:bg-[#FF9741] hover:text-white 2xl:text-[16px]"
+              onClick={() => handleClosePatientModal("text")}
+              className="3xl:px-4 3xl:py-3 mt-8 w-[60%] rounded-md bg-[#FFE9D6] p-2 text-[12px] font-medium text-[#FF9741] transition duration-200 hover:bg-[#FF9741] hover:text-white sm:px-3 sm:py-2 sm:text-[14px] 2xl:text-[16px]"
             >
-              Send My Patient In!
+              Text
+            </button>
+            <button
+              onClick={() => handleClosePatientModal("ai-bot")}
+              className="3xl:px-4 3xl:py-3 mt-8 w-[60%] rounded-md bg-[#FFE9D6] p-2 text-[12px] font-medium text-[#FF9741] transition duration-200 hover:bg-[#FF9741] hover:text-white sm:px-3 sm:py-2 sm:text-[14px] 2xl:text-[16px]"
+            >
+              AI Bot
             </button>
           </div>
         </div>
