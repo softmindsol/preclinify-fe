@@ -74,7 +74,7 @@ function App() {
         />
 
         <Route path='/textbook' element={<Textbook />} />
-        <Route path='/textbook-content' element={<TextbookContent />} />
+        <Route path='/textbook-content/:id' element={<TextbookContent />} />
 
         <Route
           path="/sba-presentation"

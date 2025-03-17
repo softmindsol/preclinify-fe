@@ -23,7 +23,7 @@ const MobileBar = ({ toggleDrawer, isOpen, setIsOpen }) => {
         <div className="mb-10 flex items-center justify-center">
           <Logo />
         </div>
-
+ 
         <div className="flex min-h-screen flex-col justify-between overflow-y-auto">
           <nav className="w-full space-y-5">
             {[

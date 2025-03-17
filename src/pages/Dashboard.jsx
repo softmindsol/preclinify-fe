@@ -81,8 +81,6 @@ import Loader from "../components/common/Loader";
 //   return streaks.map((streak) => streak.date); // Return only streak dates
 // };
 
-
-
 const calculateStreaks = (result) => {
   if (!result || result.length === 0) return { streakDays: [], streakCount: 0 };
 
@@ -91,36 +89,90 @@ const calculateStreaks = (result) => {
     (a, b) => new Date(a.date) - new Date(b.date),
   );
 
-  let streaks = [];
+  let longestStreak = [];
   let currentStreak = [];
   let lastDate = null;
 
+  // console.log("Sorted Results:", sortedResults);
+
   for (const day of sortedResults) {
+    const currentDate = new Date(day.date);
+
+    // console.log(`Processing Date: ${day.date}, Count: ${day.count}`);
+
+    // Check if the count is less than 10
     if (day.count < 10) {
-      // Streak breaks if count is less than 10
+      // console.log(`Count < 10. Resetting streak for date: ${day.date}`);
       currentStreak = [];
       lastDate = null;
       continue;
     }
 
-    const currentDate = new Date(day.date);
-    if (!lastDate || (currentDate - lastDate) / (1000 * 60 * 60 * 24) === 1) {
-      // If it's the first day OR consecutive day
+    // Calculate the gap in days between the current date and the last date
+    const gapDays = lastDate
+      ? (currentDate - lastDate) / (1000 * 60 * 60 * 24)
+      : 0; // No gap for the first date
+
+    // console.log(`Gap Days: ${gapDays}`);
+
+    // If there is no gap or the gap is exactly 1 day, continue the streak
+    if (gapDays === 0 || gapDays === 1) {
+      // console.log(`Continuing streak for date: ${day.date}`);
       currentStreak.push(day);
     } else {
-      // Streak breaks if there is a gap
+      // console.log(`Gap > 1 day. Starting new streak for date: ${day.date}`);
       currentStreak = [day];
     }
 
+    // Update the last date to the current date
     lastDate = currentDate;
-    if (currentStreak.length > streaks.length) {
-      streaks = [...currentStreak]; // Update longest streak
+
+    // Update the longest streak if the current streak is longer
+    if (currentStreak.length > longestStreak.length) {
+      // console.log(`Updating longest streak to ${currentStreak.length} days`);
+      longestStreak = [...currentStreak];
+    }
+
+    // console.log(
+    //   `Current Streak:`,
+    //   currentStreak.map((d) => d.date),
+    // );
+    // console.log(
+    //   `Longest Streak:`,
+    //   longestStreak.map((d) => d.date),
+    // );
+    // console.log("-----------------------------");
+  }
+
+  // Check if the latest day is part of the longest streak
+  const latestDate = new Date(sortedResults[sortedResults.length - 1].date);
+  const isLatestInStreak = longestStreak.some(
+    (day) => new Date(day.date).getTime() === latestDate.getTime(),
+  );
+
+  // console.log(
+  //   `Is latest date (${latestDate}) in longest streak? ${isLatestInStreak}`,
+  // );
+
+  // If the latest day is not in the longest streak, check if it can start a new streak
+  if (!isLatestInStreak) {
+    const latestDay = sortedResults[sortedResults.length - 1];
+    if (latestDay.count >= 10) {
+      // console.log(
+      //   `Latest day (${latestDay.date}) has count >= 10. Starting new streak.`,
+      // );
+      longestStreak = [latestDay];
+    } else {
+      // console.log(
+      //   `Latest day (${latestDay.date}) has count < 10. Resetting streak.`,
+      // );
+      longestStreak = [];
     }
   }
 
   return {
-    streakDays: streaks.map((streak) => streak.date),
-    streakCount: streaks.length,
+    streakDays: longestStreak.map((streak) => streak.date),
+    streakCount: longestStreak.length,
   };
 };
 const Dashboard = () => {
@@ -261,8 +313,11 @@ const Dashboard = () => {
     count,
     colorClass: getColorClass(count),
   }));
-const { streakDays, streakCount } = useMemo(() => calculateStreaks(result), [result]);
-  // console.log("result", result);
+  const { streakDays, streakCount } = useMemo(
+    () => calculateStreaks(result),
+    [result],
+  );
+  console.log("result", result);
 
   function handleContinue() {
     setIsOpenSetUpSessionModal(true);
@@ -353,7 +408,6 @@ const { streakDays, streakCount } = useMemo(() => calculateStreaks(result), [res
     (streak) => streak?.totalIncorrect,
   );
 
- 
   return (
     <>
       {dashboardLoading ? (
@@ -488,6 +542,32 @@ const { streakDays, streakCount } = useMemo(() => calculateStreaks(result), [res
                         </p>
                       </div>
                       <div className="flex justify-between gap-x-10">
+                        {/* <div className="mt-4 grid grid-cols-7 gap-[4px] xl:gap-2">
+                          {days?.map((day, index) => {
+                            const matchingResult = result.find(
+                              (res) => res.date === day.date,
+                            );
+                            const bgColorClass = matchingResult
+                              ? matchingResult.colorClass
+                              : "bg-[#E4E4E7]";
+                            const isHighStreak = streakDays.includes(day.date);
+
+                            return (
+                              <div
+                                key={index}
+                                className={`xs:w-8 xs:h-8 relative flex h-6 w-6 items-center justify-center rounded-md text-white xl:h-12 xl:w-12 ${bgColorClass} `}
+                              >
+                                {isHighStreak && (
+                                  <img
+                                    src="/assets/heatmap.png"
+                                    alt=""
+                                    srcset=""
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div> */}
                         <div className="mt-4 grid grid-cols-7 gap-[4px] xl:gap-2">
                           {days?.map((day, index) => {
                             const matchingResult = result.find(
@@ -496,7 +576,8 @@ const { streakDays, streakCount } = useMemo(() => calculateStreaks(result), [res
                             const bgColorClass = matchingResult
                               ? matchingResult.colorClass
                               : "bg-[#E4E4E7]";
-                           const isHighStreak = streakDays.includes(day.date);
+                            const isHighStreak = streakDays.includes(day.date);
+console.log("isHighStreak:", isHighStreak);
 
                             return (
                               <div

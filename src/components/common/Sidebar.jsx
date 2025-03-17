@@ -16,6 +16,7 @@ const Sidebar = () => {
     { id: "/dashboard", name: "Dashboard", icon: "house" },
     { id: "/questioning", name: "Practice", icon: "dumbbell" },
     { id: "/osce", name: "OSCE", icon: "bed" },
+    { id: "/textbook", name: "Textbook", icon: "book-open" },
   ];
 
   // **Only show pricing if plan is null or undefined**
@@ -99,6 +100,12 @@ const Sidebar = () => {
                     <path d="M2 8h18a2 2 0 0 1 2 2v10" />
                     <path d="M2 17h20" />
                     <path d="M6 8v9" />
+                  </>
+                )}
+                {item.icon === "book-open" && (
+                  <>
+                    <path d="M12 7v14" />
+                    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
                   </>
                 )}
               </svg>
