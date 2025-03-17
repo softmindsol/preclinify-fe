@@ -15,7 +15,11 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import MobileBar from "./common/Drawer";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchModuleCategories } from "../redux/features/textbook/textbook.service";
+import {
+  fetchModuleCategories,
+  getNotesByModuleId,
+  insertOrUpdateNotes,
+} from "../redux/features/textbook/textbook.service";
 import Loader from "./common/Loader";
 
 const TextbookContent = () => {
@@ -27,6 +31,10 @@ const TextbookContent = () => {
   const { textbook, categoryName } = useSelector(
     (state) => state?.textbook?.textbookModules || [],
   );
+  const loader = useSelector((state) => state?.textbook?.loading);
+  const note = useSelector((state) => state?.textbook?.notes);
+  const [noteError, setNoteError] = useState(false);
+  const userId = localStorage.getItem("userId");
   const [loading, setLoading] = useState(true);
   const [fuse, setFuse] = useState(null);
   const [article, setArticle] = useState([]);
@@ -35,7 +43,7 @@ const TextbookContent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  console.log(activeSection);
+  console.log(notes);
   const searchRef = useRef(null);
   useEffect(() => {
     if (textbook && textbook.length > 0) {
@@ -49,9 +57,31 @@ const TextbookContent = () => {
   }, [textbook]);
 
   const result = query && fuse ? fuse.search(query).map((res) => res.item) : [];
+  console.log(notes);
 
   const handleSearch = () => {
     setShowModal(true); // Show modal when the input is clicked
+  };
+
+  const handleSave = () => {
+    if (notes.trim() === "") {
+      setNoteError(true);
+    } else {
+      dispatch(insertOrUpdateNotes({ notes, moduleId: id, userId }))
+        .unwrap()
+        .then(() => {
+          setNoteError(false);
+
+          setNotes(""); // Clear the input temporarily
+          return dispatch(
+            getNotesByModuleId({ userId, moduleId: id }),
+          ).unwrap(); // Fetch updated notes
+        })
+        .then((data) => {
+          setNotes(data); // ✅ Set the latest note
+        })
+        .catch((err) => console.error(err));
+    }
   };
 
   useEffect(() => {
@@ -60,6 +90,11 @@ const TextbookContent = () => {
     const article = textbook?.find((item) => item.moduleId === Number(id));
     const module = categoryName.find((item) => item.categoryId === Number(id));
     setArticle({ article, ...module });
+    dispatch(getNotesByModuleId({ userId, moduleId:id }))
+      .unwrap()
+      .then((data) => {
+        setNotes(data);
+      });
 
     setLoading(false);
   }, [id, textbook]);
@@ -91,9 +126,7 @@ const TextbookContent = () => {
         }
       });
     };
-  }, [article]);
-
-
+  }, [article, note, notes]);
 
   // useEffect(() => {
   //   if (article?.article?.fullArticleContent?.length > 0) {
@@ -106,16 +139,15 @@ const TextbookContent = () => {
   //   }
   // }, [article]);
 
-
   // Scroll to top when component mounts or id changes
   useEffect(() => {
     window.scrollTo(0, 0);
     setTimeout(() => {
-        const sectionZero = document.getElementById("section-0");
-        if (sectionZero) {
-          sectionZero.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100); // Thoda delay taake data render ho sake
+      const sectionZero = document.getElementById("section-0");
+      if (sectionZero) {
+        sectionZero.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100); // Thoda delay taake data render ho sake
   }, [id]);
   useEffect(() => {
     function handleClickOutside(event) {
@@ -234,14 +266,22 @@ const TextbookContent = () => {
                     </div>
                     <div className="mt-4">
                       <textarea
-                        className="h-32 w-full rounded-md border border-gray-400 bg-transparent p-2 text-sm text-black"
+                        className={`h-32 w-full rounded-md border bg-transparent p-2 text-sm text-black ${noteError ? "border-red-500" : "border-gray-400"}`}
                         placeholder="This is an example note that a user would have for this topic."
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                       />
                       <div className="text-end">
-                        <button className="h-[32px] w-[125px] rounded-md border border-[#3CC8A1] text-[14px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white">
-                          Save My Notes
+                        <button
+                          onClick={handleSave}
+                          disabled={notes.trim() === ""}
+                          className="h-[32px] w-[125px] rounded-md border border-[#3CC8A1] text-[14px] font-semibold text-[#3CC8A1] transition-all duration-200 hover:bg-[#3CC8A1] hover:text-white disabled:cursor-not-allowed disabled:bg-[#3CC8A1] disabled:text-white disabled:opacity-50"
+                        >
+                          {loader
+                            ? "Saving..."
+                            : notes.trim() === ""
+                              ? "Save Note"
+                              : "Save Changes"}
                         </button>
                       </div>
                     </div>

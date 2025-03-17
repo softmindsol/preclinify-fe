@@ -19,7 +19,6 @@ const Textbook = () => {
     setIsOpen((prevState) => !prevState);
   };
 
-  console.log(categoryName);
 
   const [query, setQuery] = useState("");
   const fuse = new Fuse(categoryName?.categoryName, {
@@ -106,7 +105,7 @@ const Textbook = () => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className="fixed bottom-5 right-5"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -128,7 +127,7 @@ const Textbook = () => {
               <path d="m21 21-4.3-4.3" />
             </svg>
           </div>
-        </div>
+        </div> */}
       </div>
       <MobileBar
         toggleDrawer={toggleDrawer}

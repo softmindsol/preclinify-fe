@@ -1,4 +1,4 @@
-import {  createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import supabase from '../../../config/helper';
 
 export const fetchModuleCategories = createAsyncThunk(
@@ -39,19 +39,42 @@ export const fetchModuleCategories = createAsyncThunk(
 );
 
 
-export const insertNotes = createAsyncThunk(
-    "textbook/insertNotes",
-    async ({ notes }, thunkAPI) => { // ✅ Consistent naming
+// ✅ Async thunk: Fetch notes by moduleId
+export const getNotesByModuleId = createAsyncThunk(
+    "textbookNotes/getNotesByModuleId",
+    async ({ userId, moduleId }, thunkAPI) => {
         try {
-            console.log("notes received:", notes);
-
-            if (!notes || Object.keys(notes).length === 0) {
-                throw new Error("notes is empty or undefined");
+            if (!userId) {
+                throw new Error("userId is required");
             }
 
             const { data, error } = await supabase
                 .from("textbookNotes")
-                .insert([notes]); // ✅ Wrap in an array
+                .select("notes")
+                .eq("userId", userId)
+                .eq("moduleId", moduleId); // ✅ Added moduleId condition
+
+            if (error) throw error;
+            console.log(data);
+
+            return data[0]?.notes || '';
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
+export const insertOrUpdateNotes = createAsyncThunk(
+    "textbook/insertOrUpdateNotes",
+    async ({ notes, moduleId, userId }, thunkAPI) => {
+        try {
+            if (!notes || Object.keys(notes).length === 0) {
+                throw new Error("Notes is empty or undefined");
+            }
+
+            const { data, error } = await supabase
+                .from("textbookNotes")
+                .upsert([{ notes, moduleId, userId }], { onConflict: ["userId", "moduleId"] });
 
             if (error) throw error;
             return data;
