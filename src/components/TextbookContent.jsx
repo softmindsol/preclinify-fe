@@ -46,9 +46,15 @@ const TextbookContent = () => {
 
   const searchRef = useRef(null);
 
-   const toggleDrawer = () => {
-     setIsOpen((prevState) => !prevState);
-   };
+  const textareaRef = useRef(null);
+
+  const handleSvgClick = () => {
+    // Focus the textarea when the SVG is clicked
+    textareaRef.current.focus();
+  };
+  const toggleDrawer = () => {
+    setIsOpen((prevState) => !prevState);
+  };
 
   useEffect(() => {
     if (textbook && textbook.length > 0) {
@@ -95,7 +101,7 @@ const TextbookContent = () => {
     const article = textbook?.find((item) => item.moduleId === Number(id));
     const module = categoryName.find((item) => item.categoryId === Number(id));
     setArticle({ article, ...module });
-    dispatch(getNotesByModuleId({ userId, moduleId:id }))
+    dispatch(getNotesByModuleId({ userId, moduleId: id }))
       .unwrap()
       .then((data) => {
         setNotes(data);
@@ -167,13 +173,13 @@ const TextbookContent = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full md:flex">
+    <div className="h-screen w-full lg:flex">
       {/* Sidebar Section */}
-      <div className="fixed hidden h-full md:block">
+      <div className="fixed hidden h-full lg:block">
         <Sidebar />
       </div>
       {/* Header */}
-      <div className="flex w-full items-center justify-between bg-white p-5 md:hidden">
+      <div className="flex w-full items-center justify-between bg-white p-5 lg:hidden">
         <div className="">
           <img src="/assets/small-logo.png" alt="" />
         </div>
@@ -190,7 +196,7 @@ const TextbookContent = () => {
           </div>
         ) : (
           <div>
-            <div className="flex-1 py-2 md:ml-[170px] md:p-5 lg:ml-[250px]">
+            <div className="flex-1 py-2 md:p-5 lg:ml-[250px]">
               {/* Back Button and Search */}
               <div className="mb-5 flex items-center justify-between gap-5 px-3 md:ml-5 md:p-0">
                 <button
@@ -206,7 +212,7 @@ const TextbookContent = () => {
                   <input
                     type="search"
                     placeholder="Search for anything"
-                    className="w-[180px] text-[14px] rounded-md p-1 pl-10 placeholder:text-[12px] placeholder:text-[#D4D4D8] placeholder:pl-10 focus:outline-none focus:ring-2 focus:ring-gray-400 sm:w-[230px] md:block md:placeholder:text-[14px] lg:w-[320px] lg:p-2"
+                    className="w-[180px] rounded-md p-1 pl-10 text-[14px] placeholder:pl-10 placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none focus:ring-2 focus:ring-gray-400 sm:w-[230px] md:block md:placeholder:text-[14px] lg:w-[320px] lg:p-2"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onClick={handleSearch}
@@ -269,7 +275,7 @@ const TextbookContent = () => {
                   )}
                 </div>
 
-                <div className="hidden w-[400px] space-y-8 bg-transparent text-white lg:block 2xl:w-[320px]">
+                <div className="hidden w-[400px] space-y-8 bg-transparent text-white md:block 2xl:w-[320px]">
                   {/* Notes Section */}
                   <div>
                     <div
@@ -277,14 +283,13 @@ const TextbookContent = () => {
                       onClick={() => setShowContents(!showContents)}
                     >
                       <h2 className="text-[14px] font-semibold text-[#27272A]">
-                        - Notes
+                        - {""} {""} Notes
                       </h2>
-                      <div>
-                        <hr />
-                      </div>
                     </div>
+                    <hr className="mt-2 w-full" />
                     <div className="mt-4">
                       <textarea
+                        ref={textareaRef}
                         className={`h-32 w-full rounded-md border bg-transparent p-2 text-sm text-black ${noteError ? "border-red-500" : "border-gray-400"}`}
                         placeholder="This is an example note that a user would have for this topic."
                         value={notes}
@@ -316,6 +321,7 @@ const TextbookContent = () => {
                         - Contents
                       </h2>
                     </div>
+                    <hr className="mt-2 w-full" />
                     {article && (
                       <ul className="mt-4 space-y-2 text-sm">
                         {article?.article?.articleSubSections?.map(
@@ -349,7 +355,15 @@ const TextbookContent = () => {
 
             {/* Icons */}
             <div className={`fixed bottom-5 right-5`}>
-              <div className="block cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white lg:hidden">
+              <div
+                className="hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
+                // onClick={() => {
+                //   document
+                //     .getElementById(`section-0`)
+                //     .scrollIntoView({ behavior: "smooth" });
+                // }}
+                onClick={handleSvgClick}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -366,7 +380,14 @@ const TextbookContent = () => {
                   <path d="M15 3v4a2 2 0 0 0 2 2h4" />
                 </svg>
               </div>
-              <div className="my-3 block cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white lg:hidden">
+              <div
+                className="my-3 hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
+                onClick={() => {
+                  document
+                    .getElementById(`section-1`)
+                    .scrollIntoView({ behavior: "smooth" });
+                }}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
