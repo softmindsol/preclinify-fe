@@ -77,6 +77,8 @@ export const insertOrUpdateNotes = createAsyncThunk(
                 .upsert([{ notes, moduleId, userId }], { onConflict: ["userId", "moduleId"] });
 
             if (error) throw error;
+            console.log(error);
+            
             return data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.message);
