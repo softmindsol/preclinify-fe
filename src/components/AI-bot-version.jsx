@@ -28,8 +28,8 @@ const AINewVersion = () => {
   const { id } = useParams();
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
-  const {type} = useSelector((state) => state?.osceType);
-  
+  const { type } = useSelector((state) => state?.osceType);
+
   const navigate = useNavigate();
   // const [transcripts, setTranscript] = useState([]);
   const [isDashboard, setIsDashboard] = useState(false);
@@ -224,7 +224,6 @@ const AINewVersion = () => {
     }
   };
 
-
   useEffect(() => {
     const savedMinutes = localStorage.getItem("minutes");
     const savedSeconds = localStorage.getItem("seconds");
@@ -297,9 +296,6 @@ const AINewVersion = () => {
     }
   }, [subscriptions]);
 
-  console.log("isRecording:", isRecording);
-  console.log("isLoader:", isLoader);
-  
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -540,7 +536,10 @@ const AINewVersion = () => {
                   ))}
                 </div>
               </main>
-              <div className="h-[30vh] rounded-[8px] bg-white p-5">
+              <form
+                className="h-[30vh] rounded-[8px] bg-white p-5"
+                onSubmit={handleSendText}
+              >
                 <div
                   className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
                 >
@@ -554,7 +553,7 @@ const AINewVersion = () => {
                         placeholder="type your message..."
                       />
                       <div className="absolute bottom-2 left-2 flex items-center pr-2">
-                        <button
+                        <span
                           className="mr-2 rounded-full bg-gray-200 p-2"
                           onClick={() => {
                             dispatch(setOSCEBotType({ type: "ai-bot" }));
@@ -576,8 +575,8 @@ const AINewVersion = () => {
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                             <line x1="12" x2="12" y1="19" y2="22" />
                           </svg>
-                        </button>
-                        <button className="rounded-full bg-gray-200 p-2">
+                        </span>
+                        {/* <span className="rounded-full bg-gray-200 p-2">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -593,14 +592,11 @@ const AINewVersion = () => {
                             <path d="M18 6 6 18" />
                             <path d="m6 6 12 12" />
                           </svg>
-                        </button>
+                        </span> */}
                       </div>
 
                       <div className="absolute bottom-1.5 right-0 flex items-center pr-2">
-                        <button
-                          className="rounded-full bg-[#3CC8A1] p-2 text-white"
-                          onClick={handleSendText}
-                        >
+                        <button className="rounded-full bg-[#3CC8A1] p-2 text-white">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -621,7 +617,7 @@ const AINewVersion = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
           )}
 
@@ -632,10 +628,14 @@ const AINewVersion = () => {
                   className="transcript h-full overflow-y-auto pr-4"
                   ref={transcriptRef}
                 >
-                  <BouncingBall isRecording={isRecording} />
+                  <BouncingBall
+                    isRecording={isRecording}
+                    transcript={transcript}
+                    isAISpeaking={isAISpeaking}
+                  />
                 </div>
               </main>
-              <div className="bg- h-[30vh] rounded-[8px] p-5">
+              <div className="mt-20 h-[30vh] rounded-[8px] p-5">
                 <div className="flex h-full items-center justify-center gap-x-20">
                   <div
                     className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#d8dbe0] p-2"
