@@ -29,7 +29,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`flex min-h-screen w-64 flex-col items-center bg-white py-6 text-black shadow-lg dark:border-r-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
+      className={`flex min-h-screen w-44 lg:w-64 flex-col items-center bg-white py-6 text-black shadow-lg dark:border-r-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
     >
       {/* Logo */}
       <div className="mb-10">

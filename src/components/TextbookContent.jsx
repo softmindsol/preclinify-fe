@@ -42,9 +42,14 @@ const TextbookContent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
 
-  console.log(notes);
   const searchRef = useRef(null);
+
+   const toggleDrawer = () => {
+     setIsOpen((prevState) => !prevState);
+   };
+
   useEffect(() => {
     if (textbook && textbook.length > 0) {
       setFuse(
@@ -164,7 +169,7 @@ const TextbookContent = () => {
   return (
     <div className="h-screen w-full md:flex">
       {/* Sidebar Section */}
-      <div className="fixed hidden h-full lg:block">
+      <div className="fixed hidden h-full md:block">
         <Sidebar />
       </div>
       {/* Header */}
@@ -172,7 +177,7 @@ const TextbookContent = () => {
         <div className="">
           <img src="/assets/small-logo.png" alt="" />
         </div>
-        <div className="">
+        <div className="" onClick={toggleDrawer}>
           <TbBaselineDensityMedium />
         </div>
       </div>
@@ -185,7 +190,7 @@ const TextbookContent = () => {
           </div>
         ) : (
           <div>
-            <div className="flex-1 py-2 md:p-5 lg:ml-[250px]">
+            <div className="flex-1 py-2 md:ml-[170px] md:p-5 lg:ml-[250px]">
               {/* Back Button and Search */}
               <div className="mb-5 flex items-center justify-between gap-5 px-3 md:ml-5 md:p-0">
                 <button
@@ -197,15 +202,29 @@ const TextbookContent = () => {
                     Back To Modules
                   </span>
                 </button>
-                <div className="">
+                <div className="relative">
                   <input
                     type="search"
                     placeholder="Search for anything"
-                    className="w-[180px] rounded-md p-1 pl-4 placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none focus:ring-2 focus:ring-gray-400 sm:w-[250px] md:placeholder:text-[14px] lg:w-[320px] lg:p-2"
+                    className="w-[180px] text-[14px] rounded-md p-1 pl-10 placeholder:text-[12px] placeholder:text-[#D4D4D8] placeholder:pl-10 focus:outline-none focus:ring-2 focus:ring-gray-400 sm:w-[230px] md:block md:placeholder:text-[14px] lg:w-[320px] lg:p-2"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onClick={handleSearch}
                   />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-4.35-4.35M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"
+                    />
+                  </svg>
                 </div>
               </div>
 
@@ -218,13 +237,13 @@ const TextbookContent = () => {
 
               {/* Module Details */}
               <div className="flex justify-center gap-5">
-                <div className="space-y-10 bg-white p-6 shadow-md md:mx-5 md:rounded-lg 2xl:w-[640px]">
+                <div className="space-y-7 bg-white p-6 shadow-md md:mx-3 md:rounded-lg 2xl:w-[640px]">
                   {/* Breadcrumb and Title */}
                   <div>
-                    <p className="text-sm font-semibold text-[#A1A1AA]">
+                    <p className="text-[12px] font-semibold text-[#A1A1AA] lg:text-sm">
                       {`All Modules ${""} > ${""}${article?.categoryName} ${""} >${""} ${article?.article?.articleTitle}`}
                     </p>
-                    <h1 className="mt-2 text-3xl font-bold text-[#3F3F46]">
+                    <h1 className="mt-2 text-[20px] font-bold text-[#3F3F46] lg:text-3xl">
                       {article?.article?.articleTitle}
                     </h1>
                   </div>
@@ -250,7 +269,7 @@ const TextbookContent = () => {
                   )}
                 </div>
 
-                <div className="hidden w-[400px] space-y-8 bg-transparent p-6 text-white lg:block 2xl:w-[320px]">
+                <div className="hidden w-[400px] space-y-8 bg-transparent text-white lg:block 2xl:w-[320px]">
                   {/* Notes Section */}
                   <div>
                     <div
@@ -329,16 +348,8 @@ const TextbookContent = () => {
             </div>
 
             {/* Icons */}
-
-            <div
-              className={`fixed bottom-5 right-5 ${activeSection > "section-0" ? "block" : "hidden"}`}
-              onClick={() => {
-                document
-                  .getElementById(`section-0`)
-                  .scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              <div className="cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white">
+            <div className={`fixed bottom-5 right-5`}>
+              <div className="block cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white lg:hidden">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -349,21 +360,65 @@ const TextbookContent = () => {
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="lucide lucide-arrow-up"
+                  class="lucide lucide-sticky-note"
                 >
-                  <path d="m5 12 7-7 7 7" />
-                  <path d="M12 19V5" />
+                  <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z" />
+                  <path d="M15 3v4a2 2 0 0 0 2 2h4" />
                 </svg>
+              </div>
+              <div className="my-3 block cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white lg:hidden">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-heading"
+                >
+                  <path d="M6 12h12" />
+                  <path d="M6 20V4" />
+                  <path d="M18 20V4" />
+                </svg>
+              </div>
+              <div
+                className={` ${activeSection > "section-0" ? "block" : "hidden"}`}
+                onClick={() => {
+                  document
+                    .getElementById(`section-0`)
+                    .scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                <div className="cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-arrow-up"
+                  >
+                    <path d="m5 12 7-7 7 7" />
+                    <path d="M12 19V5" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
-      {/* <MobileBar
+      <MobileBar
         toggleDrawer={toggleDrawer}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-      /> */}
+      />
     </div>
   );
 };

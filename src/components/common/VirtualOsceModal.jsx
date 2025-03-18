@@ -95,7 +95,7 @@ const VirtualPatientGuide = () => {
               onClick={() => handleClosePatientModal("ai-bot")}
               className="3xl:px-4 3xl:py-3 mt-8 w-[60%] rounded-md bg-[#FFE9D6] p-2 text-[12px] font-medium text-[#FF9741] transition duration-200 hover:bg-[#FF9741] hover:text-white sm:px-3 sm:py-2 sm:text-[14px] 2xl:text-[16px]"
             >
-              AI Bot
+              Voice
             </button>
           </div>
         </div>
