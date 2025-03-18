@@ -10,9 +10,11 @@ const useVoiceRecorder = (AIPrompt) => {
   const [isAISpeaking, setIsAISpeaking] = useState(false);
   const [localStream, setLocalStream] = useState(null); // Store local stream
 const [dataChannel, setDataChannel] = useState(null);
+const [isLoader,setIsLoader] = useState(false);
   const initWebRTC = async () => {
     try {
       setIsRecording(true);
+      setIsLoader(true);
       const tokenResponse = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/session`,
         {
@@ -88,10 +90,14 @@ const [dataChannel, setDataChannel] = useState(null);
 
       const answer = { type: "answer", sdp: await sdpResponse.text() };
       await peerConnection.setRemoteDescription(answer);
+            setIsLoader(false);
+
     
     } catch (error) {
       console.error("Error initializing WebRTC:", error);
       setIsRecording(false);
+      setIsLoader(false);
+
     }
   };
 
@@ -188,19 +194,20 @@ const [dataChannel, setDataChannel] = useState(null);
    } else {
      // Restart microphone tracks when AI is not speaking
      console.log("AI has finished speaking. Enabling microphone.");
-     if (localStream) {
-       localStream.getTracks().forEach((track) => {
-         track.enabled = true; // Re-enable the track
-         const sender = peerConnectionRef.current
-           .getSenders()
-           .find((s) => s.track === track);
-         if (!sender) {
-           peerConnectionRef.current.addTrack(track, localStream);
-           console.log("Re-added track to peer connection:", track);
-         }
-       });
+     if (isRecording){
+       if (localStream) {
+         localStream.getTracks().forEach((track) => {
+           track.enabled = true; // Re-enable the track
+           const sender = peerConnectionRef.current
+             .getSenders()
+             .find((s) => s.track === track);
+           if (!sender) {
+             peerConnectionRef.current.addTrack(track, localStream);
+             console.log("Re-added track to peer connection:", track);
+           }
+         });
+       }
      }
-
      // Start speech recognition when AI is not speaking
      initSpeechRecognition();
    }
@@ -245,6 +252,7 @@ const [dataChannel, setDataChannel] = useState(null);
     setIsAISpeaking,
     initSpeechRecognition,
     recognitionRef,
+    isLoader,
   };
 };
 

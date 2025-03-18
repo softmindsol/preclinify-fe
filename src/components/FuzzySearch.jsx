@@ -39,6 +39,7 @@ const SearchResults = ({ result, searchRef }) => {
   // Final Data to Show
   const displayResults =
     searchTerm.trim() === "" ? sampleData : filteredResults;
+console.log("filteredResults:",filteredResults);
 
   return (
     <div className="w-[720px] p-4" ref={searchRef}>
