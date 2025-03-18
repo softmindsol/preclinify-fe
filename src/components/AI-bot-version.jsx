@@ -22,11 +22,14 @@ import { TbBaselineDensityMedium } from "react-icons/tb";
 import AIBotSidebar from "./common/AIBotSidebar";
 import UpgradePlanModal from "./common/UpgradePlan";
 import { BeatLoader } from "react-spinners";
+import BouncingBall from "./common/BouncingBall";
+import { setOSCEBotType } from "../redux/features/osce-bot/osce-type.slice";
 const AINewVersion = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("voice");
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
+  const {type} = useSelector((state) => state?.osceType);
+  
   const navigate = useNavigate();
   // const [transcripts, setTranscript] = useState([]);
   const [isDashboard, setIsDashboard] = useState(false);
@@ -64,7 +67,7 @@ const AINewVersion = () => {
     setTranscript,
     audioRef,
     initWebRTC,
-    isAISpeaking,
+    isAISpeaking, 
     stopRecording,
     setIsAISpeaking,
  
@@ -190,14 +193,14 @@ const AINewVersion = () => {
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      await dispatch(
-        incrementUsedTokens({
-          userId: userId,
-        }),
-      ).unwrap();
+      // await dispatch(
+      //   incrementUsedTokens({
+      //     userId: userId,
+      //   }),
+      // ).unwrap();
 
-      // // Then, fetch updated subscription data
-      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      // // // Then, fetch updated subscription data
+      // await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
@@ -294,6 +297,8 @@ const AINewVersion = () => {
     }
   }, [subscriptions]);
 
+  console.log("isRecording:", isRecording);
+  
   return (
     <div className="w-full">
       {/* Sidebar */}
@@ -485,29 +490,9 @@ const AINewVersion = () => {
         </div>
       </div>
       <div className="mt-5 lg:ml-[250px]">
-        {/* Tabs */}
-        <div className="flex space-x-4 border-b border-gray-300 pb-2">
-          <button
-            className={`flex w-full items-center justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
-              activeTab === "text" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
-            } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
-            onClick={() => setActiveTab("text")}
-          >
-            Text
-          </button>
-          <button
-            className={`flex w-full items-center justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
-              activeTab === "voice" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
-            } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
-            onClick={() => setActiveTab("voice")}
-          >
-            Voice
-          </button>
-        </div>
-
         {/* Content */}
         <div className={`${darkModeRedux ? "dark" : ""} `}>
-          {activeTab === "text" && (
+          {type === "text" && (
             <div>
               <main className="mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div
@@ -558,84 +543,107 @@ const AINewVersion = () => {
                 <div
                   className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
                 >
-                  <form
-                    onSubmit={handleSendText}
-                    // onSubmit={handlerToken}
-                    className="flex items-center justify-center gap-2"
-                  >
-                    <input
-                      type="text"
-                      value={inputText}
-                      onChange={handleInputChange}
-                      className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
-                      placeholder="What’s brought you in today? (press spacebar to speak)"
-                    />
-                    <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
-                      Send
-                    </button>
-                  </form>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="relative h-[100px] w-[688px]">
+                      <input
+                        type="text"
+                        value={inputText}
+                        onChange={handleInputChange}
+                        className="h-full w-full rounded-[8px] border border-[#3F3F46] pb-[4.25rem] pl-4 pt-[0.25rem] transition-all duration-500 placeholder:text-[#A1A1AA]"
+                        placeholder="type your message..."
+                      />
+                      <div className="absolute bottom-2 left-2 flex items-center pr-2">
+                        <button
+                          className="mr-2 rounded-full bg-gray-200 p-2"
+                          onClick={() => {
+                            dispatch(setOSCEBotType({ type: "ai-bot" }));
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-mic"
+                          >
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" x2="12" y1="19" y2="22" />
+                          </svg>
+                        </button>
+                        <button className="rounded-full bg-gray-200 p-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-x"
+                          >
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div className="absolute bottom-1.5 right-0 flex items-center pr-2">
+                        <button
+                          className="rounded-full bg-[#3CC8A1] p-2 text-white"
+                          onClick={handleSendText}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-arrow-up"
+                          >
+                            <path d="m5 12 7-7 7 7" />
+                            <path d="M12 19V5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === "voice" && (
+          {type === "ai-bot" && (
             <div className="">
-              <main className="z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="bg z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] p-5 px-4 py-2">
                 <div
                   className="transcript h-full overflow-y-auto pr-4"
                   ref={transcriptRef}
                 >
-                  {transcript.map((entry, index) => (
-                    <div
-                      key={index}
-                      className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}
-                    >
-                      <div
-                        className={`mb-2 flex items-center ${entry.fromAI ? "justify-start" : "ml-auto flex-row-reverse"}`}
-                      >
-                        {entry.fromAI ? (
-                          <div className="flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#F4F4F5]">
-                            <img
-                              src="/assets/Logo.png"
-                              alt="AI Icon"
-                              className="w-auto object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="ml-2 flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#3CC8A1]">
-                            <img
-                              src="/assets/sethoscope.png"
-                              alt="User Icon"
-                              className="w-auto object-contain"
-                            />
-                          </div>
-                        )}
-                        <span
-                          className={`ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
-                        >
-                          {entry.text}
-                        </span>
-                        {isLoading && entry.fromAI && (
-                          <div className="ml-2">
-                            <span className="animate-pulse">...</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                  <BouncingBall />
                 </div>
               </main>
-              <div className="h-[30vh] rounded-[8px] bg-white p-5">
-                <div className="flex h-full items-center justify-center gap-x-5">
+              <div className="bg- h-[30vh] rounded-[8px] p-5">
+                <div className="flex h-full items-center justify-center gap-x-20">
                   <div
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-gray-300 p-2"
-                    onClick={() => setActiveTab("text")}
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#d8dbe0] p-2"
+                    onClick={() => dispatch(setOSCEBotType({ type: "text" }))}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
+                      width="20"
+                      height="20"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -681,13 +689,13 @@ const AINewVersion = () => {
                     </button>
                   </div>
                   <div
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-gray-300 p-2"
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#d8dbe0] p-2"
                     onClick={stopRecordingHandler}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
+                      width="20"
+                      height="20"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
