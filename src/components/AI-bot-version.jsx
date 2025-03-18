@@ -67,10 +67,10 @@ const AINewVersion = () => {
     setTranscript,
     audioRef,
     initWebRTC,
-    isAISpeaking, 
+    isAISpeaking,
     stopRecording,
     setIsAISpeaking,
- 
+    isLoader,
   } = useVoiceRecorder(AIPrompt);
   console.log("transcript:", transcript);
   console.log("isAISpeaking:", isAISpeaking);
@@ -193,14 +193,14 @@ const AINewVersion = () => {
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      // await dispatch(
-      //   incrementUsedTokens({
-      //     userId: userId,
-      //   }),
-      // ).unwrap();
+      await dispatch(
+        incrementUsedTokens({
+          userId: userId,
+        }),
+      ).unwrap();
 
       // // // Then, fetch updated subscription data
-      // await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
@@ -298,6 +298,7 @@ const AINewVersion = () => {
   }, [subscriptions]);
 
   console.log("isRecording:", isRecording);
+  console.log("isLoader:", isLoader);
   
   return (
     <div className="w-full">
@@ -631,7 +632,7 @@ const AINewVersion = () => {
                   className="transcript h-full overflow-y-auto pr-4"
                   ref={transcriptRef}
                 >
-                  <BouncingBall />
+                  <BouncingBall isRecording={isRecording} />
                 </div>
               </main>
               <div className="bg- h-[30vh] rounded-[8px] p-5">
@@ -667,10 +668,10 @@ const AINewVersion = () => {
                         subscriptions[0]?.used_tokens
                           ? "bg-gray-400 disabled:cursor-not-allowed"
                           : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
-                      } `}
+                      } ${isRecording ? "animate-pulse" : ""} `}
                     >
                       <audio ref={audioRef} className="hidden" />
-                      {isRecording ? (
+                      {isLoader ? (
                         <BeatLoader color="#110f0f" size={10} />
                       ) : (
                         <img

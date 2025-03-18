@@ -57,7 +57,7 @@ const TextbookContent = () => {
   }, [textbook]);
 
   const result = query && fuse ? fuse.search(query).map((res) => res.item) : [];
-  console.log(notes);
+  console.log(fuse);
 
   const handleSearch = () => {
     setShowModal(true); // Show modal when the input is clicked
