@@ -2,15 +2,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    type: null
+    type: 'text'
 };
 
 const osceTypeSlice = createSlice({
     name: 'osceType',
     initialState,
     reducers: {
-        setOSCEBotType: (state) => {
-            state.type = true;
+        setOSCEBotType: (state,action) => {            
+            state.type = action.payload.type;
         }
     }
 });

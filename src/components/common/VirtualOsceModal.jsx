@@ -7,9 +7,8 @@ const VirtualPatientGuide = () => {
   const dispatch = useDispatch();
 
   const handleClosePatientModal = (type) => {
-    // dispatch(closeModal());
+    dispatch(closeModal());
     dispatch(setOSCEBotType({ type }));
-    console.log(type);
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

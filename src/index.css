@@ -22,6 +22,21 @@ html {
   scroll-behavior: smooth;
 }
 
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05)
+  }
+}
+
+.custom-heartbeat {
+  animation: heartBeat 3s infinite ease-in-out;
+}
+
+
+
 /* HTML: */
 .loading {
   text-align: center;

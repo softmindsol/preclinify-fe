@@ -1032,7 +1032,6 @@ const Questioning = () => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
-
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
@@ -1189,7 +1188,7 @@ const Questioning = () => {
                     type !== "Trial" && (
                       <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
                         <div className="mt-[300px] h-full">
-                          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A] ">
+                          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A]">
                             <div className="text-center">
                               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#3CC8A1]/10">
                                 <svg
@@ -1302,32 +1301,38 @@ const Questioning = () => {
                     <div className="ml-4 mr-4 rounded-[8px] bg-white px-10 py-8 text-[14px] text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white md:text-[16px]">
                       <div className="flex w-full flex-col justify-between pb-2 font-medium text-[#3F3F46] lg:flex-row lg:items-center">
                         <div className="flex items-center gap-x-10 dark:text-white">
-                          <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
-                            <input
-                              type="checkbox"
-                              className="mr-2 size-4"
-                              checked={data?.data?.every((row) =>
-                                selectedModules.includes(row.categoryId),
-                              )} // Parent checkbox state
-                              onChange={(e) =>
-                                handleSelectAll(e.target.checked)
-                              } // Parent checkbox change handler
-                            />
-                            Select All
-                          </div>
-                          {selectedOption !== "SAQ" && (
-                            <div className="flex items-center space-x-2 p-4">
-                              <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
-                                Sort By Presentation
-                              </span>
-                              <label className="relative inline-flex cursor-pointer items-center">
+                          {type == "Trial" ? (
+                            <div></div>
+                          ) : (
+                            <div className="flex items-center gap-x-10 dark:text-white">
+                              <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
                                 <input
                                   type="checkbox"
-                                  className="peer sr-only"
-                                  onChange={handleToggle}
+                                  className="mr-2 size-4"
+                                  checked={data?.data?.every((row) =>
+                                    selectedModules.includes(row.categoryId),
+                                  )} // Parent checkbox state
+                                  onChange={(e) =>
+                                    handleSelectAll(e.target.checked)
+                                  } // Parent checkbox change handler
                                 />
-                                <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
-                              </label>
+                                Select All
+                              </div>
+                              {selectedOption !== "SAQ" && (
+                                <div className="flex items-center space-x-2 p-4">
+                                  <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
+                                    Sort By Presentation
+                                  </span>
+                                  <label className="relative inline-flex cursor-pointer items-center">
+                                    <input
+                                      type="checkbox"
+                                      className="peer sr-only"
+                                      onChange={handleToggle}
+                                    />
+                                    <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
+                                  </label>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
