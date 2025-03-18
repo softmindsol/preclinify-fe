@@ -35,6 +35,10 @@ html {
   animation: heartBeat 3s infinite ease-in-out;
 }
 
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+  -webkit-appearance: none;
+}
 
 
 /* HTML: */

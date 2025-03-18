@@ -21,6 +21,7 @@ h3 {
   list-style: disc;
 }
 
+
 .markdown-text-container table {
   width: 100%;
   border-collapse: collapse;
@@ -61,4 +62,7 @@ h3 {
   font-style: italic;
   color: #555;
   margin-top: 10px;
+}
+.markdown-text-container {
+  font-weight: 300;
 }
