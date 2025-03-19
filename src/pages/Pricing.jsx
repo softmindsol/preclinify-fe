@@ -143,10 +143,7 @@ const Pricing = () => {
       return;
     }
     // Check if the selected plan is the free plan
-    if (
-      planId === null &&
-      planSlug === PlanSlug("The Trial Plan", 3)
-    ) {
+    if (planId === null && planSlug === PlanSlug("The Trial Plan", 3)) {
       await freePlanHandler();
       return;
     }
@@ -286,7 +283,9 @@ const Pricing = () => {
               >
                 <div className="h-[500px] w-[270px] rounded-[16px] border-[1px] border-[#3CC8A1] lg:h-[590px] lg:w-[310px]">
                   <div className="max-h-[140px] rounded-tl-[14px] rounded-tr-[14px] bg-[#3CC8A1] p-8 text-center text-white">
-                    <h3 className="mb-2 text-xl font-semibold">{plan.title}</h3>
+                    <h3 className="mb-2 text-xl font-semibold text-white">
+                      {plan.title}
+                    </h3>
                     <div className="font-bold">
                       {plan.oldPrice && (
                         <span className="mr-2 text-2xl text-[#D4D4D8] line-through">
