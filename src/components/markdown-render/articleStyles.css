@@ -43,8 +43,8 @@ h3 {
 
 .markdown-text-container h3 {
   color: #3cc8a1;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   margin-top: 15px;
 }
 
@@ -65,4 +65,3 @@ h3 {
 .markdown-text-container {
   font-weight: 300;
 }
-

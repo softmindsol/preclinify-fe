@@ -40,12 +40,12 @@ const Textbook = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full lg:flex">
+    <div className="min-h-screen w-full md:flex">
       {/* Sidebar Section */}
-      <div className="fixed hidden h-full lg:block">
+      <div className="fixed hidden h-full md:block">
         <Sidebar />
       </div>
-      <div className="flex w-full items-center justify-between bg-white p-5 lg:hidden">
+      <div className="flex w-full items-center justify-between bg-white p-5 md:hidden">
         <div className="">
           <img src="/assets/small-logo.png" alt="" />
         </div>
@@ -55,32 +55,45 @@ const Textbook = () => {
         </div>
       </div>
 
-      <div className="w-full lg:ml-[250px]">
+      <div className="w-full md:ml-[200px] lg:ml-[250px]">
         {/* Main Content Section */}
-        <div className="flex-1 lg:p-[16px]">
+        <div className="flex-2 lg:p-[16px]">
           {/* Back Button */}
           <div className="mb-2 flex items-center justify-end gap-x-5 p-2 lg:mb-5 lg:p-0">
-            <div className="hidden justify-end lg:flex">
-              <input
-                type="search"
-                placeholder="Search for anything"
-                className="w-full max-w-[400px] rounded-md p-2 pl-4 text-[14px] placeholder:text-[12px] placeholder:font-light"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)} // Update query state on input change
-                style={{
-                  WebkitAppearance: "none", // Safari ke liye
-                  MozAppearance: "none", // Firefox ke liye
-                  appearance: "none",
-                }}
-              />
+            <div className=" justify-end flex">
+              <div className="relative">
+                <input
+                  type="search"
+                  placeholder="Search for anything"
+                  className="w-full max-w-[400px] rounded-md p-2 pl-10 text-[14px] placeholder:pl-1 placeholder:text-[12px] placeholder:font-light"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)} // Update query state on input change
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-4.35-4.35M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
 
           {/* Categories List */}
           {loading ? (
-            <div><Loader /></div>
+            <div className="">
+              <Loader />
+            </div>
           ) : (
-            <div className="mt-6">
+            <div className="md:mr-2 mt-3 lg:mt-6 lg:mr-0">
               <ul className="divide-y divide-gray-300">
                 {results?.length > 0 ? (
                   results.map((category, index) => (

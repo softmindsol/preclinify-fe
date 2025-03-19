@@ -43,6 +43,7 @@ const TextbookContent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const secondSearchRef = useRef(null);
 
   const searchRef = useRef(null);
 
@@ -59,19 +60,22 @@ const TextbookContent = () => {
   useEffect(() => {
     if (textbook && textbook.length > 0) {
       setFuse(
-        new Fuse(textbook, {
+        new Fuse(article, {
           keys: ["articleTitle", "articleSubSections", "fullArticleContent"],
           threshold: 0.3,
         }),
       );
     }
-  }, [textbook]);
+  }, [article]);
 
   const result = query && fuse ? fuse.search(query).map((res) => res.item) : [];
-  console.log(fuse);
+  console.log(article);
 
   const handleSearch = () => {
     setShowModal(true); // Show modal when the input is clicked
+    setTimeout(() => {
+      secondSearchRef.current?.focus(); // Move focus to another input
+    }, 100); // Small delay to ensure modal opens first
   };
 
   const handleSave = () => {
@@ -98,7 +102,7 @@ const TextbookContent = () => {
   useEffect(() => {
     if (!id || !textbook) return;
 
-    const article = textbook?.find((item) => item.moduleId === Number(id));
+    const article = textbook?.filter((item) => item.moduleId === Number(id));
     const module = categoryName.find((item) => item.categoryId === Number(id));
     setArticle({ article, ...module });
     dispatch(getNotesByModuleId({ userId, moduleId: id }))
@@ -213,8 +217,6 @@ const TextbookContent = () => {
                     type="search"
                     placeholder="Search for anything"
                     className="w-[180px] rounded-md p-1 pl-10 text-[14px] placeholder:pl-10 placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none focus:ring-2 focus:ring-gray-400 sm:w-[230px] md:block md:placeholder:text-[14px] lg:w-[320px] lg:p-2"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
                     onClick={handleSearch}
                   />
                   <svg
@@ -237,25 +239,29 @@ const TextbookContent = () => {
               {/* Modal */}
               {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                  <SearchResults result={fuse} searchRef={searchRef} />
+                  <SearchResults
+                    result={fuse}
+                    searchRef={searchRef}
+                    secondSearchRef={secondSearchRef}
+                  />
                 </div>
-              )}
+              )} 
 
               {/* Module Details */}
               <div className="flex justify-center gap-5">
-                <div className="space-y-7 bg-white p-6 shadow-md md:mx-3 md:rounded-lg 2xl:w-[640px]">
+                <div className="w-[550px] space-y-7 bg-white p-6 shadow-md md:mx-3 md:rounded-lg xl:w-[640px]">
                   {/* Breadcrumb and Title */}
                   <div>
                     <p className="text-[12px] font-semibold text-[#A1A1AA] lg:text-sm">
-                      {`All Modules ${""} > ${""}${article?.categoryName} ${""} >${""} ${article?.article?.articleTitle}`}
+                      {`All Modules ${""} > ${""}${article?.categoryName} ${""} >${""} ${article?.article[0]?.articleTitle}`}
                     </p>
                     <h1 className="mt-2 text-[20px] font-bold text-[#3F3F46] lg:text-3xl">
-                      {article?.article?.articleTitle}
+                      {article?.article[0]?.articleTitle}
                     </h1>
                   </div>
 
                   {/* Sections */}
-                  {article?.article?.fullArticleContent?.map(
+                  {article?.article[0]?.fullArticleContent?.map(
                     (section, index) => (
                       <div
                         key={index}
@@ -275,15 +281,19 @@ const TextbookContent = () => {
                   )}
                 </div>
 
-                <div className="hidden w-[400px] space-y-8 bg-transparent text-white md:block 2xl:w-[320px]">
+                <div className="hidden w-[400px] space-y-8 bg-transparent text-white md:block lg:w-[320px]">
                   {/* Notes Section */}
                   <div>
                     <div
                       className="flex cursor-pointer items-center justify-between"
                       onClick={() => setShowContents(!showContents)}
                     >
-                      <h2 className="text-[14px] font-semibold text-[#27272A]">
-                        - {""} {""} Notes
+                      <h2 className="flex items-center text-[14px] font-semibold text-[#27272A]">
+                        <div
+                          className="border-t-1 mr-2 border border-black"
+                          style={{ width: "10px", color: "black" }}
+                        />{" "}
+                        Notes
                       </h2>
                     </div>
                     <hr className="mt-2 w-full" />
@@ -317,18 +327,22 @@ const TextbookContent = () => {
                       className="flex cursor-pointer items-center justify-between"
                       onClick={() => setShowContents(!showContents)}
                     >
-                      <h2 className="text-sm font-semibold text-[#27272A]">
-                        - Contents
+                      <h2 className="flex items-center text-sm font-semibold text-[#27272A]">
+                        <div
+                          className="border-t-1 mr-2 border border-black"
+                          style={{ width: "10px", color: "black" }}
+                        />{" "}
+                        Contents
                       </h2>
                     </div>
                     <hr className="mt-2 w-full" />
                     {article && (
                       <ul className="mt-4 space-y-2 text-sm">
-                        {article?.article?.articleSubSections?.map(
+                        {article?.article[0]?.articleSubSections?.map(
                           (items, index) => (
                             <li
                               key={index}
-                              className={`${
+                              className={`block w-fit ${
                                 activeSection === `section-${index}`
                                   ? "font-bold text-[#000000]"
                                   : "text-[#71717A] hover:text-[#3cc8a1]"

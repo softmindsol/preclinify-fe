@@ -72,7 +72,7 @@ const AINewVersion = () => {
     setIsAISpeaking,
     isLoader,
   } = useVoiceRecorder(AIPrompt);
-  console.log("transcript:", transcript);
+  // console.log("transcript:", transcript);
   console.log("isAISpeaking:", isAISpeaking);
 
   const instruction = AIPrompt;
@@ -193,14 +193,14 @@ const AINewVersion = () => {
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      await dispatch(
-        incrementUsedTokens({
-          userId: userId,
-        }),
-      ).unwrap();
+      // await dispatch(
+      //   incrementUsedTokens({
+      //     userId: userId,
+      //   }),
+      // ).unwrap();
 
-      // // // Then, fetch updated subscription data
-      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      // // // // Then, fetch updated subscription data
+      // await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
@@ -295,6 +295,7 @@ const AINewVersion = () => {
       setShowUpgradeModal(true);
     }
   }, [subscriptions]);
+  console.log("isRecording:", isRecording);
 
   return (
     <div className="w-full">
@@ -552,7 +553,7 @@ const AINewVersion = () => {
                         className="h-full w-full rounded-[8px] border border-[#3F3F46] pb-[4.25rem] pl-4 pt-[0.25rem] transition-all duration-500 placeholder:text-[#A1A1AA]"
                         placeholder="type your message..."
                       />
-                      <div className="absolute bottom-2 left-2 flex items-center pr-2">
+                      <div className="absolute bottom-2 left-2 flex cursor-pointer items-center pr-2">
                         <span
                           className="mr-2 rounded-full bg-gray-200 p-2"
                           onClick={() => {
@@ -632,6 +633,7 @@ const AINewVersion = () => {
                     isRecording={isRecording}
                     transcript={transcript}
                     isAISpeaking={isAISpeaking}
+                    isLoader={isLoader}
                   />
                 </div>
               </main>
@@ -660,7 +662,7 @@ const AINewVersion = () => {
                     <button
                       disabled={
                         subscriptions[0]?.total_tokens <=
-                        subscriptions[0]?.used_tokens
+                          subscriptions[0]?.used_tokens || isRecording
                       }
                       onClick={handleMicClick}
                       className={`flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${

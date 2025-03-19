@@ -194,7 +194,7 @@ const [isLoader,setIsLoader] = useState(false);
    } else {
      // Restart microphone tracks when AI is not speaking
      console.log("AI has finished speaking. Enabling microphone.");
-     if (isRecording){
+    //  if (isRecording){
        if (localStream) {
          localStream.getTracks().forEach((track) => {
            track.enabled = true; // Re-enable the track
@@ -207,7 +207,7 @@ const [isLoader,setIsLoader] = useState(false);
            }
          });
        }
-     }
+    //  }
      // Start speech recognition when AI is not speaking
      initSpeechRecognition();
    }
