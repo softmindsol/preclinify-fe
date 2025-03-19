@@ -23,8 +23,6 @@ const BouncingBall = ({ isRecording, transcript, isAISpeaking, isLoader }) => {
       const afternoonGreetings = [
         "Good Afternoon! ☀️",
         "Hope your day is going well! 😊",
-      
-       
       ];
       const eveningGreetings = [
         "Good Evening! 🌙",
@@ -49,9 +47,9 @@ const BouncingBall = ({ isRecording, transcript, isAISpeaking, isLoader }) => {
 
   return (
     <div className="ml-4 flex h-[100%] flex-col items-center justify-center">
-      {greeting && !isLoader && !isRecording && (
+      {/* {greeting && !isLoader && !isRecording && (
         <h1 className="mb-4 text-xl font-light text-gray-500">{greeting}</h1>
-      )}
+      )} */}
 
       {isLoader && (
         <h1 className="mb-2 text-lg font-medium text-[#34D399]">
