@@ -32,9 +32,51 @@ const Pricing = () => {
   console.log("currentPlan:", currentPlan);
 
   const [isAnnual, setIsAnnual] = useState(false);
+  const [isMonthly, setIsMonthly] = useState(false);
+  const [isTermly, setIsTermly] = useState(false);
   const dispatch = useDispatch();
 
   const pricingPlans = {
+    monthly: [
+      {
+        planId: null,
+        title: "The Trial Plan",
+        price: "Free",
+        monthlyPrice: "Free",
+        "plan-slug": PlanSlug("The Trial plan", 3),
+        features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
+      },
+      {
+        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+        title: "The OSCE Plan",
+        price: 15,
+        monthlyPrice: (15).toFixed(2),
+        "plan-slug": PlanSlug("The OSCE plan", 3),
+        features: [
+          "Station specific OSCE scenarios",
+          "Access to our custom simulated AI patients",
+        ],
+      },
+      {
+        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_3,
+
+        title: "The Full Package",
+        price: 20,
+        monthlyPrice: (20).toFixed(2),
+        "plan-slug": PlanSlug("The Full Package", 3),
+        hasDiscount: true,
+        discount: 50, // 20% discount for Monthly
+        features: [
+          "Everything in OSCE",
+          "MLA + Clinical Bank",
+          "SAQ question bank",
+          // "Pre-clinical",
+          // "Data interpretation",
+          // "Question generation",
+          "Custom AI Tutor Bot",
+        ],
+      },
+    ],
     termly: [
       {
         planId: null,
@@ -132,7 +174,9 @@ const Pricing = () => {
   };
 
   const getCurrentPlans = () => {
-    return isAnnual ? pricingPlans.annual : pricingPlans.termly;
+    if (isMonthly) return pricingPlans.monthly;
+    if (isTermly) return pricingPlans.termly;
+    if (isAnnual) return pricingPlans.annual;
   };
 
   // Function to handle the subscription
@@ -253,16 +297,34 @@ const Pricing = () => {
           <p>So confident</p>
           <p>we can even guarantee you pass.</p>
         </div>
-        <div className="flex h-[50px] w-[224px] items-center justify-center gap-x-8 rounded-[8px] bg-[#3CC8A1] p-8 font-bold text-white">
+        <div className="flex h-[50px] w-[350px] items-center justify-center gap-x-8 rounded-[8px] bg-[#3CC8A1] p-8 font-bold text-white">
           <p
-            className={`cursor-pointer rounded px-4 py-2 hover:bg-white/20 ${!isAnnual ? "bg-white/20" : ""}`}
-            onClick={() => setIsAnnual(false)}
+            className={`cursor-pointer rounded px-4 py-2 hover:bg-white/20 ${isMonthly ? "bg-white/20" : ""}`}
+            onClick={() => {
+              setIsMonthly(true);
+              setIsAnnual(false);
+              setIsTermly(false);
+            }}
+          >
+            Monthly
+          </p>{" "}
+          <p
+            className={`cursor-pointer rounded px-4 py-2 hover:bg-white/20 ${isTermly ? "bg-white/20" : ""}`}
+            onClick={() => {
+              setIsAnnual(false);
+              setIsTermly(true);
+              setIsMonthly(false);
+            }}
           >
             Termly
           </p>
           <p
             className={`cursor-pointer rounded px-4 py-2 hover:bg-white/20 ${isAnnual ? "bg-white/20" : ""}`}
-            onClick={() => setIsAnnual(true)}
+            onClick={() => {
+              setIsAnnual(true);
+              setIsTermly(false);
+              setIsMonthly(false);
+            }}
           >
             Annual
           </p>

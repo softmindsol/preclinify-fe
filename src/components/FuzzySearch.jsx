@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const SearchResults = ({ result, searchRef }) => {
+const SearchResults = ({ result, searchRef, secondSearchRef }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Sample Data for default view
@@ -21,41 +21,56 @@ const SearchResults = ({ result, searchRef }) => {
     },
   ];
 
-  // Real Data ko filter karo agar searchTerm me kuch likha ho
+  console.log("result:", result._docs?.article);
+
   const filteredResults =
-    result?._docs?.length > 0
-      ? result._docs
-          .filter((item) =>
-            item.articleTitle?.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-          .map((item) => ({
-            type: "Mod",
-            label: item.articleTitle,
-            description: item.articleSubSections?.join(", ") || "",
-            color: "bg-green-200 text-green-800",
-          }))
+    result?._docs?.article?.length > 0
+      ? result?._docs?.article
+          .filter((item) => {
+            console.log("Filtering item:", item.articleSubSections); // ✅ Log raw data
+
+            // Check if articleSubSections exists and is an array
+            const subSectionsString = Array.isArray(item.articleSubSections)
+              ? item.articleSubSections.join(" ").toLowerCase() // Convert array to string
+              : "";
+
+            return subSectionsString.includes(searchTerm.toLowerCase());
+          })
+          .map((item) => {
+            console.log("Mapped item:", item); // ✅ Log mapped items
+
+            return {
+              type: "Mod",
+              label: item.articleTitle,
+              description: Array.isArray(item.articleSubSections)
+                ? item.articleSubSections.join(", ")
+                : "",
+              color: "bg-green-200 text-green-800",
+            };
+          })
       : [];
 
   // Final Data to Show
   const displayResults =
     searchTerm.trim() === "" ? sampleData : filteredResults;
-console.log("filteredResults:",filteredResults);
+  console.log("filteredResults:", filteredResults);
 
   return (
     <div className="w-[720px] p-4" ref={searchRef}>
       {/* Search Input */}
       <div className="relative mb-6">
         <input
+          ref={secondSearchRef}
           type="text"
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-md border border-gray-300 p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 p-3 pl-10 text-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          width="18"
+          height="18"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -93,7 +108,7 @@ console.log("filteredResults:",filteredResults);
                         {item.label}
                       </p>
                       {item.description && (
-                        <p className="text-[14px] italic text-[#71717A]">
+                        <p className="text-[12px] italic text-[#71717A]">
                           {item.description}
                         </p>
                       )}
