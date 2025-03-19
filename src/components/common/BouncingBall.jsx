@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const BouncingBall = ({ isRecording, transcript, isAISpeaking }) => {
+const BouncingBall = ({ isRecording, transcript, isAISpeaking, isLoader }) => {
   const [greeting, setGreeting] = useState("");
   const [lastText, setLastText] = useState("");
   const hasShownGreeting = useRef(false); // Track if greeting has been shown
@@ -23,8 +23,8 @@ const BouncingBall = ({ isRecording, transcript, isAISpeaking }) => {
       const afternoonGreetings = [
         "Good Afternoon! ☀️",
         "Hope your day is going well! 😊",
-        "Keep pushing forward! 💪",
-        "Take a break, you deserve it! ☕",
+      
+       
       ];
       const eveningGreetings = [
         "Good Evening! 🌙",
@@ -49,17 +49,23 @@ const BouncingBall = ({ isRecording, transcript, isAISpeaking }) => {
 
   return (
     <div className="ml-4 flex h-[100%] flex-col items-center justify-center">
-      {greeting && (
+      {greeting && !isLoader && !isRecording && (
         <h1 className="mb-4 text-xl font-light text-gray-500">{greeting}</h1>
       )}
-      {!isAISpeaking ? (
+
+      {isLoader && (
+        <h1 className="mb-2 text-lg font-medium text-[#34D399]">
+          {"Connecting..."}
+        </h1>
+      )}
+
+      {!isAISpeaking && !isLoader && isRecording && (
         <h2 className="mb-2 text-lg font-medium text-[#34D399]">Your turn</h2>
-      ) : (
-        <span className="mt-2 w-[50%] text-[12px] font-light">{lastText}</span>
       )}
       <div
         className={`${isAISpeaking && "custom-heartbeat"} h-[200px] w-[200px] rounded-full bg-gradient-to-r from-[#28C3A6] to-[#34D399]`}
       ></div>
+      <span className="mt-2 w-[50%] text-[12px] font-light">{lastText}</span>
     </div>
   );
 };
