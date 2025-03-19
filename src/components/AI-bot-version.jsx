@@ -640,9 +640,13 @@ const AINewVersion = () => {
               </main>
               <div className="mt-20 h-[30vh] rounded-[8px] p-5">
                 <div className="flex h-full items-center justify-center gap-x-20">
-                  <div
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5"
-                    onClick={() => dispatch(setOSCEBotType({ type: "text" }))}
+                  <button
+                    disabled={isAISpeaking}
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      if (isAISpeaking) return;
+                      dispatch(setOSCEBotType({ type: "text" }));
+                    }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -658,7 +662,7 @@ const AINewVersion = () => {
                     >
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
-                  </div>
+                  </button>
                   <div className="flex flex-col items-center justify-center gap-2">
                     <button
                       disabled={
@@ -693,7 +697,7 @@ const AINewVersion = () => {
                     </button>
                   </div>
                   <button
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5"
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5 disabled:cursor-not-allowed"
                     onClick={stopRecordingHandler}
                     disabled={!isRecording}
                   >
