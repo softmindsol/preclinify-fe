@@ -193,14 +193,14 @@ const AINewVersion = () => {
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      // await dispatch(
-      //   incrementUsedTokens({
-      //     userId: userId,
-      //   }),
-      // ).unwrap();
+      await dispatch(
+        incrementUsedTokens({
+          userId: userId,
+        }),
+      ).unwrap();
 
       // // // // Then, fetch updated subscription data
-      // await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
