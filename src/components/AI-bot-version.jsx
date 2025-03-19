@@ -21,7 +21,7 @@ import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import AIBotSidebar from "./common/AIBotSidebar";
 import UpgradePlanModal from "./common/UpgradePlan";
-import { BeatLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 import BouncingBall from "./common/BouncingBall";
 import { setOSCEBotType } from "../redux/features/osce-bot/osce-type.slice";
 import Popup from "./common/SessionClose";
@@ -200,7 +200,7 @@ const AINewVersion = () => {
         }),
       ).unwrap();
 
-      // // // // // Then, fetch updated subscription data
+      // Then, fetch updated subscription data
       await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       initWebRTC();
     } catch (error) {
@@ -679,7 +679,7 @@ const AINewVersion = () => {
                     >
                       <audio ref={audioRef} className="hidden" />
                       {isLoader ? (
-                        <BeatLoader color="#110f0f" size={10} />
+                        <ClipLoader color="#ffff" size={20} />
                       ) : (
                         <img
                           src="/assets/mic.svg"
