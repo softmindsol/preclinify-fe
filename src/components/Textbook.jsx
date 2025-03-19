@@ -7,10 +7,15 @@ import { TbBaselineDensityMedium } from "react-icons/tb";
 import MobileBar from "./common/Drawer";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchModuleCategories } from "../redux/features/textbook/textbook.service";
+import Loader from "./common/Loader";
 const Textbook = () => {
   const categoryName = useSelector(
     (state) => state?.textbook?.textbookModules || [],
   );
+  const { loading } = useSelector((state) => state?.textbook || []);
+
+  console.log("loading:", loading);
+
   const { id } = useParams();
   const navigate = useNavigate(); // Hook to navigate programmatically
   const [isOpen, setIsOpen] = useState(false);
@@ -72,24 +77,28 @@ const Textbook = () => {
           </div>
 
           {/* Categories List */}
-          <div className="mt-6">
-            <ul className="divide-y divide-gray-300">
-              {results?.length > 0 ? (
-                results.map((category, index) => (
-                  <Link to={`/textbook-content/${category?.categoryId}`}>
-                    <li
-                      key={index}
-                      className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000]"
-                    >
-                      {category?.categoryName}
-                    </li>
-                  </Link>
-                ))
-              ) : (
-                <li className="py-3 text-gray-500">No results found</li>
-              )}
-            </ul>
-          </div>
+          {loading ? (
+            <div><Loader /></div>
+          ) : (
+            <div className="mt-6">
+              <ul className="divide-y divide-gray-300">
+                {results?.length > 0 ? (
+                  results.map((category, index) => (
+                    <Link to={`/textbook-content/${category?.categoryId}`}>
+                      <li
+                        key={index}
+                        className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000]"
+                      >
+                        {category?.categoryName}
+                      </li>
+                    </Link>
+                  ))
+                ) : (
+                  <li className="py-3 text-gray-500">No results found</li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
       <MobileBar
