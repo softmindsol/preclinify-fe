@@ -24,6 +24,7 @@ import UpgradePlanModal from "./common/UpgradePlan";
 import { BeatLoader } from "react-spinners";
 import BouncingBall from "./common/BouncingBall";
 import { setOSCEBotType } from "../redux/features/osce-bot/osce-type.slice";
+import Popup from "./common/SessionClose";
 const AINewVersion = () => {
   const { id } = useParams();
   const userInfo = useSelector((state) => state?.user?.userInfo);
@@ -54,7 +55,7 @@ const AINewVersion = () => {
     (state) => state?.subscription,
   );
   const [isOpen, setIsOpen] = useState(false);
-
+  const [sessionClose, setSessionClose] = useState(false);
   const transcriptRef = useRef(null);
   const virtualPatient = useSelector(
     (state) => state?.virtualPatient?.isModalOpen,
@@ -193,14 +194,14 @@ const AINewVersion = () => {
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      // await dispatch(
-      //   incrementUsedTokens({
-      //     userId: userId,
-      //   }),
-      // ).unwrap();
+      await dispatch(
+        incrementUsedTokens({
+          userId: userId,
+        }),
+      ).unwrap();
 
-      // // // // Then, fetch updated subscription data
-      // await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      // // // // // Then, fetch updated subscription data
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
       initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
@@ -209,7 +210,7 @@ const AINewVersion = () => {
 
   const stopRecordingHandler = () => {
     try {
-      stopRecording();
+      setSessionClose(true);
     } catch (error) {
       console.log("Error while triggering stop recording handler");
     }
@@ -640,7 +641,7 @@ const AINewVersion = () => {
               <div className="mt-20 h-[30vh] rounded-[8px] p-5">
                 <div className="flex h-full items-center justify-center gap-x-20">
                   <div
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#d8dbe0] p-2"
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5"
                     onClick={() => dispatch(setOSCEBotType({ type: "text" }))}
                   >
                     <svg
@@ -665,7 +666,7 @@ const AINewVersion = () => {
                           subscriptions[0]?.used_tokens || isRecording
                       }
                       onClick={handleMicClick}
-                      className={`flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
+                      className={`flex h-[65px] w-[65px] transform cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${
                         subscriptions[0]?.total_tokens <=
                         subscriptions[0]?.used_tokens
                           ? "bg-gray-400 disabled:cursor-not-allowed"
@@ -678,8 +679,8 @@ const AINewVersion = () => {
                       ) : (
                         <img
                           src="/assets/mic.svg"
-                          width={30}
-                          height={30}
+                          width={16}
+                          height={16}
                           className={`flex items-center justify-center ${
                             subscriptions[0]?.total_tokens <=
                             subscriptions[0]?.used_tokens
@@ -691,9 +692,10 @@ const AINewVersion = () => {
                       )}
                     </button>
                   </div>
-                  <div
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#d8dbe0] p-2"
+                  <button
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5"
                     onClick={stopRecordingHandler}
+                    disabled={!isRecording}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -710,7 +712,7 @@ const AINewVersion = () => {
                       <path d="M18 6 6 18" />
                       <path d="m6 6 12 12" />
                     </svg>
-                  </div>{" "}
+                  </button>{" "}
                 </div>
               </div>
             </div>
@@ -765,6 +767,14 @@ const AINewVersion = () => {
         <UpgradePlanModal
           isOpen={showUpgradeModal}
           onClose={() => setShowUpgradeModal(false)}
+        />
+      )}
+
+      {sessionClose && (
+        <Popup
+          sessionClose={sessionClose}
+          setSessionClose={setSessionClose}
+          stopRecording={stopRecording}
         />
       )}
     </div>
