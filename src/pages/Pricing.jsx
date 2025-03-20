@@ -43,27 +43,27 @@ const Pricing = () => {
         title: "The Trial Plan",
         price: "Free",
         monthlyPrice: "Free",
-        "plan-slug": PlanSlug("The Trial plan", 3),
+        "plan-slug": PlanSlug("The Trial plan", 1),
         features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
       },
       {
-        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_1,
         title: "The OSCE Plan",
         price: 15,
         monthlyPrice: (15).toFixed(2),
-        "plan-slug": PlanSlug("The OSCE plan", 3),
+        "plan-slug": PlanSlug("The OSCE plan", 1),
         features: [
           "Station specific OSCE scenarios",
           "Access to our custom simulated AI patients",
         ],
       },
       {
-        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_3,
+        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_1,
 
         title: "The Full Package",
         price: 20,
         monthlyPrice: (20).toFixed(2),
-        "plan-slug": PlanSlug("The Full Package", 3),
+        "plan-slug": PlanSlug("The Full Package", 1),
         hasDiscount: true,
         discount: 50, // 20% discount for Monthly
         features: [
@@ -198,6 +198,8 @@ const Pricing = () => {
 
       return;
     }
+    console.log("planId:", planId);
+    console.log("planSlug:", planSlug);
     try {
       toast.success("You are being redirected to the payment gateway");
       // Send the plan slug to the backend via an Axios POST request
