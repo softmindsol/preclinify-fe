@@ -56,7 +56,7 @@ const SearchResults = ({ result, searchRef, secondSearchRef }) => {
   console.log("filteredResults:", filteredResults);
 
   return (
-    <div className="w-[720px] p-4" ref={searchRef}>
+    <div className="w-[90%] sm:w-[70%] xl:w-[720px]" ref={searchRef}>
       {/* Search Input */}
       <div className="relative mb-6">
         <input
