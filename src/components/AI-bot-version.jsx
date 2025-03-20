@@ -242,7 +242,11 @@ const AINewVersion = () => {
   useEffect(() => {
     let timerInterval;
 
-    if (timerActive && !virtualPatient) {
+    if (
+      timerActive &&
+      !virtualPatient &&
+      subscriptions[0]?.total_tokens !== subscriptions[0]?.used_tokens
+    ) {
       timerInterval = setInterval(() => {
         if (seconds === 0 && minutes === 0) {
           clearInterval(timerInterval);
@@ -292,6 +296,14 @@ const AINewVersion = () => {
   }, []);
 
   useEffect(() => {
+    if (
+      subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens &&
+      type === "ai-bot"
+    ) {
+      toast.error(" Token limit exceeded for Voice Bot.");
+    }
+  }, [type]);
+  useEffect(() => {
     if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
       setShowUpgradeModal(true);
     }
@@ -318,8 +330,43 @@ const AINewVersion = () => {
                   type="number"
                   className="w-10 bg-transparent text-[12px] font-bold text-[#A1A1AA] outline-none"
                   defaultValue="8"
+                  min="0"
+                  max="60"
                   onChange={(e) => {
-                    setMinutes(e.target.value);
+                    let value = e.target.value;
+
+                    // Prevent entering more than 60
+                    if (value !== "" && Number(value) > 60) {
+                      value = "60";
+                    }
+
+                    // Prevent entering negative values
+                    if (value !== "" && Number(value) < 0) {
+                      value = "0";
+                    }
+
+                    setMinutes(value);
+                  }}
+                  onInput={(e) => {
+                    // Remove any non-numeric characters
+                    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      (e.key === "ArrowUp" && Number(e.target.value) >= 60) ||
+                      (e.key === "ArrowDown" && Number(e.target.value) <= 0)
+                    ) {
+                      e.preventDefault();
+                    }
+
+                    if (
+                      e.key === "e" ||
+                      e.key === "E" ||
+                      e.key === "+" ||
+                      e.key === "-"
+                    ) {
+                      e.preventDefault(); // Prevent entering non-numeric characters
+                    }
                   }}
                 />
               </div>
@@ -327,7 +374,7 @@ const AINewVersion = () => {
 
             <div className="mt-10 flex flex-col items-center justify-center">
               <div
-                className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${
+                className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens && "opacity-30"} ${
                   minutes === 0 && seconds < 60
                     ? "bg-[#FF453A]" // Red when timer is below 1 minute
                     : timerActive
@@ -346,7 +393,7 @@ const AINewVersion = () => {
             <div className="p-5 text-center">
               <button
                 onClick={() => setTimerActive(!timerActive)}
-                className={`h-[32px] w-[90%] rounded-[6px] text-[12px] transition-all duration-200 hover:text-white ${
+                className={`h-[32px] w-[90%] rounded-[6px] text-[12px] transition-all duration-200 hover:text-white ${subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens && "opacity-30"} ${
                   minutes === 0 && seconds < 60
                     ? "border border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000]" // Red when timer < 1 min
                     : timerActive
@@ -642,7 +689,7 @@ const AINewVersion = () => {
                 <div className="flex h-full items-center justify-center gap-x-20">
                   <button
                     disabled={isAISpeaking}
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5 disabled:cursor-not-allowed"
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-4 disabled:cursor-not-allowed"
                     onClick={() => {
                       if (isAISpeaking) return;
                       dispatch(setOSCEBotType({ type: "text" }));
@@ -650,8 +697,8 @@ const AINewVersion = () => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -697,14 +744,14 @@ const AINewVersion = () => {
                     </button>
                   </div>
                   <button
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-2.5 disabled:cursor-not-allowed"
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-4 disabled:cursor-not-allowed"
                     onClick={stopRecordingHandler}
                     disabled={!isRecording}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"

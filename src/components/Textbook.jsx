@@ -60,7 +60,7 @@ const Textbook = () => {
         <div className="flex-2 lg:p-[16px]">
           {/* Back Button */}
           <div className="mb-2 flex items-center justify-end gap-x-5 p-2 lg:mb-5 lg:p-0">
-            <div className=" justify-end flex">
+            <div className="flex justify-end">
               <div className="relative">
                 <input
                   type="search"
@@ -93,7 +93,7 @@ const Textbook = () => {
               <Loader />
             </div>
           ) : (
-            <div className="md:mr-2 mt-3 lg:mt-6 lg:mr-0">
+            <div className="mt-3 md:mr-6 lg:mr-0 lg:mt-6">
               <ul className="divide-y divide-gray-300">
                 {results?.length > 0 ? (
                   results.map((category, index) => (

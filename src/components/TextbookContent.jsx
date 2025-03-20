@@ -223,7 +223,7 @@ const TextbookContent = () => {
                   <input
                     type="search"
                     placeholder="Search for anything"
-                    className="w-[180px] rounded-md p-1 pl-10 text-[14px] placeholder:pl-10 placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none focus:ring-2 focus:ring-gray-400 sm:w-[230px] md:block md:placeholder:text-[14px] lg:w-[320px] lg:p-2"
+                    className="w-full max-w-[400px] rounded-md p-2 pl-10 text-[14px] placeholder:pl-1 placeholder:text-[12px] placeholder:font-light"
                     onClick={handleSearch}
                   />
                   <svg
