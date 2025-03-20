@@ -33,6 +33,7 @@ const TextbookContent = () => {
   );
   const loader = useSelector((state) => state?.textbook?.loading);
   const note = useSelector((state) => state?.textbook?.notes);
+  //  const [showContents, setShowContents] = useState(true);
   const [noteError, setNoteError] = useState(false);
   const userId = localStorage.getItem("userId");
   const [loading, setLoading] = useState(true);
@@ -46,9 +47,15 @@ const TextbookContent = () => {
   const secondSearchRef = useRef(null);
 
   const searchRef = useRef(null);
-
+  const [showNotes, setShowNotes] = useState(true);
   const textareaRef = useRef(null);
 
+  const handleContentShow = () => {
+    setShowContents(!showContents);
+  };
+  const handleNotesShow = () => {
+    setShowNotes(!showNotes);
+  };
   const handleSvgClick = () => {
     // Focus the textarea when the SVG is clicked
     textareaRef.current.focus();
@@ -175,7 +182,7 @@ const TextbookContent = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  console.log(showNotes);
   return (
     <div className="h-screen w-full lg:flex">
       {/* Sidebar Section */}
@@ -245,7 +252,7 @@ const TextbookContent = () => {
                     secondSearchRef={secondSearchRef}
                   />
                 </div>
-              )} 
+              )}
 
               {/* Module Details */}
               <div className="flex justify-center gap-5">
@@ -284,23 +291,40 @@ const TextbookContent = () => {
                 <div className="hidden w-[400px] space-y-8 bg-transparent text-white md:block lg:w-[320px]">
                   {/* Notes Section */}
                   <div>
-                    <div
-                      className="flex cursor-pointer items-center justify-between"
-                      onClick={() => setShowContents(!showContents)}
-                    >
-                      <h2 className="flex items-center text-[14px] font-semibold text-[#27272A]">
-                        <div
-                          className="border-t-1 mr-2 border border-black"
-                          style={{ width: "10px", color: "black" }}
-                        />{" "}
+                    <div className="flex cursor-pointer items-center justify-between">
+                      <h2
+                        className="flex items-center text-[14px] font-semibold text-[#27272A]"
+                        onClick={handleNotesShow}
+                      >
+                        {showNotes ? (
+                          <div
+                            className="border-t-1 mr-2 border border-black"
+                            style={{ width: "10px", color: "black" }}
+                          />
+                        ) : (
+                          <div
+                            className="mr-2"
+                            style={{ width: "10px", color: "black" }}
+                          >
+                            +{" "}
+                          </div>
+                        )}
                         Notes
                       </h2>
                     </div>
                     <hr className="mt-2 w-full" />
-                    <div className="mt-4">
+                    <div
+                      className={`mt-4 transition-all duration-300 ${
+                        showNotes
+                          ? "max-h-40 opacity-100"
+                          : "max-h-0 overflow-hidden opacity-0"
+                      }`}
+                    >
                       <textarea
                         ref={textareaRef}
-                        className={`h-32 w-full rounded-md border bg-transparent p-2 text-sm text-black ${noteError ? "border-red-500" : "border-gray-400"}`}
+                        className={`h-32 w-full rounded-md border bg-transparent p-2 text-sm text-black ${
+                          noteError ? "border-red-500" : "border-gray-400"
+                        }`}
                         placeholder="This is an example note that a user would have for this topic."
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
@@ -323,21 +347,37 @@ const TextbookContent = () => {
 
                   {/* Contents Section */}
                   <div>
-                    <div
-                      className="flex cursor-pointer items-center justify-between"
-                      onClick={() => setShowContents(!showContents)}
-                    >
-                      <h2 className="flex items-center text-sm font-semibold text-[#27272A]">
-                        <div
-                          className="border-t-1 mr-2 border border-black"
-                          style={{ width: "10px", color: "black" }}
-                        />{" "}
+                    <div className="flex cursor-pointer items-center justify-between">
+                      <h2
+                        className="flex items-center text-sm font-semibold text-[#27272A]"
+                        onClick={handleContentShow}
+                      >
+                        {showContents ? (
+                          <div
+                            className="border-t-1 mr-2 border border-black"
+                            style={{ width: "10px", color: "black" }}
+                          />
+                        ) : (
+                          <div
+                            className="mr-2"
+                            style={{ width: "10px", color: "black" }}
+                            // onClick={handleContentShow}
+                          >
+                            +{" "}
+                          </div>
+                        )}{" "}
                         Contents
-                      </h2>
+                      </h2>{" "}
                     </div>
                     <hr className="mt-2 w-full" />
                     {article && (
-                      <ul className="mt-4 space-y-2 text-sm">
+                      <ul
+                        className={`mt-4 space-y-2 text-sm transition-all duration-300 ${
+                          showContents
+                            ? "max-h-96 opacity-100"
+                            : "max-h-0 overflow-hidden opacity-0"
+                        }`}
+                      >
                         {article?.article[0]?.articleSubSections?.map(
                           (items, index) => (
                             <li
