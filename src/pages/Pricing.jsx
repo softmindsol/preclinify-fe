@@ -32,7 +32,7 @@ const Pricing = () => {
   console.log("currentPlan:", currentPlan);
 
   const [isAnnual, setIsAnnual] = useState(false);
-  const [isMonthly, setIsMonthly] = useState(false);
+  const [isMonthly, setIsMonthly] = useState(true);
   const [isTermly, setIsTermly] = useState(false);
   const dispatch = useDispatch();
 
@@ -174,9 +174,9 @@ const Pricing = () => {
   };
 
   const getCurrentPlans = () => {
-    if (isMonthly) return pricingPlans.monthly;
-    if (isTermly) return pricingPlans.termly;
-    if (isAnnual) return pricingPlans.annual;
+    if (isMonthly) return pricingPlans?.monthly;
+    if (isTermly) return pricingPlans?.termly;
+    if (isAnnual) return pricingPlans?.annual;
   };
 
   // Function to handle the subscription
@@ -338,7 +338,7 @@ const Pricing = () => {
 
         <div>
           <div className="flex flex-col items-center justify-center gap-x-5 lg:flex-row">
-            {getCurrentPlans().map((plan, index) => (
+            {getCurrentPlans()?.map((plan, index) => (
               <div
                 key={index}
                 className="relative mb-8 mt-5 rounded-[16px] transition hover:shadow-greenBlur"
