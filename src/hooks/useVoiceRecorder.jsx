@@ -140,6 +140,7 @@ const [isLoader,setIsLoader] = useState(false);
     if (recognitionRef.current) recognitionRef.current.stop();
     if (dataChannelRef.current) dataChannelRef.current.close();
     setIsRecording(false);
+    setIsAISpeaking(false); 
   };
 
 //  useEffect(() => {
@@ -207,8 +208,8 @@ const [isLoader,setIsLoader] = useState(false);
            }
          });
        }
-       initSpeechRecognition();
-     }
+      }
+      initSpeechRecognition();
      // Start speech recognition when AI is not speaking
    }
 
