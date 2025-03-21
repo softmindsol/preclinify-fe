@@ -691,8 +691,15 @@ const AINewVersion = () => {
                     disabled={isAISpeaking}
                     className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-4 disabled:cursor-not-allowed"
                     onClick={() => {
-                      if (isAISpeaking) return;
-                      dispatch(setOSCEBotType({ type: "text" }));
+                      if (isAISpeaking) {
+                        return;
+                      } else {
+                        dispatch(setOSCEBotType({ type: "text" }));
+                      }
+
+                      if (isRecording) {
+                        stopRecording();
+                      }
                     }}
                   >
                     <svg
