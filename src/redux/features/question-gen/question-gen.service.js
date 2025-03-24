@@ -104,10 +104,10 @@ export const insertQuesGenData = createAsyncThunk(
       // Map each question object to the correct Supabase format
       const formattedData = quesGenDataArray.map((quesGenData) => ({
         question_stem: quesGenData.question_stem,
-        answers: quesGenData.options,
+        answersArray: quesGenData.answersArray,
         lead_in_question: quesGenData.lead_in_question,
-        correct_Answer: quesGenData.correct_Answer, // Ensure consistent casing
-        explanation: quesGenData.explanation,
+        correctAnswerId: quesGenData.correctAnswerId, // Ensure consistent casing
+        explanationList: quesGenData.explanationList,
         module: quesGenData.module,
         presentation: quesGenData.presentation,
       }));
