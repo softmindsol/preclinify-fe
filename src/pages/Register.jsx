@@ -324,7 +324,7 @@ const Register = () => {
 
           <div className="text-center">
             <p className="text-[14px] font-medium text-[#3F3F46] sm:text-[16px]">
-              Don’t have an account?{" "}
+              Already have an account?{" "}
               <Link to="/login">
                 <span className="text-[#3CC8A1]">Log in</span>
               </Link>
