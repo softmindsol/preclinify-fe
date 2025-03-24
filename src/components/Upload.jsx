@@ -65,6 +65,7 @@ const FileUpload = () => {
                 });
         }
     }, [data, dispatch]);
+console.log("data:", data);
 
     return (
         <div>

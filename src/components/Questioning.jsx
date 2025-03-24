@@ -95,6 +95,8 @@ const Questioning = () => {
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
+  console.log("questionGenModule:", questionGenModule);
+
   const {
     mockTestIds,
     mockMcqsByModulesData,
@@ -1048,7 +1050,7 @@ const Questioning = () => {
       </div>
       <div className="w-full lg:ml-[260px] xl:ml-[250px]">
         <div>
-          <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
+          <div className="flex-grow overflow-x-hidden overflow-y-hidden dark:bg-[#1E1E2A]">
             {/* Table Header */}
 
             <div className="flex min-h-screen flex-col space-y-4 px-16 py-4 sm:m-10">
@@ -1057,7 +1059,7 @@ const Questioning = () => {
                   {/* Tab Section */}
                   <div className="flex items-center justify-between space-x-2 text-[12px] font-medium text-[#3F3F46] md:text-[16px]">
                     <button
-                      className={`w-[100%] px-4 py-2 ${
+                      className={`w-[50%] px-4 py-2 ${
                         selectedTab === "Clinical"
                           ? "bg-white text-black"
                           : "bg-[#E4E4E7] text-gray-500"
@@ -1066,7 +1068,7 @@ const Questioning = () => {
                     >
                       Clinical
                     </button>
-                    {/* <button
+                    <button
                       className={`w-[50%] px-4 py-2 ${
                         selectedTab === "Pre-clinical"
                           ? "bg-white text-black"
@@ -1075,7 +1077,7 @@ const Questioning = () => {
                       onClick={() => handleTabChange("Pre-clinical")}
                     >
                       Pre-clinical
-                    </button> */}
+                    </button>
                   </div>
                   {/* Search and Button Section */}
                   <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
@@ -1086,11 +1088,11 @@ const Questioning = () => {
                           Clinical
                         </p>
                       )}
-                      {/* {selectedTab === "Pre-clinical" && (
+                      {selectedTab === "Pre-clinical" && (
                         <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
                           Pre Clinical
                         </p>
-                      )} */}
+                      )}
                       <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
                         <div className="group">
                           <svg
@@ -1179,7 +1181,6 @@ const Questioning = () => {
                     </div>
                   </div>
                 </div>
-                {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
                   {(planType === "Osce" ||
                     plan === undefined ||
@@ -1229,6 +1230,7 @@ const Questioning = () => {
                         </div>
                       </div>
                     )}
+                  {selectedTab === "Pre-clinical" && <FileUpload />}
                   {selectedTab === "Clinical" && (
                     <div className="relative">
                       <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
@@ -1356,40 +1358,43 @@ const Questioning = () => {
                       </div>
                       <div className="mb-5 mt-2 h-[1px] bg-[#A1A1AA]" />
                       <div>
-                        {/* {selectedTab === "Pre-clinical" &&
-                      (questionGenModule?.modules?.length > 0 ? (
-                        questionGenModule.modules
-                          .filter(
-                            (row, index, arr) =>
-                              // Keep only first occurrence of each module
-                              arr.findIndex((r) => r.module === row.module) ===
-                              index,
-                          )
-                          .map((row, id) => (
-                            <div
-                              key={id}
-                              className="grid items-center py-3 md:grid-cols-2"
-                            >
-                              <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                                <label className="flex cursor-pointer items-center hover:opacity-85">
-                                  <input
-                                    type="checkbox"
-                                    className="custom-checkbox mr-2 hover:opacity-70"
-                                    checked={selectedModules.includes(row.module)}
-                                    onChange={() =>
-                                      handleCheckboxChange(row.module)
-                                    }
-                                  />
-                                  {row.module}
-                                </label>
-                              </div>
+                        {selectedTab === "Pre-clinical" &&
+                          (questionGenModule?.modules?.length > 0 ? (
+                            questionGenModule.modules
+                              .filter(
+                                (row, index, arr) =>
+                                  // Keep only first occurrence of each module
+                                  arr.findIndex(
+                                    (r) => r.module === row.module,
+                                  ) === index,
+                              )
+                              .map((row, id) => (
+                                <div
+                                  key={id}
+                                  className="grid items-center py-3 md:grid-cols-2"
+                                >
+                                  <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                                    <label className="flex cursor-pointer items-center hover:opacity-85">
+                                      <input
+                                        type="checkbox"
+                                        className="custom-checkbox mr-2 hover:opacity-70"
+                                        checked={selectedModules.includes(
+                                          row.module,
+                                        )}
+                                        onChange={() =>
+                                          handleCheckboxChange(row.module)
+                                        }
+                                      />
+                                      {row.module}
+                                    </label>
+                                  </div>
+                                </div>
+                              ))
+                          ) : (
+                            <div className="py-3 text-center text-gray-500">
+                              No modules available.
                             </div>
-                          ))
-                      ) : (
-                        <div className="py-3 text-center text-gray-500">
-                          No modules available.
-                        </div>
-                      ))} */}
+                          ))}
 
                         {/* Free plan */}
                         {selectedTab === "Clinical" &&

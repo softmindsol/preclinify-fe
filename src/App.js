@@ -20,7 +20,7 @@ import { useContext, useEffect } from "react";
 import ThemeContext from "./lib/ThemeContext";
 import ChatHistory from "./components/common/ChatHistory";
 import OSCEAIBOT from "./components/OSCE-AI-BOT";
-import QuestionGenerator from "./components/question-generation/QuestionGenerator";
+import QuestionGenerator from "./components/QuestionGenerator";
 import MockTestQuestion from "./components/mock-test/Mock";
 import PersonalInformation from "./pages/PersonalInformation";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
