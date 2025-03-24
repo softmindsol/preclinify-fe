@@ -36,142 +36,147 @@ const Pricing = () => {
   const [isTermly, setIsTermly] = useState(false);
   const dispatch = useDispatch();
 
-  const pricingPlans = {
-    monthly: [
-      {
-        planId: null,
-        title: "The Trial Plan",
-        price: "Free",
-        monthlyPrice: "Free",
-        "plan-slug": PlanSlug("The Trial plan", 1),
-        features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_1,
-        title: "The OSCE Plan",
-        price: 15,
-        monthlyPrice: (15).toFixed(2),
-        "plan-slug": PlanSlug("The OSCE plan", 1),
-        features: [
-          "Station specific OSCE scenarios",
-          "Access to our custom simulated AI patients",
-        ],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_1,
+ const pricingPlans = {
+   monthly: [
+     {
+       planId: null,
+       title: "The Trial Plan",
+       price: "Free",
+       monthlyPrice: "Free",
+       "plan-slug": PlanSlug("The Trial plan", 1),
+       features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
+     },
+     {
+       planId: process.env.REACT_APP_PRICE_OSCE_PLAN_1,
+       title: "The OSCE Plan",
+       price: 10,
+       monthlyPrice: 10,
+       "plan-slug": PlanSlug("The OSCE plan", 1),
+       features: [
+         "Station specific OSCE scenarios",
+         "Access to our custom simulated AI patients",
+       ],
+     },
+     {
+       planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_1,
 
-        title: "The Full Package",
-        price: 20,
-        monthlyPrice: (20).toFixed(2),
-        "plan-slug": PlanSlug("The Full Package", 1),
-        hasDiscount: true,
-        discount: 50, // 20% discount for Monthly
-        features: [
-          "Everything in OSCE",
-          "MLA + Clinical Bank",
-          "SAQ question bank",
-          // "Pre-clinical",
-          // "Data interpretation",
-          // "Question generation",
-          "Custom AI Tutor Bot",
-        ],
-      },
-    ],
-    termly: [
-      {
-        planId: null,
-        title: "The Trial Plan",
-        price: "Free",
-        monthlyPrice: "Free",
-        "plan-slug": PlanSlug("The Trial plan", 3),
-        features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
-        title: "The OSCE Plan",
-        price: 35,
-        monthlyPrice: (35 / 3).toFixed(2),
-        "plan-slug": PlanSlug("The OSCE plan", 3),
-        features: [
-          "Station specific OSCE scenarios",
-          "Access to our custom simulated AI patients",
-        ],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_3,
+       title: "The Full Package",
+       price: 12,
+       monthlyPrice: 12,
+       "plan-slug": PlanSlug("The Full Package", 1),
+       hasDiscount: true,
+       discount: 50, // 20% discount for Monthly
+       features: [
+         "Everything in OSCE",
+         "MLA + Clinical Bank",
+         "SAQ question bank",
+         // "Pre-clinical",
+         // "Data interpretation",
+         // "Question generation",
+         "Custom AI Tutor Bot",
+       ],
+     },
+   ],
+   termly: [
+     {
+       planId: null,
+       title: "The Trial Plan",
+       price: "Free",
+       monthlyPrice: "Free",
+       "plan-slug": PlanSlug("The Trial plan", 3),
+       features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
+     },
+     {
+       planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
+       title: "The OSCE Plan",
+       price: 25,
+       oldPrice: 11.67, // Old price for Annual
+       monthlyPrice: (25 / 3).toFixed(2),
+       "plan-slug": PlanSlug("The OSCE plan", 3),
+       features: [
+         "Station specific OSCE scenarios",
+         "Access to our custom simulated AI patients",
+       ],
+     },
+     {
+       planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_3,
 
-        title: "The Full Package",
-        price: 45,
-        monthlyPrice: (45 / 3).toFixed(2),
-        "plan-slug": PlanSlug("The Full Package", 3),
-        hasDiscount: true,
-        discount: 20, // 20% discount for Termly
-        features: [
-          "Everything in OSCE",
-          "MLA + Clinical Bank",
-          "SAQ question bank",
-          // "Pre-clinical",
-          // "Data interpretation",
-          // "Question generation",
-          "Custom AI Tutor Bot",
-        ],
-      },
-    ],
-    annual: [
-      {
-        planId: null,
-        title: "The Trial Plan",
-        price: "Free",
-        monthlyPrice: "Free",
-        "plan-slug": PlanSlug("The Trial plan", 3),
-        features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_12,
+       title: "The Full Package",
+       price: 30,
+       // oldPrice: 8.75, // 2nd last Old price for Annual
+       oldPrice: 15.0,
+       monthlyPrice: (30 / 3).toFixed(2),
+       "plan-slug": PlanSlug("The Full Package", 3),
+       hasDiscount: true,
+       discount: 20, // 20% discount for Termly
+       features: [
+         "Everything in OSCE",
+         "MLA + Clinical Bank",
+         "SAQ question bank",
+         // "Pre-clinical",
+         // "Data interpretation",
+         // "Question generation",
+         "Custom AI Tutor Bot",
+       ],
+     },
+   ],
+   annual: [
+     {
+       planId: null,
+       title: "The Trial Plan",
+       price: "Free",
+       monthlyPrice: "Free",
+       "plan-slug": PlanSlug("The Trial plan", 3),
+       features: ["50 SBAs", "10 SAQs", "5 AI patient consultations (voice) "],
+     },
+     {
+       planId: process.env.REACT_APP_PRICE_OSCE_PLAN_12,
 
-        title: "The OSCE plan",
-        price: 50,
-        oldPrice: 8.75, // Old price for Annual
-        monthlyPrice: (50 / 12).toFixed(1),
-        "plan-slug": PlanSlug("The OSCE plan", 12),
-        features: [
-          "Station specific OSCE scenarios",
-          "Access to our custom simulated AI patients",
-        ],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_12,
-        title: "The Full Package",
-        price: 65,
-        oldPrice: 11.25, // Old price for Annual
-        monthlyPrice: (65 / 12).toFixed(1),
-        "plan-slug": PlanSlug("The Full Package", 12),
-        hasDiscount: true,
-        discount: 50, // 30% discount for Annual
-        features: [
-          "Everything in OSCE",
-          "MLA + Clinical Bank",
-          "SAQ question bank",
-          // "Pre-clinical",
-          // "Data interpretation",
-          // "Question generation",
-          "Custom AI Tutor Bot",
-        ],
-      },
-      {
-        planId: process.env.REACT_APP_PRICE_PASS_GUARANTEE_12,
-        title: "The Pass Guarantee",
-        price: 1280,
-        showTotalOnly: true,
-        "plan-slug": PlanSlug("The Pass Guarantee", 12),
-        features: [
-          "Everything in The Full Package",
-          "Guaranteed pass of this academic year",
-          "1-1 Tutoring from a top decile student",
-        ],
-      },
-    ],
-  };
+       title: "The OSCE plan",
+       price: 42,
+       // oldPrice: 8.75, // 2nd last Old price for Annual
+       oldPrice: 4.2, // Old price for Annual
+       monthlyPrice: (42 / 12).toFixed(1),
+       "plan-slug": PlanSlug("The OSCE plan", 12),
+       features: [
+         "Station specific OSCE scenarios",
+         "Access to our custom simulated AI patients",
+       ],
+     },
+     {
+       planId: process.env.REACT_APP_PRICE_FULL_PACKAGE_12,
+       title: "The Full Package",
+       price: 50,
+       // oldPrice: 11.25, // Old price for Annual
+       oldPrice: 5.4, // Old price for Annual
+       monthlyPrice: (50 / 12).toFixed(1),
+       "plan-slug": PlanSlug("The Full Package", 12),
+       hasDiscount: true,
+       discount: 50, // 30% discount for Annual
+       features: [
+         "Everything in OSCE",
+         "MLA + Clinical Bank",
+         "SAQ question bank",
+         // "Pre-clinical",
+         // "Data interpretation",
+         // "Question generation",
+         "Custom AI Tutor Bot",
+       ],
+     },
+     // {
+     //   planId: process.env.REACT_APP_PRICE_PASS_GUARANTEE_12,
+     //   title: "The Pass Guarantee",
+     //   price: 1280,
+     //   showTotalOnly: true,
+     //   "plan-slug": PlanSlug("The Pass Guarantee", 12),
+     //   features: [
+     //     "Everything in The Full Package",
+     //     "Guaranteed pass of this academic year",
+     //     "1-1 Tutoring from a top decile student",
+     //   ],
+     // },
+   ],
+ };
 
   const getCurrentPlans = () => {
     if (isMonthly) return pricingPlans?.monthly;
