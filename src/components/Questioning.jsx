@@ -95,7 +95,6 @@ const Questioning = () => {
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
-  console.log("questionGenModule:", questionGenModule);
 
   const {
     mockTestIds,
@@ -175,7 +174,6 @@ const Questioning = () => {
     if (plan === undefined || planType === null || planType === undefined) {
       setShowPlanPopup(true);
     }
-    console.log("handleChange on change", selectedOption);
   };
 
   const cleanedPresentations = presentations?.map((presentation) => ({
@@ -383,23 +381,19 @@ const Questioning = () => {
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
           setIsLoading(false);
         });
-    } else if (type === "QuesGen") {
+        console.log("type:", type);
+    } else if (selectedPreClinicalOption.trim() === "QuesGen") {
       setIsSortedByPresentation(false);
+     
 
-      dispatch(setLoading({ key: "modules/fetchQuesGenModules", value: true }));
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
         .unwrap()
         .then(() => {
+           console.log("in question generation");
           setIsLoading(false);
-          dispatch(
-            setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-          );
         })
         .catch((err) => {
-          dispatch(
-            setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-          );
           setIsLoading(false);
         });
     } else if (type === "Mock") {
@@ -668,23 +662,20 @@ const Questioning = () => {
       }
     }
   }, [selectedModules, limit, selectedOption, selectedTab, freeTrialType]);
+console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
 
   useEffect(() => {
     if (selectedTab === "Pre-clinical") {
-      if (selectedPreClinicalOption === "QuesGen") {
+      // if (selectedPreClinicalOption === "QuesGen") {
         dispatch(setPreclinicalType({ selectedPreClinicalOption }));
 
-        dispatch(
-          setLoading({ key: "modules/fetchQuesGenModules", value: true }),
-        );
+       
         setIsLoading(true);
         dispatch(fetchQuesGenModules())
           .unwrap()
           .then(() => {
             setIsLoading(false);
-            dispatch(
-              setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-            );
+          
           })
           .catch((err) => {
             dispatch(
@@ -693,9 +684,7 @@ const Questioning = () => {
             setIsLoading(false);
           });
 
-        dispatch(
-          setLoading({ key: "modules/fetchQuesGenModuleById", value: true }),
-        );
+   
         dispatch(
           fetchQuesGenModuleById({
             moduleIds: selectedModules,
@@ -713,16 +702,11 @@ const Questioning = () => {
           })
           .catch((err) => {
             console.error("Error fetching QuesGen modules:", err);
-            dispatch(
-              setLoading({
-                key: "modules/fetchQuesGenModuleById",
-                value: false,
-              }),
-            );
+          
           });
-      }
+      // }
     }
-  }, [selectedPreClinicalOption, selectedModules, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
+  }, [selectedPreClinicalOption, selectedModules,selectedTab, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
 
   useEffect(() => {
     localStorage.removeItem("examTimer"); // Clear storage when timer ends
@@ -1320,7 +1304,7 @@ const Questioning = () => {
                                 />
                                 Select All
                               </div>
-                              {selectedOption !== "SAQ" && (
+                              {(selectedOption !== "SAQ" &&  !(selectedTab === "Pre-clinical" && selectedPreClinicalOption === "QuesGen")) && (
                                 <div className="flex items-center space-x-2 p-4">
                                   <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
                                     Sort By Presentation
