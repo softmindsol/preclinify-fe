@@ -1304,7 +1304,7 @@ console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
                                 />
                                 Select All
                               </div>
-                              {selectedOption !== "SAQ" && (
+                              {(selectedOption !== "SAQ" &&  !(selectedTab === "Pre-clinical" && selectedPreClinicalOption === "QuesGen")) && (
                                 <div className="flex items-center space-x-2 p-4">
                                   <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
                                     Sort By Presentation
