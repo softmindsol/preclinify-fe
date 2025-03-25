@@ -14,6 +14,8 @@ export const fetchQuesGenModules = createAsyncThunk(
       if (error) {
         return rejectWithValue(error.message);
       }
+      console.log("Question Generation:", data);
+      
 
       return data; // Return the fetched data
     } catch (error) {

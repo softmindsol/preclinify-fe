@@ -41,7 +41,10 @@ const FileUpload = () => {
             toast.success("Question generated successfully!");
         } catch (error) {
            
-            toast.error("Failed to upload and summarize the file.");
+            toast.error(
+              "Something went wrong. Please try uploading the file again.",
+            );
+
         } finally {
             setLoading(false);
         }
@@ -65,7 +68,6 @@ const FileUpload = () => {
                 });
         }
     }, [data, dispatch]);
-console.log("data:", data);
 
     return (
         <div>
