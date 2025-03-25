@@ -118,6 +118,13 @@ const QuestionCard = () => {
     setSelectedFilter(filter);
   };
 
+   const parsedAnswersArray = data[currentIndex]?.answersArray
+     ? typeof data[currentIndex]?.answersArray === "string"
+       ? JSON.parse(data[currentIndex]?.answersArray)
+       : data[currentIndex]?.answersArray
+     : [];
+
+
   // Arrays to store indices
   const unseenIndices = [];
   const flaggedIndices = [];
@@ -200,34 +207,34 @@ const QuestionCard = () => {
       setBorder(false);
 
       const correctAnswer =
-        data[currentIndex].answersArray[data[currentIndex].correctAnswerId];
+        parsedAnswersArray[data[currentIndex].correctAnswerId];
       const isCorrect = selectedAnswer === correctAnswer;
 
       setAttempts((prev) => {
         const updatedAttempts = [...prev];
         updatedAttempts[currentIndex] = isCorrect;
         dispatch(setAttempted(updatedAttempts));
-        if (data[currentIndex]?.conditionName !== null) {
-          dispatch(
-            fetchConditionNameById({
-              id: data[currentIndex]?.conditionName,
-            }),
-          )
-            .unwrap()
-            .then((res) => {
-              setArticle(res);
-            });
-        }
-        if (subscriptions[0].plan !== null) {
-          dispatch(
-            insertResult({
-              isCorrect,
-              questionId: data[currentIndex].id,
-              userId,
-              moduleId: data[currentIndex].moduleId,
-            }),
-          );
-        }
+        // if (data[currentIndex]?.conditionName !== null) {
+        //   dispatch(
+        //     fetchConditionNameById({
+        //       id: data[currentIndex]?.conditionName,
+        //     }),
+        //   )
+        //     .unwrap()
+        //     .then((res) => {
+        //       setArticle(res);
+        //     });
+        // }
+        // if (subscriptions[0].plan !== null) {
+        //   dispatch(
+        //     insertResult({
+        //       isCorrect,
+        //       questionId: data[currentIndex].id,
+        //       userId,
+        //       moduleId: data[currentIndex].moduleId,
+        //     }),
+        //   );
+        // }
 
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
@@ -236,8 +243,7 @@ const QuestionCard = () => {
       // Open the correct answer's accordion and selected if incorrect
       setIsAccordionOpen((prev) => {
         const newAccordionState = [...prev].fill(false); // Close all first
-        const selectedIndex =
-          data[currentIndex].answersArray.indexOf(selectedAnswer);
+        const selectedIndex = parsedAnswersArray.indexOf(selectedAnswer);
         const correctIndex = data[currentIndex].correctAnswerId;
 
         newAccordionState[correctIndex] = true; // Always open correct answer
@@ -279,17 +285,17 @@ const QuestionCard = () => {
       if (isQuestionReview) {
         // setIsAnswered(true);
         // setIsAccordionVisible(true);
-        if (data[currentIndex]?.conditionName !== null) {
-          dispatch(
-            fetchConditionNameById({
-              id: data[currentIndex]?.conditionName,
-            }),
-          )
-            .unwrap()
-            .then((res) => {
-              setArticle(res);
-            });
-        }
+        // if (data[currentIndex]?.conditionName !== null) {
+        //   dispatch(
+        //     fetchConditionNameById({
+        //       id: data[currentIndex]?.conditionName,
+        //     }),
+        //   )
+        //     .unwrap()
+        //     .then((res) => {
+        //       setArticle(res);
+        //     });
+        // }
       }
 
       let value = true;
@@ -399,21 +405,20 @@ const QuestionCard = () => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       setIsSubMenuOpen(false); // Close the menu if the click is outside
     }
-  };
+  }; 
+
 
   useEffect(() => {
     if (data?.length) {
-      const initialAccordionState = data[currentIndex]?.answersArray?.map(
-        () => false,
-      );
+      const initialAccordionState = parsedAnswersArray.map(() => false);
       setIsAccordionOpen(initialAccordionState);
     }
   }, [data]);
 
   useEffect(() => {
     // Reset accordion state when the current question changes
-    if (data[currentIndex]?.answersArray) {
-      const numAnswers = data[currentIndex].answersArray.length;
+    if (parsedAnswersArray) {
+      const numAnswers = parsedAnswersArray.length;
       setIsAccordionOpen(Array(numAnswers).fill(false));
     }
   }, [currentIndex, data]);
@@ -536,11 +541,8 @@ const QuestionCard = () => {
       const validKeys = ["Q", "W", "E", "R", "T"];
       const keyIndex = validKeys.indexOf(key);
 
-      if (
-        keyIndex !== -1 &&
-        keyIndex < data[currentIndex]?.answersArray.length
-      ) {
-        const answer = data[currentIndex].answersArray[keyIndex];
+      if (keyIndex !== -1 && keyIndex < parsedAnswersArray.length) {
+        const answer = parsedAnswersArray[keyIndex];
 
         handleAnswerSelect(answer);
         setIsAnswered(true);
@@ -572,6 +574,7 @@ const QuestionCard = () => {
   }, [review]);
 
   useEffect(() => {
+
     function handleClickOutside(event) {
       if (beakerRef.current && !beakerRef.current.contains(event.target)) {
         setBeakerToggle(false);
@@ -600,6 +603,8 @@ const QuestionCard = () => {
   if (reviewLoading) {
     return <Loader />;
   }
+
+  console.log("data:", data);
 
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>
@@ -758,7 +763,7 @@ const QuestionCard = () => {
                       {data[currentIndex].lead_in_question}
                     </h3>
                     <div className="mt-4 space-y-4">
-                      {data[currentIndex]?.answersArray?.map(
+                      {parsedAnswersArray?.map(
                         (answer, index) => {
                           const isSelected = selectedAnswer === answer;
                           const isCorrectAnswer =
