@@ -38,6 +38,7 @@ import TermCondition from "./pages/TermCondition";
 import Declaimer from "./pages/Declaimer";
 import Textbook from "./components/Textbook";
 import TextbookContent from "./components/TextbookContent";
+import ConditionNameScreen from "./components/ConditionNamesScreen";
 
 function App() {
   const navigate = useNavigate();
@@ -74,7 +75,9 @@ function App() {
         />
 
         <Route path='/textbook' element={<Textbook />} />
-        <Route path='/textbook-content/:id' element={<TextbookContent />} />
+        <Route path='/condition-name/:id' element={<ConditionNameScreen />} />
+
+        <Route path='/textbook-content/:moduleId/:id' element={<TextbookContent />} />
 
         <Route
           path="/sba-presentation"
