@@ -381,16 +381,15 @@ const Questioning = () => {
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
           setIsLoading(false);
         });
-        console.log("type:", type);
+      console.log("type:", type);
     } else if (selectedPreClinicalOption.trim() === "QuesGen") {
       setIsSortedByPresentation(false);
-     
 
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
         .unwrap()
         .then(() => {
-           console.log("in question generation");
+          console.log("in question generation");
           setIsLoading(false);
         })
         .catch((err) => {
@@ -662,51 +661,47 @@ const Questioning = () => {
       }
     }
   }, [selectedModules, limit, selectedOption, selectedTab, freeTrialType]);
-console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
+  console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
 
   useEffect(() => {
     if (selectedTab === "Pre-clinical") {
       // if (selectedPreClinicalOption === "QuesGen") {
-        dispatch(setPreclinicalType({ selectedPreClinicalOption }));
+      dispatch(setPreclinicalType({ selectedPreClinicalOption }));
 
-       
-        setIsLoading(true);
-        dispatch(fetchQuesGenModules())
-          .unwrap()
-          .then(() => {
-            setIsLoading(false);
-          
-          })
-          .catch((err) => {
-            dispatch(
-              setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-            );
-            setIsLoading(false);
-          });
+      setIsLoading(true);
+      dispatch(fetchQuesGenModules())
+        .unwrap()
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          dispatch(
+            setLoading({ key: "modules/fetchQuesGenModules", value: false }),
+          );
+          setIsLoading(false);
+        });
 
-   
-        dispatch(
-          fetchQuesGenModuleById({
-            moduleIds: selectedModules,
-            totalLimit: limit,
-          }),
-        )
-          .unwrap()
-          .then((res) => {
-            dispatch(
-              setLoading({
-                key: "modules/fetchQuesGenModuleById",
-                value: false,
-              }),
-            );
-          })
-          .catch((err) => {
-            console.error("Error fetching QuesGen modules:", err);
-          
-          });
+      dispatch(
+        fetchQuesGenModuleById({
+          moduleIds: selectedModules,
+          totalLimit: limit,
+        }),
+      )
+        .unwrap()
+        .then((res) => {
+          dispatch(
+            setLoading({
+              key: "modules/fetchQuesGenModuleById",
+              value: false,
+            }),
+          );
+        })
+        .catch((err) => {
+          console.error("Error fetching QuesGen modules:", err);
+        });
       // }
     }
-  }, [selectedPreClinicalOption, selectedModules,selectedTab, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
+  }, [selectedPreClinicalOption, selectedModules, selectedTab, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
 
   useEffect(() => {
     localStorage.removeItem("examTimer"); // Clear storage when timer ends
@@ -1043,7 +1038,7 @@ console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
                   {/* Tab Section */}
                   <div className="flex items-center justify-between space-x-2 text-[12px] font-medium text-[#3F3F46] md:text-[16px]">
                     <button
-                      className={`w-[50%] px-4 py-2 ${
+                      className={`w-[100%] px-4 py-2 ${
                         selectedTab === "Clinical"
                           ? "bg-white text-black"
                           : "bg-[#E4E4E7] text-gray-500"
@@ -1052,7 +1047,7 @@ console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
                     >
                       Clinical
                     </button>
-                    <button
+                    {/* <button
                       className={`w-[50%] px-4 py-2 ${
                         selectedTab === "Pre-clinical"
                           ? "bg-white text-black"
@@ -1061,7 +1056,7 @@ console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
                       onClick={() => handleTabChange("Pre-clinical")}
                     >
                       Pre-clinical
-                    </button>
+                    </button> */}
                   </div>
                   {/* Search and Button Section */}
                   <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
@@ -1304,21 +1299,25 @@ console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
                                 />
                                 Select All
                               </div>
-                              {(selectedOption !== "SAQ" &&  !(selectedTab === "Pre-clinical" && selectedPreClinicalOption === "QuesGen")) && (
-                                <div className="flex items-center space-x-2 p-4">
-                                  <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
-                                    Sort By Presentation
-                                  </span>
-                                  <label className="relative inline-flex cursor-pointer items-center">
-                                    <input
-                                      type="checkbox"
-                                      className="peer sr-only"
-                                      onChange={handleToggle}
-                                    />
-                                    <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
-                                  </label>
-                                </div>
-                              )}
+                              {selectedOption !== "SAQ" &&
+                                !(
+                                  selectedTab === "Pre-clinical" &&
+                                  selectedPreClinicalOption === "QuesGen"
+                                ) && (
+                                  <div className="flex items-center space-x-2 p-4">
+                                    <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
+                                      Sort By Presentation
+                                    </span>
+                                    <label className="relative inline-flex cursor-pointer items-center">
+                                      <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        onChange={handleToggle}
+                                      />
+                                      <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
+                                    </label>
+                                  </div>
+                                )}
                             </div>
                           )}
                         </div>
