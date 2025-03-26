@@ -103,6 +103,9 @@ export const insertQuesGenData = createAsyncThunk(
         throw new Error("Invalid data format: Expected an array of questions.");
       }
 
+      console.log("quesGenDataArray", quesGenDataArray);
+      
+
       // Map each question object to the correct Supabase format
       const formattedData = quesGenDataArray.map((quesGenData) => ({
         question_stem: quesGenData.question_stem,
