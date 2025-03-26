@@ -22,6 +22,24 @@ html {
   scroll-behavior: smooth;
 }
 
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.custom-heartbeat {
+  animation: heartBeat 3s infinite ease-in-out;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  filter: hue-rotate(150deg) saturate(5); /* Green color ke liye adjust kiya gaya hai */
+}
+
 /* HTML: */
 .loading {
   text-align: center;

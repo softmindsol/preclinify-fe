@@ -14,6 +14,8 @@ export const fetchQuesGenModules = createAsyncThunk(
       if (error) {
         return rejectWithValue(error.message);
       }
+      console.log("Question Generation:", data);
+      
 
       return data; // Return the fetched data
     } catch (error) {
@@ -101,13 +103,16 @@ export const insertQuesGenData = createAsyncThunk(
         throw new Error("Invalid data format: Expected an array of questions.");
       }
 
+      console.log("quesGenDataArray", quesGenDataArray);
+      
+
       // Map each question object to the correct Supabase format
       const formattedData = quesGenDataArray.map((quesGenData) => ({
         question_stem: quesGenData.question_stem,
-        answers: quesGenData.options,
+        answersArray: quesGenData.answersArray,
         lead_in_question: quesGenData.lead_in_question,
-        correct_Answer: quesGenData.correct_Answer, // Ensure consistent casing
-        explanation: quesGenData.explanation,
+        correctAnswerId: quesGenData.correctAnswerId, // Ensure consistent casing
+        explanationList: quesGenData.explanationList,
         module: quesGenData.module,
         presentation: quesGenData.presentation,
       }));

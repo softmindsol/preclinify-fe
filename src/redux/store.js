@@ -37,6 +37,7 @@ import SBAResultReducer from './features/all-results/results.sba.slice';
 import FreeTrialMcqsQuestionReducer from './features/free-trial-bank/free-trial-bank.slice'
 import shortQuestionsFreeTrialReducer from './features/free-trial-bank/free-trial-saq.slice'
 import textbookReducer from './features/textbook/textbook.slice'
+import osceTypeReducer from './features/osce-bot/osce-type.slice'
 // Redux Persist Config for localStorage and sessionStorage
 const persistConfig = {
   key: "root",
@@ -69,7 +70,8 @@ const persistConfig = {
     "mockModules",
     "SBApresentation",
     "virtualPatient",
-    "subscription"
+    "subscription",
+    "textbook",
   ],
   blackList: ["user", "personalInfo"],
 };
@@ -82,6 +84,7 @@ const resultPersistConfig = {
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  osceType: osceTypeReducer,
   textbook: textbookReducer,
   shortQuestionsFreeTrial: shortQuestionsFreeTrialReducer,
   FreeTrialMcqsQuestion: FreeTrialMcqsQuestionReducer,

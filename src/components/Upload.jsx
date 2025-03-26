@@ -36,12 +36,17 @@ const FileUpload = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            console.log("response", response.data.generatedQuestions);
             
+           
             setData(response.data.generatedQuestions); // Set the generated questions
             toast.success("Question generated successfully!");
         } catch (error) {
            
-            toast.error("Failed to upload and summarize the file.");
+            toast.error(
+              "Something went wrong. Please try uploading the file again.",
+            );
+
         } finally {
             setLoading(false);
         }

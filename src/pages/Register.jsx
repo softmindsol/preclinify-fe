@@ -55,8 +55,8 @@ const Register = () => {
         .max(15, "Phone number must not exceed 15 digits")
         .required("Required"),
       displayName: Yup.string()
-  .matches(/^[a-zA-Z\s]+$/, "Name must only contain letters and spaces")
-  .required("Name is Required"),
+        .matches(/^[a-zA-Z\s]+$/, "Name must only contain letters and spaces")
+        .required("Name is Required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       if (!termsChecked) {
@@ -67,12 +67,12 @@ const Register = () => {
 
       try {
         // 1️⃣ Pehle check karein ke email already exist to nahi
-          const emailExists = await checkEmailExists(values.email);
+        const emailExists = await checkEmailExists(values.email);
 
-          if (emailExists) {
-            toast.error("This email is already registered. Please log in.");
-            return;
-          } 
+        if (emailExists) {
+          toast.error("This email is already registered. Please log in.");
+          return;
+        }
         // Supabase auth register
         const { data: user, error } = await supabase.auth.signUp({
           email: values.email,

@@ -21,12 +21,16 @@ import { openModal } from "../redux/features/osce-bot/virtual.modal.slice";
 import { TbBaselineDensityMedium } from "react-icons/tb";
 import AIBotSidebar from "./common/AIBotSidebar";
 import UpgradePlanModal from "./common/UpgradePlan";
-import { BeatLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
+import BouncingBall from "./common/BouncingBall";
+import { setOSCEBotType } from "../redux/features/osce-bot/osce-type.slice";
+import Popup from "./common/SessionClose";
 const AINewVersion = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("voice");
   const userInfo = useSelector((state) => state?.user?.userInfo);
   const [showModal, setShowModal] = useState(false);
+  const { type } = useSelector((state) => state?.osceType);
+
   const navigate = useNavigate();
   // const [transcripts, setTranscript] = useState([]);
   const [isDashboard, setIsDashboard] = useState(false);
@@ -45,13 +49,13 @@ const AINewVersion = () => {
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
   const [isPatientOn, setIsPatientOn] = useState(false);
   const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const userId = localStorage.getItem("userId");
   const { subscriptions, plan, loader, completePlanData } = useSelector(
     (state) => state?.subscription,
   );
-    const [isOpen, setIsOpen] = useState(false);
-  
+  const [isOpen, setIsOpen] = useState(false);
+  const [sessionClose, setSessionClose] = useState(false);
   const transcriptRef = useRef(null);
   const virtualPatient = useSelector(
     (state) => state?.virtualPatient?.isModalOpen,
@@ -64,11 +68,19 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     setTranscript,
     audioRef,
     initWebRTC,
+    isAISpeaking,
     stopRecording,
+    setIsAISpeaking,
+    isLoader,
   } = useVoiceRecorder(AIPrompt);
+  // console.log("transcript:", transcript);
+  console.log("isAISpeaking:", isAISpeaking);
+
   const instruction = AIPrompt;
-  const { chatFeedback, generateSummaryAndFeedback } =
-    useSummaryAndFeedback(transcript);
+  const { chatFeedback, generateSummaryAndFeedback } = useSummaryAndFeedback(
+    transcript,
+    setIsAISpeaking,
+  );
   const handleFeedBack = () => {
     setShowFeedBackModal(true);
   };
@@ -113,9 +125,9 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     }
   };
 
-    const toggleDrawer = () => {
-      setIsOpen((prevState) => !prevState);
-    };
+  const toggleDrawer = () => {
+    setIsOpen((prevState) => !prevState);
+  };
 
   const reportHandler = () => {
     setShowFeedBackModal(!showFeedBackModal);
@@ -182,23 +194,25 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
         return toast.error("You Have exceeded your limit");
       // First, increment used tokens
 
-      if (isRecording) {
-        await dispatch(
-          incrementUsedTokens({
-            userId: userId,
-          }),
-        ).unwrap();
-      }
+      await dispatch(
+        incrementUsedTokens({
+          userId: userId,
+        }),
+      ).unwrap();
 
       // Then, fetch updated subscription data
-      if (isRecording) {
-        await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
-      }
-
-      // Finally, start or stop recording
-      isRecording ? stopRecording() : initWebRTC();
+      await dispatch(fetchSubscriptions({ userId: userId })).unwrap();
+      initWebRTC();
     } catch (error) {
       console.error("Error updating tokens:", error);
+    }
+  };
+
+  const stopRecordingHandler = () => {
+    try {
+      setSessionClose(true);
+    } catch (error) {
+      console.log("Error while triggering stop recording handler");
     }
   };
 
@@ -228,7 +242,11 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   useEffect(() => {
     let timerInterval;
 
-    if (timerActive && !virtualPatient) {
+    if (
+      timerActive &&
+      !virtualPatient &&
+      subscriptions[0]?.total_tokens !== subscriptions[0]?.used_tokens
+    ) {
       timerInterval = setInterval(() => {
         if (seconds === 0 && minutes === 0) {
           clearInterval(timerInterval);
@@ -275,15 +293,22 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   }, [id, dispatch]);
   useEffect(() => {
     dispatch(fetchSubscriptions({ userId }));
-
-    // dispatch(openModal());
   }, []);
 
-    useEffect(() => {
-      if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
-        setShowUpgradeModal(true);
-      }
-    }, [subscriptions]);
+  useEffect(() => {
+    if (
+      subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens &&
+      type === "ai-bot"
+    ) {
+      toast.error(" Token limit exceeded for Voice Bot.");
+    }
+  }, [type]);
+  useEffect(() => {
+    if (subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens) {
+      setShowUpgradeModal(true);
+    }
+  }, [subscriptions]);
+  console.log("isRecording:", isRecording);
 
   return (
     <div className="w-full">
@@ -305,8 +330,43 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
                   type="number"
                   className="w-10 bg-transparent text-[12px] font-bold text-[#A1A1AA] outline-none"
                   defaultValue="8"
+                  min="0"
+                  max="60"
                   onChange={(e) => {
-                    setMinutes(e.target.value);
+                    let value = e.target.value;
+
+                    // Prevent entering more than 60
+                    if (value !== "" && Number(value) > 60) {
+                      value = "60";
+                    }
+
+                    // Prevent entering negative values
+                    if (value !== "" && Number(value) < 0) {
+                      value = "0";
+                    }
+
+                    setMinutes(value);
+                  }}
+                  onInput={(e) => {
+                    // Remove any non-numeric characters
+                    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      (e.key === "ArrowUp" && Number(e.target.value) >= 60) ||
+                      (e.key === "ArrowDown" && Number(e.target.value) <= 0)
+                    ) {
+                      e.preventDefault();
+                    }
+
+                    if (
+                      e.key === "e" ||
+                      e.key === "E" ||
+                      e.key === "+" ||
+                      e.key === "-"
+                    ) {
+                      e.preventDefault(); // Prevent entering non-numeric characters
+                    }
                   }}
                 />
               </div>
@@ -314,7 +374,7 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
             <div className="mt-10 flex flex-col items-center justify-center">
               <div
-                className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${
+                className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens && "opacity-30"} ${
                   minutes === 0 && seconds < 60
                     ? "bg-[#FF453A]" // Red when timer is below 1 minute
                     : timerActive
@@ -333,7 +393,7 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
             <div className="p-5 text-center">
               <button
                 onClick={() => setTimerActive(!timerActive)}
-                className={`h-[32px] w-[90%] rounded-[6px] text-[12px] transition-all duration-200 hover:text-white ${
+                className={`h-[32px] w-[90%] rounded-[6px] text-[12px] transition-all duration-200 hover:text-white ${subscriptions[0]?.total_tokens <= subscriptions[0]?.used_tokens && "opacity-30"} ${
                   minutes === 0 && seconds < 60
                     ? "border border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000]" // Red when timer < 1 min
                     : timerActive
@@ -413,8 +473,7 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
                 </span>
                 <button
                   disabled
-                  className={`flex h-5 w-10 items-center ${isPatientOn || !isRecording ? "bg-[#28C3A6]" : "bg-[#F4F4F5]"} rounded-full p-1 transition duration-300 ${isPatientOn || !isRecording ? "justify-end" : "justify-start"}`}
-                  // onClick={() => setIsPatientOn(!isPatientOn)}
+                  className={`flex h-5 w-10 items-center ${!isRecording ? "bg-[#28C3A6]" : "bg-[#F4F4F5]"} rounded-full p-1 transition duration-300 ${!isRecording ? "justify-end" : "justify-start"}`}
                 >
                   <div className="h-4 w-4 rounded-full bg-white shadow-md"></div>
                 </button>
@@ -477,29 +536,9 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
         </div>
       </div>
       <div className="mt-5 lg:ml-[250px]">
-        {/* Tabs */}
-        <div className="flex space-x-4 border-b border-gray-300 pb-2">
-          <button
-            className={`flex w-full items-center justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
-              activeTab === "text" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
-            } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
-            onClick={() => setActiveTab("text")}
-          >
-            Text
-          </button>
-          <button
-            className={`flex w-full items-center justify-center space-x-4 rounded-tl-[4px] p-2 text-[18px] font-bold ${
-              activeTab === "voice" ? "bg-[#FAFAFA]" : "bg-[#E4E4E7]"
-            } dark:border dark:border-[#3A3A48] dark:bg-[#1E1E2A]`}
-            onClick={() => setActiveTab("voice")}
-          >
-            Voice
-          </button>
-        </div>
-
         {/* Content */}
         <div className={`${darkModeRedux ? "dark" : ""} `}>
-          {activeTab === "text" && (
+          {type === "text" && (
             <div>
               <main className="mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
                 <div
@@ -546,111 +585,192 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
                   ))}
                 </div>
               </main>
-              <div className="h-[30vh] rounded-[8px] bg-white p-5">
+              <form
+                className="h-[30vh] rounded-[8px] bg-white p-5"
+                onSubmit={handleSendText}
+              >
                 <div
                   className={`mt-8 flex flex-col items-center justify-center gap-2 transition-all duration-500 ${isPatientOn ? "translate-y-5 opacity-100" : "translate-y-0"}`}
                 >
-                  <form
-                    onSubmit={handleSendText}
-                    // onSubmit={handlerToken}
-                    className="flex items-center justify-center gap-2"
-                  >
-                    <input
-                      type="text"
-                      value={inputText}
-                      onChange={handleInputChange}
-                      className="h-[56px] w-[688px] rounded-[8px] border border-[#3F3F46] p-5 transition-all duration-500 placeholder:text-[#A1A1AA]"
-                      placeholder="What’s brought you in today? (press spacebar to speak)"
-                    />
-                    <button className="h-[56px] w-[121px] rounded-[8px] border border-[#FF9741] bg-[#FFE9D6] text-[#FF9741] transition-all duration-150 hover:bg-[#e8924d] hover:text-[#ffff]">
-                      Send
-                    </button>
-                  </form>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="relative h-[100px] w-[688px]">
+                      <input
+                        type="text"
+                        value={inputText}
+                        onChange={handleInputChange}
+                        className="h-full w-full rounded-[8px] border border-[#3F3F46] pb-[4.25rem] pl-4 pt-[0.25rem] transition-all duration-500 placeholder:text-[#A1A1AA]"
+                        placeholder="type your message..."
+                      />
+                      <div className="absolute bottom-2 left-2 flex cursor-pointer items-center pr-2">
+                        <span
+                          className="mr-2 rounded-full bg-gray-200 p-2"
+                          onClick={() => {
+                            dispatch(setOSCEBotType({ type: "ai-bot" }));
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-mic"
+                          >
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" x2="12" y1="19" y2="22" />
+                          </svg>
+                        </span>
+                        {/* <span className="rounded-full bg-gray-200 p-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-x"
+                          >
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                          </svg>
+                        </span> */}
+                      </div>
+
+                      <div className="absolute bottom-1.5 right-0 flex items-center pr-2">
+                        <button className="rounded-full bg-[#3CC8A1] p-2 text-white">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-arrow-up"
+                          >
+                            <path d="m5 12 7-7 7 7" />
+                            <path d="M12 19V5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           )}
 
-          {activeTab === "voice" && (
+          {type === "ai-bot" && (
             <div className="">
-              <main className="z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] bg-white p-5 px-4 py-2">
+              <main className="bg z-0 mb-5 h-[55vh] overflow-hidden rounded-[8px] p-5 px-4 py-2">
                 <div
                   className="transcript h-full overflow-y-auto pr-4"
                   ref={transcriptRef}
                 >
-                  {transcript.map((entry, index) => (
-                    <div
-                      key={index}
-                      className={`message ${entry.fromAI ? "ai-message" : "user-message"}`}
-                    >
-                      <div
-                        className={`mb-2 flex items-center ${entry.fromAI ? "justify-start" : "ml-auto flex-row-reverse"}`}
-                      >
-                        {entry.fromAI ? (
-                          <div className="flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#F4F4F5]">
-                            <img
-                              src="/assets/Logo.png"
-                              alt="AI Icon"
-                              className="w-auto object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="ml-2 flex size-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#3CC8A1]">
-                            <img
-                              src="/assets/sethoscope.png"
-                              alt="User Icon"
-                              className="w-auto object-contain"
-                            />
-                          </div>
-                        )}
-                        <span
-                          className={`ml-2 rounded-[8px] px-5 py-3 ${entry.fromAI ? "bg-[#EDF2F7] text-[#3F3F46]" : "bg-[#3CC8A1] text-white"}`}
-                        >
-                          {entry.text}
-                        </span>
-                        {isLoading && entry.fromAI && (
-                          <div className="ml-2">
-                            <span className="animate-pulse">...</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                  <BouncingBall
+                    isRecording={isRecording}
+                    transcript={transcript}
+                    isAISpeaking={isAISpeaking}
+                    isLoader={isLoader}
+                  />
                 </div>
               </main>
-              <div className="h-[30vh] rounded-[8px] bg-white p-5">
-                <div className="flex w-full flex-col items-center justify-center gap-2">
+              <div className="mt-20 h-[30vh] rounded-[8px] p-5">
+                <div className="flex h-full items-center justify-center gap-x-20">
                   <button
-                    disabled={
-                      subscriptions[0]?.total_tokens <=
-                      subscriptions[0]?.used_tokens
-                    }
-                    onClick={handleMicClick}
-                    className={`mt-5 flex h-[98px] w-[98px] transform cursor-pointer items-center justify-center rounded-[24px] transition-all duration-300 ${
-                      subscriptions[0]?.total_tokens <=
-                      subscriptions[0]?.used_tokens
-                        ? "bg-gray-400 disabled:cursor-not-allowed"
-                        : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
-                    } `}
+                    disabled={isAISpeaking}
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-4 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      if (isAISpeaking) {
+                        return;
+                      } else {
+                        dispatch(setOSCEBotType({ type: "text" }));
+                      }
+
+                      if (isRecording) {
+                        stopRecording();
+                      }
+                    }}
                   >
-                    <audio ref={audioRef} className="hidden" />
-                    {isRecording ? (
-                      <BeatLoader color="#110f0f" size={10} />
-                    ) : (
-                      <img
-                        src="/assets/mic.svg"
-                        width={30}
-                        height={30}
-                        className={`flex items-center justify-center ${
-                          subscriptions[0]?.total_tokens <=
-                          subscriptions[0]?.used_tokens
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer"
-                        }`}
-                        alt=""
-                      />
-                    )}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-message-square"
+                    >
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
                   </button>
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <button
+                      disabled={
+                        subscriptions[0]?.total_tokens <=
+                          subscriptions[0]?.used_tokens || isRecording
+                      }
+                      onClick={handleMicClick}
+                      className={`flex h-[65px] w-[65px] transform cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${
+                        subscriptions[0]?.total_tokens <=
+                        subscriptions[0]?.used_tokens
+                          ? "bg-gray-400 disabled:cursor-not-allowed"
+                          : "cursor-pointer bg-[#3CC8A1] hover:bg-[#34b38f]"
+                      } ${isRecording ? "animate-pulse" : ""} `}
+                    >
+                      <audio ref={audioRef} className="hidden" />
+                      {isLoader ? (
+                        <ClipLoader color="#ffff" size={20} />
+                      ) : (
+                        <img
+                          src="/assets/mic.svg"
+                          width={16}
+                          height={16}
+                          className={`flex items-center justify-center ${
+                            subscriptions[0]?.total_tokens <=
+                            subscriptions[0]?.used_tokens
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                          alt=""
+                        />
+                      )}
+                    </button>
+                  </div>
+                  <button
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#d8dbe0] p-4 disabled:cursor-not-allowed"
+                    onClick={stopRecordingHandler}
+                    disabled={!isRecording}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-x"
+                    >
+                      <path d="M18 6 6 18" />
+                      <path d="m6 6 12 12" />
+                    </svg>
+                  </button>{" "}
                 </div>
               </div>
             </div>
@@ -705,6 +825,14 @@ const [showUpgradeModal, setShowUpgradeModal] = useState(false);
         <UpgradePlanModal
           isOpen={showUpgradeModal}
           onClose={() => setShowUpgradeModal(false)}
+        />
+      )}
+
+      {sessionClose && (
+        <Popup
+          sessionClose={sessionClose}
+          setSessionClose={setSessionClose}
+          stopRecording={stopRecording}
         />
       )}
     </div>

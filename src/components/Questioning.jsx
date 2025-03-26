@@ -95,6 +95,7 @@ const Questioning = () => {
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
   const questionGenModule = useSelector((state) => state?.quesGen);
+
   const {
     mockTestIds,
     mockMcqsByModulesData,
@@ -173,7 +174,6 @@ const Questioning = () => {
     if (plan === undefined || planType === null || planType === undefined) {
       setShowPlanPopup(true);
     }
-    console.log("handleChange on change", selectedOption);
   };
 
   const cleanedPresentations = presentations?.map((presentation) => ({
@@ -381,23 +381,18 @@ const Questioning = () => {
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
           setIsLoading(false);
         });
-    } else if (type === "QuesGen") {
+      console.log("type:", type);
+    } else if (selectedPreClinicalOption.trim() === "QuesGen") {
       setIsSortedByPresentation(false);
 
-      dispatch(setLoading({ key: "modules/fetchQuesGenModules", value: true }));
       setIsLoading(true);
       dispatch(fetchQuesGenModules())
         .unwrap()
         .then(() => {
+          console.log("in question generation");
           setIsLoading(false);
-          dispatch(
-            setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-          );
         })
         .catch((err) => {
-          dispatch(
-            setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-          );
           setIsLoading(false);
         });
     } else if (type === "Mock") {
@@ -666,61 +661,47 @@ const Questioning = () => {
       }
     }
   }, [selectedModules, limit, selectedOption, selectedTab, freeTrialType]);
+  console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
 
   useEffect(() => {
     if (selectedTab === "Pre-clinical") {
-      if (selectedPreClinicalOption === "QuesGen") {
-        dispatch(setPreclinicalType({ selectedPreClinicalOption }));
+      // if (selectedPreClinicalOption === "QuesGen") {
+      dispatch(setPreclinicalType({ selectedPreClinicalOption }));
 
-        dispatch(
-          setLoading({ key: "modules/fetchQuesGenModules", value: true }),
-        );
-        setIsLoading(true);
-        dispatch(fetchQuesGenModules())
-          .unwrap()
-          .then(() => {
-            setIsLoading(false);
-            dispatch(
-              setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-            );
-          })
-          .catch((err) => {
-            dispatch(
-              setLoading({ key: "modules/fetchQuesGenModules", value: false }),
-            );
-            setIsLoading(false);
-          });
+      setIsLoading(true);
+      dispatch(fetchQuesGenModules())
+        .unwrap()
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          dispatch(
+            setLoading({ key: "modules/fetchQuesGenModules", value: false }),
+          );
+          setIsLoading(false);
+        });
 
-        dispatch(
-          setLoading({ key: "modules/fetchQuesGenModuleById", value: true }),
-        );
-        dispatch(
-          fetchQuesGenModuleById({
-            moduleIds: selectedModules,
-            totalLimit: limit,
-          }),
-        )
-          .unwrap()
-          .then((res) => {
-            dispatch(
-              setLoading({
-                key: "modules/fetchQuesGenModuleById",
-                value: false,
-              }),
-            );
-          })
-          .catch((err) => {
-            console.error("Error fetching QuesGen modules:", err);
-            dispatch(
-              setLoading({
-                key: "modules/fetchQuesGenModuleById",
-                value: false,
-              }),
-            );
-          });
-      }
+      dispatch(
+        fetchQuesGenModuleById({
+          moduleIds: selectedModules,
+          totalLimit: limit,
+        }),
+      )
+        .unwrap()
+        .then((res) => {
+          dispatch(
+            setLoading({
+              key: "modules/fetchQuesGenModuleById",
+              value: false,
+            }),
+          );
+        })
+        .catch((err) => {
+          console.error("Error fetching QuesGen modules:", err);
+        });
+      // }
     }
-  }, [selectedPreClinicalOption, selectedModules, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
+  }, [selectedPreClinicalOption, selectedModules, selectedTab, limit]); // Add selectedPreClinicalOption and selectedModules to dependencies
 
   useEffect(() => {
     localStorage.removeItem("examTimer"); // Clear storage when timer ends
@@ -1032,7 +1013,6 @@ const Questioning = () => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
-
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
@@ -1049,7 +1029,7 @@ const Questioning = () => {
       </div>
       <div className="w-full lg:ml-[260px] xl:ml-[250px]">
         <div>
-          <div className="flex-grow overflow-y-auto overflow-x-hidden dark:bg-[#1E1E2A]">
+          <div className="flex-grow overflow-x-hidden overflow-y-hidden dark:bg-[#1E1E2A]">
             {/* Table Header */}
 
             <div className="flex min-h-screen flex-col space-y-4 px-16 py-4 sm:m-10">
@@ -1087,11 +1067,11 @@ const Questioning = () => {
                           Clinical
                         </p>
                       )}
-                      {/* {selectedTab === "Pre-clinical" && (
+                      {selectedTab === "Pre-clinical" && (
                         <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
                           Pre Clinical
                         </p>
-                      )} */}
+                      )}
                       <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
                         <div className="group">
                           <svg
@@ -1180,7 +1160,6 @@ const Questioning = () => {
                     </div>
                   </div>
                 </div>
-                {selectedTab === "Pre-clinical" && <FileUpload />}
                 <div className="relative">
                   {(planType === "Osce" ||
                     plan === undefined ||
@@ -1189,7 +1168,7 @@ const Questioning = () => {
                     type !== "Trial" && (
                       <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
                         <div className="mt-[300px] h-full">
-                          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A] ">
+                          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-[#1E1E2A]">
                             <div className="text-center">
                               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#3CC8A1]/10">
                                 <svg
@@ -1230,6 +1209,7 @@ const Questioning = () => {
                         </div>
                       </div>
                     )}
+                  {selectedTab === "Pre-clinical" && <FileUpload />}
                   {selectedTab === "Clinical" && (
                     <div className="relative">
                       <div className="m-4 flex h-[212px] items-center rounded-[8px] bg-white p-5 text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
@@ -1302,32 +1282,42 @@ const Questioning = () => {
                     <div className="ml-4 mr-4 rounded-[8px] bg-white px-10 py-8 text-[14px] text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white md:text-[16px]">
                       <div className="flex w-full flex-col justify-between pb-2 font-medium text-[#3F3F46] lg:flex-row lg:items-center">
                         <div className="flex items-center gap-x-10 dark:text-white">
-                          <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
-                            <input
-                              type="checkbox"
-                              className="mr-2 size-4"
-                              checked={data?.data?.every((row) =>
-                                selectedModules.includes(row.categoryId),
-                              )} // Parent checkbox state
-                              onChange={(e) =>
-                                handleSelectAll(e.target.checked)
-                              } // Parent checkbox change handler
-                            />
-                            Select All
-                          </div>
-                          {selectedOption !== "SAQ" && (
-                            <div className="flex items-center space-x-2 p-4">
-                              <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
-                                Sort By Presentation
-                              </span>
-                              <label className="relative inline-flex cursor-pointer items-center">
+                          {type == "Trial" ? (
+                            <div></div>
+                          ) : (
+                            <div className="flex items-center gap-x-10 dark:text-white">
+                              <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
                                 <input
                                   type="checkbox"
-                                  className="peer sr-only"
-                                  onChange={handleToggle}
+                                  className="mr-2 size-4"
+                                  checked={data?.data?.every((row) =>
+                                    selectedModules.includes(row.categoryId),
+                                  )} // Parent checkbox state
+                                  onChange={(e) =>
+                                    handleSelectAll(e.target.checked)
+                                  } // Parent checkbox change handler
                                 />
-                                <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
-                              </label>
+                                Select All
+                              </div>
+                              {selectedOption !== "SAQ" &&
+                                !(
+                                  selectedTab === "Pre-clinical" &&
+                                  selectedPreClinicalOption === "QuesGen"
+                                ) && (
+                                  <div className="flex items-center space-x-2 p-4">
+                                    <span className="3xl:text-[16px] flex items-center text-[14px] font-medium text-[#3F3F46] dark:text-white">
+                                      Sort By Presentation
+                                    </span>
+                                    <label className="relative inline-flex cursor-pointer items-center">
+                                      <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        onChange={handleToggle}
+                                      />
+                                      <div className="peer h-6 w-10 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#3CC8A1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-2 peer-focus:ring-gray-300 dark:peer-focus:ring-blue-800 2xl:h-6 2xl:w-11"></div>
+                                    </label>
+                                  </div>
+                                )}
                             </div>
                           )}
                         </div>
@@ -1351,40 +1341,43 @@ const Questioning = () => {
                       </div>
                       <div className="mb-5 mt-2 h-[1px] bg-[#A1A1AA]" />
                       <div>
-                        {/* {selectedTab === "Pre-clinical" &&
-                      (questionGenModule?.modules?.length > 0 ? (
-                        questionGenModule.modules
-                          .filter(
-                            (row, index, arr) =>
-                              // Keep only first occurrence of each module
-                              arr.findIndex((r) => r.module === row.module) ===
-                              index,
-                          )
-                          .map((row, id) => (
-                            <div
-                              key={id}
-                              className="grid items-center py-3 md:grid-cols-2"
-                            >
-                              <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                                <label className="flex cursor-pointer items-center hover:opacity-85">
-                                  <input
-                                    type="checkbox"
-                                    className="custom-checkbox mr-2 hover:opacity-70"
-                                    checked={selectedModules.includes(row.module)}
-                                    onChange={() =>
-                                      handleCheckboxChange(row.module)
-                                    }
-                                  />
-                                  {row.module}
-                                </label>
-                              </div>
+                        {selectedTab === "Pre-clinical" &&
+                          (questionGenModule?.modules?.length > 0 ? (
+                            questionGenModule.modules
+                              .filter(
+                                (row, index, arr) =>
+                                  // Keep only first occurrence of each module
+                                  arr.findIndex(
+                                    (r) => r.module === row.module,
+                                  ) === index,
+                              )
+                              .map((row, id) => (
+                                <div
+                                  key={id}
+                                  className="grid items-center py-3 md:grid-cols-2"
+                                >
+                                  <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                                    <label className="flex cursor-pointer items-center hover:opacity-85">
+                                      <input
+                                        type="checkbox"
+                                        className="custom-checkbox mr-2 hover:opacity-70"
+                                        checked={selectedModules.includes(
+                                          row.module,
+                                        )}
+                                        onChange={() =>
+                                          handleCheckboxChange(row.module)
+                                        }
+                                      />
+                                      {row.module}
+                                    </label>
+                                  </div>
+                                </div>
+                              ))
+                          ) : (
+                            <div className="py-3 text-center text-gray-500">
+                              No modules available.
                             </div>
-                          ))
-                      ) : (
-                        <div className="py-3 text-center text-gray-500">
-                          No modules available.
-                        </div>
-                      ))} */}
+                          ))}
 
                         {/* Free plan */}
                         {selectedTab === "Clinical" &&

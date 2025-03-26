@@ -93,7 +93,6 @@ export const fetchDailyWork = createAsyncThunk(
   "work/fetchDailyWork",
   async ({ userId, selectedModules }, { rejectWithValue }) => {
     try {
-      console.log("Fetching daily work for user:", userId);
 
 
       let query = supabase

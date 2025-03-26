@@ -20,7 +20,7 @@ import { useContext, useEffect } from "react";
 import ThemeContext from "./lib/ThemeContext";
 import ChatHistory from "./components/common/ChatHistory";
 import OSCEAIBOT from "./components/OSCE-AI-BOT";
-import QuestionGenerator from "./components/question-generation/QuestionGenerator";
+import QuestionGenerator from "./components/QuestionGenerator";
 import MockTestQuestion from "./components/mock-test/Mock";
 import PersonalInformation from "./pages/PersonalInformation";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
@@ -38,6 +38,7 @@ import TermCondition from "./pages/TermCondition";
 import Declaimer from "./pages/Declaimer";
 import Textbook from "./components/Textbook";
 import TextbookContent from "./components/TextbookContent";
+import ConditionNameScreen from "./components/ConditionNamesScreen";
 
 function App() {
   const navigate = useNavigate();
@@ -73,8 +74,10 @@ function App() {
           }
         />
 
-        <Route path='/textbook' element={<Textbook />} />
-        <Route path='/textbook-content' element={<TextbookContent />} />
+        {/* <Route path='/textbook' element={<Textbook />} />
+        <Route path='/condition-name/:id' element={<ConditionNameScreen />} />
+
+        <Route path='/textbook-content/:moduleId/:id' element={<TextbookContent />} /> */}
 
         <Route
           path="/sba-presentation"
