@@ -100,14 +100,14 @@ const Textbook = () => {
                     <Link to={`/condition-name/${category?.categoryId}`}>
                       <li
                         key={index}
-                        className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000]"
+                        className="border-1 cursor-pointer border-b bg-white hover:bg-gray-100 p-5 py-3 text-[14px] font-semibold text-[#000000]"
                       >
                         {category?.categoryName}
                       </li>
                     </Link>
                   ))
                 ) : (
-                  <li className="py-3 text-gray-500">No results found</li>
+                  <li className="py-3 text-gray-500 text-center">No results found</li>
                 )}
               </ul>
             </div>

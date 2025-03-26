@@ -128,7 +128,7 @@ const ConditionNameScreen = () => {
                     >
                       <li
                         key={index}
-                        className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000]"
+                        className="border-1 cursor-pointer border-b bg-white hover:bg-gray-100  p-5 py-3 text-[14px] font-semibold text-[#000000]"
                       >
                         {category.conditionName}
                       </li>
