@@ -17,7 +17,7 @@ const ConditionNameScreen = () => {
   const [condition, setConditions] = useState([]);
   const [data, setData] = useState([]);
   const { loading } = useSelector((state) => state?.textbook || []);
-
+  const [moduleName, setModuleName] = useState("");
   const { id } = useParams();
   const navigate = useNavigate(); // Hook to navigate programmatically
   const [isOpen, setIsOpen] = useState(false);
@@ -25,8 +25,6 @@ const ConditionNameScreen = () => {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
-
-  let moduleName=''
 
   const [query, setQuery] = useState("");
   const fuse = new Fuse(data, {
@@ -41,9 +39,15 @@ const ConditionNameScreen = () => {
   useEffect(() => {
     if (id) {
       const conditionNames = categoryName?.find((data) => data.moduleId == id);
-moduleName = categoryName?.find((data) => data.moduleId == id);
       setConditions(conditionNames);
     }
+    if (id) {
+      let name = categoryName[0]?.totalModule?.find(
+        (data) => data.categoryId == id,
+      );
+      setModuleName(name);
+    }
+
     if (condition) {
       setData(condition?.textbook?.conditionNames?.map((cond) => cond));
     }
@@ -52,7 +56,7 @@ moduleName = categoryName?.find((data) => data.moduleId == id);
     dispatch(fetchModuleCategories());
   }, []);
 
-  console.log("categoryName:", categoryName);
+  console.log("categoryName:", categoryName[0]);
 
   return (
     <div className="min-h-screen w-full md:flex">
@@ -118,8 +122,11 @@ moduleName = categoryName?.find((data) => data.moduleId == id);
               <Loader />
             </div>
           ) : (
-            <div className="mt-3 md:mr-6 lg:mr-0 lg:mt-6">
-              <ul className="divide-y divide-gray-300">
+            <div className="mt-3 text-[#27272A] md:mr-6 lg:mr-0 lg:mt-6">
+              <p className="p-2 text-[24px] font-bold">
+                {moduleName?.categoryName}
+              </p>
+              <ul className="divide-y divide-gray-300 ">
                 {results?.length > 0 ? (
                   results.map((category, index) => (
                     <Link
@@ -127,9 +134,12 @@ moduleName = categoryName?.find((data) => data.moduleId == id);
                     >
                       <li
                         key={index}
-                        className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000] hover:bg-gray-100"
+                        className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold"
                       >
-                        {category.conditionName}
+                        <span className="hover:text-gray-400">
+                          {" "}
+                          {category.conditionName}
+                        </span>
                       </li>
                     </Link>
                   ))
