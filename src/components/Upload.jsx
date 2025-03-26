@@ -36,7 +36,9 @@ const FileUpload = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            console.log("response", response.data.generatedQuestions);
             
+           
             setData(response.data.generatedQuestions); // Set the generated questions
             toast.success("Question generated successfully!");
         } catch (error) {
