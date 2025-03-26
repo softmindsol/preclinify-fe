@@ -19,6 +19,20 @@ h3 {
 
 .markdown-text-container li {
   list-style: disc;
+  margin-left: 20px;
+}
+.markdown-text-container h1 {
+ 
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #3F3F46;
+
+}
+@media (min-width: 1024px) {
+  .markdown-text-container h1 {
+    font-size: 30px;
+  }
 }
 
 .markdown-text-container table {

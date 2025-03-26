@@ -5,32 +5,44 @@ export const fetchModuleCategories = createAsyncThunk(
     'modules/fetchModuleCategories',
     async (_, { rejectWithValue }) => {
         try {
-            // Pehle sab unique moduleIds nikal lein
-            const { data: moduleIdsData, error: moduleIdsError } = await supabase
-                .from('textbookPages')
-                .select('*');
+            // conditionNames table se moduleId, conditionName, aur textbookContent fetch karein
+            const { data: conditionData, error: conditionError } = await supabase
+                .from('conditionNames')
+                .select('id, moduleId, conditionName, textbookContent');
 
-            if (moduleIdsError) throw moduleIdsError;
+            if (conditionError) throw conditionError;
 
-            const uniqueModuleIds = [...new Set(moduleIdsData?.map(item => item.moduleId))];
+            // Unique moduleIds nikalna
+            const uniqueModuleIds = [...new Set(conditionData.map(item => item.moduleId))];
 
-            // Ab modulesNew se categoryId fetch karna hai
-            const { data: modulesData, error: modulesError } = await supabase
+            // modulesNew table se categoryId aur categoryName fetch karein
+            const { data: moduleCategories, error: moduleError } = await supabase
                 .from('modulesNew')
                 .select('categoryName, categoryId')
                 .in('categoryId', uniqueModuleIds);
 
-            if (modulesError) throw modulesError;
+            if (moduleError) throw moduleError;
 
-            const textbookData = {
-                categoryName: modulesData,
-                textbook: moduleIdsData
-            }
+            // Module data ko structure me arrange karna
+            const formattedData = uniqueModuleIds.map(moduleId => {
+                const conditions = conditionData
+                    .filter(cond => cond.moduleId === moduleId)
+                    .map(cond => ({
+                        conditionNamesId: cond.id,
+                        conditionName: cond.conditionName,
+                        textContent: cond.textbookContent || []
+                    }));
 
-            // Ab data ko map karke response banana
+                return {
+                   totalModule: moduleCategories,
+                    moduleId,
+                    textbook: {
+                        conditionNames: conditions
+                    }
+                };
+            });
 
-
-            return textbookData;
+            return formattedData;
 
         } catch (err) {
             return rejectWithValue(err.message);
@@ -38,11 +50,12 @@ export const fetchModuleCategories = createAsyncThunk(
     }
 );
 
-
 // ✅ Async thunk: Fetch notes by moduleId
 export const getNotesByModuleId = createAsyncThunk(
     "textbookNotes/getNotesByModuleId",
     async ({ userId, moduleId }, thunkAPI) => {
+        console.log("userId:", userId);
+
         try {
             if (!userId) {
                 throw new Error("userId is required");

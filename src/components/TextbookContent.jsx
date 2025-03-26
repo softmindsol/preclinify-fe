@@ -31,16 +31,23 @@ const TextbookContent = () => {
   const { textbook, categoryName } = useSelector(
     (state) => state?.textbook?.textbookModules || [],
   );
+
+  const [condition, setConditions] = useState([]);
+  const [data, setData] = useState([]);
+  const { moduleId, id } = useParams();
+
+  const articles = useSelector(
+    (state) => state?.textbook?.textbookModules || [],
+  );
+  const [loading, setLoading] = useState(true);
+
   const loader = useSelector((state) => state?.textbook?.loading);
   const note = useSelector((state) => state?.textbook?.notes);
-  //  const [showContents, setShowContents] = useState(true);
   const [noteError, setNoteError] = useState(false);
   const userId = localStorage.getItem("userId");
-  const [loading, setLoading] = useState(true);
   const [fuse, setFuse] = useState(null);
   const [article, setArticle] = useState([]);
   const [activeSection, setActiveSection] = useState(null);
-  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -57,32 +64,31 @@ const TextbookContent = () => {
     setShowNotes(!showNotes);
   };
   const handleSvgClick = () => {
-    // Focus the textarea when the SVG is clicked
     textareaRef.current.focus();
   };
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
 
+
+
   useEffect(() => {
-    if (textbook && textbook.length > 0) {
+    if (articles && articles.length > 0) {
       setFuse(
-        new Fuse(article, {
-          keys: ["articleTitle", "articleSubSections", "fullArticleContent"],
+        new Fuse(articles, {
+          keys: ["articles"],
           threshold: 0.3,
         }),
       );
     }
-  }, [article]);
+  }, [articles]);
 
-  const result = query && fuse ? fuse.search(query).map((res) => res.item) : [];
-  console.log(article);
 
   const handleSearch = () => {
-    setShowModal(true); // Show modal when the input is clicked
+    setShowModal(true);
     setTimeout(() => {
-      secondSearchRef.current?.focus(); // Move focus to another input
-    }, 100); // Small delay to ensure modal opens first
+      secondSearchRef.current?.focus();
+    }, 100);
   };
 
   const handleSave = () => {
@@ -93,103 +99,142 @@ const TextbookContent = () => {
         .unwrap()
         .then(() => {
           setNoteError(false);
-
-          setNotes(""); // Clear the input temporarily
+          setNotes("");
           return dispatch(
             getNotesByModuleId({ userId, moduleId: id }),
-          ).unwrap(); // Fetch updated notes
+          ).unwrap();
         })
         .then((data) => {
-          setNotes(data); // ✅ Set the latest note
+          setNotes(data);
         })
         .catch((err) => console.error(err));
     }
   };
 
+ 
   useEffect(() => {
-    if (!id || !textbook) return;
+    if (id) {
+      const conditionNames = articles?.find(
+        (data) => data.moduleId == moduleId,
+      );
+      setConditions(conditionNames);
+    }
+    if (condition) {
+      setData(
+        condition?.textbook?.conditionNames?.find(
+          (cond) => cond.conditionNamesId == id,
+        ),
+      );
+    }
+  }, [condition, id, articles]);
 
-    const article = textbook?.filter((item) => item.moduleId === Number(id));
-    const module = categoryName.find((item) => item.categoryId === Number(id));
-    setArticle({ article, ...module });
-    dispatch(getNotesByModuleId({ userId, moduleId: id }))
-      .unwrap()
-      .then((data) => {
-        setNotes(data);
-      });
+  const extractHeadings = (markdown) => {
+    if (typeof markdown !== "string" || !markdown) {
+      console.error("markdownContent is not a valid string:", markdown);
+      return {
+        h1: "Default Heading",
+        h2: [],
+      };
+    }
 
-    setLoading(false);
-  }, [id, textbook]);
+    const lines = markdown.split("\n");
+    let h1Heading = "Default Heading";
+    const h2Headings = [];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.5 },
-    );
+    for (const line of lines) {
+      if (line.startsWith("# ") && !line.startsWith("##")) {
+        h1Heading = line.replace("# ", "").trim();
+      } else if (line.startsWith("## ")) {
+        h2Headings.push(line.replace("## ", "").trim());
+      }
+    }
 
-    article?.article?.fullArticleContent?.forEach((_, index) => {
-      const section = document.getElementById(`section-${index}`);
-      if (section) {
-        observer.observe(section);
+    return {
+      h1: h1Heading,
+      h2: h2Headings,
+    };
+  };
+
+  const { h1, h2 } = extractHeadings(data?.textContent);
+
+  // Function to split markdown content by h2 headings and assign IDs
+  const renderSections = (markdown) => {
+    if (typeof markdown !== "string" || !markdown)
+      return <div>No content available</div>;
+
+    const lines = markdown.split("\n");
+    const sections = [];
+    let currentSection = [];
+    let sectionIndex = 0;
+
+    lines.forEach((line) => {
+      if (line.startsWith("## ")) {
+        if (currentSection.length > 0) {
+          sections.push({
+            id: `section-${sectionIndex}`,
+            content: currentSection.join("\n"),
+          });
+          sectionIndex++;
+        }
+        currentSection = [line];
+      } else {
+        currentSection.push(line);
       }
     });
 
-    return () => {
-      article?.article?.fullArticleContent?.forEach((_, index) => {
-        const section = document.getElementById(`section-${index}`);
-        if (section) {
-          observer.unobserve(section);
-        }
+    if (currentSection.length > 0) {
+      sections.push({
+        id: `section-${sectionIndex}`,
+        content: currentSection.join("\n"),
       });
-    };
-  }, [article, note, notes]);
-
-  // useEffect(() => {
-  //   if (article?.article?.fullArticleContent?.length > 0) {
-  //     setTimeout(() => {
-  //       const sectionZero = document.getElementById("section-0");
-  //       if (sectionZero) {
-  //         sectionZero.scrollIntoView({ behavior: "smooth" });
-  //       }
-  //     }, 100); // Thoda delay taake data render ho sake
-  //   }
-  // }, [article]);
-
-  // Scroll to top when component mounts or id changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setTimeout(() => {
-      const sectionZero = document.getElementById("section-0");
-      if (sectionZero) {
-        sectionZero.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100); // Thoda delay taake data render ho sake
-  }, [id]);
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowModal(false);
-      }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-  console.log(showNotes);
+
+    return sections.map((section) => (
+      <div key={section.id} id={section.id} className="space-y-3">
+        <div className="markdown-text-container">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+          >
+            {section.content}
+          </ReactMarkdown>
+        </div>
+      </div>
+    ));
+  };
+
+  useEffect(() => {
+    dispatch(getNotesByModuleId({ userId, moduleId: id })).unwrap();
+       dispatch(getNotesByModuleId({ userId, moduleId: id }))
+         .unwrap()
+         .then((data) => {
+           setNotes(data);
+         });
+
+       setLoading(false);
+
+  }, [id]);
+
+    useEffect(() => {
+      function handleClickOutside(event) {
+        if (searchRef.current && !searchRef.current.contains(event.target)) {
+          setShowModal(false);
+        }
+      }
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+    
+      useEffect(() => {
+        dispatch(fetchModuleCategories());
+      }, []);
   return (
     <div className="h-screen w-full lg:flex">
-      {/* Sidebar Section */}
       <div className="fixed hidden h-full lg:block">
         <Sidebar />
       </div>
-      {/* Header */}
       <div className="flex w-full items-center justify-between bg-white p-5 lg:hidden">
         <div className="">
           <img src="/assets/small-logo.png" alt="" />
@@ -199,7 +244,6 @@ const TextbookContent = () => {
         </div>
       </div>
 
-      {/* Main Content Section */}
       <div className="w-full">
         {loading ? (
           <div className="ml-[100px] w-[100%]">
@@ -208,7 +252,6 @@ const TextbookContent = () => {
         ) : (
           <div>
             <div className="flex-1 py-2 md:p-5 lg:ml-[250px]">
-              {/* Back Button and Search */}
               <div className="mb-5 flex items-center justify-between gap-5 px-3 md:ml-5 md:p-0">
                 <button
                   onClick={() => navigate(-1)}
@@ -243,53 +286,43 @@ const TextbookContent = () => {
                 </div>
               </div>
 
-              {/* Modal */}
               {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                   <SearchResults
                     result={fuse}
                     searchRef={searchRef}
                     secondSearchRef={secondSearchRef}
+                    setShowModal={setShowModal}
                   />
                 </div>
               )}
 
-              {/* Module Details */}
               <div className="flex justify-center gap-5">
-                <div className="w-[550px] space-y-7 bg-white p-6 shadow-md md:mx-3 md:rounded-lg xl:w-[640px]">
-                  {/* Breadcrumb and Title */}
+                <div className="w-[550px] space-y-7 bg-white p-6 shadow-md md:mx-3 md:rounded-lg xl:w-[750px]">
                   <div>
-                    <p className="text-[12px] font-semibold text-[#A1A1AA] lg:text-sm">
-                      {`All Modules ${""} > ${""}${article?.categoryName} ${""} >${""} ${article?.article[0]?.articleTitle}`}
+                    <p className="flex items-center text-[12px] font-semibold text-[#A1A1AA] lg:text-sm">
+                      {`All Modules > `}
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                      >
+                        {data?.conditionName}
+                      </ReactMarkdown>
+                      {` > `}
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                      >
+                        {h1}
+                      </ReactMarkdown>
                     </p>
-                    <h1 className="mt-2 text-[20px] font-bold text-[#3F3F46] lg:text-3xl">
-                      {article?.article[0]?.articleTitle}
-                    </h1>
                   </div>
 
-                  {/* Sections */}
-                  {article?.article[0]?.fullArticleContent?.map(
-                    (section, index) => (
-                      <div
-                        key={index}
-                        id={`section-${index}`}
-                        className="space-y-3"
-                      >
-                        <div className="markdown-text-container">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
-                          >
-                            {section}
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    ),
-                  )}
+                  {/* Render sections dynamically */}
+                  {renderSections(data?.textContent)}
                 </div>
 
                 <div className="hidden w-[400px] space-y-8 bg-transparent text-white md:block lg:w-[320px]">
-                  {/* Notes Section */}
                   <div>
                     <div className="flex cursor-pointer items-center justify-between">
                       <h2
@@ -299,13 +332,10 @@ const TextbookContent = () => {
                         {showNotes ? (
                           <div
                             className="border-t-1 mr-2 border border-black"
-                            style={{ width: "10px", color: "black" }}
+                            style={{ width: "10px" }}
                           />
                         ) : (
-                          <div
-                            className="mr-2"
-                            style={{ width: "10px", color: "black" }}
-                          >
+                          <div className="mr-2" style={{ width: "10px" }}>
                             +{" "}
                           </div>
                         )}
@@ -345,7 +375,6 @@ const TextbookContent = () => {
                     </div>
                   </div>
 
-                  {/* Contents Section */}
                   <div>
                     <div className="flex cursor-pointer items-center justify-between">
                       <h2
@@ -355,22 +384,18 @@ const TextbookContent = () => {
                         {showContents ? (
                           <div
                             className="border-t-1 mr-2 border border-black"
-                            style={{ width: "10px", color: "black" }}
+                            style={{ width: "10px" }}
                           />
                         ) : (
-                          <div
-                            className="mr-2"
-                            style={{ width: "10px", color: "black" }}
-                            // onClick={handleContentShow}
-                          >
+                          <div className="mr-2" style={{ width: "10px" }}>
                             +{" "}
                           </div>
-                        )}{" "}
+                        )}
                         Contents
-                      </h2>{" "}
+                      </h2>
                     </div>
                     <hr className="mt-2 w-full" />
-                    {article && (
+                    {h2 && (
                       <ul
                         className={`mt-4 space-y-2 text-sm transition-all duration-300 ${
                           showContents
@@ -378,28 +403,33 @@ const TextbookContent = () => {
                             : "max-h-0 overflow-hidden opacity-0"
                         }`}
                       >
-                        {article?.article[0]?.articleSubSections?.map(
-                          (items, index) => (
-                            <li
-                              key={index}
-                              className={`block w-fit ${
-                                activeSection === `section-${index}`
-                                  ? "font-bold text-[#000000]"
-                                  : "text-[#71717A] hover:text-[#3cc8a1]"
-                              }`}
-                              onClick={() => {
-                                document
-                                  .getElementById(`section-${index}`)
-                                  .scrollIntoView({ behavior: "smooth" });
-                              }}
-                              style={{
-                                cursor: "pointer",
-                              }}
+                        {h2.map((item, index) => (
+                          <li
+                            key={index}
+                            className={`block w-fit ${
+                              activeSection === `section-${index}`
+                                ? "font-bold text-[#000000]"
+                                : "text-[#71717A] hover:text-[#3cc8a1]"
+                            }`}
+                            onClick={() => {
+                              const section = document.getElementById(
+                                `section-${index}`,
+                              );
+                              if (section) {
+                                section.scrollIntoView({ behavior: "smooth" });
+                                setActiveSection(`section-${index}`); // Optional: Highlight active section
+                              }
+                            }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
                             >
-                              {items}
-                            </li>
-                          ),
-                        )}
+                              {item}
+                            </ReactMarkdown>
+                          </li>
+                        ))}
                       </ul>
                     )}
                   </div>
@@ -407,15 +437,9 @@ const TextbookContent = () => {
               </div>
             </div>
 
-            {/* Icons */}
             <div className={`fixed bottom-5 right-5`}>
               <div
                 className="hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
-                // onClick={() => {
-                //   document
-                //     .getElementById(`section-0`)
-                //     .scrollIntoView({ behavior: "smooth" });
-                // }}
                 onClick={handleSvgClick}
               >
                 <svg
@@ -437,9 +461,8 @@ const TextbookContent = () => {
               <div
                 className="my-3 hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
                 onClick={() => {
-                  document
-                    .getElementById(`section-1`)
-                    .scrollIntoView({ behavior: "smooth" });
+                  const section = document.getElementById("section-0");
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
                 }}
               >
                 <svg
