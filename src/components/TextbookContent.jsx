@@ -70,8 +70,6 @@ const TextbookContent = () => {
     setIsOpen((prevState) => !prevState);
   };
 
-
-
   useEffect(() => {
     if (articles && articles.length > 0) {
       setFuse(
@@ -82,7 +80,6 @@ const TextbookContent = () => {
       );
     }
   }, [articles]);
-
 
   const handleSearch = () => {
     setShowModal(true);
@@ -111,7 +108,6 @@ const TextbookContent = () => {
     }
   };
 
- 
   useEffect(() => {
     if (id) {
       const conditionNames = articles?.find(
@@ -205,31 +201,30 @@ const TextbookContent = () => {
 
   useEffect(() => {
     dispatch(getNotesByModuleId({ userId, moduleId: id })).unwrap();
-       dispatch(getNotesByModuleId({ userId, moduleId: id }))
-         .unwrap()
-         .then((data) => {
-           setNotes(data);
-         });
+    dispatch(getNotesByModuleId({ userId, moduleId: id }))
+      .unwrap()
+      .then((data) => {
+        setNotes(data);
+      });
 
-       setLoading(false);
-
+    setLoading(false);
   }, [id]);
 
-    useEffect(() => {
-      function handleClickOutside(event) {
-        if (searchRef.current && !searchRef.current.contains(event.target)) {
-          setShowModal(false);
-        }
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowModal(false);
       }
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-    
-      useEffect(() => {
-        dispatch(fetchModuleCategories());
-      }, []);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchModuleCategories());
+  }, []);
   return (
     <div className="h-screen w-full lg:flex">
       <div className="fixed hidden h-full lg:block">
@@ -259,7 +254,7 @@ const TextbookContent = () => {
                 >
                   <FaAngleLeft color="#3CC8A1" />
                   <span className="font-semibold text-[#3CC8A1]">
-                    Back To Modules
+                    Back To Condition
                   </span>
                 </button>
                 <div className="relative">
