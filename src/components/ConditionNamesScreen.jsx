@@ -13,9 +13,9 @@ const ConditionNameScreen = () => {
   const categoryName = useSelector(
     (state) => state?.textbook?.textbookModules || [],
   );
-   
-  const [condition,setConditions]=useState([]);
-  const [data,setData]=useState([])
+
+  const [condition, setConditions] = useState([]);
+  const [data, setData] = useState([]);
   const { loading } = useSelector((state) => state?.textbook || []);
 
   const { id } = useParams();
@@ -26,9 +26,10 @@ const ConditionNameScreen = () => {
     setIsOpen((prevState) => !prevState);
   };
 
+  let moduleName=''
 
   const [query, setQuery] = useState("");
-  const fuse = new Fuse( data , {
+  const fuse = new Fuse(data, {
     keys: ["conditionName"],
     threshold: 0.4,
   });
@@ -38,22 +39,20 @@ const ConditionNameScreen = () => {
     ? fuse.search(query).map((result) => result.item)
     : data;
   useEffect(() => {
-   if(id){
-   const conditionNames = categoryName?.find((data) => data.moduleId == id);
-   
-   setConditions(conditionNames);
-   }
-   if(condition){
-     setData(condition?.textbook?.conditionNames?.map(
-       (cond) => cond,
-     ))
-    
+    if (id) {
+      const conditionNames = categoryName?.find((data) => data.moduleId == id);
+moduleName = categoryName?.find((data) => data.moduleId == id);
+      setConditions(conditionNames);
     }
-    
-}, [condition]);
+    if (condition) {
+      setData(condition?.textbook?.conditionNames?.map((cond) => cond));
+    }
+  }, [condition]);
   useEffect(() => {
     dispatch(fetchModuleCategories());
   }, []);
+
+  console.log("categoryName:", categoryName);
 
   return (
     <div className="min-h-screen w-full md:flex">
@@ -128,7 +127,7 @@ const ConditionNameScreen = () => {
                     >
                       <li
                         key={index}
-                        className="border-1 cursor-pointer border-b bg-white hover:bg-gray-100  p-5 py-3 text-[14px] font-semibold text-[#000000]"
+                        className="border-1 cursor-pointer border-b bg-white p-5 py-3 text-[14px] font-semibold text-[#000000] hover:bg-gray-100"
                       >
                         {category.conditionName}
                       </li>

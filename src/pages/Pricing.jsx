@@ -90,7 +90,7 @@ const Pricing = () => {
        planId: process.env.REACT_APP_PRICE_OSCE_PLAN_3,
        title: "The OSCE Plan",
        price: 25,
-       oldPrice: 11.67, // Old price for Annual
+       oldPrice: 10, // Old price for Annual
        monthlyPrice: (25 / 3).toFixed(2),
        "plan-slug": PlanSlug("The OSCE plan", 3),
        features: [
@@ -104,7 +104,7 @@ const Pricing = () => {
        title: "The Full Package",
        price: 30,
        // oldPrice: 8.75, // 2nd last Old price for Annual
-       oldPrice: 15.0,
+       oldPrice: 12,
        monthlyPrice: (30 / 3).toFixed(2),
        "plan-slug": PlanSlug("The Full Package", 3),
        hasDiscount: true,
@@ -135,7 +135,7 @@ const Pricing = () => {
        title: "The OSCE plan",
        price: 42,
        // oldPrice: 8.75, // 2nd last Old price for Annual
-       oldPrice: 4.2, // Old price for Annual
+       oldPrice:8.33, // Old price for Annual
        monthlyPrice: (42 / 12).toFixed(1),
        "plan-slug": PlanSlug("The OSCE plan", 12),
        features: [
@@ -148,7 +148,7 @@ const Pricing = () => {
        title: "The Full Package",
        price: 50,
        // oldPrice: 11.25, // Old price for Annual
-       oldPrice: 5.4, // Old price for Annual
+       oldPrice: 10, // Old price for Annual
        monthlyPrice: (50 / 12).toFixed(1),
        "plan-slug": PlanSlug("The Full Package", 12),
        hasDiscount: true,

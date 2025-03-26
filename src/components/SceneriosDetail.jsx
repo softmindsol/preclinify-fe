@@ -174,27 +174,6 @@ const SceneriosDetail = () => {
           </div>
         </div>
 
-        {/* <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
-          <p>Set timer</p>
-          <div className="mt-2 flex h-[32px] w-[208px] items-center justify-between rounded-[6px] border border-[#D4D4D8] p-2 2xl:w-[99%]">
-            <p className="text-[12px] font-bold text-[#A1A1AA]">Minutes</p>
-            <p className="text-[12px] font-bold text-[#A1A1AA]">8</p>
-          </div>
-        </div> */}
-        {/* 
-        <div className="mt-10 flex flex-col items-center justify-center">
-          <div
-            className={`h-[96px] w-[90%] rounded-[8px] ${
-              timerActive ? "bg-[#3CC8A1]" : "bg-[#FF9741]"
-            } text-center text-[#ffff]`}
-          >
-            <p className="mt-3 text-[12px]">Timer</p>
-            <p className="text-[36px] font-black">
-              {minutes < 10 ? `0${minutes}` : minutes}:
-              {seconds < 10 ? `0${seconds}` : seconds}
-            </p>
-          </div>
-        </div> */}
         <div className="mt-10 flex flex-col items-center justify-center">
           <div
             className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${
@@ -220,8 +199,43 @@ const SceneriosDetail = () => {
               type="number"
               className="w-10 bg-transparent text-[12px] font-bold text-[#A1A1AA] outline-none"
               defaultValue="8"
+              min="0"
+              max="60"
               onChange={(e) => {
-                setMinutes(e.target.value);
+                let value = e.target.value;
+
+                // Prevent entering more than 60
+                if (value !== "" && Number(value) > 60) {
+                  value = "60";
+                }
+
+                // Prevent entering negative values
+                if (value !== "" && Number(value) < 0) {
+                  value = "0";
+                }
+
+                setMinutes(value);
+              }}
+              onInput={(e) => {
+                // Remove any non-numeric characters
+                e.target.value = e.target.value.replace(/[^0-9]/g, "");
+              }}
+              onKeyDown={(e) => {
+                if (
+                  (e.key === "ArrowUp" && Number(e.target.value) >= 60) ||
+                  (e.key === "ArrowDown" && Number(e.target.value) <= 0)
+                ) {
+                  e.preventDefault();
+                }
+
+                if (
+                  e.key === "e" ||
+                  e.key === "E" ||
+                  e.key === "+" ||
+                  e.key === "-"
+                ) {
+                  e.preventDefault(); // Prevent entering non-numeric characters
+                }
               }}
             />
           </div>
