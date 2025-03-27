@@ -26,7 +26,7 @@ const SceneriosDetail = () => {
   const [checkboxState, setCheckboxState] = useState([]);
   const [score, setScore] = useState(0);
   const [showFeedBackModal, setShowFeedBackModal] = useState(false);
-
+  const [showError, setShowError] = useState(false); // Add this error state
   const togglePanel = (panel) => {
     setOpenPanel(openPanel === panel ? null : panel);
   };
@@ -173,7 +173,6 @@ const SceneriosDetail = () => {
             <Logo />
           </div>
         </div>
-
         <div className="mt-10 flex flex-col items-center justify-center">
           <div
             className={`h-[96px] w-[90%] rounded-[8px] text-center text-[#ffff] ${
@@ -191,56 +190,68 @@ const SceneriosDetail = () => {
             </p>
           </div>
         </div>
+     
         <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
           <p>Set timer</p>
           <div className="mt-2 flex h-[32px] w-[208px] items-center justify-between rounded-[6px] border border-[#D4D4D8] p-2 2xl:w-[99%]">
             <p className="text-[12px] font-bold text-[#A1A1AA]">Minutes</p>
             <input
               type="number"
-              className="w-10 bg-transparent text-[12px] font-bold text-[#A1A1AA] outline-none"
-              defaultValue="8"
+              className={`w-10 bg-transparent text-[12px] font-bold outline-none ${
+                showError ? "text-red-400" : "text-[#A1A1AA]"
+              }`}
+              value={timerInput} // Use value instead of defaultValue for controlled input
               min="0"
-              max="60"
               onChange={(e) => {
-                let value = e.target.value;
+                const value = e.target.value;
 
-                // Prevent entering more than 60
-                if (value !== "" && Number(value) > 60) {
-                  value = "60";
+                // Convert to number for comparison
+                const numericValue = Number(value);
+
+                // Check if value exceeds 60
+                if (numericValue > 60) {
+                  setShowError(true);
+                  setMinutes(60); // Cap the actual timer at 60
+                  setTimerInput(60); // Cap the displayed value at 60
+                } else if (numericValue < 0) {
+                  setShowError(false);
+                  setMinutes(0);
+                  setTimerInput(0);
+                } else {
+                  setShowError(false);
+                  setMinutes(numericValue);
+                  setTimerInput(value); // Keep the input value as is (string)
                 }
-
-                // Prevent entering negative values
-                if (value !== "" && Number(value) < 0) {
-                  value = "0";
-                }
-
-                setMinutes(value);
               }}
               onInput={(e) => {
-                // Remove any non-numeric characters
+                // Remove non-numeric characters
                 e.target.value = e.target.value.replace(/[^0-9]/g, "");
               }}
               onKeyDown={(e) => {
+                const currentValue = Number(e.target.value);
                 if (
-                  (e.key === "ArrowUp" && Number(e.target.value) >= 60) ||
-                  (e.key === "ArrowDown" && Number(e.target.value) <= 0)
+                  (e.key === "ArrowUp" && currentValue >= 60) ||
+                  (e.key === "ArrowDown" && currentValue <= 0)
                 ) {
                   e.preventDefault();
                 }
-
                 if (
                   e.key === "e" ||
                   e.key === "E" ||
                   e.key === "+" ||
                   e.key === "-"
                 ) {
-                  e.preventDefault(); // Prevent entering non-numeric characters
+                  e.preventDefault();
                 }
               }}
             />
           </div>
+          {showError && (
+            <p className="mt-1 text-center text-red-400">
+              You cannot set the time above 60 minutes
+            </p>
+          )}
         </div>
-
         <div className="p-5 text-center">
           <button
             onClick={() => setTimerActive(!timerActive)}
@@ -255,7 +266,6 @@ const SceneriosDetail = () => {
             {timerActive ? "Pause Timer" : "Start Timer"}
           </button>
         </div>
-
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           {/* <div
             onClick={() => {
