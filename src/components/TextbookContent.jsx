@@ -278,8 +278,8 @@ const TextbookContent = () => {
           </div>
         ) : (
           <div>
-            <div className="flex-1 py-2 md:p-5 lg:ml-[250px]">
-              <div className="mb-5 flex items-center justify-between gap-5 px-3 md:ml-5 md:p-0">
+            <div className="flex-1 py-2 md:p-5 lg:ml-[255px]">
+              <div className="mb-5 flex items-center justify-between gap-5 px-3  md:p-0">
                 <button
                   onClick={() => navigate(-1)}
                   className="flex items-center gap-x-2 rounded-lg bg-white px-4 py-2 text-[12px] hover:shadow-lg lg:text-[16px]"

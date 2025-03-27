@@ -190,7 +190,7 @@ const SceneriosDetail = () => {
             </p>
           </div>
         </div>
-     
+
         <div className="mt-5 px-6 text-[12px] font-semibold text-[#3F3F46]">
           <p>Set timer</p>
           <div className="mt-2 flex h-[32px] w-[208px] items-center justify-between rounded-[6px] border border-[#D4D4D8] p-2 2xl:w-[99%]">
@@ -248,7 +248,7 @@ const SceneriosDetail = () => {
           </div>
           {showError && (
             <p className="mt-1 text-center text-red-400">
-              You cannot set the time above 60 minutes
+              You cannot set the time to more than 60 minutes.
             </p>
           )}
         </div>

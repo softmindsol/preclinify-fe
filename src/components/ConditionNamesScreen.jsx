@@ -74,12 +74,12 @@ const ConditionNameScreen = () => {
         </div>
       </div>
 
-      <div className="w-full md:ml-[200px] lg:ml-[250px]">
+      <div className="w-full md:ml-[200px] lg:ml-[255px]">
         {/* Main Content Section */}
-        <div className="flex-2 lg:p-[16px]">
+        <div className="flex-2 lg:p-[20px]">
           {/* Back Button */}
-          <div className="mb-2 gap-x-5 p-2 lg:mb-5 lg:p-0">
-            <div className="flex justify-between">
+          <div className="mb-2 gap-x-5 p-2  lg:mb-5 lg:p-0">
+            <div className="flex justify-between ">
               <button
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-x-2 rounded-lg bg-white px-4 py-2 text-[12px] hover:shadow-lg lg:text-[16px]"
