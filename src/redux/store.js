@@ -71,7 +71,7 @@ const persistConfig = {
     "SBApresentation",
     "virtualPatient",
     "subscription",
-
+    "textbook",
   ],
   blackList: ["user", "personalInfo"],
 };
