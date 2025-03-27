@@ -237,7 +237,7 @@ const scrollToSection = (sectionId) => {
 
   useEffect(() => {
     dispatch(fetchModuleCategories());
-  }, [dispatch]);
+  }, [moduleId, id]);
 
   return (
     <div className="h-screen w-full lg:flex">
