@@ -8,14 +8,14 @@ export const fetchQuesGenModules = createAsyncThunk(
     try {
       const { data, error } = await supabase
         .from("questionGens")
-        .select("module"); // Fetch only the 'module' column
+        .select("*"); // Fetch only the 'module' column
 
       // If there's an error in the response, reject it
       if (error) {
         return rejectWithValue(error.message);
       }
-      console.log("Question Generation:", data);
       
+      console.log("data:", data);
 
       return data; // Return the fetched data
     } catch (error) {
@@ -32,6 +32,8 @@ export const fetchQuesGenModuleById = createAsyncThunk(
       if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
         return rejectWithValue("Invalid moduleIds");
       }
+      console.log("moduleIds:", moduleIds);
+      
 
       let moduleLimits;
 
@@ -61,7 +63,7 @@ export const fetchQuesGenModuleById = createAsyncThunk(
         let query = supabase
           .from("questionGens")
           .select("*")
-          .eq("module", moduleId);
+          .eq("id", moduleId);
 
         // Apply limit only if it's defined
         if (limit !== null) {
@@ -83,6 +85,7 @@ export const fetchQuesGenModuleById = createAsyncThunk(
 
       // Combine all fetched data into a single array
       const combinedData = results.flat(); // Flatten the array of arrays into a single array
+      console.log("combinedData:", combinedData);
 
       return combinedData; // Return the combined data
     } catch (error) {
@@ -103,7 +106,6 @@ export const insertQuesGenData = createAsyncThunk(
         throw new Error("Invalid data format: Expected an array of questions.");
       }
 
-      console.log("quesGenDataArray", quesGenDataArray);
       
 
       // Map each question object to the correct Supabase format
