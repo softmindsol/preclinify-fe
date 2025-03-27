@@ -16,7 +16,7 @@ const Sidebar = () => {
     { id: "/dashboard", name: "Dashboard", icon: "house" },
     { id: "/questioning", name: "Practice", icon: "dumbbell" },
     { id: "/osce", name: "OSCE", icon: "bed" },
-    // { id: "/textbook", name: "Textbook", icon: "book-open" },
+    { id: "/textbook", name: "Textbook", icon: "book-open" },
   ];
 
   // **Only show pricing if plan is null or undefined**

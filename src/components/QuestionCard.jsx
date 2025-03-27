@@ -80,12 +80,13 @@ const QuestionCard = () => {
     (state) => state?.FreeTrialMcqsQuestion?.freeTrialData || [],
   );
   console.log("freeTrialData:", freeTrialData);
-  
 
   const PaidPlan = useSelector((state) => state?.filterQuestion?.results || []);
   const data = subscriptions[0]?.plan === null ? freeTrialData : PaidPlan;
+  console.log("data:", data);
+console.log("PaidPlan:", PaidPlan);
+console.log("subscriptions[0]?.plan:", subscriptions[0]?.plan);
 
-  
   const result = useSelector((state) => state.result);
   const [currentPage, setCurrentPage] = useState(0);
   const [isReviewEnabled, setIsReviewEnabled] = useState(false);
@@ -226,17 +227,17 @@ const QuestionCard = () => {
               setArticle(res);
             });
         }
-if (subscriptions[0].plan!==null){
-dispatch(
-  insertResult({
-    isCorrect,
-    questionId: data[currentIndex].id,
-    userId,
-    moduleId: data[currentIndex].moduleId,
-  }),
-);
-}
-  
+        if (subscriptions[0].plan !== null) {
+          dispatch(
+            insertResult({
+              isCorrect,
+              questionId: data[currentIndex].id,
+              userId,
+              moduleId: data[currentIndex].moduleId,
+            }),
+          );
+        }
+
         dispatch(setResult({ updatedAttempts }));
         return updatedAttempts;
       });

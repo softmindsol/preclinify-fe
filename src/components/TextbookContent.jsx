@@ -153,7 +153,7 @@ const TextbookContent = () => {
 
   const { h1, h2 } = extractHeadings(data?.textContent);
 
-  // Function to split markdown content by h2 headings and assign IDs
+  // Function to split markdown content by h2 headings and assign IDs correctly
   const renderSections = (markdown) => {
     if (typeof markdown !== "string" || !markdown)
       return <div>No content available</div>;
@@ -161,23 +161,27 @@ const TextbookContent = () => {
     const lines = markdown.split("\n");
     const sections = [];
     let currentSection = [];
-    let sectionIndex = 0;
+    let sectionIndex = -1; // Start at -1 so the first ## increments to 0
 
     lines.forEach((line) => {
       if (line.startsWith("## ")) {
+        // Push the previous section if it exists
         if (currentSection.length > 0) {
           sections.push({
             id: `section-${sectionIndex}`,
             content: currentSection.join("\n"),
           });
-          sectionIndex++;
         }
+        // Start a new section with the heading
+        sectionIndex++;
         currentSection = [line];
-      } else {
+      } else if (currentSection.length > 0) {
+        // Only add lines to a section if it has already started with an ## heading
         currentSection.push(line);
       }
     });
 
+    // Push the last section if it exists
     if (currentSection.length > 0) {
       sections.push({
         id: `section-${sectionIndex}`,
@@ -199,16 +203,33 @@ const TextbookContent = () => {
     ));
   };
 
+  // Custom scroll function with offset
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const offset = 100; // Adjust this based on your fixed header height
+      const sectionPosition =
+        section.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: sectionPosition - offset,
+        behavior: "smooth",
+      });
+      setActiveSection(sectionId);
+    }
+  };
+
   useEffect(() => {
-    dispatch(getNotesByModuleId({ userId, moduleId: id })).unwrap();
     dispatch(getNotesByModuleId({ userId, moduleId: id }))
       .unwrap()
       .then((data) => {
         setNotes(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
       });
-
-    setLoading(false);
-  }, [id]);
+  }, [id, dispatch, userId, moduleId]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -224,7 +245,8 @@ const TextbookContent = () => {
 
   useEffect(() => {
     dispatch(fetchModuleCategories());
-  }, []);
+  }, [dispatch]);
+
   return (
     <div className="h-screen w-full lg:flex">
       <div className="fixed hidden h-full lg:block">
@@ -406,15 +428,7 @@ const TextbookContent = () => {
                                 ? "font-bold text-[#000000]"
                                 : "text-[#71717A] hover:text-[#3cc8a1]"
                             }`}
-                            onClick={() => {
-                              const section = document.getElementById(
-                                `section-${index}`,
-                              );
-                              if (section) {
-                                section.scrollIntoView({ behavior: "smooth" });
-                                setActiveSection(`section-${index}`); // Optional: Highlight active section
-                              }
-                            }}
+                            onClick={() => scrollToSection(`section-${index}`)}
                             style={{ cursor: "pointer" }}
                           >
                             <ReactMarkdown
@@ -455,10 +469,7 @@ const TextbookContent = () => {
               </div>
               <div
                 className="my-3 hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
-                onClick={() => {
-                  const section = document.getElementById("section-0");
-                  if (section) section.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => scrollToSection("section-0")}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -479,11 +490,7 @@ const TextbookContent = () => {
               </div>
               <div
                 className={` ${activeSection > "section-0" ? "block" : "hidden"}`}
-                onClick={() => {
-                  document
-                    .getElementById(`section-0`)
-                    .scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => scrollToSection("section-0")}
               >
                 <div className="cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white">
                   <svg

@@ -74,10 +74,10 @@ function App() {
           }
         />
 
-        {/* <Route path='/textbook' element={<Textbook />} />
+        <Route path='/textbook' element={<Textbook />} />
         <Route path='/condition-name/:id' element={<ConditionNameScreen />} />
 
-        <Route path='/textbook-content/:moduleId/:id' element={<TextbookContent />} /> */}
+        <Route path='/textbook-content/:moduleId/:id' element={<TextbookContent />} />
 
         <Route
           path="/sba-presentation"
