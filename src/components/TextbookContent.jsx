@@ -29,7 +29,7 @@ const TextbookContent = () => {
   const [query, setQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
   const { textbook, categoryName } = useSelector(
-    (state) => state?.textbook?.textbookModules || [],
+    (state) => state?.textbook?.textbookModules || []
   );
 
   const [condition, setConditions] = useState([]);
@@ -37,7 +37,7 @@ const TextbookContent = () => {
   const { moduleId, id } = useParams();
 
   const articles = useSelector(
-    (state) => state?.textbook?.textbookModules || [],
+    (state) => state?.textbook?.textbookModules || []
   );
   const [loading, setLoading] = useState(true);
 
@@ -76,7 +76,7 @@ const TextbookContent = () => {
         new Fuse(articles, {
           keys: ["articles"],
           threshold: 0.3,
-        }),
+        })
       );
     }
   }, [articles]);
@@ -98,7 +98,7 @@ const TextbookContent = () => {
           setNoteError(false);
           setNotes("");
           return dispatch(
-            getNotesByModuleId({ userId, moduleId: id }),
+            getNotesByModuleId({ userId, moduleId: id })
           ).unwrap();
         })
         .then((data) => {
@@ -111,15 +111,15 @@ const TextbookContent = () => {
   useEffect(() => {
     if (id) {
       const conditionNames = articles?.find(
-        (data) => data.moduleId == moduleId,
+        (data) => data.moduleId == moduleId
       );
       setConditions(conditionNames);
     }
     if (condition) {
       setData(
         condition?.textbook?.conditionNames?.find(
-          (cond) => cond.conditionNamesId == id,
-        ),
+          (cond) => cond.conditionNamesId == id
+        )
       );
     }
   }, [condition, id, articles]);
@@ -154,74 +154,92 @@ const TextbookContent = () => {
   const { h1, h2 } = extractHeadings(data?.textContent);
 
   // Function to split markdown content by h2 headings and assign IDs
- const renderSections = (markdown) => {
-   if (typeof markdown !== "string" || !markdown)
-     return <div>No content available</div>;
+  const renderSections = (markdown) => {
+    if (typeof markdown !== "string" || !markdown)
+      return <div>No content available</div>;
 
-   const lines = markdown.split("\n");
-   const sections = [];
-   let currentSection = [];
-   let sectionIndex = -1;
+    const lines = markdown.split("\n");
+    const sections = [];
+    let currentSection = [];
+    let sectionIndex = -1;
 
-   lines.forEach((line) => {
-     if (line.startsWith("## ")) {
-       if (currentSection.length > 0) {
-         sections.push({
-           id: `section-${sectionIndex}`,
-           content: currentSection.join("\n"),
-         });
-       }
-       sectionIndex++;
-       currentSection = [line];
-     } else if (currentSection.length > 0) {
-       currentSection.push(line);
-     }
-   });
-
-   if (currentSection.length > 0) {
-     sections.push({
-       id: `section-${sectionIndex}`,
-       content: currentSection.join("\n"),
-     });
-   }
-
-   return sections.map((section) => (
-     <div key={section.id} id={section.id} className="space-y-3">
-       <div className="markdown-text-container">
-         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-           {section.content}
-         </ReactMarkdown>
-       </div>
-     </div>
-   ));
- };
-
-const scrollToSection = (sectionId) => {
-  const section = document.getElementById(sectionId);
-  if (section) {
-    const offset = 100;
-    const sectionPosition =
-      section.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: sectionPosition - offset,
-      behavior: "smooth",
+    lines.forEach((line) => {
+      if (line.startsWith("## ")) {
+        if (currentSection.length > 0) {
+          sections.push({
+            id: `section-${sectionIndex}`,
+            content: currentSection.join("\n"),
+          });
+          sectionIndex++;
+        }
+        currentSection = [line];
+      } else {
+        currentSection.push(line);
+      }
     });
-    setActiveSection(sectionId);
-  }
-};
+
+    if (currentSection.length > 0) {
+      sections.push({
+        id: `section-${sectionIndex}`,
+        content: currentSection.join("\n"),
+      });
+    }
+
+    return sections.map((section) => (
+      <div key={section.id} id={section.id} className="space-y-3">
+        <div className="markdown-text-container">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+          >
+            {section.content}
+          </ReactMarkdown>
+        </div>
+      </div>
+    ));
+  };
 
   useEffect(() => {
+    // Set up intersection observer to track active section
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.5, rootMargin: "-100px 0px -50% 0px" }
+    );
+
+    // Observe all sections when they exist
+    if (h2 && h2.length > 0) {
+      h2.forEach((_, index) => {
+        const section = document.getElementById(`section-${index}`);
+        if (section) observer.observe(section);
+      });
+    }
+
+    return () => {
+      if (h2 && h2.length > 0) {
+        h2.forEach((_, index) => {
+          const section = document.getElementById(`section-${index}`);
+          if (section) observer.unobserve(section);
+        });
+      }
+    };
+  }, [h2]);
+
+  useEffect(() => {
+    dispatch(getNotesByModuleId({ userId, moduleId: id })).unwrap();
     dispatch(getNotesByModuleId({ userId, moduleId: id }))
       .unwrap()
       .then((data) => {
         setNotes(data);
-        setLoading(false); // Set loading to false after data is fetched
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false); // Ensure loading is false even on error
       });
-  }, [id, dispatch, userId, moduleId]);
+
+    setLoading(false);
+  }, [id]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -237,7 +255,7 @@ const scrollToSection = (sectionId) => {
 
   useEffect(() => {
     dispatch(fetchModuleCategories());
-  }, [moduleId, id]);
+  }, []);
 
   return (
     <div className="h-screen w-full lg:flex">
@@ -260,8 +278,8 @@ const scrollToSection = (sectionId) => {
           </div>
         ) : (
           <div>
-            <div className="flex-1 py-2 md:p-5 lg:ml-[250px]">
-              <div className="mb-5 flex items-center justify-between gap-5 px-3 md:ml-5 md:p-0">
+            <div className="flex-1 py-2 md:p-5 lg:ml-[255px]">
+              <div className="mb-5 flex items-center justify-between gap-5 px-3  md:p-0">
                 <button
                   onClick={() => navigate(-1)}
                   className="flex items-center gap-x-2 rounded-lg bg-white px-4 py-2 text-[12px] hover:shadow-lg lg:text-[16px]"
@@ -310,14 +328,14 @@ const scrollToSection = (sectionId) => {
                 <div className="w-[550px] space-y-7 bg-white p-6 shadow-md md:mx-3 md:rounded-lg xl:w-[750px]">
                   <div>
                     <p className="flex items-center text-[12px] font-semibold text-[#A1A1AA] lg:text-sm">
-                      {`All Modules > `}
+                      {'All Modules >' }
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeRaw]}
                       >
                         {data?.conditionName}
                       </ReactMarkdown>
-                      {` > `}
+                      {' >' }
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeRaw]}
@@ -377,8 +395,8 @@ const scrollToSection = (sectionId) => {
                           {loader
                             ? "Saving..."
                             : notes.trim() === ""
-                              ? "Save Note"
-                              : "Save Changes"}
+                            ? "Save Note"
+                            : "Save Changes"}
                         </button>
                       </div>
                     </div>
@@ -415,13 +433,20 @@ const scrollToSection = (sectionId) => {
                         {h2.map((item, index) => (
                           <li
                             key={index}
-                            className={`block w-fit ${
+                            className={`block w-fit cursor-pointer ${
                               activeSection === `section-${index}`
-                                ? "font-bold text-[#000000]"
+                                ? "font-bold text-[#3CC8A1]"
                                 : "text-[#71717A] hover:text-[#3cc8a1]"
                             }`}
-                            onClick={() => scrollToSection(`section-${index}`)} // Use custom scroll function
-                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              const section = document.getElementById(
+                                `section-${index}`
+                              );
+                              if (section) {
+                                section.scrollIntoView({ behavior: "smooth" });
+                                setActiveSection(`section-${index}`);
+                              }
+                            }}
                           >
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
@@ -438,7 +463,7 @@ const scrollToSection = (sectionId) => {
               </div>
             </div>
 
-            <div className={`fixed bottom-5 right-5`}>
+            <div className="fixed bottom-5 right-5">
               <div
                 className="hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
                 onClick={handleSvgClick}
@@ -450,10 +475,10 @@ const scrollToSection = (sectionId) => {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-sticky-note"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-sticky-note"
                 >
                   <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z" />
                   <path d="M15 3v4a2 2 0 0 0 2 2h4" />
@@ -461,7 +486,10 @@ const scrollToSection = (sectionId) => {
               </div>
               <div
                 className="my-3 hidden cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white md:block lg:hidden"
-                onClick={() => scrollToSection("section-0")}
+                onClick={() => {
+                  const section = document.getElementById("section-0");
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -470,10 +498,10 @@ const scrollToSection = (sectionId) => {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-heading"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-heading"
                 >
                   <path d="M6 12h12" />
                   <path d="M6 20V4" />
@@ -481,8 +509,14 @@ const scrollToSection = (sectionId) => {
                 </svg>
               </div>
               <div
-                className={` ${activeSection > "section-0" ? "block" : "hidden"}`}
-                onClick={() => scrollToSection("section-0")}
+                className={`${
+                  activeSection && activeSection !== "section-0" ? "block" : "hidden"
+                }`}
+                onClick={() => {
+                  document
+                    .getElementById("section-0")
+                    .scrollIntoView({ behavior: "smooth" });
+                }}
               >
                 <div className="cursor-pointer rounded-[4px] bg-[#3CC8A1] p-2 text-white">
                   <svg
@@ -492,10 +526,10 @@ const scrollToSection = (sectionId) => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-arrow-up"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-arrow-up"
                   >
                     <path d="m5 12 7-7 7 7" />
                     <path d="M12 19V5" />

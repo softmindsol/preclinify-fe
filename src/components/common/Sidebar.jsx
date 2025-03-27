@@ -39,12 +39,12 @@ const Sidebar = () => {
       </div>
 
       {/* Menu Items */}
-      <nav className="w-full space-y-8 text-[#3F3F46]">
+      <span className="w-full space-y-8 pl-6 text-[#3F3F46]">
         {navItems.map((item, index) => (
           <div key={index}>
             <NavLink
               to={item.id}
-              className="group flex cursor-pointer items-center space-x-3 px-6 dark:text-white"
+              className="group flex w-fit cursor-pointer items-center space-x-3 dark:text-white"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -115,14 +115,14 @@ const Sidebar = () => {
             </NavLink>
           </div>
         ))}
-      </nav>
+      </span>
 
       {/* Bottom Settings */}
-      <div className="mt-auto w-full px-6">
-        <div className="group flex cursor-pointer items-center space-x-3 text-[#3F3F46] dark:text-white">
+      <div className="mt-auto w-full pl-6">
+        <span className="group flex w-fit cursor-pointer items-center space-x-3 text-[#3F3F46] dark:text-white">
           <NavLink
             to="/setting"
-            className="group flex cursor-pointer items-center space-x-3 text-[#3F3F46] dark:text-white"
+            className="group flex w-fit cursor-pointer items-center space-x-3 text-[#3F3F46] dark:text-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +143,7 @@ const Sidebar = () => {
               Settings
             </span>
           </NavLink>
-        </div>
+        </span>
       </div>
     </div>
   );

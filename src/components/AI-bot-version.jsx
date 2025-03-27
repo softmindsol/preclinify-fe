@@ -379,7 +379,7 @@ const AINewVersion = () => {
               </div>
               {showError && (
                 <p className="mt-1 text-center text-red-400">
-                  You cannot set the time above 60 minutes
+                  You cannot set the time to more than 60 minutes.
                 </p>
               )}
             </div>
