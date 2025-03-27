@@ -147,6 +147,19 @@ const Questioning = () => {
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+const filteredQuesGenModules =
+  questionGenModule?.modules
+    ?.filter((module) =>
+      module?.module?.toLowerCase().includes(searchQuery.toLowerCase()),
+    )
+    ?.reduce((unique, module) => {
+      // Only add if we haven't seen this module name yet
+      if (!unique.some((item) => item.module === module.module)) {
+        unique.push(module);
+      }
+      return unique;
+    }, []) || [];
+
   const filteredMockModules = modules.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -305,17 +318,37 @@ const Questioning = () => {
   const preClinicalHandler = () => {
     setSelectedPreClinicalOption("QuesGen");
   };
-
-  const handleSelectAll = (isChecked) => {
-    if (isChecked) {
-      // Select all module IDs
-      const allModuleIds = data?.data?.map((row) => row.categoryId) || [];
-      setSelectedModules(allModuleIds);
-    } else {
-      // Deselect all module IDs
-      setSelectedModules([]);
+const handleSelectAll = (isChecked) => {
+  if (isChecked) {
+    let allModuleIds = [];
+    if (selectedTab === "Pre-clinical") {
+      // QuesGen modules
+      allModuleIds =
+        questionGenModule?.modules?.map((row) => row.id) || [];
+    } else if (selectedTab === "Clinical") {
+      if (selectedOption === "SBA") {
+        // SBA modules
+        allModuleIds = data?.data?.map((row) => row.categoryId) || [];
+      } else if (selectedOption === "SAQ") {
+        // SAQ modules
+        allModuleIds = saqModule?.map((row) => row.categoryId) || [];
+      } else if (selectedOption === "Mock") {
+        // Mock modules
+        allModuleIds = mockTestIds || [];
+      } else if (selectedOption === "Trial") {
+        // Trial mode doesn’t need Select All (checkbox-based), skip or handle differently
+        return;
+      }
     }
-  };
+    setSelectedModules(allModuleIds);
+  } else {
+    // Deselect all module IDs
+    setSelectedModules([]);
+  }
+};
+  // console.log("SelectedModules:", selectedModules);
+  // console.log(" questionGenModule?.modules:", questionGenModule);
+  
 
   useEffect(() => {
     handleFreeTrialOnChange();
@@ -381,7 +414,6 @@ const Questioning = () => {
           dispatch(setLoading({ key: "modules/fetchModules", value: false }));
           setIsLoading(false);
         });
-      console.log("type:", type);
     } else if (selectedPreClinicalOption.trim() === "QuesGen") {
       setIsSortedByPresentation(false);
 
@@ -389,7 +421,6 @@ const Questioning = () => {
       dispatch(fetchQuesGenModules())
         .unwrap()
         .then(() => {
-          console.log("in question generation");
           setIsLoading(false);
         })
         .catch((err) => {
@@ -661,7 +692,6 @@ const Questioning = () => {
       }
     }
   }, [selectedModules, limit, selectedOption, selectedTab, freeTrialType]);
-  console.log("selectedPreClinicalOption:", selectedPreClinicalOption);
 
   useEffect(() => {
     if (selectedTab === "Pre-clinical") {
@@ -1287,7 +1317,7 @@ const Questioning = () => {
                           ) : (
                             <div className="flex items-center gap-x-10 dark:text-white">
                               <div className="3xl:text-[16px] flex items-center text-left text-[14px]">
-                                <input
+                                {/* <input
                                   type="checkbox"
                                   className="mr-2 size-4"
                                   checked={data?.data?.every((row) =>
@@ -1296,6 +1326,40 @@ const Questioning = () => {
                                   onChange={(e) =>
                                     handleSelectAll(e.target.checked)
                                   } // Parent checkbox change handler
+                                /> */}
+                                <input
+                                  type="checkbox"
+                                  className="mr-2 size-4"
+                                  checked={
+                                    selectedTab === "Pre-clinical"
+                                      ? questionGenModule?.modules?.every(
+                                          (row, index) =>
+                                            selectedModules.includes(row.id),
+                                        )
+                                      : selectedTab === "Clinical" &&
+                                          selectedOption === "SBA"
+                                        ? data?.data?.every((row) =>
+                                            selectedModules.includes(
+                                              row.categoryId,
+                                            ),
+                                          )
+                                        : selectedTab === "Clinical" &&
+                                            selectedOption === "SAQ"
+                                          ? saqModule?.every((row) =>
+                                              selectedModules.includes(
+                                                row.categoryId,
+                                              ),
+                                            )
+                                          : selectedTab === "Clinical" &&
+                                              selectedOption === "Mock"
+                                            ? mockTestIds?.every((row) =>
+                                                selectedModules.includes(row),
+                                              )
+                                            : false // Default to false for Trial or other cases
+                                  }
+                                  onChange={(e) =>
+                                    handleSelectAll(e.target.checked)
+                                  }
                                 />
                                 Select All
                               </div>
@@ -1343,36 +1407,28 @@ const Questioning = () => {
                       <div>
                         {selectedTab === "Pre-clinical" &&
                           (questionGenModule?.modules?.length > 0 ? (
-                            questionGenModule.modules
-                              .filter(
-                                (row, index, arr) =>
-                                  // Keep only first occurrence of each module
-                                  arr.findIndex(
-                                    (r) => r.module === row.module,
-                                  ) === index,
-                              )
-                              .map((row, id) => (
-                                <div
-                                  key={id}
-                                  className="grid items-center py-3 md:grid-cols-2"
-                                >
-                                  <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
-                                    <label className="flex cursor-pointer items-center hover:opacity-85">
-                                      <input
-                                        type="checkbox"
-                                        className="custom-checkbox mr-2 hover:opacity-70"
-                                        checked={selectedModules.includes(
-                                          row.module,
-                                        )}
-                                        onChange={() =>
-                                          handleCheckboxChange(row.module)
-                                        }
-                                      />
-                                      {row.module}
-                                    </label>
-                                  </div>
+                            filteredQuesGenModules.map((row, id) => (
+                              <div
+                                key={id}
+                                className="grid items-center py-3 md:grid-cols-2"
+                              >
+                                <div className="cursor-pointer text-left text-[14px] font-medium text-[#3F3F46] dark:text-white 2xl:text-[16px]">
+                                  <label className="flex cursor-pointer items-center hover:opacity-85">
+                                    <input
+                                      type="checkbox"
+                                      className=" mr-2 hover:opacity-70"
+                                      checked={selectedModules.includes(
+                                        row.id,
+                                      )}
+                                      onChange={() =>
+                                        handleCheckboxChange(row.module)
+                                      }
+                                    />
+                                    {row.module}
+                                  </label>
                                 </div>
-                              ))
+                              </div>
+                            ))
                           ) : (
                             <div className="py-3 text-center text-gray-500">
                               No modules available.
@@ -1395,7 +1451,7 @@ const Questioning = () => {
                                 <label className="flex cursor-pointer items-center hover:opacity-85">
                                   <input
                                     type="checkbox"
-                                    className="mr-2 size-4 rounded-none text-[#3F3F46]"
+                                    className=" mr-2 size-4 rounded-none text-[#3F3F46]"
                                     checked={freeTrialType === row.trialId} // Use freeTrialType instead of selectedTrial
                                     onChange={() =>
                                       handleFreeTrialOnChange(row.trialId)
