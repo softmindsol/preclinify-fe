@@ -1038,7 +1038,7 @@ const Questioning = () => {
                   {/* Tab Section */}
                   <div className="flex items-center justify-between space-x-2 text-[12px] font-medium text-[#3F3F46] md:text-[16px]">
                     <button
-                      className={`w-[100%] px-4 py-2 ${
+                      className={`w-[50%] px-4 py-2 ${
                         selectedTab === "Clinical"
                           ? "bg-white text-black"
                           : "bg-[#E4E4E7] text-gray-500"
@@ -1047,7 +1047,7 @@ const Questioning = () => {
                     >
                       Clinical
                     </button>
-                    {/* <button
+                    <button
                       className={`w-[50%] px-4 py-2 ${
                         selectedTab === "Pre-clinical"
                           ? "bg-white text-black"
@@ -1056,7 +1056,7 @@ const Questioning = () => {
                       onClick={() => handleTabChange("Pre-clinical")}
                     >
                       Pre-clinical
-                    </button> */}
+                    </button>
                   </div>
                   {/* Search and Button Section */}
                   <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">

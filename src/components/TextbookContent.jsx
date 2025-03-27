@@ -153,81 +153,73 @@ const TextbookContent = () => {
 
   const { h1, h2 } = extractHeadings(data?.textContent);
 
-  // Function to split markdown content by h2 headings and assign IDs correctly
-  const renderSections = (markdown) => {
-    if (typeof markdown !== "string" || !markdown)
-      return <div>No content available</div>;
+  // Function to split markdown content by h2 headings and assign IDs
+ const renderSections = (markdown) => {
+   if (typeof markdown !== "string" || !markdown)
+     return <div>No content available</div>;
 
-    const lines = markdown.split("\n");
-    const sections = [];
-    let currentSection = [];
-    let sectionIndex = -1; // Start at -1 so the first ## increments to 0
+   const lines = markdown.split("\n");
+   const sections = [];
+   let currentSection = [];
+   let sectionIndex = -1;
 
-    lines.forEach((line) => {
-      if (line.startsWith("## ")) {
-        // Push the previous section if it exists
-        if (currentSection.length > 0) {
-          sections.push({
-            id: `section-${sectionIndex}`,
-            content: currentSection.join("\n"),
-          });
-        }
-        // Start a new section with the heading
-        sectionIndex++;
-        currentSection = [line];
-      } else if (currentSection.length > 0) {
-        // Only add lines to a section if it has already started with an ## heading
-        currentSection.push(line);
-      }
+   lines.forEach((line) => {
+     if (line.startsWith("## ")) {
+       if (currentSection.length > 0) {
+         sections.push({
+           id: `section-${sectionIndex}`,
+           content: currentSection.join("\n"),
+         });
+       }
+       sectionIndex++;
+       currentSection = [line];
+     } else if (currentSection.length > 0) {
+       currentSection.push(line);
+     }
+   });
+
+   if (currentSection.length > 0) {
+     sections.push({
+       id: `section-${sectionIndex}`,
+       content: currentSection.join("\n"),
+     });
+   }
+
+   return sections.map((section) => (
+     <div key={section.id} id={section.id} className="space-y-3">
+       <div className="markdown-text-container">
+         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+           {section.content}
+         </ReactMarkdown>
+       </div>
+     </div>
+   ));
+ };
+
+const scrollToSection = (sectionId) => {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    const offset = 100;
+    const sectionPosition =
+      section.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: sectionPosition - offset,
+      behavior: "smooth",
     });
-
-    // Push the last section if it exists
-    if (currentSection.length > 0) {
-      sections.push({
-        id: `section-${sectionIndex}`,
-        content: currentSection.join("\n"),
-      });
-    }
-
-    return sections.map((section) => (
-      <div key={section.id} id={section.id} className="space-y-3">
-        <div className="markdown-text-container">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-          >
-            {section.content}
-          </ReactMarkdown>
-        </div>
-      </div>
-    ));
-  };
-
-  // Custom scroll function with offset
-  const scrollToSection = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      const offset = 100; // Adjust this based on your fixed header height
-      const sectionPosition =
-        section.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({
-        top: sectionPosition - offset,
-        behavior: "smooth",
-      });
-      setActiveSection(sectionId);
-    }
-  };
+    setActiveSection(sectionId);
+  }
+};
 
   useEffect(() => {
     dispatch(getNotesByModuleId({ userId, moduleId: id }))
       .unwrap()
       .then((data) => {
         setNotes(data);
-        setLoading(false);
+        setLoading(false); // Set loading to false after data is fetched
       })
       .catch((err) => {
         console.error(err);
-        setLoading(false);
+        setLoading(false); // Ensure loading is false even on error
       });
   }, [id, dispatch, userId, moduleId]);
 
@@ -428,7 +420,7 @@ const TextbookContent = () => {
                                 ? "font-bold text-[#000000]"
                                 : "text-[#71717A] hover:text-[#3cc8a1]"
                             }`}
-                            onClick={() => scrollToSection(`section-${index}`)}
+                            onClick={() => scrollToSection(`section-${index}`)} // Use custom scroll function
                             style={{ cursor: "pointer" }}
                           >
                             <ReactMarkdown
