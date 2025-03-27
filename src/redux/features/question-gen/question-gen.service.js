@@ -63,7 +63,7 @@ export const fetchQuesGenModuleById = createAsyncThunk(
         let query = supabase
           .from("questionGens")
           .select("*")
-          .eq("id", moduleId);
+          .eq("module", moduleId);
 
         // Apply limit only if it's defined
         if (limit !== null) {
