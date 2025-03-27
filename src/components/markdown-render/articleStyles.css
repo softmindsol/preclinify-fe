@@ -1,12 +1,13 @@
 .markdown-text-container table {
-  width: 100%;
+  width: 80%;
   border-collapse: collapse;
 }
 
 .markdown-text-container th,
 .markdown-text-container td {
+  font-size:14px;
   border: 1px solid black;
-  padding: 8px;
+  padding: 3px;
   text-align: left;
 }
 
