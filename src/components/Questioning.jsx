@@ -325,6 +325,9 @@ const handleSelectAll = (isChecked) => {
       // QuesGen modules
       allModuleIds =
         questionGenModule?.modules?.map((row) => row.id) || [];
+
+        console.log("allModuleIds:", allModuleIds);
+        
     } else if (selectedTab === "Clinical") {
       if (selectedOption === "SBA") {
         // SBA modules
@@ -1334,7 +1337,9 @@ const handleSelectAll = (isChecked) => {
                                     selectedTab === "Pre-clinical"
                                       ? questionGenModule?.modules?.every(
                                           (row, index) =>
-                                            selectedModules.includes(row.id),
+                                            selectedModules.includes(
+                                              row.module,
+                                            ),
                                         )
                                       : selectedTab === "Clinical" &&
                                           selectedOption === "SBA"
@@ -1416,9 +1421,9 @@ const handleSelectAll = (isChecked) => {
                                   <label className="flex cursor-pointer items-center hover:opacity-85">
                                     <input
                                       type="checkbox"
-                                      className=" mr-2 hover:opacity-70"
+                                      className="mr-2 hover:opacity-70"
                                       checked={selectedModules.includes(
-                                        row.id,
+                                        row.module,
                                       )}
                                       onChange={() =>
                                         handleCheckboxChange(row.module)
@@ -1451,7 +1456,7 @@ const handleSelectAll = (isChecked) => {
                                 <label className="flex cursor-pointer items-center hover:opacity-85">
                                   <input
                                     type="checkbox"
-                                    className=" mr-2 size-4 rounded-none text-[#3F3F46]"
+                                    className="mr-2 size-4 rounded-none text-[#3F3F46]"
                                     checked={freeTrialType === row.trialId} // Use freeTrialType instead of selectedTrial
                                     onChange={() =>
                                       handleFreeTrialOnChange(row.trialId)
