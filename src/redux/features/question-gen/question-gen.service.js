@@ -13,7 +13,6 @@ export const fetchQuesGenModules = createAsyncThunk(
 
       if (error) return rejectWithValue(error.message);
 
-      console.log("data:", data);
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -33,7 +32,6 @@ export const fetchQuesGenModuleById = createAsyncThunk(
         return rejectWithValue("User ID is required");
       }
       const uniqueModuleIds = [...new Set(moduleIds)];
-      console.log("uniqueModuleIds:", uniqueModuleIds);
 
       let moduleLimits;
 
@@ -72,7 +70,6 @@ export const fetchQuesGenModuleById = createAsyncThunk(
         }
 
         const { data, error } = await query;
-        console.log("data:", data);
 
         if (error) {
           throw new Error(
@@ -87,7 +84,6 @@ export const fetchQuesGenModuleById = createAsyncThunk(
 
       // Combine all fetched data into a single array
       const combinedData = results.flat(); // Flatten the array of arrays into a single array
-      console.log("combinedData:", combinedData);
 
       return combinedData; // Return the combined data
     } catch (error) {

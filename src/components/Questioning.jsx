@@ -94,8 +94,13 @@ const Questioning = () => {
   );
 
   const type = useSelector((state) => state.mode?.questionMode?.selectedOption);
-  const questionGenModule = useSelector((state) => state?.quesGen);
+  const { modules: quesGenModules, QuesLoading } = useSelector(
+    (state) => state?.quesGen,
+  );
 
+  console.log("QuesLoading:", QuesLoading);
+  console.log("quesGenModules:", quesGenModules);
+  
   const {
     mockTestIds,
     mockMcqsByModulesData,
@@ -147,18 +152,18 @@ const Questioning = () => {
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-const filteredQuesGenModules =
-  questionGenModule?.modules
-    ?.filter((module) =>
-      module?.module?.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
-    ?.reduce((unique, module) => {
-      // Only add if we haven't seen this module name yet
-      if (!unique.some((item) => item.module === module.module)) {
-        unique.push(module);
-      }
-      return unique;
-    }, []) || [];
+  const filteredQuesGenModules =
+    quesGenModules
+      ?.filter((module) =>
+        module?.module?.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      ?.reduce((unique, module) => {
+        // Only add if we haven't seen this module name yet
+        if (!unique.some((item) => item.module === module.module)) {
+          unique.push(module);
+        }
+        return unique;
+      }, []) || [];
 
   const filteredMockModules = modules.filter((module) =>
     module.categoryName.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -318,40 +323,36 @@ const filteredQuesGenModules =
   const preClinicalHandler = () => {
     setSelectedPreClinicalOption("QuesGen");
   };
-const handleSelectAll = (isChecked) => {
-  if (isChecked) {
-    let allModuleIds = [];
-    if (selectedTab === "Pre-clinical") {
-      // QuesGen modules
-      allModuleIds =
-        questionGenModule?.modules?.map((row) => row.module) || [];
+  const handleSelectAll = (isChecked) => {
+    if (isChecked) {
+      let allModuleIds = [];
+      if (selectedTab === "Pre-clinical") {
+        // QuesGen modules
+        allModuleIds = quesGenModules?.map((row) => row.module) || [];
 
-        console.log("allModuleIds:", allModuleIds);
-        
-    } else if (selectedTab === "Clinical") {
-      if (selectedOption === "SBA") {
-        // SBA modules
-        allModuleIds = data?.data?.map((row) => row.categoryId) || [];
-      } else if (selectedOption === "SAQ") {
-        // SAQ modules
-        allModuleIds = saqModule?.map((row) => row.categoryId) || [];
-      } else if (selectedOption === "Mock") {
-        // Mock modules
-        allModuleIds = mockTestIds || [];
-      } else if (selectedOption === "Trial") {
-        // Trial mode doesn’t need Select All (checkbox-based), skip or handle differently
-        return;
+      } else if (selectedTab === "Clinical") {
+        if (selectedOption === "SBA") {
+          // SBA modules
+          allModuleIds = data?.data?.map((row) => row.categoryId) || [];
+        } else if (selectedOption === "SAQ") {
+          // SAQ modules
+          allModuleIds = saqModule?.map((row) => row.categoryId) || [];
+        } else if (selectedOption === "Mock") {
+          // Mock modules
+          allModuleIds = mockTestIds || [];
+        } else if (selectedOption === "Trial") {
+          // Trial mode doesn’t need Select All (checkbox-based), skip or handle differently
+          return;
+        }
       }
+      setSelectedModules(allModuleIds);
+    } else {
+      // Deselect all module IDs
+      setSelectedModules([]);
     }
-    setSelectedModules(allModuleIds);
-  } else {
-    // Deselect all module IDs
-    setSelectedModules([]);
-  }
-};
+  };
   // console.log("SelectedModules:", selectedModules);
-  // console.log(" questionGenModule?.modules:", questionGenModule);
-  
+  // console.log(" quesGenModules:", quesGenModules);
 
   useEffect(() => {
     handleFreeTrialOnChange();
@@ -718,7 +719,7 @@ const handleSelectAll = (isChecked) => {
         fetchQuesGenModuleById({
           moduleIds: selectedModules,
           totalLimit: limit,
-          userId
+          userId,
         }),
       )
         .unwrap()
@@ -1047,8 +1048,6 @@ const handleSelectAll = (isChecked) => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
-  console.log("selectedModules:", selectedModules);
-  
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
@@ -1095,104 +1094,115 @@ const handleSelectAll = (isChecked) => {
                     </button>
                   </div>
                   {/* Search and Button Section */}
-                  <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
-                    {/* Search Bar */}
-                    <div className="flex items-center gap-x-10 p-8">
-                      {selectedTab === "Clinical" && (
-                        <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
-                          Clinical
-                        </p>
-                      )}
-                      {selectedTab === "Pre-clinical" && (
-                        <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
-                          Pre Clinical
-                        </p>
-                      )}
-                      <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
-                        <div className="group">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-search text-gray-500 transition-colors duration-200 group-hover:text-teal-500"
-                          >
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="m21 21-4.3-4.3" />
-                          </svg>
+                  <div className="relative">
+                    {(planType === "Osce" ||
+                      plan === undefined ||
+                      plan === null ||
+                      planType === undefined) &&
+                      type !== "Trial" && (
+                        <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
+                          
                         </div>
-                        <input
-                          type="text"
-                          placeholder="Search for modules"
-                          onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-                          className="ml-2 w-[200px] placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none dark:bg-[#1E1E2A] 2xl:w-[280px]"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center space-y-3 p-8 xl:flex-row xl:space-x-5 xl:space-y-0">
-                      <div className="relative w-[105px]">
-                        {selectedTab === "Clinical" ? (
-                          <select
-                            className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
-                            value={selectedOption} // Bind the selected value to state
-                            onChange={handleSelectChange} // Trigger the handler on change
-                          >
-                            {(planType === "Osce" ||
-                              planType === undefined) && (
-                              <option value="Trial">Trial</option>
-                            )}
-                            <option value="SBA">SBA</option>
-                            <option value="SAQ">SAQ</option>
-                            <option value="Mock">Mock</option>
-                          </select>
-                        ) : (
-                          <select
-                            className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
-                            value={selectedPreClinicalOption} // Bind the selected value to state
-                            onChange={preClinicalHandler} // Trigger the handler on change
-                          >
-                            <option value="QuesGen">QuesGen</option>
-                          </select>
+                      )}
+                    <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
+                      {/* Search Bar */}
+                      <div className="flex items-center gap-x-10 p-8">
+                        {selectedTab === "Clinical" && (
+                          <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
+                            Clinical
+                          </p>
                         )}
-                        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-                          <svg
-                            className="h-4 w-4 text-gray-400"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                        {selectedTab === "Pre-clinical" && (
+                          <p className="whitespace-nowrap text-[11px] font-semibold text-[#52525B] dark:text-white sm:text-[16px] md:text-[18px] 2xl:text-[20px]">
+                            Pre Clinical
+                          </p>
+                        )}
+                        <div className="hidden items-center rounded-md border border-gray-300 bg-white px-3 py-2 dark:border-[2px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] xl:flex">
+                          <div className="group">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="lucide lucide-search text-gray-500 transition-colors duration-200 group-hover:text-teal-500"
+                            >
+                              <circle cx="11" cy="11" r="8" />
+                              <path d="m21 21-4.3-4.3" />
+                            </svg>
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Search for modules"
+                            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+                            className="ml-2 w-[200px] placeholder:text-[12px] placeholder:text-[#D4D4D8] focus:outline-none dark:bg-[#1E1E2A] 2xl:w-[280px]"
+                          />
                         </div>
                       </div>
-                      {/* Dropdown */}
-                      {/* Continue Button */}
-                      <button
-                        onClick={handleContinue}
-                        disabled={
-                          selectPresentation.length === 0 &&
-                          selectedModules.length === 0 &&
-                          freeTrialType.length === 0
-                        } // Disable the button if both arrays are empty
-                        className={`bg-[#3CC8A1] ${
-                          selectPresentation.length === 0 &&
-                          selectedModules.length === 0 &&
-                          freeTrialType.length === 0
-                            ? "cursor-not-allowed opacity-50"
-                            : "hover:bg-transparent hover:text-[#3CC8A1]"
-                        } rounded-md border-[1px] border-[#3CC8A1] px-6 py-2 text-[12px] font-semibold text-white transition-all md:text-[14px] 2xl:text-[16px]`}
-                      >
-                        Continue &gt;
-                      </button>
+                      <div className="flex flex-col items-center space-y-3 p-8 xl:flex-row xl:space-x-5 xl:space-y-0">
+                        <div className="relative w-[105px]">
+                          {selectedTab === "Clinical" ? (
+                            <select
+                              className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
+                              value={selectedOption} // Bind the selected value to state
+                              onChange={handleSelectChange} // Trigger the handler on change
+                            >
+                              {(planType === "Osce" ||
+                                planType === undefined) && (
+                                <option value="Trial">Trial</option>
+                              )}
+                              <option value="SBA">SBA</option>
+                              <option value="SAQ">SAQ</option>
+                              <option value="Mock">Mock</option>
+                            </select>
+                          ) : (
+                            <select
+                              className="h-[40px] w-full appearance-none rounded border border-[#A1A1AA] px-3 py-2 pr-1 text-[14px] dark:bg-[#1E1E2A]"
+                              value={selectedPreClinicalOption} // Bind the selected value to state
+                              onChange={preClinicalHandler} // Trigger the handler on change
+                            >
+                              <option value="QuesGen">QuesGen</option>
+                            </select>
+                          )}
+                          <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                            <svg
+                              className="h-4 w-4 text-gray-400"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        {/* Dropdown */}
+                        {/* Continue Button */}
+                        <button
+                          onClick={handleContinue}
+                          disabled={
+                            selectPresentation.length === 0 &&
+                            selectedModules.length === 0 &&
+                            freeTrialType.length === 0
+                          } // Disable the button if both arrays are empty
+                          className={`bg-[#3CC8A1] ${
+                            selectPresentation.length === 0 &&
+                            selectedModules.length === 0 &&
+                            freeTrialType.length === 0
+                              ? "cursor-not-allowed opacity-50"
+                              : "hover:bg-transparent hover:text-[#3CC8A1]"
+                          } rounded-md border-[1px] border-[#3CC8A1] px-6 py-2 text-[12px] font-semibold text-white transition-all md:text-[14px] 2xl:text-[16px]`}
+                        >
+                          Continue &gt;
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1338,11 +1348,8 @@ const handleSelectAll = (isChecked) => {
                                   className="mr-2 size-4"
                                   checked={
                                     selectedTab === "Pre-clinical"
-                                      ? questionGenModule?.modules?.every(
-                                          (row, index) =>
-                                            selectedModules.includes(
-                                              row.module,
-                                            ),
+                                      ? quesGenModules?.every((row, index) =>
+                                          selectedModules.includes(row.module),
                                         )
                                       : selectedTab === "Clinical" &&
                                           selectedOption === "SBA"
@@ -1414,7 +1421,7 @@ const handleSelectAll = (isChecked) => {
                       <div className="mb-5 mt-2 h-[1px] bg-[#A1A1AA]" />
                       <div>
                         {selectedTab === "Pre-clinical" &&
-                          (questionGenModule?.modules?.length > 0 ? (
+                          (quesGenModules?.length > 0 ? (
                             filteredQuesGenModules.map((row, id) => (
                               <div
                                 key={id}
