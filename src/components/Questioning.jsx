@@ -1100,9 +1100,7 @@ const Questioning = () => {
                       plan === null ||
                       planType === undefined) &&
                       type !== "Trial" && (
-                        <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm">
-                          
-                        </div>
+                        <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center backdrop-blur-sm"></div>
                       )}
                     <div className="flex h-[110px] items-center justify-between rounded-[8px] bg-white text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white">
                       {/* Search Bar */}
@@ -1323,7 +1321,9 @@ const Questioning = () => {
                   )}
 
                   {isLoading ? (
-                    <Loader />
+                    <div className="mt-24 flex w-full items-center justify-center">
+                      <div class="loader"></div>
+                    </div>
                   ) : (
                     <div className="ml-4 mr-4 rounded-[8px] bg-white px-10 py-8 text-[14px] text-black dark:border-[1px] dark:border-[#3A3A48] dark:bg-[#1E1E2A] dark:text-white md:text-[16px]">
                       <div className="flex w-full flex-col justify-between pb-2 font-medium text-[#3F3F46] lg:flex-row lg:items-center">
