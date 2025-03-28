@@ -4,53 +4,53 @@ import supabase from "../../../config/helper";
 // Define an async thunk to fetch modules
 export const fetchQuesGenModules = createAsyncThunk(
   "modules/fetchQuesGenModules",
-  async (_, { rejectWithValue }) => {
+  async (userId, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase
         .from("questionGens")
-        .select("*"); // Fetch only the 'module' column
+        .select("*")
+        .eq("userId", userId); // Filter by userId
 
-      // If there's an error in the response, reject it
-      if (error) {
-        return rejectWithValue(error.message);
-      }
-      
+      if (error) return rejectWithValue(error.message);
+
       console.log("data:", data);
-
-      return data; // Return the fetched data
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   },
 );
-
 // Fetch MCQs by moduleId with limit
 export const fetchQuesGenModuleById = createAsyncThunk(
   "modules/fetchQuesGenModuleById",
-  async ({ moduleIds, totalLimit }, { rejectWithValue }) => {
+  async ({ moduleIds, totalLimit, userId }, { rejectWithValue }) => {
     try {
       if (!moduleIds || !Array.isArray(moduleIds) || moduleIds.length === 0) {
         return rejectWithValue("Invalid moduleIds");
       }
-      console.log("moduleIds:", moduleIds);
-      
+
+      if (!userId) {
+        return rejectWithValue("User ID is required");
+      }
+      const uniqueModuleIds = [...new Set(moduleIds)];
+      console.log("uniqueModuleIds:", uniqueModuleIds);
 
       let moduleLimits;
 
       // Check if totalLimit is 0
       if (totalLimit === 0) {
         // If totalLimit is 0, fetch all questions for each module
-        moduleLimits = moduleIds.map((moduleId) => ({
+        moduleLimits = uniqueModuleIds.map((moduleId) => ({
           moduleId,
           limit: null, // Indicate that we want to fetch all
         }));
       } else {
         // Calculate the limit for each module
-        const baseLimit = Math.floor(totalLimit / moduleIds.length);
-        const remainder = totalLimit % moduleIds.length;
+        const baseLimit = Math.floor(totalLimit / uniqueModuleIds.length);
+        const remainder = totalLimit % uniqueModuleIds.length;
 
         // Prepare limits for each module
-        moduleLimits = moduleIds.map((moduleId, index) => {
+        moduleLimits = uniqueModuleIds.map((moduleId, index) => {
           return {
             moduleId,
             limit: baseLimit + (index < remainder ? 1 : 0),
@@ -63,7 +63,8 @@ export const fetchQuesGenModuleById = createAsyncThunk(
         let query = supabase
           .from("questionGens")
           .select("*")
-          .eq("module", moduleId);
+          .eq("module", moduleId)
+          .eq("userId", userId); // Filter by userId
 
         // Apply limit only if it's defined
         if (limit !== null) {
@@ -71,6 +72,7 @@ export const fetchQuesGenModuleById = createAsyncThunk(
         }
 
         const { data, error } = await query;
+        console.log("data:", data);
 
         if (error) {
           throw new Error(
@@ -105,8 +107,10 @@ export const insertQuesGenData = createAsyncThunk(
       if (!Array.isArray(quesGenDataArray) || quesGenDataArray.length === 0) {
         throw new Error("Invalid data format: Expected an array of questions.");
       }
-
-      
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        throw new Error("User ID not found in localStorage");
+      }
 
       // Map each question object to the correct Supabase format
       const formattedData = quesGenDataArray.map((quesGenData) => ({
@@ -117,6 +121,7 @@ export const insertQuesGenData = createAsyncThunk(
         explanationList: quesGenData.explanationList,
         module: quesGenData.module,
         presentation: quesGenData.presentation,
+        userId
       }));
 
       // Insert multiple records into Supabase

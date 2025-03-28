@@ -198,6 +198,9 @@ const QuestionCard = () => {
     setIsAnswered(true);
   };
 
+  console.log(selectedAnswer);
+  
+
   const handleCheckAnswer = () => {
     dispatch(setActive(false));
 
@@ -304,6 +307,7 @@ const QuestionCard = () => {
       }
       setCurrentIndex((prev) => prev + 1);
     }
+    setSelectedAnswer('')
   };
   const getAttemptedQuestions = () => {
     return data?.filter((_, index) => attempted[index] !== null);
@@ -604,7 +608,6 @@ const QuestionCard = () => {
     return <Loader />;
   }
 
-  console.log("data:", data);
 
   return (
     <div className={`min-h-screen ${darkModeRedux ? "dark" : ""} `}>
