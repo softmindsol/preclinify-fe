@@ -324,7 +324,7 @@ const handleSelectAll = (isChecked) => {
     if (selectedTab === "Pre-clinical") {
       // QuesGen modules
       allModuleIds =
-        questionGenModule?.modules?.map((row) => row.id) || [];
+        questionGenModule?.modules?.map((row) => row.module) || [];
 
         console.log("allModuleIds:", allModuleIds);
         
@@ -421,7 +421,7 @@ const handleSelectAll = (isChecked) => {
       setIsSortedByPresentation(false);
 
       setIsLoading(true);
-      dispatch(fetchQuesGenModules())
+      dispatch(fetchQuesGenModules(userId))
         .unwrap()
         .then(() => {
           setIsLoading(false);
@@ -702,7 +702,7 @@ const handleSelectAll = (isChecked) => {
       dispatch(setPreclinicalType({ selectedPreClinicalOption }));
 
       setIsLoading(true);
-      dispatch(fetchQuesGenModules())
+      dispatch(fetchQuesGenModules(userId))
         .unwrap()
         .then(() => {
           setIsLoading(false);
@@ -718,6 +718,7 @@ const handleSelectAll = (isChecked) => {
         fetchQuesGenModuleById({
           moduleIds: selectedModules,
           totalLimit: limit,
+          userId
         }),
       )
         .unwrap()
@@ -1046,6 +1047,8 @@ const handleSelectAll = (isChecked) => {
     dispatch(fetchSubscriptions({ userId }));
   }, [dispatch, userId]);
 
+  console.log("selectedModules:", selectedModules);
+  
   return (
     <div className={`w-ful lg:flex ${darkModeRedux ? "dark" : ""}`}>
       <div className="fixed hidden h-full lg:block">
